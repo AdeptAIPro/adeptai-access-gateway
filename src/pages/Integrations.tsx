@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,69 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { FileCheck, GoogleIcon } from "@/utils/icons";
 import { 
-  Puzzle, 
-  Search, 
+  FileCheck, 
+  GoogleIcon, 
+  LinkedInIcon, 
+  FacebookIcon, 
+  SlackIcon,
+  SAPIcon,
+  WorkdayIcon,
+  CompanyLogo
+} from "@/utils/icons";
+import { 
   Link as LinkIcon, 
-  CheckCircle, 
-  X as XIcon,
-  Github,
-  Slack,
-  FileText,
-  Database,
-  Mail,
-  Calendar,
-  MessageSquare,
-  HardDrive,
-  CreditCard,
-  Building,
-  Phone,
-  Briefcase,
-  Users,
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
-  Code,
-  Upload,
-  Download,
-  Cloud,
-  List,
-  CheckSquare,
-  Home,
-  Shield,
-  ShieldCheck,
-  UserCheck,
-  UserPlus,
-  FilePlus,
-  Star,
-  Sun,
-  Globe,
-  Group,
-  Compass,
-  Route,
-  Package,
-  Ship,
-  Anchor,
-  LayoutList,
-  Search as SearchIcon,
-  Filter,
-  Zap,
-  TrendingUp,
-  Share,
-  Megaphone,
-  MapPin,
-  Target,
-  ExternalLink,
-  Heart,
-  Info,
-  HelpCircle,
-  ArrowUp,
-  Video,
-  Film,
-  Check,
-  Clock
+  X as XIcon
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -93,118 +42,268 @@ interface IntegrationItem {
   id: string;
   name: string;
   description: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   category: string;
   connected: boolean;
 }
 
 // Helper function to get icon for integration
-const getIconForIntegration = (name: string): React.ElementType => {
-  const iconMap: { [key: string]: React.ElementType } = {
+const getIconForIntegration = (name: string): React.ComponentType<{ className?: string }> => {
+  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
     // Social
-    "LinkedIn": Building,
-    "Facebook": Facebook,
-    "X": Twitter,
-    "Instagram": Instagram,
-    "TikTok": Video,
-    "YouTube": Youtube,
-    "Business Whatsapp": MessageSquare,
+    "LinkedIn": LinkedInIcon,
+    "Facebook": FacebookIcon,
+    "X": ({ className }: { className?: string }) => (
+      <CompanyLogo name="X" className={className} />
+    ),
+    "Instagram": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Instagram" className={className} />
+    ),
+    "TikTok": ({ className }: { className?: string }) => (
+      <CompanyLogo name="TikTok" className={className} />
+    ),
+    "YouTube": ({ className }: { className?: string }) => (
+      <CompanyLogo name="YouTube" className={className} />
+    ),
+    "Business Whatsapp": ({ className }: { className?: string }) => (
+      <CompanyLogo name="WhatsApp" className={className} />
+    ),
     
     // Productivity
-    "Slack": Slack,
-    "Microsoft Teams": Users,
-    "Jira": CheckSquare,
-    "Asana": Check,
-    "Trello": CheckSquare,
-    "Monday.com": Calendar,
-    "Basecamp": Home,
+    "Slack": SlackIcon,
+    "Microsoft Teams": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Microsoft" className={className} />
+    ),
+    "Jira": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Jira" className={className} />
+    ),
+    "Asana": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Asana" className={className} />
+    ),
+    "Trello": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Trello" className={className} />
+    ),
+    "Monday.com": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Monday" className={className} />
+    ),
+    "Basecamp": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Basecamp" className={className} />
+    ),
     "Google Workplace": GoogleIcon,
-    "Notion": FileText,
-    "Clickup": Check,
-    "Zoom": Video,
+    "Notion": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Notion" className={className} />
+    ),
+    "Clickup": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Clickup" className={className} />
+    ),
+    "Zoom": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Zoom" className={className} />
+    ),
     
     // Job Boards
-    "LinkedIn Jobs": Building,
-    "Indeed": Search,
-    "Glassdoor": Building,
-    "Dice": Code,
-    "Zip Recruiter": Upload,
-    "CareerBuilder": Briefcase,
-    "SimplyHired": FileText,
-    "Adzuna": Search,
-    "The Ladders": TrendingUp,
+    "LinkedIn Jobs": LinkedInIcon,
+    "Indeed": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Indeed" className={className} />
+    ),
+    "Glassdoor": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Glassdoor" className={className} />
+    ),
+    "Dice": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Dice" className={className} />
+    ),
+    "Zip Recruiter": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ZipRecruiter" className={className} />
+    ),
+    "CareerBuilder": ({ className }: { className?: string }) => (
+      <CompanyLogo name="CareerBuilder" className={className} />
+    ),
+    "SimplyHired": ({ className }: { className?: string }) => (
+      <CompanyLogo name="SimplyHired" className={className} />
+    ),
+    "Adzuna": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Adzuna" className={className} />
+    ),
+    "The Ladders": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Ladders" className={className} />
+    ),
     "Google for Jobs": GoogleIcon,
-    "Craigslist": List,
-    "Jora": SearchIcon,
-    "AngelList": Star,
+    "Craigslist": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Craigslist" className={className} />
+    ),
+    "Jora": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Jora" className={className} />
+    ),
+    "AngelList": ({ className }: { className?: string }) => (
+      <CompanyLogo name="AngelList" className={className} />
+    ),
     
     // ATS
-    "Ceipal": FileText,
-    "Workday": Calendar,
-    "Taleo": List,
-    "ICIMS": Search,
-    "Lever": Zap,
-    "Smart Recruiters": UserPlus,
-    "Bullhorn ATS": Megaphone,
-    "Pinpoint": MapPin,
-    "Jobvite": ExternalLink,
-    "JazzHR": Heart,
-    "Zoho Recruit": Mail,
+    "Ceipal": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Ceipal" className={className} />
+    ),
+    "Workday": WorkdayIcon,
+    "Taleo": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Taleo" className={className} />
+    ),
+    "ICIMS": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ICIMS" className={className} />
+    ),
+    "Lever": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Lever" className={className} />
+    ),
+    "Smart Recruiters": ({ className }: { className?: string }) => (
+      <CompanyLogo name="SmartRecruiters" className={className} />
+    ),
+    "Bullhorn ATS": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Bullhorn" className={className} />
+    ),
+    "Pinpoint": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Pinpoint" className={className} />
+    ),
+    "Jobvite": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Jobvite" className={className} />
+    ),
+    "JazzHR": ({ className }: { className?: string }) => (
+      <CompanyLogo name="JazzHR" className={className} />
+    ),
+    "Zoho Recruit": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Zoho" className={className} />
+    ),
     
     // VMS
-    "Stafferlink": Briefcase,
-    "SAP Field glass": Database,
-    "Beeline": Route,
-    "IQNavigator": Compass,
-    "PRO Unlimited VMS": Package,
-    "Pontoon": Ship,
-    "KellyOCG VMS": Users,
+    "Stafferlink": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Stafferlink" className={className} />
+    ),
+    "SAP Field glass": SAPIcon,
+    "Beeline": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Beeline" className={className} />
+    ),
+    "IQNavigator": ({ className }: { className?: string }) => (
+      <CompanyLogo name="IQNavigator" className={className} />
+    ),
+    "PRO Unlimited VMS": ({ className }: { className?: string }) => (
+      <CompanyLogo name="PROUnlimited" className={className} />
+    ),
+    "Pontoon": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Pontoon" className={className} />
+    ),
+    "KellyOCG VMS": ({ className }: { className?: string }) => (
+      <CompanyLogo name="KellyOCG" className={className} />
+    ),
     
     // Compliance
-    "HR360": Briefcase,
-    "ADP Compliance": ShieldCheck,
-    "ComplianceQuest": Shield,
-    "BambooHR Compliance": FileCheck,
-    "Zenefits": Shield,
-    "Gusto Compliance": ShieldCheck,
+    "HR360": ({ className }: { className?: string }) => (
+      <CompanyLogo name="HR360" className={className} />
+    ),
+    "ADP Compliance": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ADP" className={className} />
+    ),
+    "ComplianceQuest": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ComplianceQuest" className={className} />
+    ),
+    "BambooHR Compliance": ({ className }: { className?: string }) => (
+      <CompanyLogo name="BambooHR" className={className} />
+    ),
+    "Zenefits": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Zenefits" className={className} />
+    ),
+    "Gusto Compliance": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Gusto" className={className} />
+    ),
     
     // Background Checks
-    "HireRight": UserCheck,
-    "Checkr": CheckCircle,
-    "GoodHire": UserCheck,
-    "Sterling": Shield,
-    "Accurate Background": ShieldCheck,
-    "First Advantage": UserCheck,
-    "IntelliCorp": Building,
-    "Verifitech": Shield,
-    "ESR": FileText,
-    "PreCheck": CheckCircle,
+    "HireRight": ({ className }: { className?: string }) => (
+      <CompanyLogo name="HireRight" className={className} />
+    ),
+    "Checkr": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Checkr" className={className} />
+    ),
+    "GoodHire": ({ className }: { className?: string }) => (
+      <CompanyLogo name="GoodHire" className={className} />
+    ),
+    "Sterling": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Sterling" className={className} />
+    ),
+    "Accurate Background": ({ className }: { className?: string }) => (
+      <CompanyLogo name="AccurateBackground" className={className} />
+    ),
+    "First Advantage": ({ className }: { className?: string }) => (
+      <CompanyLogo name="FirstAdvantage" className={className} />
+    ),
+    "IntelliCorp": ({ className }: { className?: string }) => (
+      <CompanyLogo name="IntelliCorp" className={className} />
+    ),
+    "Verifitech": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Verifitech" className={className} />
+    ),
+    "ESR": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ESR" className={className} />
+    ),
+    "PreCheck": ({ className }: { className?: string }) => (
+      <CompanyLogo name="PreCheck" className={className} />
+    ),
     
     // Onboarding
-    "BambooHR Onboarding": UserPlus,
-    "Click Boarding": Check,
-    "WorkBright": Sun,
-    "ClearCompany": Building,
-    "Zenefits Onboarding": UserPlus,
-    "Gusto Onboarding": UserPlus,
-    "Sapling HR": Users,
-    "Talmundo": Globe,
-    "Breezy HR Onboarding": UserPlus,
-    "Namely": Users,
+    "BambooHR Onboarding": ({ className }: { className?: string }) => (
+      <CompanyLogo name="BambooHR" className={className} />
+    ),
+    "Click Boarding": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ClickBoarding" className={className} />
+    ),
+    "WorkBright": ({ className }: { className?: string }) => (
+      <CompanyLogo name="WorkBright" className={className} />
+    ),
+    "ClearCompany": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ClearCompany" className={className} />
+    ),
+    "Zenefits Onboarding": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Zenefits" className={className} />
+    ),
+    "Gusto Onboarding": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Gusto" className={className} />
+    ),
+    "Sapling HR": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Sapling" className={className} />
+    ),
+    "Talmundo": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Talmundo" className={className} />
+    ),
+    "Breezy HR Onboarding": ({ className }: { className?: string }) => (
+      <CompanyLogo name="BreezyHR" className={className} />
+    ),
+    "Namely": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Namely" className={className} />
+    ),
     
     // CRM & HRMS
-    "SAP SuccessFactors": Users,
-    "Salesforce (CRM)": Cloud,
-    "Workday HCM": Users,
-    "Oracle HCM Cloud": Cloud,
-    "ADP Workforce Now": Users,
-    "BambooHR": Users,
-    "Ceridian Dayforce": Users,
-    "UltiPro": Users,
-    "Kronos Workforce Ready": Users
+    "SAP SuccessFactors": SAPIcon,
+    "Salesforce (CRM)": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Salesforce" className={className} />
+    ),
+    "Workday HCM": WorkdayIcon,
+    "Oracle HCM Cloud": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Oracle" className={className} />
+    ),
+    "ADP Workforce Now": ({ className }: { className?: string }) => (
+      <CompanyLogo name="ADP" className={className} />
+    ),
+    "BambooHR": ({ className }: { className?: string }) => (
+      <CompanyLogo name="BambooHR" className={className} />
+    ),
+    "Ceridian Dayforce": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Ceridian" className={className} />
+    ),
+    "UltiPro": ({ className }: { className?: string }) => (
+      <CompanyLogo name="UltiPro" className={className} />
+    ),
+    "Kronos Workforce Ready": ({ className }: { className?: string }) => (
+      <CompanyLogo name="Kronos" className={className} />
+    )
   };
   
-  return iconMap[name] || Puzzle;
+  return iconMap[name] || (({ className }: { className?: string }) => (
+    <CompanyLogo name={name} className={className} />
+  ));
 };
 
 // Create the list of integrations
@@ -370,7 +469,20 @@ const Integrations = () => {
       <div className="space-y-6">
         {/* Search bar */}
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
           <Input 
             placeholder="Search integrations..." 
             className="pl-10"
@@ -395,8 +507,8 @@ const Integrations = () => {
               {filteredIntegrations.map((integration) => (
                 <Card key={integration.id} className="hover:shadow-md transition-all overflow-hidden">
                   <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                    <div className="bg-primary/10 p-2 rounded-md">
-                      <integration.icon className="h-6 w-6 text-primary" />
+                    <div className="bg-primary/10 p-2 rounded-md h-12 w-12 flex items-center justify-center">
+                      <integration.icon className="h-8 w-8" />
                     </div>
                     <div className="flex-1">
                       <CardTitle className="text-lg flex items-center gap-2">
