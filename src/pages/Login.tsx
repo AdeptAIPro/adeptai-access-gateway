@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/use-auth";
 import AuthLayout from "@/components/AuthLayout";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { GoogleIcon, FacebookIcon, LinkedInIcon } from "@/utils/icons";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -61,7 +62,7 @@ const Login = () => {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input-glow"
+            className="input-glow bg-gray-50 border-gray-200"
             required
           />
         </div>
@@ -71,7 +72,7 @@ const Login = () => {
             <Label htmlFor="password">Password</Label>
             <Button 
               variant="link" 
-              className="px-0 font-normal text-xs text-muted-foreground h-auto"
+              className="px-0 font-normal text-xs text-adept h-auto"
               type="button"
               onClick={() => navigate("/forgot-password")}
             >
@@ -85,7 +86,7 @@ const Login = () => {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input-glow pr-10"
+              className="input-glow pr-10 bg-gray-50 border-gray-200"
               required
             />
             <Button
@@ -113,7 +114,7 @@ const Login = () => {
         
         <Button
           type="submit"
-          className="w-full bg-adept hover:bg-adept-dark transition-all duration-300"
+          className="w-full bg-adept hover:bg-adept-dark transition-all duration-300 shadow-md"
           disabled={isLoading}
         >
           {isLoading ? "Signing in..." : "Sign in"}
@@ -130,12 +131,18 @@ const Login = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" type="button" className="hover-lift">
-            Google
+        <div className="grid grid-cols-3 gap-3">
+          <Button variant="outline" type="button" className="hover-lift flex items-center justify-center gap-2 bg-white">
+            <GoogleIcon className="h-4 w-4" />
+            <span className="sr-only md:not-sr-only md:text-xs whitespace-nowrap">Google</span>
           </Button>
-          <Button variant="outline" type="button" className="hover-lift">
-            GitHub
+          <Button variant="outline" type="button" className="hover-lift flex items-center justify-center gap-2 bg-white">
+            <FacebookIcon className="h-4 w-4" />
+            <span className="sr-only md:not-sr-only md:text-xs whitespace-nowrap">Facebook</span>
+          </Button>
+          <Button variant="outline" type="button" className="hover-lift flex items-center justify-center gap-2 bg-white">
+            <LinkedInIcon className="h-4 w-4" />
+            <span className="sr-only md:not-sr-only md:text-xs whitespace-nowrap">LinkedIn</span>
           </Button>
         </div>
       </form>
