@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard, 
-  PuzzlePiece, 
+  Puzzle, 
   Users, 
   BarChart, 
   GraduationCap,
@@ -52,7 +52,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
 
   const sidebarItems: SidebarItem[] = [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { title: "Integrations", icon: PuzzlePiece, href: "/dashboard/integrations" },
+    { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations" },
     { title: "Talent Matchmaking", icon: Users, href: "/dashboard/talent" },
     { title: "Analytics", icon: BarChart, href: "/dashboard/analytics" },
     { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills" },

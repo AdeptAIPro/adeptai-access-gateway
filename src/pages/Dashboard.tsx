@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChartContainer } from "@/components/ui/chart";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { 
-  PuzzlePiece, 
+  Puzzle, 
   Users, 
   BarChart as BarChartIcon, 
   GraduationCap,
@@ -41,7 +40,7 @@ const Dashboard = () => {
     {
       title: "Integrations",
       description: "Connect your systems and automate workflows",
-      icon: PuzzlePiece,
+      icon: Puzzle,
       route: "/dashboard/integrations",
       color: "bg-blue-500",
     },

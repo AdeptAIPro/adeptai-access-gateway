@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  PuzzlePiece, 
+  Puzzle, 
   Search, 
   Link as LinkIcon, 
-  Check, 
+  CheckCircle, 
   X as XIcon,
   Github,
   Slack,
