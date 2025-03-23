@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import Pricing from "./pages/Pricing";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import ProfessionalDevelopment from "./pages/ProfessionalDevelopment";
 
 function App() {
   const [queryClient] = React.useState(() => new QueryClient());
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/dashboard/settings" element={<Settings />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/professional-development" element={<ProfessionalDevelopment />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
