@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { FileCheck } from "@/utils/icons";
+import { FileCheck, GoogleIcon } from "@/utils/icons";
 import { 
   Puzzle, 
   Search, 
@@ -70,9 +70,7 @@ import {
   Video,
   Film,
   Check,
-  Clock,
-  Google,
-  Trello
+  Clock
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -117,10 +115,10 @@ const getIconForIntegration = (name: string): React.ElementType => {
     "Microsoft Teams": Users,
     "Jira": CheckSquare,
     "Asana": Check,
-    "Trello": Trello,
+    "Trello": CheckSquare,
     "Monday.com": Calendar,
     "Basecamp": Home,
-    "Google Workplace": Google,
+    "Google Workplace": GoogleIcon,
     "Notion": FileText,
     "Clickup": Check,
     "Zoom": Video,
@@ -135,7 +133,7 @@ const getIconForIntegration = (name: string): React.ElementType => {
     "SimplyHired": FileText,
     "Adzuna": Search,
     "The Ladders": TrendingUp,
-    "Google for Jobs": Google,
+    "Google for Jobs": GoogleIcon,
     "Craigslist": List,
     "Jora": SearchIcon,
     "AngelList": Star,
@@ -203,8 +201,7 @@ const getIconForIntegration = (name: string): React.ElementType => {
     "BambooHR": Users,
     "Ceridian Dayforce": Users,
     "UltiPro": Users,
-    "Kronos Workforce Ready": Users,
-    "Zenefits": Shield,
+    "Kronos Workforce Ready": Users
   };
   
   return iconMap[name] || Puzzle;
@@ -312,7 +309,7 @@ const createIntegrationsList = (): IntegrationItem[] => {
     }));
 
   // CRM & HRMS
-  const crmHrms = ["SAP SuccessFactors", "Salesforce (CRM)", "Workday HCM", "Oracle HCM Cloud", "ADP Workforce Now", "BambooHR", "Ceridian Dayforce", "UltiPro", "Kronos Workforce Ready", "Zenefits"]
+  const crmHrms = ["SAP SuccessFactors", "Salesforce (CRM)", "Workday HCM", "Oracle HCM Cloud", "ADP Workforce Now", "BambooHR", "Ceridian Dayforce", "UltiPro", "Kronos Workforce Ready"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
