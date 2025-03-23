@@ -35,10 +35,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           
           <div className="flex items-center gap-4 mt-8">
             <div className="flex -space-x-4">
-              <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-adept-dark text-sm font-bold border-2 border-white">JD</div>
-              <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-adept-dark text-sm font-bold border-2 border-white">SR</div>
-              <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-adept-dark text-sm font-bold border-2 border-white">KM</div>
-              <div className="w-12 h-12 rounded-full bg-adept-light shadow-lg flex items-center justify-center text-adept-dark text-sm font-bold border-2 border-white">+8</div>
+              <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-adept text-sm font-bold border-2 border-white">JD</div>
+              <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-adept text-sm font-bold border-2 border-white">SR</div>
+              <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-adept text-sm font-bold border-2 border-white">KM</div>
+              <div className="w-12 h-12 rounded-full bg-adept-light shadow-lg flex items-center justify-center text-adept text-sm font-bold border-2 border-white">+8</div>
             </div>
             <p className="text-white text-sm">
               Trusted by 10,000+ users worldwide

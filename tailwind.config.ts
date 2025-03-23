@@ -64,9 +64,9 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				adept: {
-					light: '#E8F0FE',
-					DEFAULT: '#3B82F6',
-					dark: '#1E40AF'
+					light: '#EADDFF',
+					DEFAULT: '#5E19E6',
+					dark: '#4F46E5'
 				}
 			},
 			borderRadius: {
