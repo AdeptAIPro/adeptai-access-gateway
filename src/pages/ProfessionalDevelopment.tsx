@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -80,7 +79,6 @@ const ProfessionalDevelopment = () => {
     },
   });
 
-  // Enhanced course listings with university affiliations
   const bachelorsCoursesIndia = [
     "B.Tech Computer Science - IIT Delhi",
     "B.Tech Information Technology - IIT Bombay",
@@ -159,11 +157,8 @@ const ProfessionalDevelopment = () => {
     setIsSubmitting(true);
     
     try {
-      // In a real application, this would send data to a server endpoint
-      // For now, we'll just simulate the submission
       console.log("Form submitted with data:", data);
       
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast.success("Form submitted successfully", {
@@ -202,7 +197,6 @@ const ProfessionalDevelopment = () => {
     }
   ];
   
-  // New upcoming events data
   const upcomingEvents = [
     {
       title: "Virtual Open House: IIT Programs",
@@ -224,7 +218,6 @@ const ProfessionalDevelopment = () => {
     }
   ];
   
-  // New success metrics data
   const successMetrics = [
     { metric: "95%", description: "Admission Success Rate" },
     { metric: "2500+", description: "Students Placed in Top Universities" },
@@ -236,7 +229,6 @@ const ProfessionalDevelopment = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-adept-light via-white to-adept-light py-16 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -267,7 +259,6 @@ const ProfessionalDevelopment = () => {
         </div>
       </div>
       
-      {/* Key Benefits Section */}
       <div className="py-16 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -324,7 +315,6 @@ const ProfessionalDevelopment = () => {
         </div>
       </div>
       
-      {/* Programs Section */}
       <div className="py-16 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -491,7 +481,6 @@ const ProfessionalDevelopment = () => {
         </div>
       </div>
       
-      {/* Testimonials Section */}
       <div className="py-16 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -528,7 +517,6 @@ const ProfessionalDevelopment = () => {
         </div>
       </div>
       
-      {/* Application Form Section with Side Content */}
       <div className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -541,10 +529,8 @@ const ProfessionalDevelopment = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Left Sidebar */}
+          <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
-              {/* Success Metrics */}
               <Card className="border-adept-light">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-adept flex items-center">
@@ -564,7 +550,6 @@ const ProfessionalDevelopment = () => {
                 </CardContent>
               </Card>
               
-              {/* Upcoming Events */}
               <Card className="border-adept-light">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-adept flex items-center">
@@ -592,10 +577,86 @@ const ProfessionalDevelopment = () => {
                   </Button>
                 </CardFooter>
               </Card>
+              
+              <Card className="bg-gradient-to-br from-adept-light to-white border-adept-light overflow-hidden">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="space-y-3">
+                    <p className="text-sm">Boost your profile with specialized skill certificates recognized by top employers and universities.</p>
+                    
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        Data Science Bootcamp
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        AI & Machine Learning
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        Cloud Computing Essentials
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        Digital Marketing Mastery
+                      </li>
+                    </ul>
+                    
+                    <div className="pt-2">
+                      <Button variant="outline" size="sm" className="text-adept border-adept hover:bg-adept-light">
+                        Explore All Skills
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
+                  <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-adept-light">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept flex items-center">
+                    <GraduationCapIcon className="w-5 h-5 mr-2" />
+                    Top University Rankings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">1. IIT Delhi</span>
+                      <span className="text-sm text-adept">India</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">2. IISc Bangalore</span>
+                      <span className="text-sm text-adept">India</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">3. MIT</span>
+                      <span className="text-sm text-adept">USA</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">4. Stanford University</span>
+                      <span className="text-sm text-adept">USA</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">5. Harvard University</span>
+                      <span className="text-sm text-adept">USA</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="link" size="sm" className="text-adept p-0">
+                    View all rankings <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </CardFooter>
+              </Card>
             </div>
             
-            {/* Central Form */}
-            <div className="bg-white p-6 md:p-8 rounded-lg border shadow-md md:col-span-1">
+            <div className="bg-white p-6 md:p-8 rounded-lg border shadow-md">
               <h3 className="text-xl font-bold mb-6 flex items-center">
                 <Book className="mr-2 h-5 w-5 text-adept" />
                 Course Interest Form
@@ -778,127 +839,9 @@ const ProfessionalDevelopment = () => {
                 </form>
               </Form>
             </div>
-            
-            {/* Right Sidebar */}
-            <div className="space-y-6">
-              {/* Skill Enhancement Advertisement */}
-              <Card className="bg-gradient-to-br from-adept-light to-white border-adept-light overflow-hidden">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
-                </CardHeader>
-                <CardContent className="relative">
-                  <div className="space-y-3">
-                    <p className="text-sm">Boost your profile with specialized skill certificates recognized by top employers and universities.</p>
-                    
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        Data Science Bootcamp
-                      </li>
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        AI & Machine Learning
-                      </li>
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        Cloud Computing Essentials
-                      </li>
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        Digital Marketing Mastery
-                      </li>
-                    </ul>
-                    
-                    <div className="pt-2">
-                      <Button variant="outline" size="sm" className="text-adept border-adept hover:bg-adept-light">
-                        Explore All Skills
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
-                  <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
-                </CardContent>
-              </Card>
-              
-              {/* University Rankings */}
-              <Card className="border-adept-light">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg text-adept flex items-center">
-                    <GraduationCapIcon className="w-5 h-5 mr-2" />
-                    Top University Rankings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">1. IIT Delhi</span>
-                      <span className="text-sm text-adept">India</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">2. IISc Bangalore</span>
-                      <span className="text-sm text-adept">India</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">3. MIT</span>
-                      <span className="text-sm text-adept">USA</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">4. Stanford University</span>
-                      <span className="text-sm text-adept">USA</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">5. Harvard University</span>
-                      <span className="text-sm text-adept">USA</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <Button variant="link" size="sm" className="text-adept p-0">
-                    View all rankings <ChevronRight className="w-3 h-3 ml-1" />
-                  </Button>
-                </CardFooter>
-              </Card>
-              
-              {/* Scholarship Information */}
-              <Card className="border-adept-light">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg text-adept flex items-center">
-                    <Award className="w-5 h-5 mr-2" />
-                    Scholarship Opportunities
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                      Merit-based academic scholarships
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                      University-specific grants
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                      Country-specific funding options
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                      Research fellowships
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <Button variant="link" size="sm" className="text-adept p-0">
-                    Learn more <ChevronRight className="w-3 h-3 ml-1" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
           </div>
           
-          {/* FAQ Section */}
-          <div className="mt-16 max-w-4xl mx-auto">
+          <div className="mt-16">
             <div className="text-center mb-10">
               <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
                 <Book className="h-6 w-6 text-adept" />
@@ -961,3 +904,4 @@ const ProfessionalDevelopment = () => {
 };
 
 export default ProfessionalDevelopment;
+
