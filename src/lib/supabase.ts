@@ -3,13 +3,15 @@ import { createClient } from '@supabase/supabase-js';
 
 // Get Supabase URL and anon key from environment variables or configure them directly
 // In production, you would use environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder-supabase-url.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase URL or anon key. Make sure they are set in your environment variables.');
+// Log warning if missing real credentials
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.warn('Missing Supabase URL or anon key. Using mock data fallbacks instead of real database connection.');
 }
 
+// Create a mock Supabase client that returns fallback data when real credentials aren't available
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Type definitions for our Supabase tables
