@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
-import { MatchingOptions } from "./types";
+import { MatchingOptions, MatchingModel } from "./types";
 import { Brain, Filter, Gauge, Shield, Sparkles } from "lucide-react";
 
 interface AdvancedMatchingOptionsProps {
@@ -19,7 +19,22 @@ const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
   matchingOptions,
   setMatchingOptions,
 }) => {
-  const matchingModels = getAvailableMatchingModels();
+  const [matchingModels, setMatchingModels] = useState<MatchingModel[]>([]);
+  
+  // Fetch matching models when component mounts
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const models = await getAvailableMatchingModels();
+        setMatchingModels(models);
+      } catch (error) {
+        console.error("Error fetching matching models:", error);
+        setMatchingModels([]);
+      }
+    };
+    
+    fetchModels();
+  }, []);
 
   const handleToggleChange = (option: keyof MatchingOptions) => {
     setMatchingOptions({

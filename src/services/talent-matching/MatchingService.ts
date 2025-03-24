@@ -1,5 +1,5 @@
 
-import { Candidate, MatchingOptions, MatchingResult } from "@/components/talent-matching/types";
+import { Candidate, MatchingOptions, MatchingResult, MatchingModel } from "@/components/talent-matching/types";
 import { supabase, CandidateRecord } from "@/lib/supabase";
 
 /**
@@ -107,7 +107,7 @@ const calculateMatchScore = (
   return Math.min(Math.round(baseScore), 100); // Cap at 100
 };
 
-export const getAvailableMatchingModels = async () => {
+export const getAvailableMatchingModels = async (): Promise<MatchingModel[]> => {
   try {
     const { data, error } = await supabase
       .from('matching_models')
@@ -118,7 +118,7 @@ export const getAvailableMatchingModels = async () => {
     }
     
     if (data && data.length > 0) {
-      return data;
+      return data as MatchingModel[];
     }
     
     // Fallback to hardcoded models if none in database
@@ -227,7 +227,7 @@ const getFallbackMatchingResult = (options: MatchingOptions): MatchingResult => 
   };
 };
 
-const getFallbackMatchingModels = () => {
+const getFallbackMatchingModels = (): MatchingModel[] => {
   return [
     {
       id: "openai-ada-002",

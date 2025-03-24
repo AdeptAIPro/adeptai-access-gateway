@@ -77,17 +77,19 @@ export const disconnectIntegration = async (id: string): Promise<boolean> => {
 // Get integration categories
 export const getIntegrationCategories = async (): Promise<string[]> => {
   try {
+    // First attempt to get distinct categories from the database
     const { data, error } = await supabase
       .from('integrations')
-      .select('category')
-      .distinct();
+      .select('category');
     
     if (error) {
       console.error('Error fetching integration categories:', error);
       throw error;
     }
     
-    return data?.map(item => item.category) || [];
+    // Process the data to get unique categories
+    const categories = data ? [...new Set(data.map(item => item.category))] : [];
+    return ["All", ...categories];
   } catch (error) {
     console.error('Failed to fetch integration categories:', error);
     return [
