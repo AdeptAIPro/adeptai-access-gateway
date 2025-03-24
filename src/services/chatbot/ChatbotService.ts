@@ -12,7 +12,11 @@ const CHATBOT_RESPONSES = {
   support: "We provide 24/7 customer support through email, chat, and phone. Our team is ready to assist you with any questions or issues you may have.",
   trial: "Yes, we offer a free trial period so you can experience the full benefits of AdeptAI before committing. Sign up on our website to get started.",
   security: "Security is our top priority. AdeptAI employs enterprise-grade encryption, regular security audits, and complies with industry standards to keep your data safe.",
-  dataPrivacy: "We take data privacy seriously. AdeptAI complies with GDPR, CCPA, and other privacy regulations. We never sell your data and maintain strict access controls."
+  dataPrivacy: "We take data privacy seriously. AdeptAI complies with GDPR, CCPA, and other privacy regulations. We never sell your data and maintain strict access controls.",
+  about: "AdeptAI is a leading provider of AI-powered automation solutions for businesses. Our mission is to help organizations streamline workflows and make smarter decisions.",
+  contact: "You can reach our team via email at support@adeptai.com, by phone at (555) 123-4567, or through the contact form on our website.",
+  careers: "We're always looking for talented individuals to join our team. Check out our careers page for current openings and opportunities.",
+  demo: "We'd be happy to schedule a personalized demo of AdeptAI for your team. Please visit our contact page to request a demo."
 };
 
 // Categories for understanding user intent
@@ -24,7 +28,11 @@ const INTENT_CATEGORIES = {
   support: ["support", "help", "assistance", "customer service", "ticket", "contact", "reach", "request help"],
   trial: ["trial", "free", "demo", "try out", "test", "evaluation", "sample", "preview"],
   security: ["security", "secure", "protection", "data security", "encryption", "safe", "vulnerability"],
-  dataPrivacy: ["privacy", "data protection", "personal information", "data usage", "GDPR", "CCPA", "confidential"]
+  dataPrivacy: ["privacy", "data protection", "personal information", "data usage", "GDPR", "CCPA", "confidential"],
+  about: ["about", "company", "who are you", "background", "history", "mission", "vision", "team"],
+  contact: ["contact", "email", "phone", "call", "message", "reach out", "talk to"],
+  careers: ["career", "job", "position", "hiring", "employment", "work at", "join team"],
+  demo: ["demonstration", "show me", "presentation", "showcase", "walkthrough"]
 };
 
 // Determine the intent of the user's message
