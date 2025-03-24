@@ -5,10 +5,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import JobDescriptionInput from "@/components/talent-matching/JobDescriptionInput";
 import MatchingControls from "@/components/talent-matching/MatchingControls";
 import MatchingProgress from "@/components/talent-matching/MatchingProgress";
 import CandidateResults from "@/components/talent-matching/CandidateResults";
+import AdvancedMatchingOptions from "@/components/talent-matching/AdvancedMatchingOptions";
+import { matchCandidatesWithJobDescription } from "@/services/talent-matching/MatchingService";
+import { MatchingOptions, MatchingResult, Candidate } from "@/components/talent-matching/types";
 
 const TalentMatching = () => {
   const { user } = useAuth();
@@ -19,8 +24,18 @@ const TalentMatching = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSource, setSelectedSource] = useState("all");
   const [matchingProgress, setMatchingProgress] = useState(0);
-  const [matchingCandidates, setMatchingCandidates] = useState<any[]>([]);
+  const [matchingCandidates, setMatchingCandidates] = useState<Candidate[]>([]);
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [matchResult, setMatchResult] = useState<MatchingResult | null>(null);
+  const [matchingOptions, setMatchingOptions] = useState<MatchingOptions>({
+    useSemanticMatching: true,
+    useSkillBasedFiltering: true,
+    useComplianceVerification: false,
+    useRAG: false,
+    matchingModel: "openai-ada-002",
+    minMatchScore: 75
+  });
   
   if (!user) {
     navigate("/login");
@@ -44,100 +59,31 @@ const TalentMatching = () => {
     setIsLoading(true);
     setMatchingProgress(0);
     
-    // Simulate the matching process
+    // Simulate the initial matching progress
     const interval = setInterval(() => {
       setMatchingProgress((prev) => {
-        if (prev >= 100) {
+        if (prev >= 90) {
           clearInterval(interval);
-          return 100;
+          return 90; // We'll set to 100 when the actual results are ready
         }
-        return prev + 10;
+        return prev + 5;
       });
-    }, 300);
+    }, 200);
 
     try {
-      // Mock API call to match candidates - in a real implementation, this would:
-      // 1. Call your backend API (Java/Python) with the job description
-      // 2. The API would then call ATS/VMS systems through the existing integrations
-      // 3. Return matching candidates
+      // Call the AI-driven matching service
+      const result = await matchCandidatesWithJobDescription(jobDescription, matchingOptions);
       
-      // For demo purposes, we'll simulate a response after 3 seconds
-      setTimeout(() => {
-        clearInterval(interval);
-        setMatchingProgress(100);
-        
-        // Mock response data
-        const mockCandidates = [
-          {
-            id: "1",
-            name: "Emily Johnson",
-            title: "Senior Software Engineer",
-            location: "San Francisco, CA",
-            education: "Stanford University",
-            experience: 8,
-            skills: ["JavaScript", "React", "Node.js", "Python", "AWS"],
-            matchScore: 92,
-            source: "LinkedIn",
-            avatar: "https://github.com/shadcn.png"
-          },
-          {
-            id: "2",
-            name: "Michael Chen",
-            title: "Full Stack Developer",
-            location: "New York, NY",
-            education: "MIT",
-            experience: 6,
-            skills: ["TypeScript", "React", "MongoDB", "Express", "Docker"],
-            matchScore: 87,
-            source: "Ceipal",
-            avatar: "https://github.com/shadcn.png"
-          },
-          {
-            id: "3",
-            name: "Sarah Williams",
-            title: "Frontend Developer",
-            location: "Austin, TX",
-            education: "UT Austin",
-            experience: 5,
-            skills: ["JavaScript", "React", "CSS", "HTML", "Redux"],
-            matchScore: 85,
-            source: "JobDiva",
-            avatar: "https://github.com/shadcn.png"
-          },
-          {
-            id: "4",
-            name: "James Garcia",
-            title: "Backend Engineer",
-            location: "Seattle, WA",
-            education: "University of Washington",
-            experience: 7,
-            skills: ["Java", "Spring Boot", "Python", "PostgreSQL", "Kafka"],
-            matchScore: 82,
-            source: "LinkedIn",
-            avatar: "https://github.com/shadcn.png"
-          },
-          {
-            id: "5",
-            name: "Olivia Martinez",
-            title: "DevOps Engineer",
-            location: "Chicago, IL",
-            education: "University of Illinois",
-            experience: 6,
-            skills: ["Kubernetes", "Docker", "Terraform", "AWS", "Jenkins"],
-            matchScore: 78,
-            source: "Stafferlink",
-            avatar: "https://github.com/shadcn.png"
-          }
-        ];
-        
-        setMatchingCandidates(mockCandidates);
-        setIsLoading(false);
-        
-        toast({
-          title: "Matching Complete",
-          description: `Found ${mockCandidates.length} matching candidates`,
-        });
-      }, 3000);
+      clearInterval(interval);
+      setMatchingProgress(100);
+      setMatchResult(result);
+      setMatchingCandidates(result.candidates);
+      setIsLoading(false);
+      
+      toast({
+        title: "Matching Complete",
+        description: `Found ${result.candidates.length} matching candidates using ${result.matchingModelUsed.split('-').join(' ')} model`,
+      });
     } catch (error) {
       clearInterval(interval);
       setIsLoading(false);
@@ -163,18 +109,22 @@ const TalentMatching = () => {
     });
   };
 
+  const toggleAdvancedOptions = () => {
+    setShowAdvancedOptions(!showAdvancedOptions);
+  };
+
   const filteredCandidates = selectedSource === "all" 
     ? matchingCandidates 
     : matchingCandidates.filter(candidate => candidate.source.toLowerCase() === selectedSource.toLowerCase());
 
   return (
-    <DashboardLayout title="Talent Matching">
+    <DashboardLayout title="AI Talent Matching">
       <div className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Job Description Matching</CardTitle>
             <CardDescription>
-              Upload, paste, or fetch a job description to find matching candidates from your integrated sources
+              Upload, paste, or fetch a job description to find matching candidates using advanced AI models
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -187,17 +137,38 @@ const TalentMatching = () => {
               setFileUploaded={setFileUploaded}
             />
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex-col space-y-4">
             <MatchingControls 
               handleSourceSelect={handleSourceSelect}
               parseJobDescription={parseJobDescription}
               isLoading={isLoading}
+              toggleAdvancedOptions={toggleAdvancedOptions}
+              showAdvancedOptions={showAdvancedOptions}
             />
+            
+            {showAdvancedOptions && (
+              <div className="w-full mt-4">
+                <AdvancedMatchingOptions 
+                  matchingOptions={matchingOptions}
+                  setMatchingOptions={setMatchingOptions}
+                />
+              </div>
+            )}
           </CardFooter>
         </Card>
 
         {isLoading && (
           <MatchingProgress progress={matchingProgress} />
+        )}
+        
+        {matchResult && !isLoading && (
+          <Alert variant="default" className="bg-muted">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Matching Results</AlertTitle>
+            <AlertDescription>
+              Found {matchingCandidates.length} candidates in {matchResult.matchingTime.toFixed(1)} seconds using {matchResult.matchingModelUsed.split('-').join(' ')} model
+            </AlertDescription>
+          </Alert>
         )}
 
         {matchingCandidates.length > 0 && !isLoading && (
