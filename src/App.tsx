@@ -24,7 +24,8 @@ import NotFound from "./pages/NotFound";
 import ProfessionalDevelopment from "./pages/ProfessionalDevelopment";
 
 function App() {
-  const queryClient = new QueryClient();
+  // Create a stable QueryClient instance using useState
+  const [queryClient] = React.useState(() => new QueryClient());
 
   return (
     <React.StrictMode>

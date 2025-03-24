@@ -37,8 +37,16 @@ const TalentMatching = () => {
     minMatchScore: 75
   });
   
+  // Use useEffect to handle navigation instead of returning the navigate function
+  React.useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  // If user is not authenticated, render nothing while the navigation effect runs
   if (!user) {
-    return navigate("/login");
+    return null; // This returns a valid React node (null) instead of void
   }
 
   const handleSourceSelect = (source: string) => {
