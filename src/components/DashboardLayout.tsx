@@ -17,7 +17,8 @@ import {
   X,
   BellRing,
   User,
-  LogOut
+  LogOut,
+  Search
 } from "lucide-react";
 import { 
   DropdownMenu,
@@ -54,6 +55,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations" },
     { title: "Talent Matchmaking", icon: Users, href: "/dashboard/talent" },
+    { title: "Talent Matching", icon: Search, href: "/dashboard/talent-matching" },
     { title: "Analytics", icon: BarChart, href: "/dashboard/analytics" },
     { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills" },
     { title: "Compliance", icon: ShieldCheck, href: "/dashboard/compliance" },
