@@ -1,8 +1,8 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import Chatbot from "@/components/chatbot/Chatbot";
 
 const Index = () => {
   const { user } = useAuth();
@@ -195,6 +195,9 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Add Chatbot Component */}
+      <Chatbot position="bottom-right" />
     </div>
   );
 };
