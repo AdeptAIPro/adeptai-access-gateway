@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Book, SendIcon, Award, BookOpen, Briefcase, Users, Globe } from "lucide-react";
+import { GraduationCap, Book, SendIcon, Award, BookOpen, Briefcase, Users, Globe, ChevronRight, CalendarDays, GraduationCap as GraduationCapIcon, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -200,6 +199,36 @@ const ProfessionalDevelopment = () => {
       course: "MBA from IIM Bangalore",
       quote: "I was confused about which program would align with my career goals. AdeptAI's counselors helped me identify the perfect course and guided me through each step of the admission process."
     }
+  ];
+  
+  // New upcoming events data
+  const upcomingEvents = [
+    {
+      title: "Virtual Open House: IIT Programs",
+      date: "June 15, 2023",
+      time: "10:00 AM IST",
+      description: "Join our virtual session to learn more about various engineering programs at IITs."
+    },
+    {
+      title: "Stanford University Application Workshop",
+      date: "June 22, 2023",
+      time: "7:00 PM IST",
+      description: "Learn tips and strategies for applying to Stanford University programs."
+    },
+    {
+      title: "Career Pathways in Data Science",
+      date: "July 5, 2023",
+      time: "11:00 AM IST",
+      description: "Explore career opportunities and educational pathways in the field of Data Science."
+    }
+  ];
+  
+  // New success metrics data
+  const successMetrics = [
+    { metric: "95%", description: "Admission Success Rate" },
+    { metric: "2500+", description: "Students Placed in Top Universities" },
+    { metric: "150+", description: "University Partnerships Worldwide" },
+    { metric: "30+", description: "Countries with AdeptAI Alumni" }
   ];
 
   return (
@@ -498,289 +527,306 @@ const ProfessionalDevelopment = () => {
         </div>
       </div>
       
-      {/* FAQ Section */}
+      {/* Application Form Section with Side Content */}
       <div className="py-16 px-6 bg-gray-50">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600">
-              Find answers to common questions about our professional development programs.
+            <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
+              <GraduationCap className="h-6 w-6 text-adept" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Begin Your Educational Journey</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Share your educational aspirations with us, and our expert counselors will help you find the perfect program.
             </p>
           </div>
           
-          <Accordion type="single" collapsible className="bg-white rounded-lg shadow-sm">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="p-4 hover:no-underline hover:bg-gray-50 rounded-t-lg">
-                How does AdeptAI help with university admissions?
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                Our comprehensive services include program selection, application preparation, document review, 
-                personal statement assistance, interview coaching, and ongoing support throughout the admission process. 
-                We have partnerships with top universities globally, enabling us to provide valuable insights and guidance.
-              </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="p-4 hover:no-underline hover:bg-gray-50">
-                What makes AdeptAI different from other educational consultants?
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                AdeptAI combines AI-powered program matching with human expertise. Our counselors have direct experience 
-                with the universities we recommend and use data-driven insights to provide personalized guidance. We focus 
-                on long-term career outcomes, not just admissions.
-              </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="p-4 hover:no-underline hover:bg-gray-50">
-                Do you offer financial aid and scholarship guidance?
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                Yes, we provide comprehensive scholarship and financial aid guidance, including identifying opportunities, 
-                application preparation, and interview coaching. Our team stays updated on the latest funding options at 
-                our partner universities.
-              </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="item-4">
-              <AccordionTrigger className="p-4 hover:no-underline hover:bg-gray-50 rounded-b-lg">
-                How soon should I start the application process?
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                We recommend starting 12-18 months before your intended enrollment date. This timeline allows sufficient 
-                preparation for entrance exams, document gathering, application writing, and addressing any unexpected challenges. 
-                However, we also offer accelerated services for those with tighter timelines.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </div>
-      
-      {/* Application Form Section */}
-      <div className="max-w-4xl mx-auto py-16 px-6">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
-            <GraduationCap className="h-6 w-6 text-adept" />
-          </div>
-          <h2 className="text-3xl font-bold mb-4">Begin Your Educational Journey</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Share your educational aspirations with us, and our expert counselors will help you find the perfect program.
-          </p>
-        </div>
-        
-        <div className="bg-white p-6 md:p-8 rounded-lg border shadow-sm">
-          <h3 className="text-xl font-bold mb-6 flex items-center">
-            <Book className="mr-2 h-5 w-5 text-adept" />
-            Course Interest Form
-          </h3>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="your.email@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your phone number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Country of Interest</FormLabel>
-                      <Select 
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          setSelectedCountry(value);
-                        }}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select country" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="India">India</SelectItem>
-                          <SelectItem value="United States">United States</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="courseLevel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Course Level</FormLabel>
-                      <Select 
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          setSelectedLevel(value);
-                        }}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select course level" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Bachelor's">Bachelor's</SelectItem>
-                          <SelectItem value="Master's">Master's</SelectItem>
-                          <SelectItem value="PhD">PhD</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="courseInterest"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Course of Interest</FormLabel>
-                      <Select 
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a course" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-[300px]">
-                          {getAvailableCourses().map((course) => (
-                            <SelectItem key={course} value={course}>
-                              {course}
-                            </SelectItem>
-                          ))}
-                          {getAvailableCourses().length === 0 && (
-                            <SelectItem value="other">
-                              Other (Please specify in goals)
-                            </SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Select the course you're interested in pursuing
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Left Sidebar */}
+            <div className="space-y-6">
+              {/* Success Metrics */}
+              <Card className="border-adept-light">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept flex items-center">
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Our Impact
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {successMetrics.map((item, index) => (
+                      <div key={index} className="text-center p-3">
+                        <p className="text-2xl font-bold text-adept">{item.metric}</p>
+                        <p className="text-xs text-gray-600">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
               
-              <FormField
-                control={form.control}
-                name="goals"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your Educational Goals</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Please share your educational and career goals, and any specific queries you have..." 
-                        className="min-h-[120px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Share your aspirations, timeline, and any specific requirements you may have
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Upcoming Events */}
+              <Card className="border-adept-light">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept flex items-center">
+                    <CalendarDays className="w-5 h-5 mr-2" />
+                    Upcoming Events
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {upcomingEvents.map((event, index) => (
+                      <div key={index} className="border-b pb-3 last:border-b-0 last:pb-0">
+                        <h4 className="font-medium text-sm">{event.title}</h4>
+                        <div className="flex items-center text-xs text-gray-600 mt-1">
+                          <CalendarDays className="w-3 h-3 mr-1" />
+                          {event.date} | {event.time}
+                        </div>
+                        <p className="text-xs mt-1 text-gray-600">{event.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="link" size="sm" className="text-adept p-0">
+                    View all events <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+            
+            {/* Central Form */}
+            <div className="bg-white p-6 md:p-8 rounded-lg border shadow-md md:col-span-1">
+              <h3 className="text-xl font-bold mb-6 flex items-center">
+                <Book className="mr-2 h-5 w-5 text-adept" />
+                Course Interest Form
+              </h3>
               
-              <Button 
-                type="submit" 
-                variant="adept" 
-                size="lg"
-                className="w-full md:w-auto"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>Processing...</>
-                ) : (
-                  <>
-                    <SendIcon className="mr-2 h-4 w-4" /> 
-                    Submit Query
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
-        </div>
-        
-        <div className="mt-12 text-center">
-          <h3 className="text-xl font-semibold mb-3">Need immediate assistance?</h3>
-          <p className="text-gray-600 mb-6">
-            Our education counselors are available to provide personalized guidance for your academic journey.
-          </p>
-          <div className="flex flex-col md:flex-row justify-center gap-4">
-            <Button variant="outline" className="hover:bg-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              Schedule a Call
-            </Button>
-            <Button variant="adept">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-              </svg>
-              Chat with an Advisor
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      <Footer />
-    </div>
-  );
-};
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your full name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="your.email@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your phone number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-export default ProfessionalDevelopment;
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Country of Interest</FormLabel>
+                          <Select 
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              setSelectedCountry(value);
+                            }}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="India">India</SelectItem>
+                              <SelectItem value="United States">United States</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="courseLevel"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Course Level</FormLabel>
+                          <Select 
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              setSelectedLevel(value);
+                            }}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select course level" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Bachelor's">Bachelor's</SelectItem>
+                              <SelectItem value="Master's">Master's</SelectItem>
+                              <SelectItem value="PhD">PhD</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="courseInterest"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Course of Interest</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a course" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-[200px]">
+                            {getAvailableCourses().map((course) => (
+                              <SelectItem key={course} value={course}>
+                                {course}
+                              </SelectItem>
+                            ))}
+                            {getAvailableCourses().length === 0 && (
+                              <SelectItem value="other">
+                                Other (Please specify in goals)
+                              </SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="goals"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Your Educational Goals</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Please share your educational and career goals, and any specific queries you have..." 
+                            className="min-h-[100px]"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Share your aspirations, timeline, and any specific requirements
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <Button 
+                    type="submit" 
+                    variant="adept" 
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>Processing...</>
+                    ) : (
+                      <>
+                        <SendIcon className="mr-2 h-4 w-4" /> 
+                        Submit Query
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            </div>
+            
+            {/* Right Sidebar */}
+            <div className="space-y-6">
+              {/* Skill Enhancement Advertisement */}
+              <Card className="bg-gradient-to-br from-adept-light to-white border-adept-light overflow-hidden">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="space-y-3">
+                    <p className="text-sm">Boost your profile with specialized skill certificates recognized by top employers and universities.</p>
+                    
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        Data Science Bootcamp
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        AI & Machine Learning
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        Cloud Computing Essentials
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                        Digital Marketing Mastery
+                      </li>
+                    </ul>
+                    
+                    <div className="pt-2">
+                      <Button variant="outline" size="sm" className="text-adept border-adept hover:bg-adept-light">
+                        Explore All Skills
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
+                  <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
+                </CardContent>
+              </Card>
+              
+              {/* University Rankings */}
+              <Card className="border-adept-light">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept flex items-center">
+                    <GraduationCapIcon className="w-5 h-5 mr-2" />
+                    Top University Rankings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3
