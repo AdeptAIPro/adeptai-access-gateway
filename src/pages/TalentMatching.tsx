@@ -38,8 +38,7 @@ const TalentMatching = () => {
   });
   
   if (!user) {
-    navigate("/login");
-    return null;
+    return navigate("/login");
   }
 
   const handleSourceSelect = (source: string) => {
