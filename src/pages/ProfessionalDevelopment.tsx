@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -829,4 +830,134 @@ const ProfessionalDevelopment = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">1. IIT Delhi</span>
+                      <span className="text-sm text-adept">India</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">2. IISc Bangalore</span>
+                      <span className="text-sm text-adept">India</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">3. MIT</span>
+                      <span className="text-sm text-adept">USA</span>
+                    </div>
+                    <div className="flex items-center justify-between border-b pb-2">
+                      <span className="font-medium">4. Stanford University</span>
+                      <span className="text-sm text-adept">USA</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">5. Harvard University</span>
+                      <span className="text-sm text-adept">USA</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="link" size="sm" className="text-adept p-0">
+                    View all rankings <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              {/* Scholarship Information */}
+              <Card className="border-adept-light">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept flex items-center">
+                    <Award className="w-5 h-5 mr-2" />
+                    Scholarship Opportunities
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center">
+                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                      Merit-based academic scholarships
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                      University-specific grants
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                      Country-specific funding options
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="w-4 h-4 text-adept mr-2" />
+                      Research fellowships
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="link" size="sm" className="text-adept p-0">
+                    Learn more <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </div>
+          
+          {/* FAQ Section */}
+          <div className="mt-16 max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
+                <Book className="h-6 w-6 text-adept" />
+              </div>
+              <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+              <p className="text-gray-600">
+                Find answers to the most common questions about our professional development programs.
+              </p>
+            </div>
+            
+            <Accordion type="single" collapsible className="bg-white rounded-lg border">
+              <AccordionItem value="item-1" className="px-4">
+                <AccordionTrigger className="text-base">
+                  How do I choose the right program for my career goals?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  Our expert counselors conduct a thorough assessment of your academic background, professional experience, and career aspirations. Based on this evaluation, we recommend programs that align with your goals and enhance your career prospects.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2" className="px-4">
+                <AccordionTrigger className="text-base">
+                  What documents do I need for university applications?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  Requirements vary by program and university, but typically include academic transcripts, standardized test scores (like GRE, GMAT, TOEFL, IELTS), statement of purpose, letters of recommendation, resume/CV, and sometimes portfolio samples for specific programs.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3" className="px-4">
+                <AccordionTrigger className="text-base">
+                  How long does the application process take?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  The timeline varies depending on the program and university. Generally, we recommend starting the process 10-12 months before your intended start date. This allows sufficient time for test preparation, document collection, application submission, and visa processing if needed.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4" className="px-4">
+                <AccordionTrigger className="text-base">
+                  Are there scholarships available for international students?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  Yes, many universities offer scholarships for international students based on academic merit, research potential, or specific country of origin. Our counselors help identify scholarship opportunities and guide you through the application process to increase your chances of securing financial aid.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5" className="px-4">
+                <AccordionTrigger className="text-base">
+                  What support do you provide after admission?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  Our support extends beyond admission. We assist with visa applications, pre-departure orientation, accommodation arrangements, and provide guidance throughout your academic journey. We also offer career placement services and networking opportunities with alumni and industry partners.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default ProfessionalDevelopment;
