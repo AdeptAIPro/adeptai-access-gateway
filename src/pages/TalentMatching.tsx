@@ -54,10 +54,23 @@ const TalentMatching = () => {
   };
 
   const parseJobDescription = async () => {
-    if ((!jobDescription && tab === "paste") || (!fileUploaded && tab === "upload")) {
+    const isImageTab = tab === "image";
+    const isDocumentTab = tab === "upload";
+    const isPasteTab = tab === "paste";
+    
+    // Validation based on the current tab
+    if ((isPasteTab && !jobDescription) || 
+        (isDocumentTab && !fileUploaded) || 
+        (isImageTab && !fileUploaded)) {
+      
+      let errorMessage = "Please ";
+      if (isPasteTab) errorMessage += "enter a job description";
+      else if (isDocumentTab) errorMessage += "upload a document";
+      else if (isImageTab) errorMessage += "upload an image";
+      
       toast({
-        title: "No Job Description",
-        description: tab === "paste" ? "Please enter a job description" : "Please upload a job description file",
+        title: "Missing Input",
+        description: errorMessage,
         variant: "destructive",
       });
       return;
@@ -131,7 +144,7 @@ const TalentMatching = () => {
           <CardHeader>
             <CardTitle>Job Description Matching</CardTitle>
             <CardDescription>
-              Upload, paste, or fetch a job description to find matching candidates using advanced AI models
+              Upload, paste, or extract from images a job description to find matching candidates using advanced AI models
             </CardDescription>
           </CardHeader>
           <CardContent>
