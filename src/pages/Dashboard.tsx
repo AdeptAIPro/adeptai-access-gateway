@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -28,12 +27,10 @@ const Dashboard = () => {
   const [timeframe, setTimeframe] = useState("month");
   const [isLoading, setIsLoading] = useState(true);
   
-  // Handle unauthorized access
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Fetch analytics data
   useEffect(() => {
     const fetchAnalytics = async () => {
       setIsLoading(true);
@@ -50,7 +47,6 @@ const Dashboard = () => {
     fetchAnalytics();
   }, [timeframe]);
 
-  // Custom tooltip style for the chart - fixed TypeScript error by properly typing the props
   const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
     if (active && payload && payload.length) {
       return (
@@ -63,7 +59,6 @@ const Dashboard = () => {
     return null;
   };
 
-  // Dashboard card data
   const dashboardCards = [
     {
       title: "Integrations",
@@ -82,7 +77,7 @@ const Dashboard = () => {
       stats: "3.2k candidates",
     },
     {
-      title: "AI Based Talent Matching",
+      title: "Talent Matchmaking - AI",
       description: "Match jobs with candidates using AI",
       icon: Users,
       route: "/dashboard/talent-matching",
@@ -126,7 +121,6 @@ const Dashboard = () => {
   return (
     <DashboardLayout title="Dashboard">
       <div className="grid gap-8 animate-fade-in-up">
-        {/* Welcome Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="overflow-hidden border-0 shadow-md bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
             <CardHeader className="pb-2">
@@ -201,7 +195,6 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Analytics Chart - With proper fixed height and styling */}
         <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
           <CardHeader className="pb-0">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -240,7 +233,7 @@ const Dashboard = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="mt-4 h-[350px] w-full"> {/* Fixed height to prevent overflow */}
+            <div className="mt-4 h-[350px] w-full">
               <ChartContainer config={{ value: { theme: { light: '#5E19E6', dark: '#4F46E5' } } }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
@@ -283,7 +276,6 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Section Cards - Enhanced with gradients and better spacing */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
           {dashboardCards.map((card, index) => (
             <Card 

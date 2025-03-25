@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -254,7 +255,7 @@ const TalentMatching = () => {
     : matchingCandidates.filter(candidate => candidate.source.toLowerCase() === selectedSource.toLowerCase());
 
   return (
-    <DashboardLayout title="AI Based Talent Matching">
+    <DashboardLayout title="Talent Matchmaking - AI">
       <div className="space-y-6">
         <Card>
           <CardHeader>
