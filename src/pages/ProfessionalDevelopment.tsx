@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -317,208 +316,6 @@ const ProfessionalDevelopment = () => {
       </div>
       
       <div className="py-16 px-6 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
-              <BookOpen className="h-6 w-6 text-adept" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">Featured Programs</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore our curated selection of programs across various disciplines and educational levels.
-            </p>
-          </div>
-          
-          <Tabs defaultValue="bachelor" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto md:grid-cols-3 mb-8">
-              <TabsTrigger value="bachelor">Bachelor's Programs</TabsTrigger>
-              <TabsTrigger value="master">Master's Programs</TabsTrigger>
-              <TabsTrigger value="phd">PhD Programs</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="bachelor" className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-adept" />
-                      Technology & Engineering
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 text-sm">
-                      {bachelorsCoursesIndia.slice(0, 5).map((course, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                          {course}
-                        </li>
-                      ))}
-                      <li className="text-adept text-xs mt-2 font-medium">+ 15 more programs</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-adept" />
-                      Business & Management
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 text-sm">
-                      {bachelorsCoursesUS.slice(0, 5).map((course, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                          {course}
-                        </li>
-                      ))}
-                      <li className="text-adept text-xs mt-2 font-medium">+ 12 more programs</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="master" className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-adept" />
-                      Advanced Technology
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 text-sm">
-                      {mastersCoursesIndia.slice(0, 5).map((course, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                          {course}
-                        </li>
-                      ))}
-                      <li className="text-adept text-xs mt-2 font-medium">+ 18 more programs</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-adept" />
-                      Business Leadership
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 text-sm">
-                      {mastersCoursesUS.slice(0, 5).map((course, index) => (
-                        <li key={index} className="flex items-center">
-                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                          {course}
-                        </li>
-                      ))}
-                      <li className="text-adept text-xs mt-2 font-medium">+ 14 more programs</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="phd" className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-adept" />
-                      Research Programs in India
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 text-sm">
-                      <li className="flex items-center">
-                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Computer Science - IISc Bangalore
-                      </li>
-                      <li className="flex items-center">
-                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in AI and Machine Learning - IIT Delhi
-                      </li>
-                      <li className="flex items-center">
-                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Data Science - ISI Kolkata
-                      </li>
-                      <li className="text-adept text-xs mt-2 font-medium">+ 8 more programs</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-adept" />
-                      Research Programs in US
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 text-sm">
-                      <li className="flex items-center">
-                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Computer Science - Stanford University
-                      </li>
-                      <li className="flex items-center">
-                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Robotics - MIT
-                      </li>
-                      <li className="flex items-center">
-                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Quantum Computing - Caltech
-                      </li>
-                      <li className="text-adept text-xs mt-2 font-medium">+ 10 more programs</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-      
-      <div className="py-16 px-6 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
-              <Award className="h-6 w-6 text-adept" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">Success Stories</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Hear from professionals who transformed their careers through our educational programs.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonialsData.map((testimonial, index) => (
-              <Card key={index} className="border-adept-light">
-                <CardHeader>
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-adept font-bold text-xl">
-                      {testimonial.name.charAt(0)}
-                    </div>
-                    <div className="ml-4">
-                      <CardTitle className="text-base">{testimonial.name}</CardTitle>
-                      <CardDescription>{testimonial.role}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 italic text-sm">"{testimonial.quote}"</p>
-                  <p className="text-xs text-adept mt-4 font-medium">{testimonial.course}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      <div className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
@@ -579,7 +376,6 @@ const ProfessionalDevelopment = () => {
                 </CardFooter>
               </Card>
               
-              {/* Replacing Top University Rankings with Financial Assistance Programs */}
               <Card className="border-adept-light">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-adept flex items-center">
@@ -905,61 +701,265 @@ const ProfessionalDevelopment = () => {
               </Card>
             </div>
           </div>
-          
-          <div className="mt-16">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
-                <Book className="h-6 w-6 text-adept" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-              <p className="text-gray-600">
-                Find answers to the most common questions about our professional development programs.
-              </p>
+        </div>
+      </div>
+      
+      <div className="py-16 px-6 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
+              <BookOpen className="h-6 w-6 text-adept" />
             </div>
-            
-            <Accordion type="single" collapsible className="bg-white rounded-lg border">
-              <AccordionItem value="item-1" className="px-4">
-                <AccordionTrigger className="text-base">
-                  How do I choose the right program for my career goals?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  Our expert counselors conduct a thorough assessment of your academic background, professional experience, and career aspirations. Based on this evaluation, we recommend programs that align with your goals and enhance your career prospects.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2" className="px-4">
-                <AccordionTrigger className="text-base">
-                  What documents do I need for university applications?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  Requirements vary by program and university, but typically include academic transcripts, standardized test scores (like GRE, GMAT, TOEFL, IELTS), statement of purpose, letters of recommendation, resume/CV, and sometimes portfolio samples for specific programs.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3" className="px-4">
-                <AccordionTrigger className="text-base">
-                  How long does the application process take?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  The timeline varies depending on the program and university. Generally, we recommend starting the process 10-12 months before your intended start date. This allows sufficient time for test preparation, document collection, application submission, and visa processing if needed.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4" className="px-4">
-                <AccordionTrigger className="text-base">
-                  Are there scholarships available for international students?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  Yes, many universities offer scholarships for international students based on academic merit, research potential, or specific country of origin. Our counselors help identify scholarship opportunities and guide you through the application process to increase your chances of securing financial aid.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-5" className="px-4">
-                <AccordionTrigger className="text-base">
-                  What support do you provide after admission?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  Our support extends beyond admission. We assist with visa applications, pre-departure orientation, accommodation arrangements, and provide guidance throughout your academic journey. We also offer career placement services and networking opportunities with alumni and industry partners.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <h2 className="text-3xl font-bold mb-4">Featured Programs</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Explore our curated selection of programs across various disciplines and educational levels.
+            </p>
           </div>
+          
+          <Tabs defaultValue="bachelor" className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto md:grid-cols-3 mb-8">
+              <TabsTrigger value="bachelor">Bachelor's Programs</TabsTrigger>
+              <TabsTrigger value="master">Master's Programs</TabsTrigger>
+              <TabsTrigger value="phd">PhD Programs</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="bachelor" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Globe className="w-5 h-5 mr-2 text-adept" />
+                      Technology & Engineering
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm">
+                      {bachelorsCoursesIndia.slice(0, 5).map((course, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                          {course}
+                        </li>
+                      ))}
+                      <li className="text-adept text-xs mt-2 font-medium">+ 15 more programs</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Globe className="w-5 h-5 mr-2 text-adept" />
+                      Business & Management
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm">
+                      {bachelorsCoursesUS.slice(0, 5).map((course, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                          {course}
+                        </li>
+                      ))}
+                      <li className="text-adept text-xs mt-2 font-medium">+ 12 more programs</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="master" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Globe className="w-5 h-5 mr-2 text-adept" />
+                      Advanced Technology
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm">
+                      {mastersCoursesIndia.slice(0, 5).map((course, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                          {course}
+                        </li>
+                      ))}
+                      <li className="text-adept text-xs mt-2 font-medium">+ 18 more programs</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Globe className="w-5 h-5 mr-2 text-adept" />
+                      Business Leadership
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm">
+                      {mastersCoursesUS.slice(0, 5).map((course, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                          {course}
+                        </li>
+                      ))}
+                      <li className="text-adept text-xs mt-2 font-medium">+ 14 more programs</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="phd" className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Globe className="w-5 h-5 mr-2 text-adept" />
+                      Research Programs in India
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm">
+                      <li className="flex items-center">
+                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                        PhD in Computer Science - IISc Bangalore
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                        PhD in AI and Machine Learning - IIT Delhi
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                        PhD in Data Science - ISI Kolkata
+                      </li>
+                      <li className="text-adept text-xs mt-2 font-medium">+ 8 more programs</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center">
+                      <Globe className="w-5 h-5 mr-2 text-adept" />
+                      Research Programs in US
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-1 text-sm">
+                      <li className="flex items-center">
+                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                        PhD in Computer Science - Stanford University
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                        PhD in Robotics - MIT
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
+                        PhD in Quantum Computing - Caltech
+                      </li>
+                      <li className="text-adept text-xs mt-2 font-medium">+ 10 more programs</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+      
+      <div className="py-16 px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
+              <Award className="h-6 w-6 text-adept" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Success Stories</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Hear from professionals who transformed their careers through our educational programs.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonialsData.map((testimonial, index) => (
+              <Card key={index} className="border-adept-light">
+                <CardHeader>
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-adept font-bold text-xl">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div className="ml-4">
+                      <CardTitle className="text-base">{testimonial.name}</CardTitle>
+                      <CardDescription>{testimonial.role}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 italic text-sm">"{testimonial.quote}"</p>
+                  <p className="text-xs text-adept mt-4 font-medium">{testimonial.course}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="py-16 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center p-2 bg-adept-light rounded-full mb-4">
+              <Book className="h-6 w-6 text-adept" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p className="text-gray-600">
+              Find answers to the most common questions about our professional development programs.
+            </p>
+          </div>
+          
+          <Accordion type="single" collapsible className="bg-white rounded-lg border">
+            <AccordionItem value="item-1" className="px-4">
+              <AccordionTrigger className="text-base">
+                How do I choose the right program for my career goals?
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Our expert counselors conduct a thorough assessment of your academic background, professional experience, and career aspirations. Based on this evaluation, we recommend programs that align with your goals and enhance your career prospects.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2" className="px-4">
+              <AccordionTrigger className="text-base">
+                What documents do I need for university applications?
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Requirements vary by program and university, but typically include academic transcripts, standardized test scores (like GRE, GMAT, TOEFL, IELTS), statement of purpose, letters of recommendation, resume/CV, and sometimes portfolio samples for specific programs.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3" className="px-4">
+              <AccordionTrigger className="text-base">
+                How long does the application process take?
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                The timeline varies depending on the program and university. Generally, we recommend starting the process 10-12 months before your intended start date. This allows sufficient time for test preparation, document collection, application submission, and visa processing if needed.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4" className="px-4">
+              <AccordionTrigger className="text-base">
+                Are there scholarships available for international students?
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Yes, many universities offer scholarships for international students based on academic merit, research potential, or specific country of origin. Our counselors help identify scholarship opportunities and guide you through the application process to increase your chances of securing financial aid.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5" className="px-4">
+              <AccordionTrigger className="text-base">
+                What support do you provide after admission?
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-600">
+                Our support extends beyond admission. We assist with visa applications, pre-departure orientation, accommodation arrangements, and provide guidance throughout your academic journey. We also offer career placement services and networking opportunities with alumni and industry partners.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
       
