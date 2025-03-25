@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,8 +35,13 @@ const TalentSearchBar: React.FC = () => {
   
   useEffect(() => {
     const fetchSources = async () => {
-      const sources = await getTalentSources();
-      setAvailableSources(sources);
+      try {
+        const sources = await getTalentSources();
+        setAvailableSources(sources);
+      } catch (error) {
+        console.error('Error fetching talent sources:', error);
+        setAvailableSources([]);
+      }
     };
     
     fetchSources();
@@ -170,7 +174,7 @@ const TalentSearchBar: React.FC = () => {
                 <SelectValue placeholder="All sources" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All sources</SelectItem>
+                <SelectItem value="all">All sources</SelectItem>
                 {availableSources.map((src) => (
                   <SelectItem key={src} value={src.toLowerCase()}>
                     {src}

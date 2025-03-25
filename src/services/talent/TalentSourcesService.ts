@@ -10,6 +10,7 @@ export const getTalentSources = async (): Promise<string[]> => {
       .select('name');
     
     if (error) {
+      console.error('Error fetching from supabase:', error);
       throw error;
     }
     
