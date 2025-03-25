@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, LogOut, Moon, Sun } from "lucide-react";
+import { Switch } from "@/components/ui/switch"; 
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -40,24 +41,25 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({ theme, toggleTheme }) => 
           <HelpCircle className="h-4 w-4 mr-2" />
           Help & Support
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="justify-start"
-          onClick={toggleTheme}
-        >
-          {theme === "light" ? (
-            <>
-              <Moon className="h-4 w-4 mr-2" />
-              Dark Mode
-            </>
-          ) : (
-            <>
-              <Sun className="h-4 w-4 mr-2" />
-              Light Mode
-            </>
-          )}
-        </Button>
+        
+        <div className="flex items-center justify-between p-2 rounded-md bg-secondary/50">
+          <div className="flex items-center">
+            {theme === "light" ? (
+              <Sun className="h-4 w-4 mr-2 text-amber-500" />
+            ) : (
+              <Moon className="h-4 w-4 mr-2 text-blue-400" />
+            )}
+            <span className="text-sm font-medium">
+              {theme === "light" ? "Light Mode" : "Dark Mode"}
+            </span>
+          </div>
+          <Switch 
+            checked={theme === "dark"}
+            onCheckedChange={toggleTheme}
+            aria-label="Toggle theme"
+          />
+        </div>
+        
         <Button
           variant="ghost"
           size="sm"

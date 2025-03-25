@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,8 +19,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Remove the useEffect that checks for dark mode preference
-
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
     document.documentElement.classList.toggle('dark');
@@ -34,7 +32,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   return (
     <div className={`min-h-screen flex flex-col md:flex-row ${theme === "dark" ? "dark" : ""} bg-background text-foreground`}>
       {/* Mobile header */}
-      <MobileHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <MobileHeader 
+        sidebarOpen={sidebarOpen} 
+        setSidebarOpen={setSidebarOpen} 
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
 
       {/* Sidebar */}
       <Sidebar 

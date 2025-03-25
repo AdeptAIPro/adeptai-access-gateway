@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Moon, Settings, Sun, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { Switch } from "@/components/ui/switch"; 
 
 interface UserMenuProps {
   theme: "light" | "dark";
@@ -58,18 +59,21 @@ const UserMenu: React.FC<UserMenuProps> = ({ theme, toggleTheme }) => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={toggleTheme}>
-            {theme === "light" ? (
-              <>
-                <Moon className="mr-2 h-4 w-4" />
-                <span>Dark Mode</span>
-              </>
-            ) : (
-              <>
-                <Sun className="mr-2 h-4 w-4" />
-                <span>Light Mode</span>
-              </>
-            )}
+          <DropdownMenuItem onClick={toggleTheme} className="flex justify-between items-center">
+            <div className="flex items-center">
+              {theme === "light" ? (
+                <Sun className="mr-2 h-4 w-4 text-amber-500" />
+              ) : (
+                <Moon className="mr-2 h-4 w-4 text-blue-400" />
+              )}
+              <span>{theme === "light" ? "Light Mode" : "Dark Mode"}</span>
+            </div>
+            <Switch 
+              checked={theme === "dark"}
+              onCheckedChange={toggleTheme}
+              aria-label="Toggle theme"
+              className="ml-2"
+            />
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
