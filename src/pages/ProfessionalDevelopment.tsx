@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Book, SendIcon, Award, BookOpen, Briefcase, Users, Globe, ChevronRight, CalendarDays, GraduationCap as GraduationCapIcon, CheckCircle, BookIcon, Compass, Sparkles, ArrowUpRight } from "lucide-react";
+import { GraduationCap, Book, SendIcon, Award, BookOpen, Briefcase, Users, Globe, ChevronRight, CalendarDays, GraduationCap as GraduationCapIcon, CheckCircle, BookIcon, Compass, Sparkles, ArrowUpRight, PiggyBank } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -578,6 +579,58 @@ const ProfessionalDevelopment = () => {
                 </CardFooter>
               </Card>
               
+              {/* Replacing Top University Rankings with Financial Assistance Programs */}
+              <Card className="border-adept-light">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg text-adept flex items-center">
+                    <PiggyBank className="w-5 h-5 mr-2" />
+                    Financial Assistance Programs
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <p className="text-sm">We help identify and secure financial support for your education through various channels:</p>
+                    
+                    <div className="flex items-start gap-2 border-b pb-2">
+                      <CheckCircle className="w-4 h-4 text-adept mt-0.5" />
+                      <div>
+                        <p className="font-medium text-sm">Merit Scholarships</p>
+                        <p className="text-xs text-gray-600">We'll help you apply for merit-based scholarships offered by universities and external organizations.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2 border-b pb-2">
+                      <CheckCircle className="w-4 h-4 text-adept mt-0.5" />
+                      <div>
+                        <p className="font-medium text-sm">Education Loans</p>
+                        <p className="text-xs text-gray-600">Partnership with leading banks offering special interest rates and repayment terms for our students.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2 border-b pb-2">
+                      <CheckCircle className="w-4 h-4 text-adept mt-0.5" />
+                      <div>
+                        <p className="font-medium text-sm">Corporate Sponsorships</p>
+                        <p className="text-xs text-gray-600">We connect eligible candidates with companies offering educational sponsorships or tuition reimbursement.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-adept mt-0.5" />
+                      <div>
+                        <p className="font-medium text-sm">Government Grants</p>
+                        <p className="text-xs text-gray-600">Guidance on applying for government education grants and financial aid programs.</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <Button variant="link" size="sm" className="text-adept p-0">
+                    Explore funding options <ChevronRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </CardFooter>
+              </Card>
+              
               <Card className="bg-gradient-to-br from-adept-light to-white border-adept-light overflow-hidden">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
@@ -615,44 +668,6 @@ const ProfessionalDevelopment = () => {
                   <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
                   <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
                 </CardContent>
-              </Card>
-              
-              <Card className="border-adept-light">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg text-adept flex items-center">
-                    <GraduationCapIcon className="w-5 h-5 mr-2" />
-                    Top University Rankings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">1. IIT Delhi</span>
-                      <span className="text-sm text-adept">India</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">2. IISc Bangalore</span>
-                      <span className="text-sm text-adept">India</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">3. MIT</span>
-                      <span className="text-sm text-adept">USA</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <span className="font-medium">4. Stanford University</span>
-                      <span className="text-sm text-adept">USA</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">5. Harvard University</span>
-                      <span className="text-sm text-adept">USA</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <Button variant="link" size="sm" className="text-adept p-0">
-                    View all rankings <ChevronRight className="w-3 h-3 ml-1" />
-                  </Button>
-                </CardFooter>
               </Card>
             </div>
             
