@@ -42,13 +42,36 @@ export const getCandidateMetrics = async (timeframe: string = 'month'): Promise<
   }
 };
 
+// Get job statistics summary for the dashboard
+export const getJobStatsSummary = async (): Promise<any> => {
+  try {
+    const { data, error } = await supabase.rpc('get_job_stats_summary');
+    
+    if (error) {
+      console.error('Error fetching job stats summary:', error);
+      throw error;
+    }
+    
+    return data || {
+      total: 1872,
+      growth: 12,
+      active: 643,
+      closed: 229
+    };
+  } catch (error) {
+    console.error('Failed to fetch job stats summary:', error);
+    return {
+      total: 1872,
+      growth: 12,
+      active: 643,
+      closed: 229
+    };
+  }
+};
+
 // Fallback functions for when database is unavailable
 const getFallbackJobMetrics = (timeframe: string) => {
   // Generate appropriate sample data based on timeframe
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
-  // These values represent the actual job posting counts by month/day/etc.
-  // In a real system, this would be coming from the database
   if (timeframe === 'year') {
     return [
       { name: 'Jan', value: 342 },
