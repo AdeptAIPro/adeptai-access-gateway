@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -9,6 +8,7 @@ import JobDescriptionInput from "@/components/talent-matching/JobDescriptionInpu
 import MatchingControls from "@/components/talent-matching/MatchingControls";
 import AdvancedOptionsToggle from "@/components/talent-matching/AdvancedOptionsToggle";
 import ResultsSection from "@/components/talent-matching/ResultsSection";
+import MatchingWorkflow from "@/components/talent-matching/MatchingWorkflow";
 import { MatchingOptions } from "@/components/talent-matching/types";
 import { checkSupabaseConnection } from "@/components/talent-matching/utils/matching-utils";
 import { extractTextFromImage } from "@/services/talent-matching/ImageProcessingService";
@@ -42,14 +42,12 @@ const TalentMatchingContainer: React.FC = () => {
     contactCandidate
   } = useMatchingProcess(user, jobDescription, matchingOptions, toast);
   
-  // Redirect if not logged in
   React.useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
 
-  // Check database connection
   useEffect(() => {
     checkSupabaseConnection(toast);
   }, [toast]);
@@ -121,53 +119,55 @@ const TalentMatchingContainer: React.FC = () => {
     : matchingCandidates.filter(candidate => candidate.source.toLowerCase() === selectedSource.toLowerCase());
 
   return (
-    <DashboardLayout title="Talent Matchmaking - AI">
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Job Description Matching</CardTitle>
-            <CardDescription>
-              Upload, paste, or extract from images a job description to find matching candidates using advanced AI models
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <JobDescriptionInput 
-              tab={tab}
-              setTab={setTab}
-              jobDescription={jobDescription}
-              setJobDescription={setJobDescription}
-              fileUploaded={fileUploaded}
-              setFileUploaded={setFileUploaded}
-            />
-          </CardContent>
-          <CardFooter className="flex-col space-y-4">
-            <MatchingControls 
-              handleSourceSelect={handleSourceSelect}
-              parseJobDescription={parseJobDescription}
-              isLoading={isLoading}
-              toggleAdvancedOptions={toggleAdvancedOptions}
-              showAdvancedOptions={showAdvancedOptions}
-            />
-            
-            <AdvancedOptionsToggle 
-              showAdvancedOptions={showAdvancedOptions}
-              matchingOptions={matchingOptions}
-              setMatchingOptions={setMatchingOptions}
-            />
-          </CardFooter>
-        </Card>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Job Description Matching</CardTitle>
+          <CardDescription>
+            Upload, paste, or extract from images a job description to find matching candidates using advanced AI models
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+          <MatchingWorkflow />
+          
+          <JobDescriptionInput 
+            tab={tab}
+            setTab={setTab}
+            jobDescription={jobDescription}
+            setJobDescription={setJobDescription}
+            fileUploaded={fileUploaded}
+            setFileUploaded={setFileUploaded}
+          />
+        </CardContent>
+        
+        <CardFooter className="flex-col space-y-4">
+          <MatchingControls 
+            handleSourceSelect={handleSourceSelect}
+            parseJobDescription={parseJobDescription}
+            isLoading={isLoading}
+            toggleAdvancedOptions={toggleAdvancedOptions}
+            showAdvancedOptions={showAdvancedOptions}
+          />
+          
+          <AdvancedOptionsToggle 
+            showAdvancedOptions={showAdvancedOptions}
+            matchingOptions={matchingOptions}
+            setMatchingOptions={setMatchingOptions}
+          />
+        </CardFooter>
+      </Card>
 
-        <ResultsSection 
-          isLoading={isLoading}
-          matchingProgress={matchingProgress}
-          matchResult={matchResult}
-          matchingCandidates={matchingCandidates}
-          filteredCandidates={filteredCandidates}
-          saveCandidate={saveCandidate}
-          contactCandidate={contactCandidate}
-        />
-      </div>
-    </DashboardLayout>
+      <ResultsSection 
+        isLoading={isLoading}
+        matchingProgress={matchingProgress}
+        matchResult={matchResult}
+        matchingCandidates={matchingCandidates}
+        filteredCandidates={filteredCandidates}
+        saveCandidate={saveCandidate}
+        contactCandidate={contactCandidate}
+      />
+    </div>
   );
 };
 
