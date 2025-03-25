@@ -29,38 +29,36 @@ function App() {
   const [queryClient] = React.useState(() => new QueryClient());
 
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/dashboard/integrations" element={<Integrations />} />
-                <Route path="/dashboard/talent" element={<Talent />} />
-                <Route path="/dashboard/talent-search" element={<TalentSearch />} />
-                <Route path="/dashboard/talent-matching" element={<TalentMatching />} />
-                <Route path="/dashboard/analytics" element={<Analytics />} />
-                <Route path="/dashboard/skills" element={<Skills />} />
-                <Route path="/dashboard/compliance" element={<Compliance />} />
-                <Route path="/dashboard/onboarding" element={<Onboarding />} />
-                <Route path="/dashboard/settings" element={<Settings />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/professional-development" element={<ProfessionalDevelopment />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/integrations" element={<Integrations />} />
+              <Route path="/dashboard/talent" element={<Talent />} />
+              <Route path="/dashboard/talent-search" element={<TalentSearch />} />
+              <Route path="/dashboard/talent-matching" element={<TalentMatching />} />
+              <Route path="/dashboard/analytics" element={<Analytics />} />
+              <Route path="/dashboard/skills" element={<Skills />} />
+              <Route path="/dashboard/compliance" element={<Compliance />} />
+              <Route path="/dashboard/onboarding" element={<Onboarding />} />
+              <Route path="/dashboard/settings" element={<Settings />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/professional-development" element={<ProfessionalDevelopment />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
