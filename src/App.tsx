@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Integrations from "./pages/Integrations";
 import Talent from "./pages/Talent";
 import TalentMatching from "./pages/TalentMatching";
+import TalentSearch from "./pages/TalentSearch";
 import Analytics from "./pages/Analytics";
 import Skills from "./pages/Skills";
 import Compliance from "./pages/Compliance";
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/integrations" element={<Integrations />} />
                 <Route path="/dashboard/talent" element={<Talent />} />
+                <Route path="/dashboard/talent-search" element={<TalentSearch />} />
                 <Route path="/dashboard/talent-matching" element={<TalentMatching />} />
                 <Route path="/dashboard/analytics" element={<Analytics />} />
                 <Route path="/dashboard/skills" element={<Skills />} />
