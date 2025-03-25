@@ -1,13 +1,11 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText, Database, Image as ImageIcon, Loader2 } from "lucide-react";
-import { extractTextFromImage } from "@/services/talent-matching/ImageProcessingService";
+import { FileText, Upload, Database, Image as ImageIcon } from "lucide-react";
+import PasteJobDescription from "./job-description/PasteJobDescription";
+import UploadDocumentTab from "./job-description/UploadDocumentTab";
+import ImageToTextTab from "./job-description/ImageToTextTab";
+import FetchFromAtsTab from "./job-description/FetchFromAtsTab";
 
 interface JobDescriptionInputProps {
   tab: string;
@@ -26,55 +24,6 @@ const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
   fileUploaded,
   setFileUploaded,
 }) => {
-  const { toast } = useToast();
-  const [processingImage, setProcessingImage] = useState(false);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFileUploaded(file);
-      toast({
-        title: "File Uploaded",
-        description: `${file.name} has been uploaded`,
-      });
-
-      // If it's an image file, process it automatically
-      if (file.type.startsWith('image/')) {
-        processImageFile(file);
-      }
-    }
-  };
-
-  const processImageFile = async (imageFile: File) => {
-    setProcessingImage(true);
-    try {
-      const extractedText = await extractTextFromImage(imageFile);
-      
-      if (extractedText.trim().length > 0) {
-        setJobDescription(extractedText);
-        toast({
-          title: "Image Processed",
-          description: "Successfully extracted text from the image",
-        });
-      } else {
-        toast({
-          title: "Processing Warning",
-          description: "No text could be extracted from this image",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error processing image:", error);
-      toast({
-        title: "Processing Error",
-        description: "Failed to extract text from the image",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessingImage(false);
-    }
-  };
-
   return (
     <Tabs value={tab} onValueChange={setTab} className="w-full">
       <TabsList className="grid grid-cols-4 mb-6">
@@ -96,144 +45,31 @@ const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
         </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="paste" className="space-y-4">
-        <Textarea 
-          placeholder="Paste job description here..."
-          className="min-h-[200px]"
-          value={jobDescription}
-          onChange={(e) => setJobDescription(e.target.value)}
+      <TabsContent value="paste">
+        <PasteJobDescription 
+          jobDescription={jobDescription}
+          setJobDescription={setJobDescription}
         />
       </TabsContent>
       
-      <TabsContent value="upload" className="space-y-4">
-        <div className="border-2 border-dashed rounded-lg p-10 text-center">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <Upload className="h-12 w-12 text-gray-400" />
-            <div className="space-y-2">
-              <h3 className="text-lg font-medium">Upload Job Description</h3>
-              <p className="text-sm text-gray-500">
-                Drag and drop your file here, or click to browse
-              </p>
-              <p className="text-xs text-gray-400">
-                Supported formats: PDF, DOCX, TXT (Max 5MB)
-              </p>
-            </div>
-            <Input
-              type="file"
-              id="file-upload"
-              className="hidden"
-              accept=".pdf,.docx,.txt"
-              onChange={handleFileUpload}
-            />
-            <Button asChild>
-              <label htmlFor="file-upload">Browse Files</label>
-            </Button>
-            {fileUploaded && (
-              <div className="flex items-center p-2 bg-gray-100 rounded-md">
-                <FileText className="h-4 w-4 mr-2 text-blue-500" />
-                <span className="text-sm">{fileUploaded.name}</span>
-              </div>
-            )}
-          </div>
-        </div>
+      <TabsContent value="upload">
+        <UploadDocumentTab 
+          fileUploaded={fileUploaded}
+          setFileUploaded={setFileUploaded}
+        />
       </TabsContent>
       
-      <TabsContent value="image" className="space-y-4">
-        <div className="border-2 border-dashed rounded-lg p-10 text-center">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <ImageIcon className="h-12 w-12 text-gray-400" />
-            <div className="space-y-2">
-              <h3 className="text-lg font-medium">Upload Job Description Image</h3>
-              <p className="text-sm text-gray-500">
-                Upload an image containing a job description
-              </p>
-              <p className="text-xs text-gray-400">
-                Supported formats: PNG, JPEG, JPG (Max 5MB)
-              </p>
-            </div>
-            <Input
-              type="file"
-              id="image-upload"
-              className="hidden"
-              accept="image/*"
-              onChange={handleFileUpload}
-            />
-            <Button asChild disabled={processingImage}>
-              <label htmlFor="image-upload">
-                {processingImage ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing Image...
-                  </>
-                ) : (
-                  <>Upload Image</>
-                )}
-              </label>
-            </Button>
-            {fileUploaded && fileUploaded.type.startsWith('image/') && (
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center p-2 bg-gray-100 rounded-md">
-                  <ImageIcon className="h-4 w-4 mr-2 text-blue-500" />
-                  <span className="text-sm">{fileUploaded.name}</span>
-                </div>
-                <div className="relative w-full max-w-md border rounded-md overflow-hidden">
-                  <img 
-                    src={URL.createObjectURL(fileUploaded)} 
-                    alt="Uploaded job description" 
-                    className="w-full object-contain max-h-64"
-                  />
-                  {processingImage && (
-                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                      <div className="text-white text-center">
-                        <Loader2 className="mx-auto h-8 w-8 animate-spin" />
-                        <p className="mt-2">Extracting text...</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {jobDescription && (
-                  <div className="p-4 bg-gray-50 rounded-md">
-                    <h4 className="font-medium mb-2">Extracted Text:</h4>
-                    <p className="text-sm text-gray-700 whitespace-pre-line max-h-64 overflow-y-auto">
-                      {jobDescription}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+      <TabsContent value="image">
+        <ImageToTextTab 
+          fileUploaded={fileUploaded}
+          setFileUploaded={setFileUploaded}
+          jobDescription={jobDescription}
+          setJobDescription={setJobDescription}
+        />
       </TabsContent>
       
-      <TabsContent value="fetch" className="space-y-4">
-        <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Select ATS/VMS System</label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select system" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ceipal">Ceipal</SelectItem>
-                  <SelectItem value="stafferlink">Stafferlink</SelectItem>
-                  <SelectItem value="sapfieldglass">SAP Fieldglass</SelectItem>
-                  <SelectItem value="beeline">Beeline</SelectItem>
-                  <SelectItem value="pontoon">Pontoon</SelectItem>
-                  <SelectItem value="jobdiva">JobDiva</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Job ID/Reference</label>
-              <Input placeholder="Enter job ID or reference" />
-            </div>
-          </div>
-          <Button className="w-full md:w-auto">
-            <Database className="mr-2 h-4 w-4" />
-            Fetch Job Details
-          </Button>
-        </div>
+      <TabsContent value="fetch">
+        <FetchFromAtsTab />
       </TabsContent>
     </Tabs>
   );
