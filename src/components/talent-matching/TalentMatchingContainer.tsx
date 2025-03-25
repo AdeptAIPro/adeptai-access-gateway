@@ -5,17 +5,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import JobDescriptionInput from "@/components/talent-matching/JobDescriptionInput";
 import MatchingControls from "@/components/talent-matching/MatchingControls";
-import MatchingProgress from "@/components/talent-matching/MatchingProgress";
-import CandidateResults from "@/components/talent-matching/CandidateResults";
-import AdvancedMatchingOptions from "@/components/talent-matching/AdvancedMatchingOptions";
-import { matchCandidatesWithJobDescription } from "@/services/talent-matching/MatchingService";
-import { MatchingOptions, MatchingResult, Candidate } from "@/components/talent-matching/types";
+import AdvancedOptionsToggle from "@/components/talent-matching/AdvancedOptionsToggle";
+import ResultsSection from "@/components/talent-matching/ResultsSection";
+import { MatchingOptions } from "@/components/talent-matching/types";
+import { checkSupabaseConnection } from "@/components/talent-matching/utils/matching-utils";
 import { extractTextFromImage } from "@/services/talent-matching/ImageProcessingService";
-import { supabase } from "@/lib/supabase";
 import useMatchingProcess from "@/hooks/use-matching-process";
 
 const TalentMatchingContainer: React.FC = () => {
@@ -46,33 +42,16 @@ const TalentMatchingContainer: React.FC = () => {
     contactCandidate
   } = useMatchingProcess(user, jobDescription, matchingOptions, toast);
   
+  // Redirect if not logged in
   React.useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
 
+  // Check database connection
   useEffect(() => {
-    const checkSupabaseConnection = async () => {
-      try {
-        const { data, error } = await supabase.from('health_check').select('*').limit(1);
-        
-        if (error) {
-          console.warn('Supabase connection check failed:', error);
-          toast({
-            title: "Database Connection Warning",
-            description: "Could not connect to the database. Some features may use fallback data.",
-            variant: "destructive",
-          });
-        } else {
-          console.log('Supabase connection successful');
-        }
-      } catch (err) {
-        console.error('Error checking Supabase connection:', err);
-      }
-    };
-    
-    checkSupabaseConnection();
+    checkSupabaseConnection(toast);
   }, [toast]);
 
   if (!user) {
@@ -109,8 +88,8 @@ const TalentMatchingContainer: React.FC = () => {
     
     if (isImageTab && fileUploaded) {
       try {
-        descriptionToUse = await extractTextFromImage(fileUploaded);
-        if (!descriptionToUse) {
+        const extractedText = await extractTextFromImage(fileUploaded);
+        if (!extractedText) {
           toast({
             title: "Extraction Failed",
             description: "Could not extract text from the image. Please try a clearer image or use the paste option.",
@@ -118,7 +97,8 @@ const TalentMatchingContainer: React.FC = () => {
           });
           return;
         }
-        setJobDescription(descriptionToUse);
+        setJobDescription(extractedText);
+        descriptionToUse = extractedText;
       } catch (extractionError) {
         toast({
           title: "Extraction Error",
@@ -169,39 +149,23 @@ const TalentMatchingContainer: React.FC = () => {
               showAdvancedOptions={showAdvancedOptions}
             />
             
-            {showAdvancedOptions && (
-              <div className="w-full mt-4">
-                <AdvancedMatchingOptions 
-                  matchingOptions={matchingOptions}
-                  setMatchingOptions={setMatchingOptions}
-                />
-              </div>
-            )}
+            <AdvancedOptionsToggle 
+              showAdvancedOptions={showAdvancedOptions}
+              matchingOptions={matchingOptions}
+              setMatchingOptions={setMatchingOptions}
+            />
           </CardFooter>
         </Card>
 
-        {isLoading && (
-          <MatchingProgress progress={matchingProgress} />
-        )}
-        
-        {matchResult && !isLoading && (
-          <Alert variant="default" className="bg-muted">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Matching Results</AlertTitle>
-            <AlertDescription>
-              Found {matchingCandidates.length} candidates in {matchResult.matchingTime.toFixed(1)} seconds using {matchResult.matchingModelUsed.split('-').join(' ')} model
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {matchingCandidates.length > 0 && !isLoading && (
-          <CandidateResults 
-            filteredCandidates={filteredCandidates}
-            matchingCandidates={matchingCandidates}
-            saveCandidate={saveCandidate}
-            contactCandidate={contactCandidate}
-          />
-        )}
+        <ResultsSection 
+          isLoading={isLoading}
+          matchingProgress={matchingProgress}
+          matchResult={matchResult}
+          matchingCandidates={matchingCandidates}
+          filteredCandidates={filteredCandidates}
+          saveCandidate={saveCandidate}
+          contactCandidate={contactCandidate}
+        />
       </div>
     </DashboardLayout>
   );
