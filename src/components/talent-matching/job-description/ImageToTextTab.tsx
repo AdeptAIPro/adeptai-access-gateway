@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Image as ImageIcon, Camera, RotateCcw, Copy, Check } from "lucide-react";
+import { Image as ImageIcon, Camera, RotateCcw, Copy, Check, Loader2 } from "lucide-react";
 import ImageProcessor from "./ImageProcessor";
 
 interface ImageToTextTabProps {
