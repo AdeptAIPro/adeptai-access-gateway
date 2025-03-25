@@ -54,8 +54,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   const sidebarItems: SidebarItem[] = [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations" },
-    { title: "Talent Matchmaking", icon: Users, href: "/dashboard/talent" },
-    { title: "Talent Matching", icon: Search, href: "/dashboard/talent-matching" },
+    { title: "Talent Search", icon: Search, href: "/dashboard/talent-search" },
+    { title: "Talent Matching", icon: Users, href: "/dashboard/talent-matching" },
     { title: "Analytics", icon: BarChart, href: "/dashboard/analytics" },
     { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills" },
     { title: "Compliance", icon: ShieldCheck, href: "/dashboard/compliance" },

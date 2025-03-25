@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,7 +14,8 @@ import {
   GraduationCap,
   ShieldCheck,
   UserPlus,
-  ArrowRight
+  ArrowRight,
+  Search
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -45,10 +47,10 @@ const Dashboard = () => {
       color: "bg-blue-500",
     },
     {
-      title: "Talent Matchmaking",
+      title: "Talent Search",
       description: "Find the right talent for your projects",
-      icon: Users,
-      route: "/dashboard/talent",
+      icon: Search,
+      route: "/dashboard/talent-search",
       color: "bg-green-500",
     },
     {
