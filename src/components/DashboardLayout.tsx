@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -122,9 +121,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   ];
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row ${theme === "dark" ? "dark" : ""} bg-gray-50 dark:bg-gray-900`}>
+    <div className={`min-h-screen flex flex-col md:flex-row ${theme === "dark" ? "dark" : ""} bg-background text-foreground`}>
       {/* Mobile sidebar toggle */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 shadow-sm">
+      <div className="md:hidden flex items-center justify-between p-4 bg-card border-b border-border shadow-sm">
         <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
@@ -153,12 +152,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
       {/* Sidebar for desktop and mobile */}
       <div 
         className={cn(
-          "bg-white dark:bg-gray-800 w-64 flex-shrink-0 border-r dark:border-gray-700 transition-all duration-300 ease-in-out overflow-y-auto h-screen fixed md:sticky top-0 z-30",
+          "bg-card border-r border-border transition-all duration-300 ease-in-out overflow-y-auto h-screen fixed md:sticky top-0 z-30",
           sidebarOpen ? "left-0" : "-left-64",
           "md:left-0 md:w-64"
         )}
       >
-        <div className="p-4 border-b dark:border-gray-700 flex items-center justify-between">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <Zap className="h-6 w-6 text-adept" />
             <span className="font-bold text-xl text-adept">AdeptAI Pro</span>
@@ -219,7 +218,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
           </ul>
         </nav>
 
-        <div className="mt-auto p-4 border-t dark:border-gray-700">
+        <div className="mt-auto p-4 border-t border-border">
           <div className="flex flex-col space-y-2">
             <Button 
               variant="outline" 
@@ -267,7 +266,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
         sidebarOpen ? "md:ml-0" : "md:ml-0",
       )}>
         {/* Header */}
-        <header className="hidden md:flex h-16 items-center justify-between bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 sticky top-0 z-20 shadow-sm">
+        <header className="hidden md:flex h-16 items-center justify-between bg-card border-b border-border px-6 sticky top-0 z-20 shadow-sm">
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -407,10 +406,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
         </header>
 
         {/* Page content */}
-        <main className="p-6">{children}</main>
+        <main className="p-6 bg-background">{children}</main>
         
         {/* Footer */}
-        <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 py-4 px-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        <footer className="bg-card border-t border-border py-4 px-6 text-center text-sm text-muted-foreground">
           <p>&copy; 2023 AdeptAI Pro. All rights reserved.</p>
         </footer>
       </div>
