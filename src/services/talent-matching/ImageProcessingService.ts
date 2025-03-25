@@ -17,25 +17,12 @@ export const extractTextFromImage = async (imageFile: File): Promise<string> => 
     // Create an image element from the file
     const imageElement = await loadImageFromFile(imageFile);
     
-    // Initialize the OCR pipeline with Hugging Face's vision transformer
-    const processor = await pipeline('image-to-text', 'Xenova/vit-gpt2-image-captioning', {
-      device: 'webgpu',
-    });
+    // Process the image with OCR
+    const extractedText = await performOCR(imageElement);
     
-    // Process the image
-    console.log('Processing image with OCR model...');
-    const result = await processor(imageElement.src);
-    
-    // Extract and clean the text
-    let extractedText = '';
-    if (Array.isArray(result) && result.length > 0) {
-      extractedText = result.map(item => item.generated_text).join('\n');
-      console.log('Text extracted successfully:', extractedText.substring(0, 100) + '...');
-      
-      // Store the extracted text in Supabase for future reference
+    // Store the extracted text for future reference
+    if (extractedText.length > 0) {
       await storeExtractedText(imageFile.name, extractedText);
-    } else {
-      console.log('No text was extracted from the image');
     }
     
     return extractedText;
@@ -53,6 +40,35 @@ const loadImageFromFile = (file: File): Promise<HTMLImageElement> => {
     img.onerror = (error) => reject(new Error('Failed to load image: ' + error));
     img.src = URL.createObjectURL(file);
   });
+};
+
+// Perform OCR on the image using HuggingFace transformers
+const performOCR = async (imageElement: HTMLImageElement): Promise<string> => {
+  try {
+    // Initialize the OCR pipeline with Hugging Face's vision transformer
+    console.log('Initializing OCR pipeline...');
+    const processor = await pipeline('image-to-text', 'Xenova/vit-gpt2-image-captioning', {
+      device: 'webgpu',
+    });
+    
+    // Process the image
+    console.log('Processing image with OCR model...');
+    const result = await processor(imageElement.src);
+    
+    // Extract and clean the text
+    let extractedText = '';
+    if (Array.isArray(result) && result.length > 0) {
+      extractedText = result.map(item => item.generated_text).join('\n');
+      console.log('Text extracted successfully:', extractedText.substring(0, 100) + '...');
+    } else {
+      console.log('No text was extracted from the image');
+    }
+    
+    return extractedText;
+  } catch (error) {
+    console.error('Error in OCR processing:', error);
+    throw error;
+  }
 };
 
 // Store extracted text in Supabase for future reference

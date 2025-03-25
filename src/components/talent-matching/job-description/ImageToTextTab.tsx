@@ -1,10 +1,10 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Image as ImageIcon, Loader2 } from "lucide-react";
-import { extractTextFromImage } from "@/services/talent-matching/ImageProcessingService";
+import { Image as ImageIcon } from "lucide-react";
+import ImageProcessor from "./ImageProcessor";
 
 interface ImageToTextTabProps {
   fileUploaded: File | null;
@@ -20,7 +20,6 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
   setJobDescription,
 }) => {
   const { toast } = useToast();
-  const [processingImage, setProcessingImage] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,37 +29,6 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
         title: "Image Uploaded",
         description: `${file.name} has been uploaded`,
       });
-      processImageFile(file);
-    }
-  };
-
-  const processImageFile = async (imageFile: File) => {
-    setProcessingImage(true);
-    try {
-      const extractedText = await extractTextFromImage(imageFile);
-      
-      if (extractedText.trim().length > 0) {
-        setJobDescription(extractedText);
-        toast({
-          title: "Image Processed",
-          description: "Successfully extracted text from the image",
-        });
-      } else {
-        toast({
-          title: "Processing Warning",
-          description: "No text could be extracted from this image",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error processing image:", error);
-      toast({
-        title: "Processing Error",
-        description: "Failed to extract text from the image",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessingImage(false);
     }
   };
 
@@ -84,39 +52,24 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
           accept="image/*"
           onChange={handleFileUpload}
         />
-        <Button asChild disabled={processingImage}>
-          <label htmlFor="image-upload">
-            {processingImage ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing Image...
-              </>
-            ) : (
-              <>Upload Image</>
-            )}
-          </label>
+        <Button asChild>
+          <label htmlFor="image-upload">Upload Image</label>
         </Button>
+        
         {fileUploaded && fileUploaded.type.startsWith('image/') && (
           <div className="mt-4 space-y-4">
             <div className="flex items-center p-2 bg-gray-100 rounded-md">
               <ImageIcon className="h-4 w-4 mr-2 text-blue-500" />
               <span className="text-sm">{fileUploaded.name}</span>
             </div>
-            <div className="relative w-full max-w-md border rounded-md overflow-hidden">
-              <img 
-                src={URL.createObjectURL(fileUploaded)} 
-                alt="Uploaded job description" 
-                className="w-full object-contain max-h-64"
-              />
-              {processingImage && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                  <div className="text-white text-center">
-                    <Loader2 className="mx-auto h-8 w-8 animate-spin" />
-                    <p className="mt-2">Extracting text...</p>
-                  </div>
-                </div>
-              )}
-            </div>
+            
+            <ImageProcessor 
+              fileUploaded={fileUploaded}
+              setFileUploaded={setFileUploaded}
+              setExtractedText={setJobDescription}
+              className="mt-4"
+            />
+            
             {jobDescription && (
               <div className="p-4 bg-gray-50 rounded-md">
                 <h4 className="font-medium mb-2">Extracted Text:</h4>
