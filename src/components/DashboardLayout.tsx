@@ -19,13 +19,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  useEffect(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) {
-      setTheme("dark");
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
+  // Remove the useEffect that checks for dark mode preference
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
