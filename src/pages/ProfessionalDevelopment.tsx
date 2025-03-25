@@ -327,6 +327,46 @@ const ProfessionalDevelopment = () => {
             </p>
           </div>
           
+          <div className="mb-8">
+            <Card className="bg-gradient-to-r from-adept-light to-white border-adept-light overflow-hidden">
+              <div className="flex flex-col md:flex-row">
+                <CardHeader className="pb-2 md:w-1/3">
+                  <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
+                  <CardDescription>
+                    Boost your profile with specialized skill certificates recognized by top employers and universities.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative md:w-2/3 flex items-center">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-adept mb-2" />
+                      <span className="text-sm font-medium text-center">Data Science Bootcamp</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-adept mb-2" />
+                      <span className="text-sm font-medium text-center">AI & Machine Learning</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-adept mb-2" />
+                      <span className="text-sm font-medium text-center">Cloud Computing</span>
+                    </div>
+                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-adept mb-2" />
+                      <span className="text-sm font-medium text-center">Digital Marketing</span>
+                    </div>
+                  </div>
+                  
+                  <Button variant="outline" size="sm" className="absolute bottom-4 right-4 text-adept border-adept hover:bg-adept-light">
+                    Explore All Skills
+                  </Button>
+                  
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
+                  <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
+                </CardContent>
+              </div>
+            </Card>
+          </div>
+          
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <Card className="border-adept-light">
@@ -425,45 +465,6 @@ const ProfessionalDevelopment = () => {
                     Explore funding options <ChevronRight className="w-3 h-3 ml-1" />
                   </Button>
                 </CardFooter>
-              </Card>
-              
-              <Card className="bg-gradient-to-br from-adept-light to-white border-adept-light overflow-hidden">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
-                </CardHeader>
-                <CardContent className="relative">
-                  <div className="space-y-3">
-                    <p className="text-sm">Boost your profile with specialized skill certificates recognized by top employers and universities.</p>
-                    
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        Data Science Bootcamp
-                      </li>
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        AI & Machine Learning
-                      </li>
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        Cloud Computing Essentials
-                      </li>
-                      <li className="flex items-center">
-                        <CheckCircle className="w-4 h-4 text-adept mr-2" />
-                        Digital Marketing Mastery
-                      </li>
-                    </ul>
-                    
-                    <div className="pt-2">
-                      <Button variant="outline" size="sm" className="text-adept border-adept hover:bg-adept-light">
-                        Explore All Skills
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
-                  <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
-                </CardContent>
               </Card>
             </div>
             
