@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,7 +98,7 @@
 
 @layer components {
   .glass-morphism {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
+    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border border-white/20 dark:border-gray-800/20 shadow-glass;
   }
   
   .input-glow:focus {
@@ -110,6 +111,34 @@
   
   .hover-lift {
     @apply transition-transform duration-200 hover:-translate-y-1;
+  }
+  
+  .card-gradient {
+    @apply bg-gradient-to-br from-card to-secondary/80 backdrop-blur-sm;
+  }
+  
+  .card-highlight {
+    @apply border-0 shadow-md hover:shadow-lg transition-all duration-300;
+  }
+  
+  .enterprise-card {
+    @apply border-0 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden;
+  }
+  
+  .enterprise-header {
+    @apply bg-gradient-to-r from-adept to-adept-dark text-white p-4;
+  }
+  
+  .dashboard-stat-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all p-4;
+  }
+  
+  .grid-dashboard {
+    @apply grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  
+  .action-button {
+    @apply bg-adept hover:bg-adept-dark text-white transition-colors;
   }
 }
 
@@ -133,8 +162,16 @@ html {
   border-radius: 4px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Font rendering optimizations */
