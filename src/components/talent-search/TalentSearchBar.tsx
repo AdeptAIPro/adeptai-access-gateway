@@ -19,21 +19,14 @@ import {
   CardTitle, 
   CardDescription 
 } from "@/components/ui/card";
-import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { TalentSearchParams } from '@/services/talent/TalentSearchService';
 import { Slider } from '@/components/ui/slider';
 import { getTalentSources } from '@/services/talent/TalentSearchService';
+import { useTalentSearch } from '@/context/TalentSearchContext';
 
-interface TalentSearchBarProps {
-  onSearch: (params: TalentSearchParams) => void;
-  isLoading?: boolean;
-}
-
-const TalentSearchBar: React.FC<TalentSearchBarProps> = ({ onSearch, isLoading = false }) => {
+const TalentSearchBar: React.FC = () => {
+  const { handleSearch, isLoading } = useTalentSearch();
+  
   const [skillsInput, setSkillsInput] = useState<string>('');
   const [skills, setSkills] = useState<string[]>([]);
   const [location, setLocation] = useState<string>('');
@@ -68,8 +61,8 @@ const TalentSearchBar: React.FC<TalentSearchBarProps> = ({ onSearch, isLoading =
     }
   };
   
-  const handleSearch = () => {
-    onSearch({
+  const handleSearchSubmit = () => {
+    handleSearch({
       skills: skills.length > 0 ? skills : undefined,
       location: location || undefined,
       experience: experience > 0 ? experience : undefined,
@@ -192,7 +185,7 @@ const TalentSearchBar: React.FC<TalentSearchBarProps> = ({ onSearch, isLoading =
             <Button variant="outline" onClick={handleClearAll} disabled={isLoading}>
               Clear All
             </Button>
-            <Button onClick={handleSearch} disabled={isLoading}>
+            <Button onClick={handleSearchSubmit} disabled={isLoading}>
               {isLoading ? (
                 <>
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

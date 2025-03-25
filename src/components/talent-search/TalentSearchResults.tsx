@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Card, 
@@ -17,27 +16,34 @@ import {
   Phone, 
   Calendar, 
   ExternalLink,
-  Download
+  Download,
+  Search
 } from 'lucide-react';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
+import { useTalentSearch } from '@/context/TalentSearchContext';
 
-interface TalentSearchResultsProps {
-  results: Talent[];
-  totalResults: number;
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  isLoading?: boolean;
-}
+const TalentSearchResults: React.FC = () => {
+  const { 
+    searchResults, 
+    totalResults, 
+    currentPage, 
+    totalPages, 
+    handlePageChange, 
+    isLoading,
+    hasSearched
+  } = useTalentSearch();
 
-const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
-  results,
-  totalResults,
-  currentPage,
-  totalPages,
-  onPageChange,
-  isLoading = false
-}) => {
+  if (!hasSearched) {
+    return null;
+  }
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
@@ -47,7 +53,7 @@ const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
     );
   }
 
-  if (results.length === 0) {
+  if (searchResults.length === 0) {
     return (
       <Card className="bg-gray-50 dark:bg-gray-800 border-dashed">
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -78,7 +84,7 @@ const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {results.map((talent) => (
+        {searchResults.map((talent) => (
           <TalentCard key={talent.id} talent={talent} />
         ))}
       </div>
@@ -88,8 +94,15 @@ const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious 
-                onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage > 1) {
+                    handlePageChange(currentPage - 1);
+                  }
+                }}
+                aria-disabled={currentPage === 1}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
               />
             </PaginationItem>
             
@@ -98,7 +111,11 @@ const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
               return (
                 <PaginationItem key={pageNumber}>
                   <PaginationLink
-                    onClick={() => onPageChange(pageNumber)}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(pageNumber);
+                    }}
                     isActive={pageNumber === currentPage}
                   >
                     {pageNumber}
@@ -109,14 +126,20 @@ const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
             
             {totalPages > 5 && (
               <PaginationItem>
-                <PaginationLink>...</PaginationLink>
+                <PaginationLink href="#" onClick={(e) => e.preventDefault()}>
+                  ...
+                </PaginationLink>
               </PaginationItem>
             )}
             
             {totalPages > 5 && (
               <PaginationItem>
                 <PaginationLink
-                  onClick={() => onPageChange(totalPages)}
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(totalPages);
+                  }}
                   isActive={totalPages === currentPage}
                 >
                   {totalPages}
@@ -126,8 +149,15 @@ const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({
             
             <PaginationItem>
               <PaginationNext 
-                onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage < totalPages) {
+                    handlePageChange(currentPage + 1);
+                  }
+                }}
+                aria-disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
               />
             </PaginationItem>
           </PaginationContent>
@@ -217,8 +247,5 @@ const TalentCard: React.FC<{ talent: Talent }> = ({ talent }) => {
     </Card>
   );
 };
-
-// Need to import at the end to avoid circular dependency
-import { Search } from 'lucide-react';
 
 export default TalentSearchResults;
