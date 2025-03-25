@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, User, X, Zap } from "lucide-react";
+import { Menu, User, X, Zap, LogOut } from "lucide-react";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +55,5 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ sidebarOpen, setSidebarOpen
     </div>
   );
 };
-
-import { LogOut } from "lucide-react";
 
 export default MobileHeader;

@@ -9,7 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuGroup
+  DropdownMenuGroup,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, Moon, Settings, Sun, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
