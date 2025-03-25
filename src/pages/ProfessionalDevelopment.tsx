@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Book, SendIcon, Award, BookOpen, Briefcase, Users, Globe, ChevronRight, CalendarDays, GraduationCap as GraduationCapIcon, CheckCircle } from "lucide-react";
+import { GraduationCap, Book, SendIcon, Award, BookOpen, Briefcase, Users, Globe, ChevronRight, CalendarDays, GraduationCap as GraduationCapIcon, CheckCircle, BookIcon, Compass, Sparkles, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -654,6 +654,54 @@ const ProfessionalDevelopment = () => {
                   </Button>
                 </CardFooter>
               </Card>
+              
+              <Card className="border-adept-light overflow-hidden">
+                <div className="relative h-40 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670&auto=format&fit=crop"
+                    alt="Education counseling session" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                    <h3 className="text-white font-bold text-xl p-4">Your Personal Education Guide</h3>
+                  </div>
+                </div>
+                <CardContent className="pt-4">
+                  <h4 className="font-medium text-adept mb-2">How Our Counselors Support Your Journey</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <div className="mt-1 bg-adept-light rounded-full p-1">
+                        <Compass className="h-4 w-4 text-adept" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Personalized Path</p>
+                        <p className="text-xs text-muted-foreground">Custom education roadmaps based on your career goals and interests</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className="mt-1 bg-adept-light rounded-full p-1">
+                        <Sparkles className="h-4 w-4 text-adept" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Cross-Skill Guidance</p>
+                        <p className="text-xs text-muted-foreground">Identify complementary skills to enhance your primary expertise</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className="mt-1 bg-adept-light rounded-full p-1">
+                        <BookIcon className="h-4 w-4 text-adept" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Application Excellence</p>
+                        <p className="text-xs text-muted-foreground">Expert assistance with admissions essays and interviews</p>
+                      </div>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full mt-4 text-adept border-adept hover:bg-adept-light">
+                    Schedule Free Consultation <ArrowUpRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
             
             <div className="bg-white p-6 md:p-8 rounded-lg border shadow-md">
@@ -904,4 +952,3 @@ const ProfessionalDevelopment = () => {
 };
 
 export default ProfessionalDevelopment;
-
