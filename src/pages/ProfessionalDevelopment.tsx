@@ -328,29 +328,29 @@ const ProfessionalDevelopment = () => {
           </div>
           
           <div className="mb-8">
-            <Card className="bg-gradient-to-r from-adept-light to-white border-adept-light overflow-hidden">
-              <div className="flex flex-col md:flex-row">
-                <CardHeader className="pb-2 md:w-1/3">
+            <Card className="bg-white border-adept-light overflow-hidden">
+              <div className="flex flex-col md:flex-row items-center">
+                <CardHeader className="pb-2 md:w-full">
                   <CardTitle className="text-lg text-adept">Skill Enhancement Programs</CardTitle>
                   <CardDescription>
                     Boost your profile with specialized skill certificates recognized by top employers and universities.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="relative md:w-2/3 flex items-center">
+                <CardContent className="relative md:w-full flex items-center justify-center">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                    <div className="flex flex-col items-center bg-adept-light/30 p-3 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-adept mb-2" />
                       <span className="text-sm font-medium text-center">Data Science Bootcamp</span>
                     </div>
-                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                    <div className="flex flex-col items-center bg-adept-light/30 p-3 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-adept mb-2" />
                       <span className="text-sm font-medium text-center">AI & Machine Learning</span>
                     </div>
-                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                    <div className="flex flex-col items-center bg-adept-light/30 p-3 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-adept mb-2" />
                       <span className="text-sm font-medium text-center">Cloud Computing</span>
                     </div>
-                    <div className="flex flex-col items-center bg-white/50 p-3 rounded-lg">
+                    <div className="flex flex-col items-center bg-adept-light/30 p-3 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-adept mb-2" />
                       <span className="text-sm font-medium text-center">Digital Marketing</span>
                     </div>
@@ -359,9 +359,6 @@ const ProfessionalDevelopment = () => {
                   <Button variant="outline" size="sm" className="absolute bottom-4 right-4 text-adept border-adept hover:bg-adept-light">
                     Explore All Skills
                   </Button>
-                  
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-adept/10 z-0"></div>
-                  <div className="absolute -bottom-4 -right-12 w-32 h-32 rounded-full bg-adept/5 z-0"></div>
                 </CardContent>
               </div>
             </Card>
@@ -469,9 +466,9 @@ const ProfessionalDevelopment = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="bg-white p-6 md:p-8 rounded-lg border shadow-md">
-                <h3 className="text-xl font-bold mb-6 flex items-center">
-                  <Book className="mr-2 h-5 w-5 text-adept" />
+              <div className="bg-gradient-to-br from-adept-light/80 via-white to-adept/10 p-6 md:p-8 rounded-lg border shadow-md animate-fade-in hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-bold mb-6 flex items-center text-adept">
+                  <Book className="mr-2 h-5 w-5" />
                   Course Interest Form
                 </h3>
                 
@@ -482,9 +479,9 @@ const ProfessionalDevelopment = () => {
                       name="fullName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name</FormLabel>
+                          <FormLabel className="font-medium">Full Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter your full name" {...field} />
+                            <Input placeholder="Enter your full name" className="bg-white/80" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -496,9 +493,9 @@ const ProfessionalDevelopment = () => {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Email Address</FormLabel>
+                          <FormLabel className="font-medium">Email Address</FormLabel>
                           <FormControl>
-                            <Input placeholder="your.email@example.com" {...field} />
+                            <Input placeholder="your.email@example.com" className="bg-white/80" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -510,9 +507,9 @@ const ProfessionalDevelopment = () => {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
+                          <FormLabel className="font-medium">Phone Number</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter your phone number" {...field} />
+                            <Input placeholder="Enter your phone number" className="bg-white/80" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -525,7 +522,7 @@ const ProfessionalDevelopment = () => {
                         name="country"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Country of Interest</FormLabel>
+                            <FormLabel className="font-medium">Country of Interest</FormLabel>
                             <Select 
                               onValueChange={(value) => {
                                 field.onChange(value);
@@ -534,7 +531,7 @@ const ProfessionalDevelopment = () => {
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="bg-white/80">
                                   <SelectValue placeholder="Select country" />
                                 </SelectTrigger>
                               </FormControl>
@@ -554,7 +551,7 @@ const ProfessionalDevelopment = () => {
                         name="courseLevel"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Course Level</FormLabel>
+                            <FormLabel className="font-medium">Course Level</FormLabel>
                             <Select 
                               onValueChange={(value) => {
                                 field.onChange(value);
@@ -563,7 +560,7 @@ const ProfessionalDevelopment = () => {
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger>
+                                <SelectTrigger className="bg-white/80">
                                   <SelectValue placeholder="Select course level" />
                                 </SelectTrigger>
                               </FormControl>
@@ -585,13 +582,13 @@ const ProfessionalDevelopment = () => {
                       name="courseInterest"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Course of Interest</FormLabel>
+                          <FormLabel className="font-medium">Course of Interest</FormLabel>
                           <Select 
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="bg-white/80">
                                 <SelectValue placeholder="Select a course" />
                               </SelectTrigger>
                             </FormControl>
@@ -618,11 +615,11 @@ const ProfessionalDevelopment = () => {
                       name="goals"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Your Educational Goals</FormLabel>
+                          <FormLabel className="font-medium">Your Educational Goals</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Please share your educational and career goals, and any specific queries you have..." 
-                              className="min-h-[100px]"
+                              className="min-h-[100px] bg-white/80"
                               {...field} 
                             />
                           </FormControl>
@@ -637,7 +634,7 @@ const ProfessionalDevelopment = () => {
                     <Button 
                       type="submit" 
                       variant="adept" 
-                      className="w-full"
+                      className="w-full shadow-md hover:shadow-lg transition-shadow"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
