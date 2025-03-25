@@ -50,8 +50,8 @@ const Dashboard = () => {
     fetchAnalytics();
   }, [timeframe]);
 
-  // Custom tooltip style for the chart
-  const CustomTooltip = ({ active, payload, label }) => {
+  // Custom tooltip style for the chart - fixed TypeScript error by properly typing the props
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white/90 backdrop-blur-sm border border-gray-200 p-4 rounded-lg shadow-lg">
@@ -80,6 +80,14 @@ const Dashboard = () => {
       route: "/dashboard/talent-search",
       color: "from-green-500 to-green-700",
       stats: "3.2k candidates",
+    },
+    {
+      title: "AI Based Talent Matching",
+      description: "Match jobs with candidates using AI",
+      icon: Users,
+      route: "/dashboard/talent-matching",
+      color: "from-purple-500 to-purple-700",
+      stats: "+18% this month",
     },
     {
       title: "Analytics",

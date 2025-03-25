@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -39,18 +38,15 @@ const TalentMatching = () => {
     minMatchScore: 75
   });
   
-  // Use useEffect to handle navigation instead of returning the navigate function
   React.useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
 
-  // Check Supabase connection on component mount
   useEffect(() => {
     const checkSupabaseConnection = async () => {
       try {
-        // Simple ping to check connection
         const { data, error } = await supabase.from('health_check').select('*').limit(1);
         
         if (error) {
@@ -71,9 +67,8 @@ const TalentMatching = () => {
     checkSupabaseConnection();
   }, [toast]);
 
-  // If user is not authenticated, render nothing while the navigation effect runs
   if (!user) {
-    return null; // This returns a valid React node (null) instead of void
+    return null;
   }
 
   const handleSourceSelect = (source: string) => {
@@ -85,7 +80,6 @@ const TalentMatching = () => {
     const isDocumentTab = tab === "upload";
     const isPasteTab = tab === "paste";
     
-    // Validation based on the current tab
     if ((isPasteTab && !jobDescription) || 
         (isDocumentTab && !fileUploaded) || 
         (isImageTab && !fileUploaded)) {
@@ -106,19 +100,17 @@ const TalentMatching = () => {
     setIsLoading(true);
     setMatchingProgress(0);
     
-    // Simulate the initial matching progress
     const interval = setInterval(() => {
       setMatchingProgress((prev) => {
         if (prev >= 90) {
           clearInterval(interval);
-          return 90; // We'll set to 100 when the actual results are ready
+          return 90;
         }
         return prev + 5;
       });
     }, 200);
 
     try {
-      // For image tab, extract text from image first
       let descriptionToUse = jobDescription;
       
       if (isImageTab && fileUploaded) {
@@ -134,7 +126,6 @@ const TalentMatching = () => {
             });
             return;
           }
-          // Update the job description field with the extracted text
           setJobDescription(descriptionToUse);
         } catch (extractionError) {
           clearInterval(interval);
@@ -148,7 +139,6 @@ const TalentMatching = () => {
         }
       }
       
-      // Call the AI-driven matching service
       const result = await matchCandidatesWithJobDescription(descriptionToUse, matchingOptions);
       
       clearInterval(interval);
@@ -162,7 +152,6 @@ const TalentMatching = () => {
         description: `Found ${result.candidates.length} matching candidates using ${result.matchingModelUsed.split('-').join(' ')} model`,
       });
       
-      // Save job description to recent searches in Supabase
       if (descriptionToUse) {
         saveRecentSearch(descriptionToUse);
       }
@@ -177,7 +166,6 @@ const TalentMatching = () => {
     }
   };
 
-  // Save recent search to Supabase
   const saveRecentSearch = async (searchText: string) => {
     if (!user) return;
     
@@ -187,13 +175,12 @@ const TalentMatching = () => {
         .insert([
           { 
             user_id: user.id, 
-            search_text: searchText.substring(0, 500), // Limit to 500 chars
+            search_text: searchText.substring(0, 500),
             search_type: 'job_description' 
           }
         ]);
     } catch (err) {
       console.error('Failed to save recent search:', err);
-      // Non-critical error, so we don't show a toast
     }
   };
 
@@ -267,7 +254,7 @@ const TalentMatching = () => {
     : matchingCandidates.filter(candidate => candidate.source.toLowerCase() === selectedSource.toLowerCase());
 
   return (
-    <DashboardLayout title="AI Talent Matching">
+    <DashboardLayout title="AI Based Talent Matching">
       <div className="space-y-6">
         <Card>
           <CardHeader>
