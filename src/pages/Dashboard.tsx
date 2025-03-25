@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -17,25 +17,36 @@ import {
   ArrowRight,
   Search
 } from "lucide-react";
+import { getJobMetrics } from "@/services/dashboard/AnalyticsService";
 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [analyticsData, setAnalyticsData] = useState([]);
+  const [timeframe, setTimeframe] = useState("month");
+  const [isLoading, setIsLoading] = useState(true);
   
   // Handle unauthorized access
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Sample data for analytics
-  const analyticsData = [
-    { name: "Jan", value: 400 },
-    { name: "Feb", value: 300 },
-    { name: "Mar", value: 500 },
-    { name: "Apr", value: 280 },
-    { name: "May", value: 590 },
-    { name: "Jun", value: 350 },
-  ];
+  // Fetch analytics data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getJobMetrics(timeframe);
+        setAnalyticsData(data);
+      } catch (error) {
+        console.error("Error fetching analytics data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [timeframe]);
 
   // Dashboard card data
   const dashboardCards = [
@@ -86,7 +97,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout title="Dashboard">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fade-in-up">
-        {/* Welcome Card */}
+        {/* Welcome Card with Chart - Fixed height to prevent overflow */}
         <Card className="md:col-span-2 lg:col-span-3">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">Welcome back, {user.name}</CardTitle>
@@ -95,18 +106,49 @@ const Dashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] w-full">
-              <ChartContainer config={{ value: { theme: { light: '#3498db', dark: '#60a5fa' } } }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={analyticsData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="var(--color-value)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+            <div className="h-64 w-full"> {/* Fixed height to prevent overflow */}
+              <div className="flex justify-end mb-2 text-sm">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={timeframe === "week" ? "bg-muted" : ""}
+                  onClick={() => setTimeframe("week")}
+                >
+                  Week
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={timeframe === "month" ? "bg-muted" : ""}
+                  onClick={() => setTimeframe("month")}
+                >
+                  Month
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={timeframe === "year" ? "bg-muted" : ""}
+                  onClick={() => setTimeframe("year")}
+                >
+                  Year
+                </Button>
+              </div>
+              <div className="h-52 w-full"> {/* Fixed subcontainer height */}
+                <ChartContainer config={{ value: { theme: { light: '#3498db', dark: '#60a5fa' } } }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analyticsData} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip 
+                        formatter={(value) => [`${value} jobs`, 'Volume']}
+                        labelFormatter={(label) => `${label}`}
+                      />
+                      <Bar dataKey="value" fill="var(--color-value)" name="Job Postings" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
             </div>
           </CardContent>
         </Card>
