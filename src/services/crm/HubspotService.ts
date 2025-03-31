@@ -3,6 +3,15 @@ import { supabase } from "@/lib/supabase";
 
 /**
  * Service for managing HubSpot CRM integration
+ * 
+ * SETUP INSTRUCTIONS:
+ * 1. Create a HubSpot account at https://www.hubspot.com/ using crm@adeptaipro.com
+ * 2. Get your API key from HubSpot: Settings > Integrations > API Keys
+ * 3. Set your HubSpot API key as VITE_HUBSPOT_API_KEY in your environment
+ *    or in the Supabase secrets if using Supabase
+ * 
+ * Note: When properly set up, all leads captured in this system will 
+ * automatically sync to your HubSpot CRM
  */
 
 // Types for lead data
@@ -41,7 +50,7 @@ export const saveLead = async (lead: Lead): Promise<boolean> => {
         ...lead,
         id: `demo-${Date.now()}`,
         created_at: new Date().toISOString(),
-        status: 'new'
+        status: 'new' as const
       });
       localStorage.setItem('adeptai_leads', JSON.stringify(storedLeads));
       
@@ -65,7 +74,7 @@ export const saveLead = async (lead: Lead): Promise<boolean> => {
     }
     
     // If using real credentials, also send to HubSpot
-    sendToHubSpot(lead);
+    await sendToHubSpot(lead);
     return true;
   } catch (error) {
     console.error('Failed to save lead:', error);
@@ -85,7 +94,12 @@ export const getLeads = async (filter?: LeadFilter): Promise<Lead[]> => {
         supabaseAnonKey === 'placeholder-anon-key') {
       // Demo mode - get from localStorage
       const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
-      return storedLeads;
+      
+      // Ensure all leads have proper status type
+      return storedLeads.map((lead: any) => ({
+        ...lead,
+        status: (lead.status || 'new') as Lead['status']
+      }));
     }
     
     // Fetch from Supabase with optional filters
@@ -114,7 +128,11 @@ export const getLeads = async (filter?: LeadFilter): Promise<Lead[]> => {
       return [];
     }
     
-    return data || [];
+    // Ensure proper status typing
+    return (data || []).map(lead => ({
+      ...lead,
+      status: (lead.status || 'new') as Lead['status']
+    }));
   } catch (error) {
     console.error('Failed to fetch leads:', error);
     return [];
@@ -134,15 +152,18 @@ export const updateLeadStatus = async (id: string, status: string): Promise<bool
       // Demo mode - update in localStorage
       const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
       const updatedLeads = storedLeads.map((lead: Lead) => 
-        lead.id === id ? { ...lead, status } : lead
+        lead.id === id ? { ...lead, status: status as Lead['status'] } : lead
       );
       localStorage.setItem('adeptai_leads', JSON.stringify(updatedLeads));
       return true;
     }
     
+    // Ensure status is valid
+    const validStatus = status as Lead['status'];
+    
     const { error } = await supabase
       .from('leads')
-      .update({ status })
+      .update({ status: validStatus })
       .eq('id', id);
     
     if (error) {
@@ -157,39 +178,55 @@ export const updateLeadStatus = async (id: string, status: string): Promise<bool
   }
 };
 
-// Simulate sending to HubSpot
+// Send lead to HubSpot
 const sendToHubSpot = async (lead: Lead): Promise<void> => {
   try {
     const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
     
     // Only attempt to send if we have an API key
     if (hubspotApiKey && hubspotApiKey !== 'placeholder-hubspot-key') {
-      // This would be a real API call to HubSpot in production
       console.log('Sending lead to HubSpot:', lead);
       
       // In a real implementation, you would use the HubSpot API
-      // const response = await fetch('https://api.hubapi.com/contacts/v1/contact/', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${hubspotApiKey}`
-      //   },
-      //   body: JSON.stringify({
-      //     properties: [
-      //       { property: 'email', value: lead.email },
-      //       { property: 'firstname', value: lead.name?.split(' ')[0] || '' },
-      //       { property: 'lastname', value: lead.name?.split(' ')[1] || '' },
-      //       { property: 'company', value: lead.company || '' },
-      //       { property: 'phone', value: lead.phone || '' },
-      //       { property: 'message', value: lead.message || '' },
-      //       { property: 'source', value: lead.source || 'website' }
-      //     ]
-      //   })
-      // });
-      // const data = await response.json();
-      // console.log('HubSpot response:', data);
+      const response = await fetch('https://api.hubapi.com/contacts/v1/contact/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${hubspotApiKey}`
+        },
+        body: JSON.stringify({
+          properties: [
+            { property: 'email', value: lead.email },
+            { property: 'firstname', value: lead.name?.split(' ')[0] || '' },
+            { property: 'lastname', value: lead.name?.split(' ')[1] || '' },
+            { property: 'company', value: lead.company || '' },
+            { property: 'phone', value: lead.phone || '' },
+            { property: 'message', value: lead.message || '' },
+            { property: 'source', value: lead.source || 'website' }
+          ]
+        })
+      });
+      
+      // Check response
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('HubSpot API error:', errorData);
+      } else {
+        console.log('Lead successfully sent to HubSpot');
+      }
+    } else {
+      console.log('No valid HubSpot API key found - lead not sent to HubSpot');
     }
   } catch (error) {
     console.error('Error sending lead to HubSpot:', error);
   }
+};
+
+// For future: get HubSpot connection status
+export const getHubSpotStatus = (): { connected: boolean, email?: string } => {
+  const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
+  return {
+    connected: hubspotApiKey && hubspotApiKey !== 'placeholder-hubspot-key',
+    email: 'crm@adeptaipro.com'
+  };
 };
