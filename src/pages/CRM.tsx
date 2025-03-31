@@ -13,7 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Download, Filter, Loader2, Mail, Phone, RefreshCw } from "lucide-react";
-import { getLeads, updateLeadStatus, Lead, LeadFilter, getHubSpotStatus } from "@/services/crm/HubspotService";
+import { getLeads, updateLeadStatus, Lead, LeadFilter, getHubSpotStatus, fetchHubSpotContacts, testHubSpotConnection } from "@/services/crm/HubspotService";
 import LeadCaptureForm from "@/components/crm/LeadCaptureForm";
 
 const CRM = () => {
@@ -27,7 +27,10 @@ const CRM = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
   const [toDate, setToDate] = useState<Date | undefined>(undefined);
-  const [hubspotStatus, setHubspotStatus] = useState({ connected: false, email: 'crm@adeptaipro.com' });
+  const [hubspotStatus, setHubspotStatus] = useState<{ connected: boolean; email: string }>({
+    connected: false,
+    email: 'crm@adeptaipro.com'
+  });
   
   if (!user) {
     navigate("/login");
@@ -63,7 +66,7 @@ const CRM = () => {
       const success = await updateLeadStatus(id, status);
       if (success) {
         setLeads(leads.map(lead => 
-          lead.id === id ? { ...lead, status } : lead
+          lead.id === id ? { ...lead, status: status as Lead['status'] } : lead
         ));
         toast({
           title: "Status Updated",
@@ -141,11 +144,29 @@ const CRM = () => {
     setIsFiltersOpen(false);
   };
   
-  const handleConnectHubSpot = () => {
-    toast({
-      title: "HubSpot Integration",
-      description: "Please set the VITE_HUBSPOT_API_KEY environment variable to connect to HubSpot. See the documentation in the HubspotService.ts file.",
-    });
+  const handleConnectHubSpot = async () => {
+    try {
+      const isConnected = await testHubSpotConnection();
+      if (isConnected) {
+        toast({
+          title: "Connection Successful",
+          description: "Your HubSpot integration is working correctly.",
+        });
+        setHubspotStatus({...hubspotStatus, connected: true});
+      } else {
+        toast({
+          title: "Connection Failed",
+          description: "Please check your HubSpot API key. See the documentation in the HubspotService.ts file.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Connection Error",
+        description: "Please set the VITE_HUBSPOT_API_KEY environment variable to connect to HubSpot.",
+        variant: "destructive",
+      });
+    }
   };
   
   const filteredLeads = leads.filter(lead => {

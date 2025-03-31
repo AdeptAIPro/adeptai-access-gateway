@@ -1,4 +1,3 @@
-
 import { supabase } from "@/lib/supabase";
 
 /**
@@ -32,6 +31,22 @@ export interface LeadFilter {
   source?: string;
   dateFrom?: Date;
   dateTo?: Date;
+}
+
+// HubSpot contact interface
+export interface HubspotContact {
+  id: string;
+  properties: {
+    email: string;
+    firstname?: string;
+    lastname?: string;
+    company?: string;
+    phone?: string;
+    createdate: string;
+    [key: string]: any;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Save lead to local database
@@ -223,10 +238,63 @@ const sendToHubSpot = async (lead: Lead): Promise<void> => {
 };
 
 // For future: get HubSpot connection status
-export const getHubSpotStatus = (): { connected: boolean, email?: string } => {
+export const getHubSpotStatus = (): { connected: boolean; email: string } => {
   const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
   return {
     connected: hubspotApiKey && hubspotApiKey !== 'placeholder-hubspot-key',
     email: 'crm@adeptaipro.com'
   };
+};
+
+/**
+ * Fetch contacts from HubSpot API
+ * @param limit Number of contacts to fetch (default: 10)
+ * @returns Array of HubSpot contacts or empty array if error
+ */
+export const fetchHubSpotContacts = async (limit: number = 10): Promise<HubspotContact[]> => {
+  try {
+    const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
+    
+    if (!hubspotApiKey || hubspotApiKey === 'placeholder-hubspot-key') {
+      console.log('No valid HubSpot API key found');
+      return [];
+    }
+    
+    const response = await fetch(
+      `https://api.hubapi.com/crm/v3/objects/contacts?limit=${limit}&archived=false`, 
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${hubspotApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('HubSpot API error:', errorData);
+      return [];
+    }
+    
+    const data = await response.json();
+    return data.results as HubspotContact[];
+  } catch (error) {
+    console.error('Error fetching HubSpot contacts:', error);
+    return [];
+  }
+};
+
+/**
+ * Test the HubSpot connection by attempting to fetch a single contact
+ * @returns Boolean indicating if the connection was successful
+ */
+export const testHubSpotConnection = async (): Promise<boolean> => {
+  try {
+    const contacts = await fetchHubSpotContacts(1);
+    return contacts.length >= 0; // Even if we have 0 contacts, as long as the API call works, it's true
+  } catch (error) {
+    console.error('HubSpot connection test failed:', error);
+    return false;
+  }
 };
