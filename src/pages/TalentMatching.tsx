@@ -41,6 +41,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const TalentMatching: React.FC = () => {
   const [timeframe, setTimeframe] = useState("month");
@@ -88,7 +89,7 @@ const TalentMatching: React.FC = () => {
   };
 
   return (
-    <>
+    <DashboardLayout title="AI Talent Matchmaking">
       <TalentMatchingHero />
       <Tabs defaultValue="matching" className="w-full">
         <TabsList className="w-full max-w-3xl mx-auto mb-6">
@@ -306,7 +307,7 @@ const TalentMatching: React.FC = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </>
+    </DashboardLayout>
   );
 };
 
