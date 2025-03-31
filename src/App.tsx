@@ -23,6 +23,7 @@ import Pricing from "./pages/Pricing";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import ProfessionalDevelopment from "./pages/ProfessionalDevelopment";
+import CRM from "./pages/CRM";
 
 function App() {
   // Create a stable QueryClient instance using useState
@@ -49,6 +50,7 @@ function App() {
               <Route path="/dashboard/compliance" element={<Compliance />} />
               <Route path="/dashboard/onboarding" element={<Onboarding />} />
               <Route path="/dashboard/settings" element={<Settings />} />
+              <Route path="/dashboard/crm" element={<CRM />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/professional-development" element={<ProfessionalDevelopment />} />

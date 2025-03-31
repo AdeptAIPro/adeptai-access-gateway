@@ -6,6 +6,7 @@ import Features from "@/components/home/Features";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/layout/Footer";
 import Chatbot from "@/components/chatbot/Chatbot";
+import LeadCaptureWidget from "@/components/crm/LeadCaptureWidget";
 
 const Index = () => {
   return (
@@ -18,6 +19,9 @@ const Index = () => {
       
       {/* Add Chatbot Component */}
       <Chatbot position="bottom-right" />
+      
+      {/* Add Lead Capture Widget */}
+      <LeadCaptureWidget />
     </div>
   );
 };
