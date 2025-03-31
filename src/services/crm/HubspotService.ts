@@ -1,6 +1,5 @@
 
 import { supabase } from "@/lib/supabase";
-import { Lead, LeadFilter, HubspotContact } from "./types";
 import { saveLead, getLeads, updateLeadStatus } from "./LeadService";
 import { fetchHubSpotContacts, sendToHubSpot } from "./HubspotApiService";
 
@@ -40,5 +39,8 @@ export const testHubSpotConnection = async (): Promise<boolean> => {
   }
 };
 
-// Re-export all types and functions
-export { Lead, LeadFilter, HubspotContact, saveLead, getLeads, updateLeadStatus, fetchHubSpotContacts };
+// Re-export functions
+export { saveLead, getLeads, updateLeadStatus, fetchHubSpotContacts, sendToHubSpot };
+
+// Re-export types with 'export type'
+export type { Lead, LeadFilter, HubspotContact } from './types';
