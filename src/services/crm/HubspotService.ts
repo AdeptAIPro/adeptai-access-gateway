@@ -1,4 +1,8 @@
+
 import { supabase } from "@/lib/supabase";
+import { Lead, LeadFilter, HubspotContact } from "./types";
+import { saveLead, getLeads, updateLeadStatus } from "./LeadService";
+import { fetchHubSpotContacts, sendToHubSpot } from "./HubspotApiService";
 
 /**
  * Service for managing HubSpot CRM integration
@@ -13,230 +17,6 @@ import { supabase } from "@/lib/supabase";
  * automatically sync to your HubSpot CRM
  */
 
-// Types for lead data
-export interface Lead {
-  id?: string;
-  email: string;
-  name?: string;
-  company?: string;
-  phone?: string;
-  source: string;
-  message?: string;
-  created_at?: string;
-  status?: 'new' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost';
-}
-
-export interface LeadFilter {
-  status?: string;
-  source?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-}
-
-// HubSpot contact interface
-export interface HubspotContact {
-  id: string;
-  properties: {
-    email: string;
-    firstname?: string;
-    lastname?: string;
-    company?: string;
-    phone?: string;
-    createdate: string;
-    [key: string]: any;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Save lead to local database
-export const saveLead = async (lead: Lead): Promise<boolean> => {
-  try {
-    // Check for placeholder credentials
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (!supabaseUrl || !supabaseAnonKey ||
-        supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
-        supabaseAnonKey === 'placeholder-anon-key') {
-      // Demo mode - store in localStorage instead
-      const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
-      storedLeads.push({
-        ...lead,
-        id: `demo-${Date.now()}`,
-        created_at: new Date().toISOString(),
-        status: 'new' as const
-      });
-      localStorage.setItem('adeptai_leads', JSON.stringify(storedLeads));
-      
-      // Also simulate HubSpot API call
-      console.log('Demo mode: Lead would be sent to HubSpot', lead);
-      return true;
-    }
-    
-    // Store in Supabase
-    const { error } = await supabase
-      .from('leads')
-      .insert([{ 
-        ...lead,
-        created_at: new Date().toISOString(), 
-        status: 'new' 
-      }]);
-    
-    if (error) {
-      console.error('Error saving lead to database:', error);
-      return false;
-    }
-    
-    // If using real credentials, also send to HubSpot
-    await sendToHubSpot(lead);
-    return true;
-  } catch (error) {
-    console.error('Failed to save lead:', error);
-    return false;
-  }
-};
-
-// Get all leads
-export const getLeads = async (filter?: LeadFilter): Promise<Lead[]> => {
-  try {
-    // Check for placeholder credentials
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (!supabaseUrl || !supabaseAnonKey ||
-        supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
-        supabaseAnonKey === 'placeholder-anon-key') {
-      // Demo mode - get from localStorage
-      const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
-      
-      // Ensure all leads have proper status type
-      return storedLeads.map((lead: any) => ({
-        ...lead,
-        status: (lead.status || 'new') as Lead['status']
-      }));
-    }
-    
-    // Fetch from Supabase with optional filters
-    let query = supabase.from('leads').select('*').order('created_at', { ascending: false });
-    
-    if (filter?.status) {
-      query = query.eq('status', filter.status);
-    }
-    
-    if (filter?.source) {
-      query = query.eq('source', filter.source);
-    }
-    
-    if (filter?.dateFrom) {
-      query = query.gte('created_at', filter.dateFrom.toISOString());
-    }
-    
-    if (filter?.dateTo) {
-      query = query.lte('created_at', filter.dateTo.toISOString());
-    }
-    
-    const { data, error } = await query;
-    
-    if (error) {
-      console.error('Error fetching leads:', error);
-      return [];
-    }
-    
-    // Ensure proper status typing
-    return (data || []).map(lead => ({
-      ...lead,
-      status: (lead.status || 'new') as Lead['status']
-    }));
-  } catch (error) {
-    console.error('Failed to fetch leads:', error);
-    return [];
-  }
-};
-
-// Update lead status
-export const updateLeadStatus = async (id: string, status: string): Promise<boolean> => {
-  try {
-    // Check for placeholder credentials
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (!supabaseUrl || !supabaseAnonKey ||
-        supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
-        supabaseAnonKey === 'placeholder-anon-key') {
-      // Demo mode - update in localStorage
-      const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
-      const updatedLeads = storedLeads.map((lead: Lead) => 
-        lead.id === id ? { ...lead, status: status as Lead['status'] } : lead
-      );
-      localStorage.setItem('adeptai_leads', JSON.stringify(updatedLeads));
-      return true;
-    }
-    
-    // Ensure status is valid
-    const validStatus = status as Lead['status'];
-    
-    const { error } = await supabase
-      .from('leads')
-      .update({ status: validStatus })
-      .eq('id', id);
-    
-    if (error) {
-      console.error('Error updating lead status:', error);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Failed to update lead status:', error);
-    return false;
-  }
-};
-
-// Send lead to HubSpot
-const sendToHubSpot = async (lead: Lead): Promise<void> => {
-  try {
-    const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
-    
-    // Only attempt to send if we have an API key
-    if (hubspotApiKey && hubspotApiKey !== 'placeholder-hubspot-key') {
-      console.log('Sending lead to HubSpot:', lead);
-      
-      // In a real implementation, you would use the HubSpot API
-      const response = await fetch('https://api.hubapi.com/contacts/v1/contact/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${hubspotApiKey}`
-        },
-        body: JSON.stringify({
-          properties: [
-            { property: 'email', value: lead.email },
-            { property: 'firstname', value: lead.name?.split(' ')[0] || '' },
-            { property: 'lastname', value: lead.name?.split(' ')[1] || '' },
-            { property: 'company', value: lead.company || '' },
-            { property: 'phone', value: lead.phone || '' },
-            { property: 'message', value: lead.message || '' },
-            { property: 'source', value: lead.source || 'website' }
-          ]
-        })
-      });
-      
-      // Check response
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('HubSpot API error:', errorData);
-      } else {
-        console.log('Lead successfully sent to HubSpot');
-      }
-    } else {
-      console.log('No valid HubSpot API key found - lead not sent to HubSpot');
-    }
-  } catch (error) {
-    console.error('Error sending lead to HubSpot:', error);
-  }
-};
-
 // For future: get HubSpot connection status
 export const getHubSpotStatus = (): { connected: boolean; email: string } => {
   const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
@@ -244,45 +24,6 @@ export const getHubSpotStatus = (): { connected: boolean; email: string } => {
     connected: hubspotApiKey && hubspotApiKey !== 'placeholder-hubspot-key',
     email: 'crm@adeptaipro.com'
   };
-};
-
-/**
- * Fetch contacts from HubSpot API
- * @param limit Number of contacts to fetch (default: 10)
- * @returns Array of HubSpot contacts or empty array if error
- */
-export const fetchHubSpotContacts = async (limit: number = 10): Promise<HubspotContact[]> => {
-  try {
-    const hubspotApiKey = import.meta.env.VITE_HUBSPOT_API_KEY;
-    
-    if (!hubspotApiKey || hubspotApiKey === 'placeholder-hubspot-key') {
-      console.log('No valid HubSpot API key found');
-      return [];
-    }
-    
-    const response = await fetch(
-      `https://api.hubapi.com/crm/v3/objects/contacts?limit=${limit}&archived=false`, 
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${hubspotApiKey}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('HubSpot API error:', errorData);
-      return [];
-    }
-    
-    const data = await response.json();
-    return data.results as HubspotContact[];
-  } catch (error) {
-    console.error('Error fetching HubSpot contacts:', error);
-    return [];
-  }
 };
 
 /**
@@ -298,3 +39,6 @@ export const testHubSpotConnection = async (): Promise<boolean> => {
     return false;
   }
 };
+
+// Re-export all types and functions
+export { Lead, LeadFilter, HubspotContact, saveLead, getLeads, updateLeadStatus, fetchHubSpotContacts };
