@@ -6,12 +6,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Database } from "lucide-react";
 
 const FetchFromAtsTab: React.FC = () => {
+  const [selectedSystem, setSelectedSystem] = React.useState<string>("");
+
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="text-sm font-medium mb-2 block">Select ATS/VMS System</label>
-          <Select>
+          <Select value={selectedSystem} onValueChange={setSelectedSystem}>
             <SelectTrigger>
               <SelectValue placeholder="Select system" />
             </SelectTrigger>

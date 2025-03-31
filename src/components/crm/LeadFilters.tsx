@@ -73,16 +73,16 @@ const LeadFilters: React.FC<LeadFiltersProps> = ({
           />
         </div>
         <Select
-          value={filter.status || ""}
+          value={filter.status || "all"}
           onValueChange={(status) =>
-            setFilter({ ...filter, status: status || undefined })
+            setFilter({ ...filter, status: status === "all" ? undefined : status })
           }
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="new">New</SelectItem>
             <SelectItem value="contacted">Contacted</SelectItem>
             <SelectItem value="qualified">Qualified</SelectItem>
@@ -106,16 +106,16 @@ const LeadFilters: React.FC<LeadFiltersProps> = ({
               <div>
                 <label className="text-sm font-medium mb-1 block">Source</label>
                 <Select
-                  value={filter.source || ""}
+                  value={filter.source || "all"}
                   onValueChange={(source) =>
-                    setFilter({ ...filter, source: source || undefined })
+                    setFilter({ ...filter, source: source === "all" ? undefined : source })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All Sources" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Sources</SelectItem>
+                    <SelectItem value="all">All Sources</SelectItem>
                     <SelectItem value="website">Website</SelectItem>
                     <SelectItem value="manual">Manual Entry</SelectItem>
                     <SelectItem value="widget">Chat Widget</SelectItem>

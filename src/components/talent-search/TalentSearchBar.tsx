@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,7 @@ const TalentSearchBar: React.FC = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [location, setLocation] = useState<string>('');
   const [experience, setExperience] = useState<number>(0);
-  const [source, setSource] = useState<string>('');
+  const [source, setSource] = useState<string>('all');
   const [availableSources, setAvailableSources] = useState<string[]>([]);
   
   useEffect(() => {
@@ -70,7 +71,7 @@ const TalentSearchBar: React.FC = () => {
       skills: skills.length > 0 ? skills : undefined,
       location: location || undefined,
       experience: experience > 0 ? experience : undefined,
-      source: source || undefined,
+      source: source === 'all' ? undefined : source,
     });
   };
   
@@ -78,7 +79,7 @@ const TalentSearchBar: React.FC = () => {
     setSkills([]);
     setLocation('');
     setExperience(0);
-    setSource('');
+    setSource('all');
   };
   
   return (
