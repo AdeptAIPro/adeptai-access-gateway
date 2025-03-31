@@ -52,7 +52,15 @@ const useMatchingProcess = (
       });
       
       if (descriptionToUse) {
-        saveRecentSearch(user, descriptionToUse);
+        // Only save the search if we have valid Supabase credentials
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        
+        if (supabaseUrl && supabaseAnonKey &&
+            supabaseUrl !== 'https://placeholder-supabase-url.supabase.co' && 
+            supabaseAnonKey !== 'placeholder-anon-key') {
+          saveRecentSearch(user, descriptionToUse);
+        }
       }
     } catch (error) {
       clearInterval(interval);
@@ -87,6 +95,21 @@ const useMatchingProcess = (
     if (!user) return;
     
     try {
+      // Check for placeholder credentials
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey ||
+          supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
+          supabaseAnonKey === 'placeholder-anon-key') {
+        // Simulate success for demo purposes
+        toast({
+          title: "Candidate Saved",
+          description: "Candidate has been saved to your favorites (demo mode)",
+        });
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('saved_candidates')
         .insert([
@@ -117,6 +140,21 @@ const useMatchingProcess = (
     if (!user) return;
     
     try {
+      // Check for placeholder credentials
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey ||
+          supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
+          supabaseAnonKey === 'placeholder-anon-key') {
+        // Simulate success for demo purposes
+        toast({
+          title: "Contact Request Sent",
+          description: "We've sent a connection request to the candidate (demo mode)",
+        });
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('candidate_contacts')
         .insert([

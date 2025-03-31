@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -48,6 +49,7 @@ const TalentMatchingContainer: React.FC = () => {
   }, [user, navigate]);
 
   useEffect(() => {
+    // Check database connection once on component mount
     checkSupabaseConnection(toast);
   }, [toast]);
 
