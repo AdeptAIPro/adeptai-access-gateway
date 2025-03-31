@@ -2,6 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { saveLead, getLeads, updateLeadStatus } from "./LeadService";
 import { fetchHubSpotContacts, sendToHubSpot } from "./HubspotApiService";
+import { calculateLeadScore, scoreLeads, getLeadPriority } from "./LeadScoringService";
 
 /**
  * Service for managing HubSpot CRM integration
@@ -40,7 +41,16 @@ export const testHubSpotConnection = async (): Promise<boolean> => {
 };
 
 // Re-export functions
-export { saveLead, getLeads, updateLeadStatus, fetchHubSpotContacts, sendToHubSpot };
+export { 
+  saveLead, 
+  getLeads, 
+  updateLeadStatus, 
+  fetchHubSpotContacts, 
+  sendToHubSpot,
+  calculateLeadScore,
+  scoreLeads,
+  getLeadPriority
+};
 
 // Re-export types with 'export type'
 export type { Lead, LeadFilter, HubspotContact } from './types';

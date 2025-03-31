@@ -11,10 +11,12 @@ import {
   getHubSpotStatus, 
   testHubSpotConnection 
 } from "@/services/crm/HubspotService";
+import { scoreLeads } from "@/services/crm/LeadScoringService";
 import { LeadFilter } from "@/services/crm/types";
 import LeadCaptureForm from "@/components/crm/LeadCaptureForm";
 import LeadManagementCard from "@/components/crm/LeadManagementCard";
 import HubspotIntegrationCard from "@/components/crm/HubspotIntegrationCard";
+import LeadScoreDistributionChart from "@/components/crm/LeadScoreDistributionChart";
 
 const CRM = () => {
   const { user } = useAuth();
@@ -49,7 +51,9 @@ const CRM = () => {
     setLoading(true);
     try {
       const data = await getLeads(filter);
-      setLeads(data);
+      // Apply AI scoring to all leads
+      const scoredLeads = scoreLeads(data);
+      setLeads(scoredLeads);
     } catch (error) {
       console.error("Error fetching leads:", error);
       toast({
@@ -194,10 +198,13 @@ const CRM = () => {
         />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <HubspotIntegrationCard
-            hubspotStatus={hubspotStatus}
-            handleConnectHubSpot={handleConnectHubSpot}
-          />
+          <div className="space-y-6">
+            <LeadScoreDistributionChart leads={leads} />
+            <HubspotIntegrationCard
+              hubspotStatus={hubspotStatus}
+              handleConnectHubSpot={handleConnectHubSpot}
+            />
+          </div>
           
           <Card>
             <CardHeader>

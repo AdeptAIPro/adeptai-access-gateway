@@ -14,6 +14,8 @@ export interface Lead {
   message?: string;
   created_at?: string;
   status?: 'new' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost';
+  score?: number; // AI-generated lead score (0-100)
+  scoringFactors?: string[]; // Factors that contributed to the score
 }
 
 export interface LeadFilter {
@@ -21,6 +23,7 @@ export interface LeadFilter {
   source?: string;
   dateFrom?: Date;
   dateTo?: Date;
+  minScore?: number; // Filter by minimum lead score
 }
 
 // HubSpot contact interface

@@ -2,6 +2,7 @@
 import { supabase } from "@/lib/supabase";
 import { Lead, LeadFilter } from "./types";
 import { sendToHubSpot } from "./HubspotApiService";
+import { calculateLeadScore } from "./LeadScoringService";
 
 /**
  * Service for managing leads
@@ -14,13 +15,21 @@ export const saveLead = async (lead: Lead): Promise<boolean> => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
     
+    // Apply AI lead scoring
+    const { score, factors } = calculateLeadScore(lead);
+    const scoredLead = {
+      ...lead,
+      score,
+      scoringFactors: factors
+    };
+    
     if (!supabaseUrl || !supabaseAnonKey ||
         supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
         supabaseAnonKey === 'placeholder-anon-key') {
       // Demo mode - store in localStorage instead
       const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
       storedLeads.push({
-        ...lead,
+        ...scoredLead,
         id: `demo-${Date.now()}`,
         created_at: new Date().toISOString(),
         status: 'new' as const
@@ -28,7 +37,7 @@ export const saveLead = async (lead: Lead): Promise<boolean> => {
       localStorage.setItem('adeptai_leads', JSON.stringify(storedLeads));
       
       // Also simulate HubSpot API call
-      console.log('Demo mode: Lead would be sent to HubSpot', lead);
+      console.log('Demo mode: Lead would be sent to HubSpot', scoredLead);
       return true;
     }
     
@@ -36,7 +45,7 @@ export const saveLead = async (lead: Lead): Promise<boolean> => {
     const { error } = await supabase
       .from('leads')
       .insert([{ 
-        ...lead,
+        ...scoredLead,
         created_at: new Date().toISOString(), 
         status: 'new' 
       }]);
@@ -47,7 +56,7 @@ export const saveLead = async (lead: Lead): Promise<boolean> => {
     }
     
     // If using real credentials, also send to HubSpot
-    await sendToHubSpot(lead);
+    await sendToHubSpot(scoredLead);
     return true;
   } catch (error) {
     console.error('Failed to save lead:', error);
@@ -69,10 +78,13 @@ export const getLeads = async (filter?: LeadFilter): Promise<Lead[]> => {
       const storedLeads = JSON.parse(localStorage.getItem('adeptai_leads') || '[]');
       
       // Ensure all leads have proper status type
-      return storedLeads.map((lead: any) => ({
+      const leads = storedLeads.map((lead: any) => ({
         ...lead,
         status: (lead.status || 'new') as Lead['status']
       }));
+      
+      // Apply filters if provided
+      return filterLeads(leads, filter);
     }
     
     // Fetch from Supabase with optional filters
@@ -101,15 +113,33 @@ export const getLeads = async (filter?: LeadFilter): Promise<Lead[]> => {
       return [];
     }
     
-    // Ensure proper status typing
-    return (data || []).map(lead => ({
+    // Ensure proper status typing and apply any remaining filters
+    const leads = (data || []).map(lead => ({
       ...lead,
       status: (lead.status || 'new') as Lead['status']
     }));
+    
+    // Apply score filter if provided (can't do this in Supabase query)
+    return filterLeads(leads, filter);
   } catch (error) {
     console.error('Failed to fetch leads:', error);
     return [];
   }
+};
+
+// Filter leads based on criteria that can't be directly queried
+const filterLeads = (leads: Lead[], filter?: LeadFilter): Lead[] => {
+  if (!filter) return leads;
+  
+  return leads.filter(lead => {
+    // Filter by minimum score if specified
+    if (filter.minScore !== undefined && 
+        (lead.score === undefined || lead.score < filter.minScore)) {
+      return false;
+    }
+    
+    return true;
+  });
 };
 
 // Update lead status
