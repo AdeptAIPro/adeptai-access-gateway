@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Download, Filter, Loader2, Mail, Phone, RefreshCw } from "lucide-react";
 import { getLeads, updateLeadStatus, Lead, LeadFilter } from "@/services/crm/HubspotService";
+import LeadCaptureForm from "@/components/crm/LeadCaptureForm";
 
 const CRM = () => {
   const { user } = useAuth();
@@ -41,7 +42,12 @@ const CRM = () => {
     setLoading(true);
     try {
       const data = await getLeads(filter);
-      setLeads(data);
+      // Ensure all lead status values conform to the expected type
+      const typedLeads = data.map(lead => ({
+        ...lead,
+        status: (lead.status || 'new') as Lead['status']
+      }));
+      setLeads(typedLeads);
     } catch (error) {
       console.error("Error fetching leads:", error);
       toast({
