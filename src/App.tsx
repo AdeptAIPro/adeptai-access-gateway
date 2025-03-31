@@ -24,6 +24,8 @@ import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import ProfessionalDevelopment from "./pages/ProfessionalDevelopment";
 import CRM from "./pages/CRM";
+import Unauthorized from "./pages/Unauthorized";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   // Create a stable QueryClient instance using useState
@@ -40,17 +42,62 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/integrations" element={<Integrations />} />
-              <Route path="/dashboard/talent" element={<Talent />} />
-              <Route path="/dashboard/talent-search" element={<TalentSearch />} />
-              <Route path="/dashboard/talent-matching" element={<TalentMatching />} />
-              <Route path="/dashboard/analytics" element={<Analytics />} />
-              <Route path="/dashboard/skills" element={<Skills />} />
-              <Route path="/dashboard/compliance" element={<Compliance />} />
-              <Route path="/dashboard/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard/settings" element={<Settings />} />
-              <Route path="/dashboard/crm" element={<CRM />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/integrations" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Integrations />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/talent" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Talent />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/talent-search" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <TalentSearch />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/talent-matching" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <TalentMatching />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/analytics" element={
+                <ProtectedRoute requiredPermission="viewAnalytics">
+                  <Analytics />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/skills" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Skills />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/compliance" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Compliance />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/onboarding" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Onboarding />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/settings" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/crm" element={
+                <ProtectedRoute requiredPermission="viewCRM">
+                  <CRM />
+                </ProtectedRoute>
+              } />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/professional-development" element={<ProfessionalDevelopment />} />

@@ -10,10 +10,13 @@ import { useAuth } from "@/hooks/use-auth";
 import AuthLayout from "@/components/AuthLayout";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { GoogleIcon, FacebookIcon, LinkedInIcon } from "@/utils/icons";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserRole } from "@/services/crm/types";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<UserRole>("admin");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -35,10 +38,22 @@ const Login = () => {
     
     try {
       // In a real app, this would call an authentication API
-      await login(email, password);
+      // For demo: set the email based on selected role to trigger proper role assignment
+      const roleMappedEmail = role === "admin" ? email : `${role}@adeptaipro.com`;
+      
+      await login(roleMappedEmail, password);
       
       toast.success("Login successful!");
-      navigate(from, { replace: true });
+
+      // Redirect based on role
+      if (role === "leadership") {
+        navigate("/dashboard");
+      } else if (["sales", "marketing"].includes(role)) {
+        navigate("/dashboard/crm");
+      } else {
+        // Admin can access everything
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       console.error("Login failed:", error);
       toast.error("Invalid email or password. Please try again.");
@@ -99,6 +114,31 @@ const Login = () => {
               {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
             </Button>
           </div>
+        </div>
+
+        {/* Role selector for demo purposes */}
+        <div className="space-y-2">
+          <Label htmlFor="role">Login as (Demo)</Label>
+          <Select
+            value={role}
+            onValueChange={(value) => setRole(value as UserRole)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="admin">Administrator</SelectItem>
+              <SelectItem value="sales">Sales Team</SelectItem>
+              <SelectItem value="marketing">Marketing Team</SelectItem>
+              <SelectItem value="leadership">Leadership</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {role === "admin" ? "Full access to all features" : 
+             role === "sales" ? "Access to CRM with edit permissions" :
+             role === "marketing" ? "Access to CRM and Analytics" :
+             "Access to Dashboards and Analytics only"}
+          </p>
         </div>
         
         <div className="flex items-center space-x-2">

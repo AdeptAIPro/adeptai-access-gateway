@@ -41,3 +41,13 @@ export interface HubspotContact {
   createdAt: string;
   updatedAt: string;
 }
+
+// User role types for role-based access control
+export type UserRole = 'admin' | 'sales' | 'marketing' | 'leadership';
+
+export interface UserRolePermissions {
+  viewCRM: boolean;
+  viewDashboard: boolean;
+  editLeads: boolean;
+  viewAnalytics: boolean;
+}

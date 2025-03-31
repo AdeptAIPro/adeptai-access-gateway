@@ -3,6 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
 
 interface SidebarItem {
   title: string;
@@ -10,39 +11,52 @@ interface SidebarItem {
   href: string;
   badge?: string;
   badgeVariant?: "default" | "secondary" | "destructive" | "outline";
+  requiredPermission: "viewDashboard" | "viewCRM" | "viewAnalytics" | "editLeads";
 }
 
 const SidebarItems = () => {
   const location = useLocation();
+  const { hasPermission } = useAuth();
 
   const sidebarItems: SidebarItem[] = [
-    { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations" },
-    { title: "Talent Search", icon: Search, href: "/dashboard/talent-search" },
+    { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard", requiredPermission: "viewDashboard" },
+    { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations", requiredPermission: "viewDashboard" },
+    { title: "Talent Search", icon: Search, href: "/dashboard/talent-search", requiredPermission: "viewDashboard" },
     { 
       title: "Talent Matchmaking", 
       icon: Users, 
       href: "/dashboard/talent-matching",
       badge: "AI",
-      badgeVariant: "secondary"
+      badgeVariant: "secondary",
+      requiredPermission: "viewDashboard"
     },
-    { title: "Analytics", icon: BarChart, href: "/dashboard/analytics" },
-    { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills" },
+    { title: "Analytics", icon: BarChart, href: "/dashboard/analytics", requiredPermission: "viewAnalytics" },
+    { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills", requiredPermission: "viewDashboard" },
     { 
       title: "Compliance", 
       icon: ShieldCheck, 
       href: "/dashboard/compliance",
       badge: "New",
-      badgeVariant: "outline"
+      badgeVariant: "outline",
+      requiredPermission: "viewDashboard"
     },
-    { title: "Onboarding", icon: UserPlus, href: "/dashboard/onboarding" },
-    { title: "Settings", icon: Settings, href: "/dashboard/settings" }
+    { title: "Onboarding", icon: UserPlus, href: "/dashboard/onboarding", requiredPermission: "viewDashboard" },
+    { 
+      title: "CRM", 
+      icon: Users2, 
+      href: "/dashboard/crm",
+      requiredPermission: "viewCRM"
+    },
+    { title: "Settings", icon: Settings, href: "/dashboard/settings", requiredPermission: "viewDashboard" }
   ];
+
+  // Filter sidebar items based on user permissions
+  const filteredItems = sidebarItems.filter(item => hasPermission(item.requiredPermission));
 
   return (
     <nav className="py-4">
       <ul className="space-y-1 px-2">
-        {sidebarItems.map((item) => (
+        {filteredItems.map((item) => (
           <li key={item.title}>
             <Link
               to={item.href}
@@ -78,7 +92,8 @@ const SidebarItems = () => {
 import { 
   LayoutDashboard, 
   Puzzle, 
-  Users, 
+  Users,
+  Users2,
   BarChart, 
   GraduationCap,
   ShieldCheck,
