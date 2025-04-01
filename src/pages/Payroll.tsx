@@ -1,31 +1,78 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import PayrollTypeSelector from "@/components/payroll/PayrollTypeSelector";
 import PayrollFrequencySelector from "@/components/payroll/PayrollFrequencySelector";
 import PayrollIntegrations from "@/components/payroll/PayrollIntegrations";
 import PayrollRunHistory from "@/components/payroll/PayrollRunHistory";
 import EmployeeList from "@/components/payroll/EmployeeList";
 import EmployeeDetails from "@/components/payroll/EmployeeDetails";
-import { BanknoteIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Database, RefreshCw } from "lucide-react";
+import { seedEmployeeData } from "@/services/payroll/PayrollSeedData";
+import { ensurePayrollTables } from "@/services/payroll/PayrollService";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Payroll = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
+  const [isSeeding, setIsSeeding] = useState<boolean>(false);
+  const [needsSetup, setNeedsSetup] = useState<boolean>(false);
+  
+  useEffect(() => {
+    const checkTables = async () => {
+      const tablesExist = await ensurePayrollTables();
+      setNeedsSetup(!tablesExist);
+    };
+    
+    checkTables();
+  }, []);
   
   if (!user) {
     navigate("/login");
     return null;
   }
+  
+  const handleSeedData = async () => {
+    setIsSeeding(true);
+    await seedEmployeeData();
+    setIsSeeding(false);
+    // Reload the page to refresh data
+    window.location.reload();
+  };
 
   return (
     <DashboardLayout title="Payroll Management">
       <div className="space-y-6">
+        {needsSetup && (
+          <Alert variant="warning" className="mb-4 bg-yellow-50 border-yellow-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Database Setup Required</AlertTitle>
+            <AlertDescription>
+              Your Supabase database needs to be configured with the appropriate tables for payroll management.
+              Please create an "employees" table with the necessary columns.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="flex justify-between items-center">
+          <h2 className="text-3xl font-bold tracking-tight">Payroll Management</h2>
+          <Button 
+            onClick={handleSeedData} 
+            disabled={isSeeding}
+            variant="outline"
+            className="gap-2"
+          >
+            {isSeeding ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+            {isSeeding ? "Adding Sample Data..." : "Seed Database"}
+          </Button>
+        </div>
+        
         <Tabs defaultValue="employees" className="w-full">
           <TabsList className="grid grid-cols-4 mb-6">
             <TabsTrigger value="employees">Employees</TabsTrigger>

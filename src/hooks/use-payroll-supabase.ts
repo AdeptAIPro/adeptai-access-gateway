@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Employee } from "@/hooks/use-payroll";
 import { toast } from "@/hooks/use-toast";
@@ -9,35 +8,35 @@ export function usePayrollEmployeesSupabase() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const getEmployees = async () => {
-      try {
-        setIsLoading(true);
-        const employeeData = await fetchEmployees();
-        
-        // If we get data back from Supabase, use it, otherwise we'll use the mock data
-        if (employeeData.length > 0) {
-          setEmployees(employeeData);
-        } else {
-          // We'll import the usePayrollEmployees hook to get the mock data
-          const { employees: mockEmployees } = await import("@/hooks/use-payroll").then(
-            (module) => module.usePayrollEmployees()
-          );
-          setEmployees(mockEmployees);
-        }
-        setError(null);
-      } catch (err) {
-        setError("Failed to load employees");
-        toast({
-          title: "Error",
-          description: "Failed to load employees",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
+  const getEmployees = async () => {
+    try {
+      setIsLoading(true);
+      const employeeData = await fetchEmployees();
+      
+      // If we get data back from Supabase, use it, otherwise we'll use the mock data
+      if (employeeData.length > 0) {
+        setEmployees(employeeData);
+      } else {
+        // We'll import the usePayrollEmployees hook to get the mock data
+        const { employees: mockEmployees } = await import("@/hooks/use-payroll").then(
+          (module) => module.usePayrollEmployees()
+        );
+        setEmployees(mockEmployees);
       }
-    };
+      setError(null);
+    } catch (err) {
+      setError("Failed to load employees");
+      toast({
+        title: "Error",
+        description: "Failed to load employees",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     getEmployees();
   }, []);
 
@@ -72,7 +71,8 @@ export function usePayrollEmployeesSupabase() {
     isLoading,
     error,
     addEmployee,
-    updateEmployee: updateEmployeeData
+    updateEmployee: updateEmployeeData,
+    refreshEmployees: getEmployees
   };
 }
 
