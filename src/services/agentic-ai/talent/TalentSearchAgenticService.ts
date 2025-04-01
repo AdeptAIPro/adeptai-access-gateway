@@ -12,6 +12,12 @@ export interface TalentSearchTaskParams {
   maxResults?: number;
 }
 
+// Define an interface for sources that have an id
+interface SourceWithId {
+  id: string;
+  [key: string]: any;
+}
+
 export async function processTalentSearchTask(task: AgentTask): Promise<any> {
   try {
     const params = task.params as TalentSearchTaskParams;
@@ -38,7 +44,7 @@ export async function processTalentSearchTask(task: AgentTask): Promise<any> {
       
       // Try each external source until we have enough results
       for (const source of sources) {
-        // Skip if source is just a string or doesn't have an id
+        // Skip if source is just a string
         if (typeof source === 'string') {
           continue;
         }
@@ -48,11 +54,13 @@ export async function processTalentSearchTask(task: AgentTask): Promise<any> {
           continue;
         }
         
-        if (source.id === 'internal') continue; // Skip internal, we already searched it
+        const sourceWithId = source as SourceWithId;
+        
+        if (sourceWithId.id === 'internal') continue; // Skip internal, we already searched it
         
         const externalSearchParams = {
           ...searchParams,
-          source: source.id,
+          source: sourceWithId.id,
           limit: remainingResults
         };
         
