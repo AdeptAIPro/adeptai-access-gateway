@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 
 export interface OnboardingStep {
@@ -134,16 +133,6 @@ const mockOnboardingTools: OnboardingTool[] = [
     logo: 'clearcompany.png'
   },
   {
-    id: 'nursys',
-    name: 'Nursys',
-    description: 'Nurse licensure verification for healthcare',
-    category: 'Healthcare',
-    apiKeyRequired: true,
-    apiUrlRequired: false,
-    webhookSupport: false,
-    logo: 'nursys.png'
-  },
-  {
     id: 'custom',
     name: 'Custom Integration',
     description: 'Connect your custom onboarding system via API',
@@ -163,8 +152,7 @@ const mockClients: OnboardingClient[] = [
     activeSince: '2023-01-15',
     subscription: 'enterprise',
     connectedOnboardingTools: [
-      mockOnboardingTools.find(tool => tool.id === 'bamboohr'),
-      mockOnboardingTools.find(tool => tool.id === 'nursys')
+      mockOnboardingTools.find(tool => tool.id === 'bamboohr')
     ].filter(Boolean) as OnboardingTool[],
     workflows: [
       {
@@ -174,12 +162,12 @@ const mockClients: OnboardingClient[] = [
         progress: 75,
         sector: 'healthcare',
         assignee: 'Sarah Johnson',
-        connectedTools: ['BambooHR', 'Nursys'],
+        connectedTools: ['BambooHR'],
         steps: [
           {
             id: 'step-1',
             title: 'License Verification',
-            description: 'Verify nursing license through Nursys',
+            description: 'Verify nursing license through compliance system',
             completed: true,
           },
           {
