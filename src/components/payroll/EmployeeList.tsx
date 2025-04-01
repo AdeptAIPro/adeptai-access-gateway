@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { usePayrollEmployees } from "@/hooks/use-payroll";
+import { usePayrollEmployeesSupabase } from "@/hooks/use-payroll-supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,13 +16,20 @@ interface EmployeeListProps {
 const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedEmployee }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const { employees, isLoading } = usePayrollEmployees();
+  const { employees, isLoading, addEmployee } = usePayrollEmployeesSupabase();
 
   const filteredEmployees = employees.filter(emp => 
     emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     emp.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleAddEmployee = async (newEmployee: any) => {
+    const success = await addEmployee(newEmployee);
+    if (success) {
+      setIsAddDialogOpen(false);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -90,6 +97,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedE
       <AddEmployeeDialog 
         open={isAddDialogOpen} 
         onOpenChange={setIsAddDialogOpen} 
+        onAddEmployee={handleAddEmployee}
       />
     </div>
   );

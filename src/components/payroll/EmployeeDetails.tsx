@@ -1,13 +1,13 @@
 
 import React, { useState } from "react";
-import { usePayrollEmployee } from "@/hooks/use-payroll";
+import { usePayrollEmployeeSupabase } from "@/hooks/use-payroll-supabase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Bank, CreditCard, Mail, Phone, Edit, User } from "lucide-react";
+import { CreditCard, Mail, Phone, Edit, User, BanknoteIcon } from "lucide-react";
 
 interface EmployeeDetailsProps {
   employeeId: string | null;
@@ -15,7 +15,7 @@ interface EmployeeDetailsProps {
 
 const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employeeId }) => {
   const [activeTab, setActiveTab] = useState("personal");
-  const { employee, isLoading } = usePayrollEmployee(employeeId);
+  const { employee, isLoading, updateEmployee } = usePayrollEmployeeSupabase(employeeId);
 
   if (isLoading) {
     return (

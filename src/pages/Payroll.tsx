@@ -11,6 +11,7 @@ import PayrollIntegrations from "@/components/payroll/PayrollIntegrations";
 import PayrollRunHistory from "@/components/payroll/PayrollRunHistory";
 import EmployeeList from "@/components/payroll/EmployeeList";
 import EmployeeDetails from "@/components/payroll/EmployeeDetails";
+import { BanknoteIcon } from "lucide-react";
 
 const Payroll = () => {
   const { user } = useAuth();
