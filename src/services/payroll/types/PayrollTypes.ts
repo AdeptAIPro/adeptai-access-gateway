@@ -36,6 +36,3 @@ export type PayrollBatchItem = {
   employee: any;
   payStub: any;
 };
-
-// Re-export types from the codebase
-export * from './PayrollTypes';
