@@ -1,6 +1,6 @@
 
 import { AgentTask } from "../types/AgenticTypes";
-import { executeQuery } from "../database/AgenticDatabaseService";
+import agenticDatabaseService, { executeQuery } from "../database/AgenticDatabaseService";
 import { searchTalents } from "@/services/talent/TalentSearchService";
 import { generateMatchingInsights } from "./utils/InsightsGenerator";
 import { rankCandidates } from "./utils/CandidateRanking";

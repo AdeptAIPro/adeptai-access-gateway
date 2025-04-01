@@ -74,4 +74,7 @@ const agenticDatabaseService = {
   }
 };
 
+// Export the executeQuery function separately so it can be imported directly
+export const executeQuery = agenticDatabaseService.executeQuery;
+
 export default agenticDatabaseService;

@@ -105,7 +105,11 @@ const getAllAvailableSources = async (): Promise<string[]> => {
       // Check if source is an object with an id property
       return typeof source === 'object' && source !== null && 'id' in source;
     })
-    .map(source => (source as { id: string }).id);
+    .map(source => {
+      // Type assertion to ensure source has id property
+      const sourceWithId = source as { id: string };
+      return sourceWithId.id;
+    });
 };
 
 // Re-export types and functions for simpler imports
