@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, Mail, Phone, Edit, User, BanknoteIcon } from "lucide-react";
+import { CreditCard, Mail, Phone, Edit, User, BanknoteIcon, Building } from "lucide-react";
 
 interface EmployeeDetailsProps {
   employeeId: string | null;
@@ -114,7 +114,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employeeId }) => {
           <Card className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium flex items-center">
-                <Bank className="h-4 w-4 mr-2" />
+                <Building className="h-4 w-4 mr-2" />
                 Direct Deposit Information
               </h4>
               <Button variant="outline" size="sm">
