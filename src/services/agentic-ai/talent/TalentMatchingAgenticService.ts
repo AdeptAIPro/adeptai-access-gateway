@@ -2,12 +2,12 @@
 import { AgentTask } from '../AgenticService';
 import { searchTalents } from '@/services/talent/TalentSearchService';
 import { processJobDescription } from '@/services/talent-matching/MatchingService';
-import { TalentMatchingTaskParams } from './types/TalentMatchingTypes';
 import { rankCandidates } from './utils/CandidateRanking';
 import { generateMatchingInsights } from './utils/InsightsGenerator';
 import { generateNextSteps } from './utils/NextStepsGenerator';
 
-export { TalentMatchingTaskParams };
+// Use 'export type' to fix the TS1205 error
+export type { TalentMatchingTaskParams } from './types/TalentMatchingTypes';
 
 export async function processTalentMatchingTask(task: AgentTask): Promise<any> {
   try {
