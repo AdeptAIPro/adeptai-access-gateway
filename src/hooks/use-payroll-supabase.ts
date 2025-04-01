@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { Employee } from "@/hooks/use-payroll";
 import { toast } from "@/hooks/use-toast";
-import { fetchEmployees, fetchEmployeeById, createEmployee, updateEmployee } from "@/services/payroll/PayrollService";
+import { fetchEmployees, fetchEmployeeById, createEmployee, updateEmployee } from "@/services/payroll";
 
 export function usePayrollEmployeesSupabase() {
   const [employees, setEmployees] = useState<Employee[]>([]);

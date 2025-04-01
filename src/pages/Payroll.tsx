@@ -14,7 +14,7 @@ import EmployeeDetails from "@/components/payroll/EmployeeDetails";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Database, RefreshCw } from "lucide-react";
 import { seedEmployeeData } from "@/services/payroll/PayrollSeedData";
-import { ensurePayrollTables } from "@/services/payroll/PayrollService";
+import { ensurePayrollTables } from "@/services/payroll";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Payroll = () => {
