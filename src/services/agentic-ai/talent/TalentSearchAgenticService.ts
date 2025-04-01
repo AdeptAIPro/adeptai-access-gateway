@@ -39,7 +39,12 @@ export async function processTalentSearchTask(task: AgentTask): Promise<any> {
       // Try each external source until we have enough results
       for (const source of sources) {
         // Skip if source is just a string or doesn't have an id
-        if (typeof source === 'string' || !source.id) {
+        if (typeof source === 'string') {
+          continue;
+        }
+        
+        // Check if source has an id property using type guard
+        if (!('id' in source)) {
           continue;
         }
         

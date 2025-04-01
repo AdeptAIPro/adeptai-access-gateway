@@ -86,29 +86,29 @@ export async function getAvailableMatchingModels(): Promise<MatchingModel[]> {
         id: "openai-ada-002",
         name: "OpenAI Ada 002",
         description: "Embeddings model for semantic search",
-        capabilities: ["semantic_matching", "keyword_extraction"],
-        type: "embeddings"
+        type: "openai",
+        capabilities: ["semantic_matching", "keyword_extraction"]
       },
       {
         id: "tensorflow-bert",
         name: "TensorFlow BERT",
         description: "BERT model for technical role matching",
-        capabilities: ["skills_matching", "experience_evaluation"],
-        type: "transformer"
+        type: "tensorflow",
+        capabilities: ["skills_matching", "experience_evaluation"]
       },
       {
         id: "pytorch-roberta",
         name: "PyTorch RoBERTa",
         description: "Fine-tuned model for technical skills",
-        capabilities: ["skills_extraction", "skills_matching", "advanced_classification"],
-        type: "transformer"
+        type: "pytorch",
+        capabilities: ["skills_extraction", "skills_matching", "advanced_classification"]
       },
       {
         id: "hybrid-rag",
         name: "Hybrid RAG System",
         description: "Advanced retrieval augmented generation",
-        capabilities: ["contextual_matching", "semantic_search", "reasoning"],
-        type: "hybrid"
+        type: "hybrid",
+        capabilities: ["contextual_matching", "semantic_search", "reasoning"]
       }
     ];
   } catch (error) {

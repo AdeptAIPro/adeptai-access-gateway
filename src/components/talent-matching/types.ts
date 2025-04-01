@@ -23,6 +23,7 @@ export interface MatchingModel {
   name: string;
   type: "openai" | "tensorflow" | "pytorch" | "hybrid";
   description: string;
+  capabilities?: string[];
 }
 
 export interface MatchingResult {
