@@ -24,7 +24,11 @@ import { Slider } from '@/components/ui/slider';
 import { getTalentSources } from '@/services/talent/TalentSearchService';
 import { useTalentSearch } from '@/context/TalentSearchContext';
 
-const TalentSearchBar: React.FC = () => {
+interface TalentSearchBarProps {
+  useAgenticIntelligence?: boolean;
+}
+
+const TalentSearchBar: React.FC<TalentSearchBarProps> = ({ useAgenticIntelligence = false }) => {
   const { handleSearch, isLoading } = useTalentSearch();
   
   const [skillsInput, setSkillsInput] = useState<string>('');
@@ -87,10 +91,12 @@ const TalentSearchBar: React.FC = () => {
       <CardHeader>
         <CardTitle className="text-2xl flex items-center">
           <Search className="mr-2 h-5 w-5" />
-          Talent Search
+          {useAgenticIntelligence ? 'AI-Enhanced Talent Search' : 'Talent Search'}
         </CardTitle>
         <CardDescription>
-          Search for talent with specific skills, location, and experience level
+          {useAgenticIntelligence 
+            ? 'Our AI agents are searching across multiple sources for the best candidates'
+            : 'Search for talent with specific skills, location, and experience level'}
         </CardDescription>
       </CardHeader>
       <CardContent>

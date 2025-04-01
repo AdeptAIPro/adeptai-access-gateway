@@ -101,8 +101,11 @@ export const searchTalentsWithAgenticIntelligence = async (
 const getAllAvailableSources = async (): Promise<string[]> => {
   const sources = await getTalentSources();
   return sources
-    .filter(source => typeof source !== 'string' && source.id)
-    .map(source => (source as any).id);
+    .filter(source => {
+      // Check if source is an object with an id property
+      return typeof source === 'object' && source !== null && 'id' in source;
+    })
+    .map(source => (source as { id: string }).id);
 };
 
 // Re-export types and functions for simpler imports

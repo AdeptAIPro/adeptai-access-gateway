@@ -1,9 +1,10 @@
 
 import { AgentTask } from "../types/AgenticTypes";
-import { executeQuery } from "../database/AgenticDatabaseService";
+import agenticDatabaseService from "../database/AgenticDatabaseService";
 import { rankCandidates } from "./utils/CandidateRanking";
 import { generateMatchingInsights } from "./utils/InsightsGenerator";
 import { generateNextSteps } from "./utils/NextStepsGenerator";
+import { TalentMatchingTaskParams } from './types/TalentMatchingTypes';
 
 const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> => {
   console.log(`Processing talent matching task: ${task.id}`);
@@ -15,7 +16,13 @@ const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> =>
     // Simulating matching process
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const candidates = await fetchCandidates(task.params.jobDescription);
+    // Ensure we have jobDescription in params
+    const params = task.params as TalentMatchingTaskParams;
+    if (!params.jobDescription) {
+      throw new Error("Missing required parameter: jobDescription");
+    }
+    
+    const candidates = await fetchCandidates(params.jobDescription);
     
     // Job analysis parameters
     const jobAnalysis = {
@@ -23,9 +30,9 @@ const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> =>
       companyValues: ["innovation", "teamwork", "customer-focus"]
     };
     
-    const requiredSkills = task.params.requiredSkills || [];
-    const preferredSkills = task.params.preferredSkills || [];
-    const prioritizeCulturalFit = task.params.prioritizeCulturalFit || false;
+    const requiredSkills = params.requiredSkills || [];
+    const preferredSkills = params.preferredSkills || [];
+    const prioritizeCulturalFit = params.prioritizeCulturalFit || false;
     
     const rankedCandidates = rankCandidates(
       candidates, 
@@ -35,8 +42,8 @@ const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> =>
       jobAnalysis
     );
     
-    const insights = generateMatchingInsights(rankedCandidates, task.params);
-    const nextSteps = generateNextSteps(rankedCandidates.length > 0, task.params);
+    const insights = generateMatchingInsights(rankedCandidates, params);
+    const nextSteps = generateNextSteps(rankedCandidates.length > 0, params);
     
     // Update task with candidates, insights, and next steps
     return {
@@ -62,8 +69,8 @@ const fetchCandidates = async (jobDescription: string) => {
   try {
     console.log(`Fetching candidates for job: ${jobDescription.substring(0, 20)}...`);
     
-    // Query the database for candidates
-    const candidatesResult = await executeQuery(
+    // Query the database for candidates using agenticDatabaseService instead of direct executeQuery
+    const candidatesResult = await agenticDatabaseService.executeQuery(
       "SELECT * FROM candidates WHERE status = 'active' LIMIT 10"
     );
     

@@ -46,5 +46,6 @@ class AgenticService {
   }
 }
 
-export { AgentTask, Agent, AgentTaskType };
+// Use 'export type' when re-exporting types with isolatedModules enabled
+export type { AgentTask, Agent, AgentTaskType };
 export default new AgenticService();

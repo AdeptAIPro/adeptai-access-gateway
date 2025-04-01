@@ -17,7 +17,8 @@ import {
   Calendar, 
   ExternalLink,
   Download,
-  Search
+  Search,
+  Sparkles
 } from 'lucide-react';
 import { 
   Pagination, 
@@ -29,7 +30,11 @@ import {
 } from '@/components/ui/pagination';
 import { useTalentSearch } from '@/context/TalentSearchContext';
 
-const TalentSearchResults: React.FC = () => {
+interface TalentSearchResultsProps {
+  useAgenticIntelligence?: boolean;
+}
+
+const TalentSearchResults: React.FC<TalentSearchResultsProps> = ({ useAgenticIntelligence = false }) => {
   const { 
     searchResults, 
     totalResults, 
@@ -48,7 +53,11 @@ const TalentSearchResults: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <div className="w-12 h-12 border-4 border-t-blue-600 border-b-blue-600 rounded-full animate-spin mb-4"></div>
-        <p className="text-gray-500">Loading talent results...</p>
+        <p className="text-gray-500">
+          {useAgenticIntelligence 
+            ? 'AI agents are searching across multiple sources...' 
+            : 'Loading talent results...'}
+        </p>
       </div>
     );
   }
