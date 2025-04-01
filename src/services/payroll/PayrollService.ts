@@ -34,6 +34,13 @@ export const ensurePayrollTables = async (): Promise<boolean> => {
  */
 export const fetchEmployees = async (): Promise<Employee[]> => {
   try {
+    // First check if the table exists
+    const tableExists = await ensurePayrollTables();
+    if (!tableExists) {
+      console.log("Employees table doesn't exist yet");
+      return [];
+    }
+    
     const { data, error } = await supabase
       .from(EMPLOYEES_TABLE)
       .select("*");
@@ -46,7 +53,7 @@ export const fetchEmployees = async (): Promise<Employee[]> => {
     return data as Employee[] || [];
   } catch (error) {
     console.error("Failed to fetch employees:", error);
-    // We'll still return the mockEmployees from the hook as fallback
+    // We'll still return an empty array as fallback
     return [];
   }
 };
@@ -63,6 +70,10 @@ export const fetchEmployeeById = async (id: string): Promise<Employee | null> =>
       .single();
     
     if (error) {
+      if (error.code === 'PGRST116') { // Record not found error code
+        console.log(`Employee with ID ${id} not found`);
+        return null;
+      }
       console.error("Error fetching employee:", error);
       throw error;
     }
@@ -79,6 +90,17 @@ export const fetchEmployeeById = async (id: string): Promise<Employee | null> =>
  */
 export const createEmployee = async (employee: Omit<Employee, "id">): Promise<Employee | null> => {
   try {
+    // First check if the table exists
+    const tableExists = await ensurePayrollTables();
+    if (!tableExists) {
+      toast({
+        title: "Database Setup Required",
+        description: "Please create the necessary tables in your Supabase project.",
+        variant: "warning",
+      });
+      return null;
+    }
+    
     const { data, error } = await supabase
       .from(EMPLOYEES_TABLE)
       .insert([employee])
@@ -154,6 +176,13 @@ export const recordPayrollRun = async (
   }
 ): Promise<any> => {
   try {
+    // Check if table exists
+    const tableExists = await ensurePayrollTables();
+    if (!tableExists) {
+      console.log("Payroll history table doesn't exist yet");
+      return null;
+    }
+    
     const { data, error } = await supabase
       .from(PAYROLL_HISTORY_TABLE)
       .insert([payrollData])
@@ -176,6 +205,13 @@ export const recordPayrollRun = async (
  */
 export const fetchPayrollHistory = async (): Promise<any[]> => {
   try {
+    // Check if table exists
+    const tableExists = await ensurePayrollTables();
+    if (!tableExists) {
+      console.log("Payroll history table doesn't exist yet");
+      return [];
+    }
+    
     const { data, error } = await supabase
       .from(PAYROLL_HISTORY_TABLE)
       .select("*")

@@ -3,7 +3,9 @@ import { supabase } from "@/lib/supabase";
 import { Employee } from "@/hooks/use-payroll";
 import { toast } from "@/hooks/use-toast";
 
-// Sample employees data that will be used to seed the database
+/**
+ * Sample employee data for seeding the database
+ */
 const sampleEmployees: Omit<Employee, "id">[] = [
   {
     employeeId: "EMP001",
@@ -222,150 +224,96 @@ const sampleEmployees: Omit<Employee, "id">[] = [
       state: "Florida",
       stateFilingStatus: "Single"
     }
-  },
-  {
-    employeeId: "EMP005",
-    name: "Emma Rodriguez",
-    title: "Human Resources Manager",
-    email: "emma.rodriguez@example.com",
-    phone: "(555) 567-8901",
-    address: "222 HR Avenue, Staffville, CA 92008",
-    dateOfBirth: "1979-08-05",
-    ssn: "567-89-0123",
-    type: "W-2",
-    status: "Active",
-    department: "Human Resources",
-    payRate: "52.00",
-    paySchedule: "Bi-Weekly",
-    startDate: "2020-06-15",
-    avatar: "https://randomuser.me/api/portraits/women/22.jpg",
-    emergencyContact: {
-      name: "Carlos Rodriguez",
-      phone: "(555) 234-5678",
-      relationship: "Spouse"
-    },
-    bankInfo: {
-      bankName: "People's Credit Union",
-      accountType: "Checking",
-      routingNumber: "567891234",
-      accountNumber: "012345678"
-    },
-    taxForms: {
-      w4: {
-        submitted: true,
-        lastUpdated: "2020-06-10"
-      },
-      i9: {
-        submitted: true,
-        lastUpdated: "2020-06-10"
-      },
-      w2: {
-        available: true,
-        year: "2023"
-      }
-    },
-    taxWithholdings: {
-      federalFilingStatus: "Married Filing Jointly",
-      federalAllowances: "3",
-      state: "California",
-      stateFilingStatus: "Married Filing Jointly"
-    },
-    recentPayslips: [
-      {
-        payPeriod: "Jun 1 - Jun 15, 2023",
-        payDate: "Jun 20, 2023",
-        grossPay: "4,160.00",
-        netPay: "3,120.00",
-        id: "pay-20230620-3"
-      }
-    ]
-  },
-  {
-    employeeId: "EMP006",
-    name: "James Wilson",
-    title: "Marketing Specialist",
-    email: "james.wilson@example.com",
-    phone: "(555) 678-9012",
-    address: "333 Brand St, Marketing City, CA 91010",
-    dateOfBirth: "1992-11-18",
-    ssn: "678-90-1234",
-    type: "W-2",
-    status: "On Leave",
-    department: "Marketing",
-    payRate: "48.50",
-    paySchedule: "Bi-Weekly",
-    startDate: "2021-03-01",
-    avatar: "https://randomuser.me/api/portraits/men/42.jpg",
-    bankInfo: {
-      bankName: "Marketing Credit Union",
-      accountType: "Savings",
-      routingNumber: "678912345",
-      accountNumber: "123456780"
-    },
-    taxForms: {
-      w4: {
-        submitted: true,
-        lastUpdated: "2021-02-25"
-      },
-      i9: {
-        submitted: true,
-        lastUpdated: "2021-02-25"
-      },
-      w2: {
-        available: true,
-        year: "2023"
-      }
-    },
-    taxWithholdings: {
-      federalFilingStatus: "Single",
-      federalAllowances: "1",
-      state: "California",
-      stateFilingStatus: "Single"
-    }
   }
 ];
 
 /**
- * Seeds the Supabase database with sample employee data
+ * Creates necessary tables in Supabase if they don't exist
  */
-export const seedEmployeeData = async (): Promise<boolean> => {
+const createPayrollTables = async (): Promise<boolean> => {
   try {
-    // Check if employees table already has data
-    const { data: existingEmployees, error: checkError } = await supabase
-      .from("employees")
-      .select("id")
+    // Check if the employees table exists
+    const { error } = await supabase
+      .from('employees')
+      .select('count')
       .limit(1);
-      
-    if (checkError) {
-      throw checkError;
-    }
     
-    // If there are already employees, don't seed more
-    if (existingEmployees && existingEmployees.length > 0) {
-      console.log("Employees table already has data, skipping seed");
+    if (error && error.message.includes('does not exist')) {
+      console.log("Tables need to be created in Supabase Dashboard");
+      toast({
+        title: "Database Setup Required",
+        description: "Please create the necessary tables in your Supabase project.",
+        variant: "warning",
+      });
       return false;
     }
     
-    // Insert sample employees
-    const { error: insertError } = await supabase
-      .from("employees")
-      .insert(sampleEmployees);
+    return true;
+  } catch (error) {
+    console.error("Error checking tables:", error);
+    return false;
+  }
+};
+
+/**
+ * Seeds the database with sample employee data
+ */
+export const seedEmployeeData = async (): Promise<boolean> => {
+  try {
+    // First check if tables exist
+    const tablesExist = await createPayrollTables();
+    if (!tablesExist) {
+      return false;
+    }
+    
+    // Check if data already exists
+    const { data: existingData, error: checkError } = await supabase
+      .from('employees')
+      .select('id')
+      .limit(1);
       
-    if (insertError) {
-      throw insertError;
+    if (checkError) {
+      console.error("Error checking existing data:", checkError);
+      return false;
+    }
+    
+    if (existingData && existingData.length > 0) {
+      // Data already exists, ask before overwriting
+      console.log("Sample data already exists");
+      toast({
+        title: "Sample Data Already Exists",
+        description: "Additional sample data has been added to your database.",
+      });
+    }
+    
+    // Insert sample data
+    for (const employee of sampleEmployees) {
+      const { error } = await supabase
+        .from('employees')
+        .insert([employee]);
+        
+      if (error) {
+        console.error("Error inserting employee:", error);
+        toast({
+          title: "Error",
+          description: "Failed to add sample employee data",
+          variant: "destructive",
+        });
+        return false;
+      }
     }
     
     toast({
-      title: "Database Seeded",
-      description: "Sample employee data has been added to your database.",
+      title: "Success",
+      description: "Sample employee data has been added to your database",
     });
     
     return true;
   } catch (error) {
     console.error("Error seeding employee data:", error);
     toast({
-      title: "Seeding Error",
-      description: "Could not add sample employees to your database. Using mock data instead.",
+      title: "Error",
+      description: "Failed to add sample employee data",
       variant: "destructive",
     });
     return false;
