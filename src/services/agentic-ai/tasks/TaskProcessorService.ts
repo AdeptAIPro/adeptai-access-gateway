@@ -2,6 +2,7 @@
 import { AgentTask } from '../types/AgenticTypes';
 import { processTalentMatchingTask } from "../talent/TalentMatchingAgenticService";
 import { processPayrollTask } from '../payroll/PayrollAgenticService';
+import { processCrossSourceTalentIntelligenceTask } from '../talent/CrossSourceTalentIntelligenceService';
 
 const processAgentTask = async (task: AgentTask): Promise<AgentTask> => {
   console.log(`Processing task ${task.id} of type ${task.taskType}`);
@@ -12,6 +13,9 @@ const processAgentTask = async (task: AgentTask): Promise<AgentTask> => {
       
     case "payroll":
       return await processPayrollTask(task);
+      
+    case "cross-source-talent-intelligence":
+      return await processCrossSourceTalentIntelligenceTask(task);
       
     default:
       return processGenericTask(task);

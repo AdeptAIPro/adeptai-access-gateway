@@ -1,7 +1,8 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import TalentSearchBar from '@/components/talent-search/TalentSearchBar';
 import TalentSearchResults from '@/components/talent-search/TalentSearchResults';
@@ -14,19 +15,36 @@ import {
   Share2,
   BookmarkPlus,
   Users,
-  UserPlus
+  UserPlus,
+  Sparkles
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const TalentSearch = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [useAgenticIntelligence, setUseAgenticIntelligence] = useState(false);
   
   useEffect(() => {
     if (!user) {
       navigate('/login');
     }
   }, [user, navigate]);
+  
+  const handleToggleAgenticIntelligence = () => {
+    const newValue = !useAgenticIntelligence;
+    setUseAgenticIntelligence(newValue);
+    
+    toast({
+      title: newValue ? "AI Intelligence Activated" : "Standard Search Mode",
+      description: newValue 
+        ? "Using advanced cross-source talent intelligence to find the best matches" 
+        : "Using standard talent search functionality",
+    });
+  };
   
   return (
     <DashboardLayout title="Talent Search">
@@ -70,9 +88,24 @@ const TalentSearch = () => {
             </div>
           </div>
           
-          <TalentSearchInfo />
-          <TalentSearchBar />
-          <TalentSearchResults />
+          <div className="flex items-center space-x-2 p-4 bg-muted/40 rounded-lg border mb-4">
+            <Sparkles className="h-5 w-5 text-amber-500" />
+            <h3 className="font-medium">Cross-Source Talent Intelligence</h3>
+            <div className="ml-auto flex items-center space-x-2">
+              <Label htmlFor="agentic-mode">
+                {useAgenticIntelligence ? "Enabled" : "Disabled"}
+              </Label>
+              <Switch
+                id="agentic-mode"
+                checked={useAgenticIntelligence}
+                onCheckedChange={handleToggleAgenticIntelligence}
+              />
+            </div>
+          </div>
+          
+          <TalentSearchInfo useAgenticIntelligence={useAgenticIntelligence} />
+          <TalentSearchBar useAgenticIntelligence={useAgenticIntelligence} />
+          <TalentSearchResults useAgenticIntelligence={useAgenticIntelligence} />
         </div>
       </TalentSearchProvider>
     </DashboardLayout>

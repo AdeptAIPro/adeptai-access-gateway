@@ -3,6 +3,7 @@ import { TalentSearchParams, TalentSearchResponse, Talent } from './types';
 import { searchTalentsFromSupabase } from './SupabaseTalentService';
 import { searchTalentsFromExternalSource } from './ExternalTalentService';
 import { getTalentSources } from './TalentSourcesService';
+import { processCrossSourceTalentIntelligenceTask } from '../agentic-ai/talent/CrossSourceTalentIntelligenceService';
 
 // Combine results from multiple sources
 export const searchTalents = async (
@@ -38,6 +39,69 @@ export const searchTalents = async (
       totalPages: 0
     };
   }
+};
+
+// Enhanced search using agentic cross-source intelligence
+export const searchTalentsWithAgenticIntelligence = async (
+  params: TalentSearchParams,
+  jobDescription: string,
+  requiredSkills: string[],
+  preferredSkills: string[] = []
+): Promise<any> => {
+  try {
+    // Create an agent task to perform cross-source intelligence
+    const task = {
+      id: `talent-intel-${Date.now()}`,
+      taskType: 'cross-source-talent-intelligence',
+      status: 'pending',
+      goal: 'Find best matching candidates with cross-source validation',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      userId: 'system',
+      agentId: 'talent-intelligence-agent',
+      priority: 'high',
+      params: {
+        jobDescription,
+        requiredSkills,
+        preferredSkills,
+        experienceLevel: params.experience || 2,
+        locations: params.location ? [params.location] : ['Remote'],
+        sources: params.source ? [params.source] : await getAllAvailableSources(),
+        culturalFitPriority: 7, // High priority on cultural fit (0-10 scale)
+        minMatchScore: 70
+      }
+    };
+    
+    // Process the task using our agentic service
+    const completedTask = await processCrossSourceTalentIntelligenceTask(task);
+    
+    // If task was successful, return the result
+    if (completedTask.status === 'completed' && completedTask.result) {
+      return {
+        candidates: completedTask.result.candidates,
+        insights: completedTask.result.insights,
+        outreachStrategies: completedTask.result.outreachStrategies,
+        crossSourceValidation: completedTask.result.crossSourceValidation,
+        total: completedTask.result.candidates.length,
+        page: params.page || 1,
+        totalPages: 1
+      };
+    } else {
+      throw new Error(completedTask.error || 'Failed to complete talent intelligence task');
+    }
+  } catch (error) {
+    console.error('Error in searchTalentsWithAgenticIntelligence:', error);
+    // Fall back to standard search if the enhanced search fails
+    return searchTalents(params);
+  }
+};
+
+// Get all available talent sources
+const getAllAvailableSources = async (): Promise<string[]> => {
+  const sources = await getTalentSources();
+  return sources
+    .filter(source => typeof source !== 'string' && source.id)
+    .map(source => (source as any).id);
 };
 
 // Re-export types and functions for simpler imports

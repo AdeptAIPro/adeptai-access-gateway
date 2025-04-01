@@ -3,7 +3,7 @@
 export interface AgentTask {
   id: string;
   taskType: AgentTaskType;
-  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  status: 'pending' | 'in-progress' | 'processing' | 'completed' | 'failed';
   goal: string;
   createdAt: string;
   updatedAt: string;
@@ -24,7 +24,8 @@ export type AgentTaskType =
   'skills-recommendation' | 
   'analytics-insight' | 
   'compliance-check' | 
-  'onboarding-customization';
+  'onboarding-customization' |
+  'cross-source-talent-intelligence';
 
 export interface Agent {
   id: string;
