@@ -1,39 +1,12 @@
 
 import { Employee } from "@/types/employee";
-import { calculateTaxes } from "./tax/TaxCalculationService";
-import { generatePayStub } from "./paystub/PayStubGenerator";
-import { processPayment, processBulkPayments } from "./payment/PaymentProcessor";
 import { fetchEmployees } from "./EmployeeService";
 import { recordPayrollRun } from "./PayrollHistoryService";
+import { processBulkPayments } from "./payment/PaymentProcessor";
+import { processEmployeePayroll } from "./processors/EmployeePayrollProcessor";
+import { calculateHoursPerPeriod, determinePayrollStatus } from "./utils/PayrollCalculationUtils";
+import { PayrollRunOptions, PayrollRunResult, PayrollBatchItem } from "./types/PayrollTypes";
 import { toast } from "@/hooks/use-toast";
-
-export interface PayrollRunOptions {
-  payPeriod: string;
-  payDate: string;
-  employeeType?: "W-2" | "1099" | "Independent Contractor" | "Per Diem" | "All";
-  departmentFilter?: string;
-  payFrequency: "Weekly" | "Bi-Weekly" | "Monthly" | "Semi-Monthly";
-  companyInfo?: {
-    name: string;
-    address: string;
-    ein?: string;
-  };
-  useDynamicTaxRates?: boolean;
-}
-
-export interface PayrollRunResult {
-  totalEmployees: number;
-  processedEmployees: number;
-  totalGrossPay: number;
-  totalNetPay: number;
-  totalTaxes: number;
-  successfulPayments: number;
-  failedPayments: number;
-  payDate: string;
-  processingTime: number;
-  status: "Completed" | "Partial" | "Failed";
-  taxRateSource?: "API" | "Static";
-}
 
 /**
  * Runs payroll processing for the specified pay period and employees
@@ -50,7 +23,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       });
     }
 
-    // 1. Fetch all employees based on filters
+    // 1. Fetch and filter employees
     let employees = await fetchEmployees();
     
     // Apply filters
@@ -62,7 +35,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       employees = employees.filter(emp => emp.department === options.departmentFilter);
     }
     
-    // 2. Process each employee
+    // 2. Initialize result object
     const result: PayrollRunResult = {
       totalEmployees: employees.length,
       processedEmployees: 0,
@@ -77,92 +50,51 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       taxRateSource: options.useDynamicTaxRates ? "API" : "Static"
     };
     
-    // Prepare batch processing data
-    const paymentBatch = [];
+    // 3. Calculate hours per pay period
+    const hoursPerPeriod = calculateHoursPerPeriod(options.payFrequency);
     
-    // Process each eligible employee
+    // 4. Prepare batch processing data
+    const paymentBatch: PayrollBatchItem[] = [];
+    
+    // 5. Process each eligible employee
     for (const employee of employees) {
-      try {
-        // Parse employee pay rate
-        const payRate = parseFloat(employee.payRate);
-        if (isNaN(payRate)) continue;
+      const processResult = await processEmployeePayroll(
+        employee,
+        hoursPerPeriod,
+        options.payPeriod,
+        options.payDate,
+        options.payFrequency,
+        options.companyInfo,
+        options.useDynamicTaxRates
+      );
+      
+      // Add to batch and update totals if processing succeeded
+      if (processResult.payStubItem) {
+        paymentBatch.push(processResult.payStubItem);
         
-        // Calculate gross pay based on pay frequency
-        let hoursPerPeriod = 0;
-        switch (options.payFrequency) {
-          case "Weekly":
-            hoursPerPeriod = 40;
-            break;
-          case "Bi-Weekly":
-            hoursPerPeriod = 80;
-            break;
-          case "Semi-Monthly":
-            hoursPerPeriod = 86.67;
-            break;
-          case "Monthly":
-            hoursPerPeriod = 173.33;
-            break;
-        }
-        
-        // For salaried employees, we would use a different calculation
-        // This simple example assumes hourly employees
-        const grossPay = payRate * hoursPerPeriod;
-        
-        // Calculate taxes - now async
-        const taxResult = await calculateTaxes(
-          employee, 
-          grossPay,
-          options.payFrequency
-        );
-        
-        // Generate pay stub
-        const payStub = await generatePayStub(
-          employee,
-          options.payPeriod,
-          options.payDate,
-          taxResult,
-          options.companyInfo
-        );
-        
-        if (payStub) {
-          // Add to batch for payment processing
-          paymentBatch.push({
-            employee,
-            payStub
-          });
-          
-          // Update running totals
-          result.totalGrossPay += grossPay;
-          result.totalNetPay += taxResult.netPay;
-          result.totalTaxes += taxResult.totalTaxes;
-          result.processedEmployees++;
-        }
-      } catch (employeeError) {
-        console.error(`Error processing employee ${employee.id}:`, employeeError);
+        // Update running totals
+        result.totalGrossPay += processResult.grossPay;
+        result.totalNetPay += processResult.netPay;
+        result.totalTaxes += processResult.totalTaxes;
+        result.processedEmployees++;
       }
     }
     
-    // 3. Process payments in bulk
+    // 6. Process payments in bulk
     if (paymentBatch.length > 0) {
       const paymentResults = await processBulkPayments(paymentBatch);
       result.successfulPayments = paymentResults.successful;
       result.failedPayments = paymentResults.failed;
     }
     
-    // 4. Record the payroll run
+    // 7. Calculate processing time
     const endTime = Date.now();
     result.processingTime = (endTime - startTime) / 1000; // Convert to seconds
     
-    // Determine overall status
-    if (result.processedEmployees === 0) {
-      result.status = "Failed";
-    } else if (result.failedPayments > 0) {
-      result.status = "Partial";
-    } else {
-      result.status = "Completed";
-    }
+    // 8. Determine overall status
+    result.status = determinePayrollStatus(result.processedEmployees, result.failedPayments);
     
-    // Record payroll run in history
+    // 9. Record payroll run in history
     await recordPayrollRun({
       runDate: new Date().toISOString(),
       payPeriod: options.payPeriod,
@@ -171,7 +103,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       status: result.status === "Failed" ? "Failed" : (result.status === "Partial" ? "Processing" : "Complete")
     });
     
-    // Show summary toast
+    // 10. Show summary toast
     toast({
       title: `Payroll Run ${result.status}`,
       description: `Processed ${result.processedEmployees} employees with ${result.successfulPayments} successful payments using ${result.taxRateSource} tax rates.`,
