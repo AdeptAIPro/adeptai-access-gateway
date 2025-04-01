@@ -18,6 +18,7 @@ export interface PayrollRunOptions {
     address: string;
     ein?: string;
   };
+  useDynamicTaxRates?: boolean;
 }
 
 export interface PayrollRunResult {
@@ -31,6 +32,7 @@ export interface PayrollRunResult {
   payDate: string;
   processingTime: number;
   status: "Completed" | "Partial" | "Failed";
+  taxRateSource?: "API" | "Static";
 }
 
 /**
@@ -40,6 +42,14 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
   const startTime = Date.now();
   
   try {
+    // Show toast if using dynamic tax rates
+    if (options.useDynamicTaxRates) {
+      toast({
+        title: "Using Dynamic Tax Rates",
+        description: "Connecting to tax agency APIs to fetch current tax rates...",
+      });
+    }
+
     // 1. Fetch all employees based on filters
     let employees = await fetchEmployees();
     
@@ -63,7 +73,8 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       failedPayments: 0,
       payDate: options.payDate,
       processingTime: 0,
-      status: "Failed"
+      status: "Failed",
+      taxRateSource: options.useDynamicTaxRates ? "API" : "Static"
     };
     
     // Prepare batch processing data
@@ -97,8 +108,8 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
         // This simple example assumes hourly employees
         const grossPay = payRate * hoursPerPeriod;
         
-        // Calculate taxes
-        const taxResult = calculateTaxes(
+        // Calculate taxes - now async
+        const taxResult = await calculateTaxes(
           employee, 
           grossPay,
           options.payFrequency
@@ -163,7 +174,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
     // Show summary toast
     toast({
       title: `Payroll Run ${result.status}`,
-      description: `Processed ${result.processedEmployees} employees with ${result.successfulPayments} successful payments.`,
+      description: `Processed ${result.processedEmployees} employees with ${result.successfulPayments} successful payments using ${result.taxRateSource} tax rates.`,
       variant: result.status === "Failed" ? "destructive" : (result.status === "Partial" ? "default" : "default"),
     });
     

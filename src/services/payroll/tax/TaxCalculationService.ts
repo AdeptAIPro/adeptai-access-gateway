@@ -1,6 +1,7 @@
 
 import { Employee } from "@/types/employee";
 import { toast } from "@/hooks/use-toast";
+import { fetchFederalTaxRates, fetchStateTaxRates, checkTaxApiAvailability } from "./TaxAPIService";
 
 export type TaxRules = {
   country: string;
@@ -14,6 +15,7 @@ export type TaxRules = {
     rate: number;
     maxAmount?: number;
   }>;
+  lastUpdated?: string;
 };
 
 export type DeductionDetail = {
@@ -30,7 +32,7 @@ export type PayrollTaxResult = {
   totalTaxes: number;
 };
 
-// For demonstration, these are simplified tax rules
+// For demonstration, these are fallback tax rules if API connection fails
 const USA_TAX_RULES: Record<string, TaxRules> = {
   "California": {
     country: "USA",
@@ -78,11 +80,12 @@ const INDIA_TAX_RULES: Record<string, TaxRules> = {
 };
 
 /**
- * Gets tax rules based on employee's location
+ * Gets tax rules based on employee's location, fetching from APIs when possible
  */
-export const getTaxRules = (employee: Employee): TaxRules => {
+export const getTaxRules = async (employee: Employee): Promise<TaxRules> => {
   let country = "USA"; // Default country
   let state = "";
+  let filingStatus = "Single"; // Default filing status
 
   // Extract country and state from address
   if (employee.address) {
@@ -97,22 +100,92 @@ export const getTaxRules = (employee: Employee): TaxRules => {
     } else if (lastPart.includes("NY") || lastPart.includes("New York")) {
       state = "New York";
     }
-    
-    // Could also use employee.taxWithholdings?.state if available
-    if (employee.taxWithholdings?.state) {
-      state = employee.taxWithholdings.state;
-    }
   }
   
-  // Look up tax rules based on country and state
-  if (country === "India") {
-    return INDIA_TAX_RULES["DEFAULT"];
-  } else {
-    // USA
-    if (state && USA_TAX_RULES[state]) {
-      return USA_TAX_RULES[state];
+  // Use tax withholdings if available
+  if (employee.taxWithholdings) {
+    if (employee.taxWithholdings.state) {
+      state = employee.taxWithholdings.state;
+    }
+    if (employee.taxWithholdings.federalFilingStatus) {
+      filingStatus = employee.taxWithholdings.federalFilingStatus;
+    }
+  }
+
+  try {
+    // Check if tax APIs are available
+    const apiAvailability = await checkTaxApiAvailability(country, state);
+    
+    if (apiAvailability.federal || apiAvailability.state) {
+      console.log("Tax APIs available, fetching current rates...");
+      
+      // For income-based tax calculations, we'd need the annualized income
+      // This is simplified and would need to be calculated based on actual salary/hourly rate
+      const annualIncome = parseFloat(employee.payRate) * 2080; // Assuming 40 hours/week, 52 weeks
+      
+      // Get federal tax rates from API
+      const federalRates = apiAvailability.federal ? 
+        await fetchFederalTaxRates(country, annualIncome, filingStatus) : null;
+      
+      // Get state tax rates from API if applicable
+      const stateRates = (apiAvailability.state && state) ? 
+        await fetchStateTaxRates(country, state, annualIncome, filingStatus) : null;
+      
+      if (federalRates || stateRates) {
+        // Build tax rules from API responses
+        const taxRules: TaxRules = {
+          country,
+          state: state || undefined,
+          federalTaxRate: federalRates?.federalTaxRate || 
+            (country === "USA" ? USA_TAX_RULES.DEFAULT.federalTaxRate : INDIA_TAX_RULES.DEFAULT.federalTaxRate),
+          stateTaxRate: stateRates?.stateTaxRate || 
+            (state && country === "USA" ? USA_TAX_RULES[state]?.stateTaxRate || USA_TAX_RULES.DEFAULT.stateTaxRate : 0),
+          medicareRate: federalRates?.medicareRate || 
+            (country === "USA" ? USA_TAX_RULES.DEFAULT.medicareRate : 0),
+          socialSecurityRate: federalRates?.socialSecurityRate || 
+            (country === "USA" ? USA_TAX_RULES.DEFAULT.socialSecurityRate : INDIA_TAX_RULES.DEFAULT.socialSecurityRate),
+          additionalTaxes: [
+            ...(federalRates?.additionalTaxes || []),
+            ...(stateRates?.additionalTaxes || [])
+          ],
+          lastUpdated: new Date().toISOString()
+        };
+        
+        console.log("Dynamically fetched tax rules:", taxRules);
+        return taxRules;
+      }
+    }
+
+    console.log("Falling back to static tax rules");
+    // Fall back to static tax rules if API call fails
+    if (country === "India") {
+      return INDIA_TAX_RULES.DEFAULT;
     } else {
-      return USA_TAX_RULES["DEFAULT"];
+      // USA
+      if (state && USA_TAX_RULES[state]) {
+        return USA_TAX_RULES[state];
+      } else {
+        return USA_TAX_RULES.DEFAULT;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching tax rules:", error);
+    toast({
+      title: "Tax Service Error",
+      description: "Could not connect to tax services. Using fallback tax rates.",
+      variant: "destructive",
+    });
+
+    // Fallback to static tax rules
+    if (country === "India") {
+      return INDIA_TAX_RULES.DEFAULT;
+    } else {
+      // USA
+      if (state && USA_TAX_RULES[state]) {
+        return USA_TAX_RULES[state];
+      } else {
+        return USA_TAX_RULES.DEFAULT;
+      }
     }
   }
 };
@@ -120,15 +193,15 @@ export const getTaxRules = (employee: Employee): TaxRules => {
 /**
  * Calculate taxes for an employee's pay
  */
-export const calculateTaxes = (
+export const calculateTaxes = async (
   employee: Employee,
   grossPay: number, 
   payPeriod: "Weekly" | "Bi-Weekly" | "Monthly" | "Semi-Monthly",
   additionalDeductions: DeductionDetail[] = []
-): PayrollTaxResult => {
+): Promise<PayrollTaxResult> => {
   try {
-    // Get tax rules based on employee's location
-    const taxRules = getTaxRules(employee);
+    // Get tax rules based on employee's location - now async
+    const taxRules = await getTaxRules(employee);
     
     // Annualize the gross pay for tax calculation
     let annualizedPay = grossPay;
@@ -196,6 +269,9 @@ export const calculateTaxes = (
     
     // Calculate net pay
     const netPay = grossPay - totalPeriodTaxes;
+    
+    // Show source of tax data in console
+    console.log(`Tax calculation for ${employee.name} using ${taxRules.lastUpdated ? 'API-sourced' : 'static'} tax rates`);
     
     // Build list of deductions for the pay stub
     const deductions: DeductionDetail[] = [
