@@ -26,6 +26,7 @@ import ProfessionalDevelopment from "./pages/ProfessionalDevelopment";
 import CRM from "./pages/CRM";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import Payroll from "./pages/Payroll";
 
 function App() {
   // Create a stable QueryClient instance using useState
@@ -66,6 +67,11 @@ function App() {
               <Route path="/dashboard/talent-matching" element={
                 <ProtectedRoute requiredPermission="viewDashboard">
                   <TalentMatching />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/payroll" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <Payroll />
                 </ProtectedRoute>
               } />
               <Route path="/dashboard/analytics" element={

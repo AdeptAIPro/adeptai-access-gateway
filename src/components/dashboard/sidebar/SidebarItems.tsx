@@ -30,14 +30,20 @@ const SidebarItems = () => {
       badgeVariant: "secondary",
       requiredPermission: "viewDashboard"
     },
+    { 
+      title: "Payroll", 
+      icon: DollarSign, 
+      href: "/dashboard/payroll",
+      badge: "New",
+      badgeVariant: "outline",
+      requiredPermission: "viewDashboard"
+    },
     { title: "Analytics", icon: BarChart, href: "/dashboard/analytics", requiredPermission: "viewAnalytics" },
     { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills", requiredPermission: "viewDashboard" },
     { 
       title: "Compliance", 
       icon: ShieldCheck, 
       href: "/dashboard/compliance",
-      badge: "New",
-      badgeVariant: "outline",
       requiredPermission: "viewDashboard"
     },
     { title: "Onboarding", icon: UserPlus, href: "/dashboard/onboarding", requiredPermission: "viewDashboard" },
@@ -107,7 +113,8 @@ import {
   ShieldCheck,
   UserPlus,
   Settings,
-  Search
+  Search,
+  DollarSign
 } from "lucide-react";
 
 export default SidebarItems;
