@@ -8,7 +8,8 @@ import { Calendar, DollarSign, Play, Download, FileText, Users, Loader2 } from "
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { runPayroll, PayrollRunOptions } from "@/services/payroll/PayrollProcessor";
+import { runPayroll } from "@/services/payroll/PayrollProcessor";
+import { PayrollRunOptions } from "@/services/payroll/types/PayrollTypes";  // Updated import path
 import { format } from "date-fns";
 
 const PayrollRunHistory = () => {
