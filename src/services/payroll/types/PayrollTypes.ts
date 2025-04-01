@@ -1,23 +1,23 @@
 
-/**
- * Types for payroll processing
- */
-
-export interface PayrollRunOptions {
+// PayrollRunOptions defines the configuration for running payroll
+export type PayrollRunOptions = {
   payPeriod: string;
   payDate: string;
-  employeeType?: "W-2" | "1099" | "Independent Contractor" | "Per Diem" | "All";
-  departmentFilter?: string;
   payFrequency: "Weekly" | "Bi-Weekly" | "Monthly" | "Semi-Monthly";
+  employeeType?: "W-2" | "1099" | "All";
+  departmentFilter?: string;
+  useDynamicTaxRates?: boolean;
+  country?: string; // Added country parameter
+  individualEmployeeId?: string; // Added individualEmployeeId parameter
   companyInfo?: {
     name: string;
     address: string;
     ein?: string;
   };
-  useDynamicTaxRates?: boolean;
-}
+};
 
-export interface PayrollRunResult {
+// PayrollRunResult contains the results of a payroll run
+export type PayrollRunResult = {
   totalEmployees: number;
   processedEmployees: number;
   totalGrossPay: number;
@@ -29,9 +29,13 @@ export interface PayrollRunResult {
   processingTime: number;
   status: "Completed" | "Partial" | "Failed";
   taxRateSource?: "API" | "Static";
-}
+};
 
-export interface PayrollBatchItem {
+// PayrollBatchItem represents a single payment in a batch
+export type PayrollBatchItem = {
   employee: any;
   payStub: any;
-}
+};
+
+// Re-export types from the codebase
+export * from './PayrollTypes';

@@ -1,6 +1,6 @@
 
 import { Employee } from "@/types/employee";
-import { fetchEmployees } from "./EmployeeService";
+import { fetchEmployees, fetchEmployeeById } from "./EmployeeService";
 import { recordPayrollRun } from "./PayrollHistoryService";
 import { processBulkPayments } from "./payment/PaymentProcessor";
 import { processEmployeePayroll } from "./processors/EmployeePayrollProcessor";
@@ -23,16 +23,61 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       });
     }
 
-    // 1. Fetch and filter employees
-    let employees = await fetchEmployees();
+    let employees: Employee[] = [];
     
-    // Apply filters
-    if (options.employeeType && options.employeeType !== "All") {
-      employees = employees.filter(emp => emp.type === options.employeeType);
-    }
-    
-    if (options.departmentFilter) {
-      employees = employees.filter(emp => emp.department === options.departmentFilter);
+    // Check if we're processing an individual employee
+    if (options.individualEmployeeId) {
+      const employee = await fetchEmployeeById(options.individualEmployeeId);
+      if (employee) {
+        employees = [employee];
+        toast({
+          title: "Individual Employee Payroll",
+          description: `Processing payroll for ${employee.name}`,
+        });
+      } else {
+        toast({
+          title: "Employee Not Found",
+          description: "The selected employee could not be found.",
+          variant: "destructive",
+        });
+        return {
+          totalEmployees: 0,
+          processedEmployees: 0,
+          totalGrossPay: 0,
+          totalNetPay: 0,
+          totalTaxes: 0,
+          successfulPayments: 0,
+          failedPayments: 0,
+          payDate: options.payDate,
+          processingTime: 0,
+          status: "Failed"
+        };
+      }
+    } else {
+      // 1. Fetch and filter employees
+      employees = await fetchEmployees();
+      
+      // Apply filters
+      if (options.employeeType && options.employeeType !== "All") {
+        employees = employees.filter(emp => emp.type === options.employeeType);
+      }
+      
+      if (options.departmentFilter) {
+        employees = employees.filter(emp => emp.department === options.departmentFilter);
+      }
+      
+      // Apply country filter if specified
+      if (options.country) {
+        employees = employees.filter(emp => {
+          const address = emp.address || "";
+          if (options.country === "USA") {
+            return !address.includes("India");
+          } else if (options.country === "India") {
+            return address.includes("India");
+          }
+          return true; // Default case, include all
+        });
+      }
     }
     
     // 2. Initialize result object
@@ -104,9 +149,10 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
     });
     
     // 10. Show summary toast
+    const employeeText = options.individualEmployeeId ? "individual employee" : `${result.processedEmployees} employees`;
     toast({
       title: `Payroll Run ${result.status}`,
-      description: `Processed ${result.processedEmployees} employees with ${result.successfulPayments} successful payments using ${result.taxRateSource} tax rates.`,
+      description: `Processed ${employeeText} with ${result.successfulPayments} successful payments using ${result.taxRateSource} tax rates.`,
       variant: result.status === "Failed" ? "destructive" : (result.status === "Partial" ? "default" : "default"),
     });
     
