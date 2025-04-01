@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { useAgenticAI } from '@/hooks/use-agentic';
 import { useAuth } from '@/hooks/use-auth';
 import { AgentTask } from '@/services/agentic-ai/AgenticService'; 
 import { Progress } from "@/components/ui/progress";
-import { Robot, Clock, Check, AlertCircle, Play, Loader2 } from 'lucide-react';
+import { Bot, Clock, Check, AlertCircle, Play, Loader2 } from 'lucide-react';
 
 const AgenticDashboard = () => {
   const { tasks, agents, isLoading, activeTask, processTask } = useAgenticAI();
@@ -53,7 +52,7 @@ const AgenticDashboard = () => {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="text-2xl font-bold">{agents.length}</div>
-              <Robot className="h-5 w-5 text-purple-500" />
+              <Bot className="h-5 w-5 text-purple-500" />
             </div>
           </CardContent>
         </Card>
@@ -106,7 +105,7 @@ const AgenticDashboard = () => {
           {tasks.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center justify-center pt-6">
-                <Robot className="h-12 w-12 text-muted-foreground mb-4" />
+                <Bot className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium">No AI Tasks Yet</h3>
                 <p className="text-sm text-muted-foreground text-center mt-2">
                   Your AI agents are ready to assist you. Create a new task to get started.
@@ -129,7 +128,7 @@ const AgenticDashboard = () => {
           {Object.entries(tasksByType).length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center justify-center pt-6">
-                <Robot className="h-12 w-12 text-muted-foreground mb-4" />
+                <Bot className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium">No AI Tasks Yet</h3>
                 <p className="text-sm text-muted-foreground text-center mt-2">
                   Your AI agents are ready to assist you. Create a new task to get started.
@@ -191,7 +190,7 @@ const AgenticDashboard = () => {
             {agents.length === 0 && (
               <Card className="border-dashed md:col-span-2 lg:col-span-3">
                 <CardContent className="flex flex-col items-center justify-center pt-6">
-                  <Robot className="h-12 w-12 text-muted-foreground mb-4" />
+                  <Bot className="h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium">No Agents Available</h3>
                   <p className="text-sm text-muted-foreground text-center mt-2">
                     AI agents will appear here once configured in your Supabase database.

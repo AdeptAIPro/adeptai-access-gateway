@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -40,7 +39,7 @@ const SidebarItems = () => {
     },
     { 
       title: "Agentic AI Platform", 
-      icon: Robot, 
+      icon: Bot, 
       href: "/dashboard/agentic-ai",
       badge: "New",
       badgeVariant: "default",
@@ -123,7 +122,7 @@ import {
   Settings,
   Search,
   DollarSign,
-  Robot
+  Bot
 } from "lucide-react";
 
 export default SidebarItems;

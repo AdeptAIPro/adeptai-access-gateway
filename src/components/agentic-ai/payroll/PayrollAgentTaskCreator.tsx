@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { usePayrollEmployees } from '@/hooks/use-payroll';
-import { Loader2, Robot } from 'lucide-react';
+import { Loader2, Bot } from 'lucide-react';
 
 // Define payroll frequencies for the dropdown
 const payrollFrequencies = [
@@ -114,7 +113,7 @@ const PayrollAgentTaskCreator = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Robot className="h-5 w-5 text-primary" />
+          <Bot className="h-5 w-5 text-primary" />
           AI Payroll Processing
         </CardTitle>
         <CardDescription>
@@ -325,7 +324,7 @@ const PayrollAgentTaskCreator = () => {
             </>
           ) : (
             <>
-              <Robot className="mr-2 h-4 w-4" />
+              <Bot className="mr-2 h-4 w-4" />
               Process Payroll with AI
             </>
           )}

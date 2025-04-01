@@ -1,6 +1,6 @@
-
 import { AgentTask } from '../AgenticService';
-import { runPayroll, PayrollRunOptions, PayrollRunResult } from '@/services/payroll/PayrollProcessor';
+import { runPayroll } from '@/services/payroll/PayrollProcessor';
+import { PayrollRunOptions, PayrollRunResult } from '@/services/payroll/types/PayrollTypes';
 import { fetchEmployees } from '@/services/payroll/EmployeeService';
 
 export interface PayrollTaskParams {
@@ -78,11 +78,11 @@ async function verifyPayrollCompliance(options: PayrollRunOptions): Promise<bool
   const complianceIssues: string[] = [];
   
   employees.forEach(employee => {
-    if (employee.type === 'W-2' && !employee.taxInfo?.ssn) {
+    if (employee.type === 'W-2' && !employee.ssn) {
       complianceIssues.push(`Missing SSN for employee ${employee.id}`);
     }
     
-    if (employee.type === '1099' && !employee.taxInfo?.tin) {
+    if (employee.type === '1099' && !employee.ssn) {
       complianceIssues.push(`Missing TIN for contractor ${employee.id}`);
     }
   });

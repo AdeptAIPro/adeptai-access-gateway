@@ -1,4 +1,3 @@
-
 import { AgentTask } from '../AgenticService';
 import { searchTalents, TalentSearchParams } from '@/services/talent/TalentSearchService';
 import { getTalentSources } from '@/services/talent/TalentSourcesService';
@@ -38,6 +37,11 @@ export async function processTalentSearchTask(task: AgentTask): Promise<any> {
       
       // Try each external source until we have enough results
       for (const source of sources) {
+        if (typeof source === 'string') {
+          // Skip if source is just a string
+          continue;
+        }
+        
         if (source.id === 'internal') continue; // Skip internal, we already searched it
         
         const externalSearchParams = {

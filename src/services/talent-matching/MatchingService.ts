@@ -1,60 +1,66 @@
 
-import { Candidate, MatchingOptions, MatchingResult, MatchingModel } from "@/components/talent-matching/types";
-import { matchCandidatesFromDatabase } from "./matchers/DatabaseMatcher";
-import { getAvailableMatchingModelsFromDatabase } from "./models/MatchingModelsService";
-import { getFallbackMatchingResult, getFallbackMatchingModels } from "./fallbacks/MatchingFallbacks";
-
 /**
- * Production implementation of AI-driven talent matching service.
- * This uses Supabase as the data source and can be configured to use other databases.
+ * Process job description text to extract key information
  */
-export const matchCandidatesWithJobDescription = async (
-  jobDescription: string,
-  options: MatchingOptions
-): Promise<MatchingResult> => {
-  console.log("Matching with options:", options);
-  const startTime = performance.now();
+export async function processJobDescription(jobDescription: string): Promise<{
+  extractedTitle?: string;
+  extractedSkills?: string[];
+  suggestedExperience: number;
+  keyResponsibilities?: string[];
+}> {
+  // This is a placeholder implementation - in a real app this would use
+  // NLP to analyze the job description
   
-  try {
-    // Get candidates from database with applied filters
-    const matchedCandidates = await matchCandidatesFromDatabase(jobDescription, options);
-    
-    // If no candidates found, use fallback
-    if (!matchedCandidates || matchedCandidates.length === 0) {
-      console.log("No candidates found, using fallback mock data");
-      return getFallbackMatchingResult(options);
-    }
-    
-    // Sort by match score descending
-    matchedCandidates.sort((a, b) => b.matchScore - a.matchScore);
-    
-    const endTime = performance.now();
-    const matchingTime = (endTime - startTime) / 1000; // Convert to seconds
-    
-    return {
-      candidates: matchedCandidates,
-      matchingModelUsed: options.matchingModel,
-      matchingTime
-    };
-  } catch (error) {
-    console.error("Error in matching service:", error);
-    // Fallback to mock data if there's an error
-    return getFallbackMatchingResult(options);
+  // Extract a title from the first few words
+  const extractedTitle = jobDescription.split('\n')[0]?.trim() || 
+    jobDescription.substring(0, 30).trim();
+  
+  // Extract skills based on common patterns
+  const skillKeywords = [
+    'React', 'JavaScript', 'TypeScript', 'Node.js', 'SQL', 'AWS', 'Python',
+    'Java', 'Agile', 'Management', 'Communication', 'Leadership', 'Research',
+    'Marketing', 'Finance', 'Excel', 'PowerPoint', 'Project Management',
+    'Machine Learning', 'Data Analysis', 'UI/UX', 'Design', 'HTML', 'CSS'
+  ];
+  
+  // Find skills mentioned in the job description
+  const extractedSkills = skillKeywords
+    .filter(skill => jobDescription.toLowerCase().includes(skill.toLowerCase()))
+    .slice(0, 8); // Limit to 8 skills
+  
+  // Simple heuristic to estimate experience level based on keywords
+  const juniorTerms = ['entry-level', 'junior', 'associate', '0-2 years', '1-3 years', 'intern', 'trainee'];
+  const midTerms = ['mid-level', 'intermediate', '2-5 years', '3-5 years', 'experienced'];
+  const seniorTerms = ['senior', 'lead', 'principal', '5+ years', '6+ years', '7+ years', 'manager', 'director'];
+  
+  let suggestedExperience = 2; // Default to mid-level
+  
+  // Check for experience level indicators
+  if (seniorTerms.some(term => jobDescription.toLowerCase().includes(term))) {
+    suggestedExperience = 5;
+  } else if (midTerms.some(term => jobDescription.toLowerCase().includes(term))) {
+    suggestedExperience = 3;
+  } else if (juniorTerms.some(term => jobDescription.toLowerCase().includes(term))) {
+    suggestedExperience = 1;
   }
-};
-
-export const getAvailableMatchingModels = async (): Promise<MatchingModel[]> => {
-  try {
-    const models = await getAvailableMatchingModelsFromDatabase();
-    
-    if (models && models.length > 0) {
-      return models;
-    }
-    
-    // Fallback to hardcoded models if none in database
-    return getFallbackMatchingModels();
-  } catch (error) {
-    console.error("Error fetching matching models:", error);
-    return getFallbackMatchingModels();
-  }
-};
+  
+  // Extract key responsibilities (simplified implementation)
+  const keyResponsibilities = jobDescription
+    .split(/\n|\./)
+    .filter(line => line.trim().length > 20) // Only consider meaningful lines
+    .filter(line => 
+      line.toLowerCase().includes('responsible') || 
+      line.toLowerCase().includes('duties') || 
+      line.toLowerCase().includes('will') || 
+      line.toLowerCase().includes('tasks')
+    )
+    .map(line => line.trim())
+    .slice(0, 5); // Limit to 5 responsibilities
+  
+  return {
+    extractedTitle,
+    extractedSkills,
+    suggestedExperience,
+    keyResponsibilities
+  };
+}
