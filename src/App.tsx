@@ -27,6 +27,7 @@ import CRM from "./pages/CRM";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Payroll from "./pages/Payroll";
+import AgenticAI from "./pages/AgenticAI";
 
 function App() {
   // Create a stable QueryClient instance using useState
@@ -102,6 +103,11 @@ function App() {
               <Route path="/dashboard/crm" element={
                 <ProtectedRoute requiredPermission="viewCRM">
                   <CRM />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard/agentic-ai" element={
+                <ProtectedRoute requiredPermission="viewDashboard">
+                  <AgenticAI />
                 </ProtectedRoute>
               } />
               <Route path="/pricing" element={<Pricing />} />

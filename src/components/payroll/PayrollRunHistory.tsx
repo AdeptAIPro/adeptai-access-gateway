@@ -1,9 +1,12 @@
 
-import React from "react";
+import React, { useState } from "react";
 import PayrollRunForm from "./PayrollRunForm";
 import PayrollHistoryTable from "./PayrollHistoryTable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PayrollAgentTaskCreator from "../agentic-ai/payroll/PayrollAgentTaskCreator";
 
 const PayrollRunHistory = () => {
+  const [activeTab, setActiveTab] = useState<string>("manual");
   const payrollHistory = [
     { 
       id: "pr-001", 
@@ -36,7 +39,20 @@ const PayrollRunHistory = () => {
 
   return (
     <div className="space-y-6">
-      <PayrollRunForm />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-2 mb-6">
+          <TabsTrigger value="manual">Manual Processing</TabsTrigger>
+          <TabsTrigger value="ai">AI Processing</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="manual">
+          <PayrollRunForm />
+        </TabsContent>
+        
+        <TabsContent value="ai">
+          <PayrollAgentTaskCreator />
+        </TabsContent>
+      </Tabs>
       
       <div>
         <h3 className="text-lg font-medium mb-4">Recent Payroll Runs</h3>

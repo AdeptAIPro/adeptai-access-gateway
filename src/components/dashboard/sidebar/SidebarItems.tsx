@@ -38,6 +38,14 @@ const SidebarItems = () => {
       badgeVariant: "outline",
       requiredPermission: "viewDashboard"
     },
+    { 
+      title: "Agentic AI Platform", 
+      icon: Robot, 
+      href: "/dashboard/agentic-ai",
+      badge: "New",
+      badgeVariant: "default",
+      requiredPermission: "viewDashboard"
+    },
     { title: "Analytics", icon: BarChart, href: "/dashboard/analytics", requiredPermission: "viewAnalytics" },
     { title: "Professional Skills", icon: GraduationCap, href: "/dashboard/skills", requiredPermission: "viewDashboard" },
     { 
@@ -114,7 +122,8 @@ import {
   UserPlus,
   Settings,
   Search,
-  DollarSign
+  DollarSign,
+  Robot
 } from "lucide-react";
 
 export default SidebarItems;
