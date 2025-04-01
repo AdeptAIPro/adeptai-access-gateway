@@ -96,7 +96,7 @@ export const createEmployee = async (employee: Omit<Employee, "id">): Promise<Em
       toast({
         title: "Database Setup Required",
         description: "Please create the necessary tables in your Supabase project.",
-        variant: "warning",
+        variant: "default",
       });
       return null;
     }

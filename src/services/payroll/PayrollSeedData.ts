@@ -243,7 +243,7 @@ const createPayrollTables = async (): Promise<boolean> => {
       toast({
         title: "Database Setup Required",
         description: "Please create the necessary tables in your Supabase project.",
-        variant: "warning",
+        variant: "default",
       });
       return false;
     }

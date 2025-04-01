@@ -30,14 +30,14 @@ export function usePayrollEmployeesSupabase() {
           toast({
             title: "Using Mock Data",
             description: "No employee data found in database. Using sample data instead.",
-            variant: "warning",
+            variant: "default",
           });
         } else {
           setError("No employee data available");
           toast({
             title: "No Data Available",
             description: "Please add employees or seed the database with sample data.",
-            variant: "warning",
+            variant: "default",
           });
         }
       }
@@ -56,7 +56,7 @@ export function usePayrollEmployeesSupabase() {
           toast({
             title: "Using Mock Data",
             description: "Error connecting to database. Using sample data instead.",
-            variant: "warning",
+            variant: "default",
           });
         } else {
           toast({
