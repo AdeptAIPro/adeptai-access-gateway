@@ -3,16 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, Building2, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import ClientSelector from "@/components/onboarding/ClientSelector";
-import OnboardingWorkflowCard from "@/components/onboarding/OnboardingWorkflowCard";
 import OnboardingWorkflowDetail from "@/components/onboarding/OnboardingWorkflowDetail";
-import OnboardingWorkflowCreator from "@/components/onboarding/OnboardingWorkflowCreator";
-import OnboardingIntegrations from "@/components/onboarding/OnboardingIntegrations";
 import OnboardingEmptyState from "@/components/onboarding/OnboardingEmptyState";
 import OnboardingHeader from "@/components/onboarding/OnboardingHeader";
+import OnboardingContent from "./workflow/OnboardingContent";
 import { Input } from "@/components/ui/input";
 import { 
   getClientOnboardingData, 
@@ -176,7 +172,7 @@ const OnboardingDashboard = () => {
                 setActiveTab={setActiveTab}
                 filteredWorkflows={filteredWorkflows}
                 onSelectWorkflow={setSelectedWorkflow}
-                selectedClientId={selectedClientId}
+                selectedClientId={selectedClientId!}
                 onWorkflowCreated={handleRefresh}
                 availableTools={availableTools}
                 connectedTools={connectedTools}
@@ -189,173 +185,6 @@ const OnboardingDashboard = () => {
         )}
       </div>
     </DashboardLayout>
-  );
-};
-
-interface OnboardingContentProps {
-  selectedClient: OnboardingClient;
-  viewMode: "workflows" | "integrations";
-  setViewMode: (mode: "workflows" | "integrations") => void;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  filteredWorkflows: OnboardingWorkflow[];
-  onSelectWorkflow: (workflow: OnboardingWorkflow) => void;
-  selectedClientId: string;
-  onWorkflowCreated: () => void;
-  availableTools: OnboardingTool[];
-  connectedTools: OnboardingTool[];
-  onToolConnected: () => void;
-}
-
-const OnboardingContent: React.FC<OnboardingContentProps> = ({
-  selectedClient,
-  viewMode,
-  setViewMode,
-  activeTab,
-  setActiveTab,
-  filteredWorkflows,
-  onSelectWorkflow,
-  selectedClientId,
-  onWorkflowCreated,
-  availableTools,
-  connectedTools,
-  onToolConnected
-}) => {
-  return (
-    <div className="space-y-4">
-      <Tabs defaultValue="workflows" value={viewMode} onValueChange={(value) => setViewMode(value as "workflows" | "integrations")}>
-        <TabsList>
-          <TabsTrigger value="workflows">Workflows</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="workflows" className="space-y-6">
-          <OnboardingWorkflows
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            filteredWorkflows={filteredWorkflows}
-            onSelectWorkflow={onSelectWorkflow}
-            selectedClientId={selectedClientId}
-            onWorkflowCreated={onWorkflowCreated}
-          />
-        </TabsContent>
-
-        <TabsContent value="integrations" className="space-y-6">
-          <OnboardingIntegrations
-            clientId={selectedClientId}
-            availableTools={availableTools}
-            connectedTools={connectedTools}
-            onToolConnected={onToolConnected}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-};
-
-interface OnboardingWorkflowsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  filteredWorkflows: OnboardingWorkflow[];
-  onSelectWorkflow: (workflow: OnboardingWorkflow) => void;
-  selectedClientId: string;
-  onWorkflowCreated: () => void;
-}
-
-const OnboardingWorkflows: React.FC<OnboardingWorkflowsProps> = ({
-  activeTab,
-  setActiveTab,
-  filteredWorkflows,
-  onSelectWorkflow,
-  selectedClientId,
-  onWorkflowCreated
-}) => {
-  return (
-    <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-      <TabsList>
-        <TabsTrigger value="all">All Workflows</TabsTrigger>
-        <TabsTrigger value="healthcare">Healthcare</TabsTrigger>
-        <TabsTrigger value="it">IT</TabsTrigger>
-        <TabsTrigger value="general">General</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="all" className="space-y-6">
-        <WorkflowList
-          workflows={filteredWorkflows}
-          onSelectWorkflow={onSelectWorkflow}
-          selectedClientId={selectedClientId}
-          onWorkflowCreated={onWorkflowCreated}
-          sectorFilter={null}
-        />
-      </TabsContent>
-
-      <TabsContent value="healthcare" className="space-y-6">
-        <WorkflowList
-          workflows={filteredWorkflows}
-          onSelectWorkflow={onSelectWorkflow}
-          selectedClientId={selectedClientId}
-          onWorkflowCreated={onWorkflowCreated}
-          sectorFilter="healthcare"
-        />
-      </TabsContent>
-
-      <TabsContent value="it" className="space-y-6">
-        <WorkflowList
-          workflows={filteredWorkflows}
-          onSelectWorkflow={onSelectWorkflow}
-          selectedClientId={selectedClientId}
-          onWorkflowCreated={onWorkflowCreated}
-          sectorFilter="it"
-        />
-      </TabsContent>
-
-      <TabsContent value="general" className="space-y-6">
-        <WorkflowList
-          workflows={filteredWorkflows}
-          onSelectWorkflow={onSelectWorkflow}
-          selectedClientId={selectedClientId}
-          onWorkflowCreated={onWorkflowCreated}
-          sectorFilter="general"
-        />
-      </TabsContent>
-    </Tabs>
-  );
-};
-
-interface WorkflowListProps {
-  workflows: OnboardingWorkflow[];
-  onSelectWorkflow: (workflow: OnboardingWorkflow) => void;
-  selectedClientId: string;
-  onWorkflowCreated: () => void;
-  sectorFilter: "healthcare" | "it" | "general" | null;
-}
-
-const WorkflowList: React.FC<WorkflowListProps> = ({
-  workflows,
-  onSelectWorkflow,
-  selectedClientId,
-  onWorkflowCreated,
-  sectorFilter
-}) => {
-  const displayName = sectorFilter ? `${sectorFilter} ` : "";
-  
-  return workflows.length > 0 ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {workflows.map(workflow => (
-        <OnboardingWorkflowCard 
-          key={workflow.id} 
-          workflow={workflow} 
-          onClick={() => onSelectWorkflow(workflow)}
-        />
-      ))}
-    </div>
-  ) : (
-    <OnboardingEmptyState 
-      type="no-workflows"
-      sector={sectorFilter}
-      clientId={selectedClientId}
-      onWorkflowCreated={onWorkflowCreated}
-    />
   );
 };
 

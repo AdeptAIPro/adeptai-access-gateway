@@ -1,78 +1,111 @@
-// Import the correct type
-import { TalentMatchingTaskParams } from './types/TalentMatchingTypes';
-import { AgentTask } from '../../types/AgenticTypes';
-import agenticDatabaseService from '../../database/AgenticDatabaseService';
 
-export class TalentMatchingAgenticService {
-  // Process a talent matching task
-  public async processTalentMatchingTask(task: AgentTask): Promise<any> {
-    try {
-      // Get the task parameters
-      const params = task.params as TalentMatchingTaskParams;
-      
-      // Validate parameters
-      if (!params.jobDescription) {
-        throw new Error('Job description is required for talent matching.');
-      }
-      
-      // Simulate talent matching logic (replace with actual implementation)
-      const matchedCandidates = this.simulateTalentMatching(params);
-      
-      // Basic insights (replace with actual analysis)
-      const insights = this.generateMatchingInsights(matchedCandidates);
-      
-      return {
-        candidates: matchedCandidates,
-        insights: insights,
-        taskParams: params
-      };
-    } catch (error: any) {
-      console.error('Error processing talent matching task:', error);
-      await agenticDatabaseService.updateTaskStatus(task.id, 'failed', null, error.message || 'Talent matching failed');
-      return null;
-    }
-  }
+import { AgentTask } from "../types/AgenticTypes";
+import { executeQuery } from "../database/AgenticDatabaseService";
+import { rankCandidatesAgainstJob } from "./utils/CandidateRanking";
+import { generateCandidateInsights } from "./utils/InsightsGenerator";
+import { generateNextSteps } from "./utils/NextStepsGenerator";
+
+const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> => {
+  console.log(`Processing talent matching task: ${task.id}`);
   
-  // Simulate talent matching (replace with actual implementation)
-  private simulateTalentMatching(params: TalentMatchingTaskParams): any[] {
-    const numCandidates = params.maxCandidates || 5;
-    const candidates = [];
-    
-    for (let i = 1; i <= numCandidates; i++) {
-      candidates.push({
-        candidateId: `candidate-${i}`,
-        name: `Candidate ${i}`,
-        matchScore: Math.random() * 100,
-        skillMatch: Math.random() * 100,
-        experienceMatch: Math.random() * 100,
-        culturalFitScore: Math.random() * 100,
-        matchDetails: {
-          matchedRequiredSkills: ['JavaScript', 'React', 'Node.js'],
-          matchedPreferredSkills: ['TypeScript', 'GraphQL'],
-          missingSkills: ['Angular']
-        }
-      });
-    }
-    
-    return candidates;
-  }
+  // Mark task as processing
+  const updatedTask = { ...task, status: "processing" as const };
   
-  // Generate basic matching insights (replace with actual analysis)
-  private generateMatchingInsights(candidates: any[]): any {
-    const averageScore = candidates.reduce((sum, candidate) => sum + candidate.matchScore, 0) / candidates.length;
+  try {
+    // Simulating matching process
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
+    const candidates = await fetchCandidates(task.data.jobDescription);
+    const rankedCandidates = rankCandidatesAgainstJob(candidates, task.data.jobDescription);
+    
+    const insights = generateCandidateInsights(rankedCandidates, task.data.jobDescription);
+    const nextSteps = generateNextSteps(rankedCandidates);
+    
+    // Update task with candidates, insights, and next steps
     return {
-      topCandidatesAverageScore: averageScore,
-      mostCommonSkills: ['JavaScript', 'React', 'Node.js'],
-      candidatePoolQuality: 'Good',
-      mostMissingSkills: ['Angular'],
-      recommendedInterviewQuestions: [
-        'Tell me about a time you had to learn a new skill quickly.',
-        'Describe your experience with our tech stack.',
-        'How do you stay up-to-date with the latest industry trends?'
-      ]
+      ...updatedTask,
+      status: "completed",
+      result: {
+        candidates: rankedCandidates,
+        insights,
+        nextSteps
+      }
+    };
+  } catch (error) {
+    console.error(`Error processing talent matching task: ${error}`);
+    return {
+      ...updatedTask,
+      status: "failed",
+      error: `Failed to process task: ${error}`
     };
   }
-}
+};
 
-export default new TalentMatchingAgenticService();
+const fetchCandidates = async (jobDescription: string) => {
+  try {
+    console.log(`Fetching candidates for job: ${jobDescription.substring(0, 20)}...`);
+    
+    // Query the database for candidates
+    const candidatesResult = await executeQuery(
+      "SELECT * FROM candidates WHERE status = 'active' LIMIT 10"
+    );
+    
+    // Simulate some processing time
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Mock data if no results from the database
+    if (!candidatesResult || candidatesResult.length === 0) {
+      return mockCandidates;
+    }
+    
+    return candidatesResult.map((candidate: any) => ({
+      id: candidate.id,
+      name: candidate.name,
+      skills: candidate.skills || [],
+      experience: candidate.experience || [],
+      education: candidate.education || [],
+      matchScore: Math.floor(Math.random() * 40) + 60 // Random score between 60-99
+    }));
+  } catch (error) {
+    console.error("Error fetching candidates:", error);
+    return mockCandidates;
+  }
+};
+
+const mockCandidates = [
+  {
+    id: "c1",
+    name: "Jane Smith",
+    skills: ["JavaScript", "React", "TypeScript", "Node.js"],
+    experience: [
+      "Senior Frontend Developer at Tech Co (2020-present)",
+      "Frontend Developer at App Inc (2018-2020)"
+    ],
+    education: ["B.S. Computer Science, University of Technology"],
+    matchScore: 95
+  },
+  {
+    id: "c2",
+    name: "Michael Johnson",
+    skills: ["JavaScript", "Angular", "Java", "Spring Boot"],
+    experience: [
+      "Full Stack Developer at Software Solutions Ltd (2019-present)",
+      "Backend Developer at Enterprise Apps (2016-2019)"
+    ],
+    education: ["M.S. Software Engineering, State University"],
+    matchScore: 88
+  },
+  {
+    id: "c3",
+    name: "Emily Davis",
+    skills: ["JavaScript", "Vue.js", "Python", "Django"],
+    experience: [
+      "Web Developer at Creative Agency (2018-present)",
+      "Junior Developer at Tech Startups Inc (2017-2018)"
+    ],
+    education: ["B.A. Web Development, Design Institute"],
+    matchScore: 75
+  }
+];
+
+export { processTalentMatchingTask };
