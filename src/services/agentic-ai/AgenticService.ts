@@ -1,50 +1,50 @@
 
-import { toast } from "@/hooks/use-toast";
 import { AgentTask, Agent, AgentTaskType } from './types/AgenticTypes';
 import agenticDatabaseService from './database/AgenticDatabaseService';
-import taskProcessorService from './tasks/TaskProcessorService';
+import { processAgentTask } from './tasks/TaskProcessorService';
 
-// Export types for simpler imports from other files
-export type { AgentTask, Agent, AgentTaskType };
-
-// Core Agentic AI Service
-export class AgenticService {
-  private static instance: AgenticService;
-  
-  private constructor() {}
-  
-  // Get singleton instance
-  public static getInstance(): AgenticService {
-    if (!AgenticService.instance) {
-      AgenticService.instance = new AgenticService();
-    }
-    return AgenticService.instance;
-  }
-  
-  // Create a new task for an agent
-  public async createTask(task: Omit<AgentTask, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<AgentTask | null> {
-    return agenticDatabaseService.createTask(task);
+class AgenticService {
+  // Create a new task for the agent system
+  async createTask(taskData: Omit<AgentTask, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<AgentTask | null> {
+    return await agenticDatabaseService.createTask(taskData);
   }
   
   // Get all tasks for a user
-  public async getUserTasks(userId: string): Promise<AgentTask[]> {
-    return agenticDatabaseService.getUserTasks(userId);
+  async getUserTasks(userId: string): Promise<AgentTask[]> {
+    return await agenticDatabaseService.getUserTasks(userId);
   }
   
   // Get all available agents
-  public async getAgents(): Promise<Agent[]> {
-    return agenticDatabaseService.getAgents();
+  async getAgents(): Promise<Agent[]> {
+    return await agenticDatabaseService.getAgents();
   }
   
-  // Update task status
-  public async updateTaskStatus(taskId: string, status: AgentTask['status'], result?: any, error?: string): Promise<boolean> {
-    return agenticDatabaseService.updateTaskStatus(taskId, status, result, error);
-  }
-  
-  // Process a specific task
-  public async processTask(taskId: string): Promise<boolean> {
-    return taskProcessorService.processTask(taskId);
+  // Process a task with the appropriate agent
+  async processTask(taskId: string): Promise<boolean> {
+    try {
+      const task = await agenticDatabaseService.getTaskById(taskId);
+      
+      if (!task) {
+        console.error(`Task with ID ${taskId} not found`);
+        return false;
+      }
+      
+      // Process the task with the appropriate handler
+      const processedTask = await processAgentTask(task);
+      
+      // Update the task status in the database
+      return await agenticDatabaseService.updateTaskStatus(
+        taskId,
+        processedTask.status,
+        processedTask.result,
+        processedTask.error
+      );
+    } catch (error) {
+      console.error(`Error processing task ${taskId}:`, error);
+      return false;
+    }
   }
 }
 
-export default AgenticService.getInstance();
+export { AgentTask, Agent, AgentTaskType };
+export default new AgenticService();

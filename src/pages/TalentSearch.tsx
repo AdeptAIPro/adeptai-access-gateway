@@ -22,6 +22,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
+interface TalentComponentProps {
+  useAgenticIntelligence?: boolean;
+}
+
 const TalentSearch = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

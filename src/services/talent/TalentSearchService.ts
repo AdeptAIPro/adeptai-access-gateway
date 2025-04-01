@@ -4,6 +4,7 @@ import { searchTalentsFromSupabase } from './SupabaseTalentService';
 import { searchTalentsFromExternalSource } from './ExternalTalentService';
 import { getTalentSources } from './TalentSourcesService';
 import { processCrossSourceTalentIntelligenceTask } from '../agentic-ai/talent/CrossSourceTalentIntelligenceService';
+import { AgentTask } from '../agentic-ai/types/AgenticTypes';
 
 // Combine results from multiple sources
 export const searchTalents = async (
@@ -50,7 +51,7 @@ export const searchTalentsWithAgenticIntelligence = async (
 ): Promise<any> => {
   try {
     // Create an agent task to perform cross-source intelligence
-    const task = {
+    const task: AgentTask = {
       id: `talent-intel-${Date.now()}`,
       taskType: 'cross-source-talent-intelligence',
       status: 'pending',

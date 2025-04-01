@@ -25,7 +25,8 @@ export type AgentTaskType =
   'analytics-insight' | 
   'compliance-check' | 
   'onboarding-customization' |
-  'cross-source-talent-intelligence';
+  'cross-source-talent-intelligence' |
+  'payroll';
 
 export interface Agent {
   id: string;

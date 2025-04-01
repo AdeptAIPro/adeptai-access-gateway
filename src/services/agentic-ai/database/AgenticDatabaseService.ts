@@ -3,6 +3,64 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import { AgentTask, Agent } from '../types/AgenticTypes';
 
+// Helper function to execute database queries
+export const executeQuery = async (query: string, params?: any[]): Promise<any[] | null> => {
+  try {
+    // This is a simplified implementation - in a real app, this would use actual parameterized queries
+    console.log(`Executing query: ${query}`);
+    
+    // For development/demo purposes, we'll simulate database queries
+    // In production, this would use actual Supabase queries
+    
+    if (query.toLowerCase().includes('select') && query.toLowerCase().includes('candidates')) {
+      return mockCandidates;
+    }
+    
+    const { data, error } = await supabase.rpc('execute_query', { 
+      query_text: query,
+      params: params || []
+    });
+    
+    if (error) {
+      console.error('Error executing query:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error in executeQuery:', error);
+    return null;
+  }
+};
+
+// Mock candidates for development/demo
+const mockCandidates = [
+  {
+    id: "c1",
+    name: "Jane Smith",
+    skills: ["JavaScript", "React", "TypeScript", "Node.js"],
+    experience: 5,
+    location: "San Francisco, CA",
+    source: "linkedin"
+  },
+  {
+    id: "c2",
+    name: "Michael Johnson",
+    skills: ["JavaScript", "Angular", "Java", "Spring Boot"],
+    experience: 7,
+    location: "New York, NY",
+    source: "internal"
+  },
+  {
+    id: "c3",
+    name: "Emily Davis",
+    skills: ["JavaScript", "Vue.js", "Python", "Django"],
+    experience: 3,
+    location: "Austin, TX",
+    source: "ceipal"
+  }
+];
+
 export class AgenticDatabaseService {
   private tableName = 'agent_tasks';
   private agentsTableName = 'agents';
