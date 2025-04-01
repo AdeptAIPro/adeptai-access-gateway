@@ -22,12 +22,22 @@ export const fetchEmployees = async (): Promise<Employee[]> => {
     
     if (error) {
       console.error("Error fetching employees:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch employees from database",
+        variant: "destructive",
+      });
       throw error;
     }
     
     return data as Employee[] || [];
   } catch (error) {
     console.error("Failed to fetch employees:", error);
+    toast({
+      title: "Database Error",
+      description: "Failed to load employees. Please check your database connection.",
+      variant: "destructive",
+    });
     // We'll still return an empty array as fallback
     return [];
   }
@@ -56,6 +66,11 @@ export const fetchEmployeeById = async (id: string): Promise<Employee | null> =>
     return data as Employee;
   } catch (error) {
     console.error(`Failed to fetch employee with ID ${id}:`, error);
+    toast({
+      title: "Error",
+      description: "Failed to load employee details",
+      variant: "destructive",
+    });
     return null;
   }
 };

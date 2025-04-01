@@ -21,23 +21,31 @@ export function usePayrollEmployeesSupabase() {
       } else {
         // Fall back to mock data
         console.log("No employees found in Supabase, falling back to mock data");
-        const { employees: mockEmployees } = await import("@/hooks/use-payroll").then(
-          (module) => module.usePayrollEmployees()
-        );
-        
-        if (mockEmployees && mockEmployees.length > 0) {
-          setEmployees(mockEmployees);
+        try {
+          const { mockEmployees } = await import("@/data/mockEmployees");
+          
+          if (mockEmployees && mockEmployees.length > 0) {
+            setEmployees(mockEmployees);
+            toast({
+              title: "Using Mock Data",
+              description: "No employee data found in database. Using sample data instead.",
+              variant: "default",
+            });
+          } else {
+            setError("No employee data available");
+            toast({
+              title: "No Data Available",
+              description: "Please add employees or seed the database with sample data.",
+              variant: "default",
+            });
+          }
+        } catch (mockError) {
+          console.error("Error loading mock data:", mockError);
+          setError("Failed to load any employee data");
           toast({
-            title: "Using Mock Data",
-            description: "No employee data found in database. Using sample data instead.",
-            variant: "default",
-          });
-        } else {
-          setError("No employee data available");
-          toast({
-            title: "No Data Available",
-            description: "Please add employees or seed the database with sample data.",
-            variant: "default",
+            title: "Data Loading Error",
+            description: "Could not load employee data from any source.",
+            variant: "destructive",
           });
         }
       }
@@ -47,9 +55,7 @@ export function usePayrollEmployeesSupabase() {
       
       // Fall back to mock data
       try {
-        const { employees: mockEmployees } = await import("@/hooks/use-payroll").then(
-          (module) => module.usePayrollEmployees()
-        );
+        const { mockEmployees } = await import("@/data/mockEmployees");
         
         if (mockEmployees && mockEmployees.length > 0) {
           setEmployees(mockEmployees);
@@ -66,9 +72,10 @@ export function usePayrollEmployeesSupabase() {
           });
         }
       } catch (mockErr) {
+        console.error("Error loading mock data after DB error:", mockErr);
         toast({
           title: "Error",
-          description: "Failed to load employees",
+          description: "Failed to load employees from any source",
           variant: "destructive",
         });
       }
@@ -155,18 +162,27 @@ export function usePayrollEmployeeSupabase(employeeId: string | null) {
         } else {
           // Fall back to mock data
           console.log(`Employee ${employeeId} not found in Supabase, falling back to mock data`);
-          const { employee: mockEmployee } = await import("@/hooks/use-payroll").then(
-            (module) => module.usePayrollEmployee(employeeId)
-          );
-          
-          if (mockEmployee) {
-            setEmployee(mockEmployee);
-            setError(null);
-          } else {
-            setError("Employee not found");
+          try {
+            const { mockEmployees } = await import("@/data/mockEmployees");
+            const mockEmployee = mockEmployees.find(emp => emp.id === employeeId);
+            
+            if (mockEmployee) {
+              setEmployee(mockEmployee);
+              setError(null);
+            } else {
+              setError("Employee not found");
+              toast({
+                title: "Not Found",
+                description: "Employee details could not be found",
+                variant: "destructive",
+              });
+            }
+          } catch (mockErr) {
+            console.error("Error loading mock employee data:", mockErr);
+            setError("Failed to load employee data from any source");
             toast({
-              title: "Not Found",
-              description: "Employee details could not be found",
+              title: "Error",
+              description: "Failed to load employee details from any source",
               variant: "destructive",
             });
           }
@@ -177,12 +193,16 @@ export function usePayrollEmployeeSupabase(employeeId: string | null) {
         
         // Fall back to mock data
         try {
-          const { employee: mockEmployee } = await import("@/hooks/use-payroll").then(
-            (module) => module.usePayrollEmployee(employeeId)
-          );
+          const { mockEmployees } = await import("@/data/mockEmployees");
+          const mockEmployee = mockEmployees.find(emp => emp.id === employeeId);
           
           if (mockEmployee) {
             setEmployee(mockEmployee);
+            toast({
+              title: "Using Mock Data",
+              description: "Using sample employee data due to database error",
+              variant: "default",
+            });
           } else {
             toast({
               title: "Error",
