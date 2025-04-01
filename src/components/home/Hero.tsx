@@ -1,8 +1,8 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import CarouselIndicators from "./CarouselIndicators";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const heroSlides = [
@@ -29,27 +29,53 @@ const heroSlides = [
     description: "Gain valuable insights with our powerful analytics dashboard, helping you make data-driven decisions that drive business growth.",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=1200&q=80",
     alt: "Analytics dashboard"
-  },
-  {
-    title: "Seamless Integrations",
-    description: "Connect all your existing tools and systems with our platform for a unified workflow that enhances productivity across your organization.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-    alt: "Integration dashboard"
   }
 ];
 
 const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const isMobile = useIsMobile();
+  
+  // Auto-rotate slides
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+  
+  const goToNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+  
+  const goToPrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
 
   return (
     <section className="py-8 md:py-16 px-6 bg-gradient-to-b from-indigo-50 to-white">
       <div className="max-w-7xl mx-auto">
-        <Carousel className="w-full" opts={{ loop: true }}>
-          <CarouselContent>
-            {heroSlides.map((slide, index) => (
-              <CarouselItem key={index}>
-                <div className="flex flex-col lg:flex-row gap-8 items-center">
-                  <div className="lg:w-1/2 space-y-6 text-center lg:text-left animate-fade-in-up">
+        <div className="relative overflow-hidden">
+          {/* Carousel Content */}
+          <div 
+            className="transition-all duration-500 ease-in-out"
+            style={{
+              transform: `translateX(-${currentSlide * 100}%)`
+            }}
+          >
+            <div className="flex">
+              {heroSlides.map((slide, index) => (
+                <div 
+                  key={index} 
+                  className="w-full flex-shrink-0 flex flex-col lg:flex-row gap-8 items-center"
+                  style={{ minWidth: '100%' }}
+                >
+                  <div className="lg:w-1/2 space-y-6 text-center lg:text-left">
                     <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
                       <span className="text-adept">{slide.title}</span>
                     </h1>
@@ -71,38 +97,53 @@ const Hero = () => {
                     </div>
                   </div>
                   
-                  <div className="lg:w-1/2 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+                  <div className="lg:w-1/2">
                     <div className="rounded-lg overflow-hidden shadow-2xl glass-morphism">
                       <img 
                         src={slide.image} 
                         alt={slide.alt}
                         className="w-full aspect-[16/9] object-cover"
+                        loading="lazy"
                       />
                     </div>
                   </div>
                 </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Arrows */}
           {!isMobile && (
             <>
-              <CarouselPrevious className="left-2 lg:-left-12" />
-              <CarouselNext className="right-2 lg:-right-12" />
+              <button 
+                onClick={goToPrevSlide}
+                className="absolute left-2 lg:-left-8 top-1/2 -translate-y-1/2 bg-white/70 dark:bg-gray-800/70 rounded-full p-2 shadow-md z-10"
+                aria-label="Previous slide"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+              </button>
+              <button 
+                onClick={goToNextSlide}
+                className="absolute right-2 lg:-right-8 top-1/2 -translate-y-1/2 bg-white/70 dark:bg-gray-800/70 rounded-full p-2 shadow-md z-10"
+                aria-label="Next slide"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
             </>
           )}
-        </Carousel>
+        </div>
         
-        <div className="flex justify-center mt-8">
-          <div className="flex gap-2">
-            {heroSlides.map((_, index) => (
-              <div 
-                key={index} 
-                className="w-2 h-2 rounded-full bg-gray-300 cursor-pointer"
-                // Navigation indicators - in a real app these would be connected to the carousel
-              />
-            ))}
-          </div>
+        {/* Carousel Indicators */}
+        <div className="mt-8">
+          <CarouselIndicators 
+            total={heroSlides.length} 
+            current={currentSlide} 
+            onClick={goToSlide}
+          />
         </div>
       </div>
     </section>
