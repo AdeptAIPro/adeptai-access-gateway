@@ -1,4 +1,4 @@
-
+import React from "react";
 import { IntegrationItem } from "@/types/integration";
 import {
   LinkedInIcon,
