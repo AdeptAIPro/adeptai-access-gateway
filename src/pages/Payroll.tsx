@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import PayrollTypeSelector from "@/components/payroll/PayrollTypeSelector";
 import PayrollFrequencySelector from "@/components/payroll/PayrollFrequencySelector";
 import PayrollIntegrations from "@/components/payroll/PayrollIntegrations";
@@ -13,7 +13,7 @@ import EmployeeList from "@/components/payroll/EmployeeList";
 import EmployeeDetails from "@/components/payroll/EmployeeDetails";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Database, RefreshCw } from "lucide-react";
-import { seedEmployeeData } from "@/services/payroll/PayrollSeedData";
+import { seedEmployeeData } from "@/services/payroll/db/DatabaseSeeder";
 import { ensurePayrollTables } from "@/services/payroll";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 

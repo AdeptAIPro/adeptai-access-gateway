@@ -1,12 +1,10 @@
 
-import { supabase } from "@/lib/supabase";
 import { Employee } from "@/types/employee";
-import { toast } from "@/hooks/use-toast";
 
 /**
  * Sample employee data for seeding the database
  */
-const sampleEmployees: Omit<Employee, "id">[] = [
+export const sampleEmployees: Omit<Employee, "id">[] = [
   {
     employeeId: "EMP001",
     name: "Sarah Johnson",
@@ -226,96 +224,3 @@ const sampleEmployees: Omit<Employee, "id">[] = [
     }
   }
 ];
-
-/**
- * Creates necessary tables in Supabase if they don't exist
- */
-const createPayrollTables = async (): Promise<boolean> => {
-  try {
-    // Check if the employees table exists
-    const { error } = await supabase
-      .from('employees')
-      .select('count')
-      .limit(1);
-    
-    if (error && error.message.includes('does not exist')) {
-      console.log("Tables need to be created in Supabase Dashboard");
-      toast({
-        title: "Database Setup Required",
-        description: "Please create the necessary tables in your Supabase project.",
-        variant: "default",
-      });
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error("Error checking tables:", error);
-    return false;
-  }
-};
-
-/**
- * Seeds the database with sample employee data
- */
-export const seedEmployeeData = async (): Promise<boolean> => {
-  try {
-    // First check if tables exist
-    const tablesExist = await createPayrollTables();
-    if (!tablesExist) {
-      return false;
-    }
-    
-    // Check if data already exists
-    const { data: existingData, error: checkError } = await supabase
-      .from('employees')
-      .select('id')
-      .limit(1);
-      
-    if (checkError) {
-      console.error("Error checking existing data:", checkError);
-      return false;
-    }
-    
-    if (existingData && existingData.length > 0) {
-      // Data already exists, ask before overwriting
-      console.log("Sample data already exists");
-      toast({
-        title: "Sample Data Already Exists",
-        description: "Additional sample data has been added to your database.",
-      });
-    }
-    
-    // Insert sample data
-    for (const employee of sampleEmployees) {
-      const { error } = await supabase
-        .from('employees')
-        .insert([employee]);
-        
-      if (error) {
-        console.error("Error inserting employee:", error);
-        toast({
-          title: "Error",
-          description: "Failed to add sample employee data",
-          variant: "destructive",
-        });
-        return false;
-      }
-    }
-    
-    toast({
-      title: "Success",
-      description: "Sample employee data has been added to your database",
-    });
-    
-    return true;
-  } catch (error) {
-    console.error("Error seeding employee data:", error);
-    toast({
-      title: "Error",
-      description: "Failed to add sample employee data",
-      variant: "destructive",
-    });
-    return false;
-  }
-};
