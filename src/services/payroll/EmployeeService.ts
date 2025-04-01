@@ -1,6 +1,6 @@
 
 import { supabase } from "@/lib/supabase";
-import { Employee } from "@/hooks/use-payroll";
+import { Employee } from "@/types/employee";
 import { toast } from "@/hooks/use-toast";
 import { EMPLOYEES_TABLE, ensurePayrollTables } from "./utils/DatabaseUtils";
 
