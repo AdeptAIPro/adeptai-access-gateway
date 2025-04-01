@@ -17,6 +17,18 @@ export interface OnboardingWorkflow {
   steps: OnboardingStep[];
   sector: 'healthcare' | 'it' | 'general';
   assignee?: string;
+  connectedTools?: string[];
+}
+
+export interface OnboardingTool {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  apiKeyRequired: boolean;
+  apiUrlRequired: boolean;
+  webhookSupport: boolean;
+  logo?: string;
 }
 
 export interface OnboardingClient {
@@ -26,7 +38,122 @@ export interface OnboardingClient {
   workflows: OnboardingWorkflow[];
   activeSince: string;
   subscription: 'basic' | 'professional' | 'enterprise';
+  connectedOnboardingTools?: OnboardingTool[];
 }
+
+// Mock onboarding tools data
+const mockOnboardingTools: OnboardingTool[] = [
+  {
+    id: 'bamboohr',
+    name: 'BambooHR',
+    description: 'Comprehensive HR and onboarding platform',
+    category: 'HRMS',
+    apiKeyRequired: true,
+    apiUrlRequired: false,
+    webhookSupport: true,
+    logo: 'bamboohr.png'
+  },
+  {
+    id: 'workday',
+    name: 'Workday',
+    description: 'Enterprise human capital management',
+    category: 'HRMS',
+    apiKeyRequired: true,
+    apiUrlRequired: true,
+    webhookSupport: true,
+    logo: 'workday.png'
+  },
+  {
+    id: 'zenefits',
+    name: 'Zenefits',
+    description: 'All-in-one HR platform for small businesses',
+    category: 'HRMS',
+    apiKeyRequired: true,
+    apiUrlRequired: false,
+    webhookSupport: true,
+    logo: 'zenefits.png'
+  },
+  {
+    id: 'gusto',
+    name: 'Gusto',
+    description: 'Payroll, benefits, and HR management',
+    category: 'HRMS',
+    apiKeyRequired: true,
+    apiUrlRequired: false,
+    webhookSupport: true,
+    logo: 'gusto.png'
+  },
+  {
+    id: 'clickboarding',
+    name: 'Click Boarding',
+    description: 'Mobile-first onboarding experience platform',
+    category: 'Onboarding',
+    apiKeyRequired: true,
+    apiUrlRequired: true,
+    webhookSupport: false,
+    logo: 'clickboarding.png'
+  },
+  {
+    id: 'workbright',
+    name: 'WorkBright',
+    description: 'Digital employee onboarding for high-volume hiring',
+    category: 'Onboarding',
+    apiKeyRequired: true,
+    apiUrlRequired: true,
+    webhookSupport: true,
+    logo: 'workbright.png'
+  },
+  {
+    id: 'sapling',
+    name: 'Sapling HR',
+    description: 'People operations platform for mid-market companies',
+    category: 'HRMS',
+    apiKeyRequired: true,
+    apiUrlRequired: false,
+    webhookSupport: true,
+    logo: 'sapling.png'
+  },
+  {
+    id: 'talmundo',
+    name: 'Talmundo',
+    description: 'Employee onboarding software',
+    category: 'Onboarding',
+    apiKeyRequired: true,
+    apiUrlRequired: true,
+    webhookSupport: false,
+    logo: 'talmundo.png'
+  },
+  {
+    id: 'clearcompany',
+    name: 'ClearCompany',
+    description: 'Talent management platform for recruiting and onboarding',
+    category: 'ATS',
+    apiKeyRequired: true,
+    apiUrlRequired: true,
+    webhookSupport: true,
+    logo: 'clearcompany.png'
+  },
+  {
+    id: 'nursys',
+    name: 'Nursys',
+    description: 'Nurse licensure verification for healthcare',
+    category: 'Healthcare',
+    apiKeyRequired: true,
+    apiUrlRequired: false,
+    webhookSupport: false,
+    logo: 'nursys.png'
+  },
+  {
+    id: 'custom',
+    name: 'Custom Integration',
+    description: 'Connect your custom onboarding system via API',
+    category: 'Custom',
+    apiKeyRequired: true,
+    apiUrlRequired: true,
+    webhookSupport: true,
+    logo: 'custom.png'
+  }
+];
 
 // Mock data for client-specific onboarding workflows
 const mockClients: OnboardingClient[] = [
@@ -35,6 +162,10 @@ const mockClients: OnboardingClient[] = [
     name: 'HealthTech Solutions',
     activeSince: '2023-01-15',
     subscription: 'enterprise',
+    connectedOnboardingTools: [
+      mockOnboardingTools.find(tool => tool.id === 'bamboohr'),
+      mockOnboardingTools.find(tool => tool.id === 'nursys')
+    ].filter(Boolean) as OnboardingTool[],
     workflows: [
       {
         id: 'workflow-1',
@@ -43,6 +174,7 @@ const mockClients: OnboardingClient[] = [
         progress: 75,
         sector: 'healthcare',
         assignee: 'Sarah Johnson',
+        connectedTools: ['BambooHR', 'Nursys'],
         steps: [
           {
             id: 'step-1',
@@ -78,6 +210,7 @@ const mockClients: OnboardingClient[] = [
         progress: 50,
         sector: 'healthcare',
         assignee: 'Michael Chen',
+        connectedTools: ['BambooHR'],
         steps: [
           {
             id: 'step-1',
@@ -114,6 +247,9 @@ const mockClients: OnboardingClient[] = [
     name: 'TechForward Inc.',
     activeSince: '2023-03-22',
     subscription: 'professional',
+    connectedOnboardingTools: [
+      mockOnboardingTools.find(tool => tool.id === 'workday')
+    ].filter(Boolean) as OnboardingTool[],
     workflows: [
       {
         id: 'workflow-3',
@@ -122,6 +258,7 @@ const mockClients: OnboardingClient[] = [
         progress: 60,
         sector: 'it',
         assignee: 'David Park',
+        connectedTools: ['Workday'],
         steps: [
           {
             id: 'step-1',
@@ -280,6 +417,85 @@ export const updateWorkflowStatus = async (clientId: string, workflowId: string,
     toast({
       title: "Error",
       description: "Failed to update workflow status",
+      variant: "destructive"
+    });
+    return false;
+  }
+};
+
+// Get available onboarding tools
+export const getOnboardingTools = async (): Promise<OnboardingTool[]> => {
+  try {
+    // In a real implementation, this would fetch from an API
+    await new Promise(resolve => setTimeout(resolve, 600)); // Simulate API delay
+    
+    return mockOnboardingTools;
+  } catch (error) {
+    console.error("Error fetching onboarding tools:", error);
+    toast({
+      title: "Error",
+      description: "Failed to load available onboarding tools",
+      variant: "destructive"
+    });
+    return [];
+  }
+};
+
+// Get client's connected tools
+export const getClientConnectedTools = async (clientId: string): Promise<OnboardingTool[]> => {
+  try {
+    // In a real implementation, this would fetch from an API
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+    
+    const client = mockClients.find(c => c.id === clientId);
+    return client?.connectedOnboardingTools || [];
+  } catch (error) {
+    console.error("Error fetching connected tools:", error);
+    toast({
+      title: "Error",
+      description: "Failed to load client's connected tools",
+      variant: "destructive"
+    });
+    return [];
+  }
+};
+
+// Connect an onboarding tool to a client
+export const connectOnboardingTool = async (clientId: string, connectionDetails: any): Promise<boolean> => {
+  try {
+    // In a real implementation, this would send to an API
+    console.log("Connecting onboarding tool for client", clientId, connectionDetails);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    
+    return true;
+  } catch (error) {
+    console.error("Error connecting tool:", error);
+    return false;
+  }
+};
+
+// Disconnect an onboarding tool from a client
+export const disconnectOnboardingTool = async (clientId: string, toolId: string): Promise<boolean> => {
+  try {
+    // In a real implementation, this would send to an API
+    console.log("Disconnecting onboarding tool", toolId, "for client", clientId);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    toast({
+      title: "Success",
+      description: "Onboarding tool disconnected successfully",
+    });
+    
+    return true;
+  } catch (error) {
+    console.error("Error disconnecting tool:", error);
+    toast({
+      title: "Error",
+      description: "Failed to disconnect onboarding tool",
       variant: "destructive"
     });
     return false;

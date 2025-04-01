@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { OnboardingWorkflow } from "@/services/onboarding/OnboardingService";
-import { Calendar, FileCheck, UserCircle } from "lucide-react";
+import { Calendar, FileCheck, UserCircle, Puzzle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface OnboardingWorkflowCardProps {
   workflow: OnboardingWorkflow;
@@ -80,6 +81,27 @@ const OnboardingWorkflowCard: React.FC<OnboardingWorkflowCardProps> = ({
                 <Calendar className="h-4 w-4" />
                 <span>Next due: {new Date(nextDue).toLocaleDateString()}</span>
               </div>
+            )}
+
+            {workflow.connectedTools && workflow.connectedTools.length > 0 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Puzzle className="h-4 w-4" />
+                      <span>{workflow.connectedTools.length} integration{workflow.connectedTools.length > 1 ? 's' : ''}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="font-semibold mb-1">Connected tools:</p>
+                    <ul className="text-xs">
+                      {workflow.connectedTools.map((tool, idx) => (
+                        <li key={idx}>{tool}</li>
+                      ))}
+                    </ul>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         </div>
