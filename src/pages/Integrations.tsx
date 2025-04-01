@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-// Define the categories and integrations
 const categories = [
   "All",
   "VMS Systems",
@@ -47,10 +46,8 @@ interface IntegrationItem {
   connected: boolean;
 }
 
-// Helper function to get icon for integration
 const getIconForIntegration = (name: string): React.ComponentType<{ className?: string }> => {
   const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
-    // Social
     "LinkedIn": LinkedInIcon,
     "Facebook": FacebookIcon,
     "X": ({ className }: { className?: string }) => (
@@ -69,7 +66,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="WhatsApp" className={className} />
     ),
     
-    // Productivity
     "Slack": SlackIcon,
     "Microsoft Teams": ({ className }: { className?: string }) => (
       <CompanyLogo name="Microsoft" className={className} />
@@ -100,7 +96,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="Zoom" className={className} />
     ),
     
-    // Job Boards
     "LinkedIn Jobs": LinkedInIcon,
     "Indeed": ({ className }: { className?: string }) => (
       <CompanyLogo name="Indeed" className={className} />
@@ -137,7 +132,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="AngelList" className={className} />
     ),
     
-    // ATS
     "Ceipal": ({ className }: { className?: string }) => (
       <CompanyLogo name="Ceipal" className={className} />
     ),
@@ -170,7 +164,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="Zoho" className={className} />
     ),
     
-    // VMS
     "Stafferlink": ({ className }: { className?: string }) => (
       <CompanyLogo name="Stafferlink" className={className} />
     ),
@@ -191,7 +184,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="KellyOCG" className={className} />
     ),
     
-    // Compliance
     "HR360": ({ className }: { className?: string }) => (
       <CompanyLogo name="HR360" className={className} />
     ),
@@ -211,7 +203,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="Gusto" className={className} />
     ),
     
-    // Background Checks
     "HireRight": ({ className }: { className?: string }) => (
       <CompanyLogo name="HireRight" className={className} />
     ),
@@ -243,7 +234,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="PreCheck" className={className} />
     ),
     
-    // Onboarding
     "BambooHR Onboarding": ({ className }: { className?: string }) => (
       <CompanyLogo name="BambooHR" className={className} />
     ),
@@ -275,7 +265,6 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
       <CompanyLogo name="Namely" className={className} />
     ),
     
-    // CRM & HRMS
     "SAP SuccessFactors": SAPIcon,
     "Salesforce (CRM)": ({ className }: { className?: string }) => (
       <CompanyLogo name="Salesforce" className={className} />
@@ -306,9 +295,7 @@ const getIconForIntegration = (name: string): React.ComponentType<{ className?: 
   ));
 };
 
-// Create the list of integrations
 const createIntegrationsList = (): IntegrationItem[] => {
-  // VMS Systems
   const vmsSystems = ["Stafferlink", "SAP Field glass", "Beeline", "IQNavigator", "PRO Unlimited VMS", "Pontoon", "KellyOCG VMS"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -316,10 +303,9 @@ const createIntegrationsList = (): IntegrationItem[] => {
       description: `Connect your ${name} VMS system`,
       icon: getIconForIntegration(name),
       category: "VMS Systems",
-      connected: Math.random() > 0.8, // Random connection status for demo
+      connected: Math.random() > 0.8,
     }));
 
-  // ATS
   const ats = ["Ceipal", "Workday", "Taleo", "ICIMS", "Lever", "Smart Recruiters", "Bullhorn ATS", "Pinpoint", "Jobvite", "JazzHR", "Zoho Recruit"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -330,7 +316,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Paid Job Boards
   const paidJobBoards = ["LinkedIn Jobs", "Indeed (Paid)", "Glassdoor", "Dice (IT)", "Zip Recruiter", "CareerBuilder", "SimplyHired (Paid)", "Adzuna", "The Ladders"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -341,7 +326,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Free Job Posting
   const freeJobPosting = ["Indeed (Free)", "SimplyHired (Free)", "Google for Jobs", "Craigslist", "Jora", "AngelList"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -352,7 +336,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Social
   const social = ["LinkedIn", "Facebook", "X", "Instagram", "TikTok", "YouTube", "Business Whatsapp"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -363,7 +346,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Productivity
   const productivity = ["Slack", "Microsoft Teams", "Jira", "Asana", "Trello", "Monday.com", "Basecamp", "Google Workplace", "Notion", "Clickup", "Zoom"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -374,7 +356,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Compliance Boards
   const complianceBoards = ["HR360", "ADP Compliance", "ComplianceQuest", "BambooHR Compliance", "Zenefits", "Gusto Compliance"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -385,7 +366,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Background Boards
   const backgroundBoards = ["HireRight", "Checkr", "GoodHire", "Sterling", "Accurate Background", "First Advantage", "IntelliCorp", "Verifitech", "ESR", "PreCheck"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -396,7 +376,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // Onboarding Boards
   const onboardingBoards = ["BambooHR Onboarding", "Click Boarding", "WorkBright", "ClearCompany", "Zenefits Onboarding", "Gusto Onboarding", "Sapling HR", "Talmundo", "Breezy HR Onboarding", "Namely"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -407,7 +386,6 @@ const createIntegrationsList = (): IntegrationItem[] => {
       connected: Math.random() > 0.8,
     }));
 
-  // CRM & HRMS
   const crmHrms = ["SAP SuccessFactors", "Salesforce (CRM)", "Workday HCM", "Oracle HCM Cloud", "ADP Workforce Now", "BambooHR", "Ceridian Dayforce", "UltiPro", "Kronos Workforce Ready"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
@@ -445,7 +423,6 @@ const Integrations = () => {
     return null;
   }
 
-  // Filter integrations based on search and category
   const filteredIntegrations = integrationItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                            item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -453,7 +430,6 @@ const Integrations = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // Toggle connection status
   const toggleConnection = (id: string) => {
     toast({
       title: "Integration Status Changed",
@@ -461,13 +437,11 @@ const Integrations = () => {
       variant: "default",
     });
     console.log(`Toggling connection for ${id}`);
-    // In a real app, this would update the state after calling an API
   };
 
   return (
     <DashboardLayout title="Integrations">
       <div className="space-y-6">
-        {/* Search bar */}
         <div className="relative w-full max-w-md">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -491,7 +465,6 @@ const Integrations = () => {
           />
         </div>
 
-        {/* Category tabs */}
         <Tabs defaultValue="All" value={activeCategory} onValueChange={setActiveCategory}>
           <TabsList className="bg-background/80 backdrop-blur-sm mb-4 overflow-auto flex flex-nowrap max-w-full">
             {categories.map(category => (
@@ -502,7 +475,6 @@ const Integrations = () => {
           </TabsList>
           
           <TabsContent value={activeCategory} className="mt-0">
-            {/* Integrations grid */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredIntegrations.map((integration) => (
                 <Card key={integration.id} className="hover:shadow-md transition-all overflow-hidden">
