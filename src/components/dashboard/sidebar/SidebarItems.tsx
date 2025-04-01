@@ -53,6 +53,14 @@ const SidebarItems = () => {
   // Filter sidebar items based on user permissions
   const filteredItems = sidebarItems.filter(item => hasPermission(item.requiredPermission));
 
+  // Function to check if a route is active, accounting for nested routes
+  const isActive = (path: string) => {
+    if (path === "/dashboard" && location.pathname === "/dashboard") {
+      return true;
+    }
+    return location.pathname.startsWith(path) && path !== "/dashboard";
+  };
+
   return (
     <nav className="py-4">
       <ul className="space-y-1 px-2">
@@ -62,7 +70,7 @@ const SidebarItems = () => {
               to={item.href}
               className={cn(
                 "flex items-center justify-between px-4 py-2.5 rounded-md transition-colors group",
-                location.pathname === item.href
+                isActive(item.href)
                   ? "bg-adept text-white"
                   : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               )}
@@ -70,7 +78,7 @@ const SidebarItems = () => {
               <div className="flex items-center">
                 <item.icon className={cn(
                   "h-5 w-5 mr-3",
-                  location.pathname === item.href
+                  isActive(item.href)
                     ? "text-white"
                     : "text-gray-500 dark:text-gray-400 group-hover:text-adept dark:group-hover:text-white"
                 )} />

@@ -40,17 +40,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
       />
 
       {/* Sidebar */}
-      <Sidebar 
-        sidebarOpen={sidebarOpen} 
-        setSidebarOpen={setSidebarOpen} 
-        theme={theme} 
-        toggleTheme={toggleTheme} 
-      />
+      <div className={`md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col ${!sidebarOpen && "md:hidden"}`}>
+        <Sidebar 
+          sidebarOpen={sidebarOpen} 
+          setSidebarOpen={setSidebarOpen} 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+        />
+      </div>
 
       {/* Main content */}
       <div className={cn(
         "flex-1 transition-all duration-300 ease-in-out",
-        sidebarOpen ? "md:ml-0" : "md:ml-0",
+        sidebarOpen ? "md:ml-64" : "md:ml-0",
       )}>
         {/* Desktop header */}
         <Header 

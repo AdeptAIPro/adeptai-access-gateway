@@ -21,9 +21,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div 
       className={cn(
-        "bg-card border-r border-border transition-all duration-300 ease-in-out overflow-y-auto h-screen fixed md:sticky top-0 z-30",
-        sidebarOpen ? "left-0" : "-left-64",
-        "md:left-0 md:w-64"
+        "bg-card border-r border-border h-full w-64 overflow-y-auto",
+        sidebarOpen ? "block" : "hidden md:block"
       )}
     >
       <SidebarHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
