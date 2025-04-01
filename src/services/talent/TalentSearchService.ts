@@ -101,17 +101,17 @@ export const searchTalentsWithAgenticIntelligence = async (
 const getAllAvailableSources = async (): Promise<string[]> => {
   const sources = await getTalentSources();
   return sources
-    .filter(source => {
+    .filter((source): source is { id: string } => {
       // Check if source is an object with an id property
-      // Also add null/undefined check
+      // Add null/undefined check and ensure the source is the correct type
       return source !== null && 
              typeof source === 'object' && 
              'id' in source;
     })
     .map(source => {
-      // Since we've already checked that source has an id property and is not null
-      // we can safely assert the type
-      return (source as { id: string }).id;
+      // Since we've properly filtered the sources with the type predicate above,
+      // TypeScript knows that source is an object with an id property
+      return source.id;
     });
 };
 
