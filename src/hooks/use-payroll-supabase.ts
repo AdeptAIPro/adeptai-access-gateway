@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { Employee } from "@/hooks/use-payroll";
+import { Employee } from "@/types/employee";
 import { toast } from "@/hooks/use-toast";
 import { fetchEmployees, fetchEmployeeById, createEmployee, updateEmployee } from "@/services/payroll";
 
