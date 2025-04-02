@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, BellRing } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MobileHeaderProps {
   sidebarOpen: boolean;
@@ -18,6 +19,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   toggleTheme
 }) => {
   const { user } = useAuth();
+
+  // Function to get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (!user || !user.name) return "U";
+    return user.name
+      .split(" ")
+      .map(part => part.charAt(0))
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
 
   return (
     <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b border-border px-4 flex items-center justify-between z-30">
@@ -39,17 +51,13 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
         </Button>
         
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="rounded-full p-1 h-8 w-8 overflow-hidden"
-        >
-          <img 
-            src={user?.avatarUrl || 'https://via.placeholder.com/32'} 
+        <Avatar className="h-8 w-8">
+          <AvatarImage 
+            src={user?.email ? `https://ui-avatars.com/api/?name=${user.name}&background=random` : undefined} 
             alt={user?.name || 'User'} 
-            className="h-full w-full object-cover rounded-full" 
           />
-        </Button>
+          <AvatarFallback>{getUserInitials()}</AvatarFallback>
+        </Avatar>
       </div>
     </div>
   );
