@@ -2,12 +2,13 @@
 import React from "react";
 import StepsGuide from "./StepsGuide";
 import AIModelsSection from "./AIModelsSection";
-import { Settings, BookOpen, Search, CheckCircle2 } from "lucide-react";
+import { BookOpen, Settings, Search, CheckCircle2 } from "lucide-react";
 import { SectionCard, SectionHeader } from "@/components/ui/section-card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Step, AIModel, UserGuideProps } from "./types";
 
-const UserGuide: React.FC = () => {
-  const steps = [
+const UserGuide: React.FC<UserGuideProps> = () => {
+  const steps: Step[] = [
     {
       icon: BookOpen,
       title: "Prepare Job Description",
@@ -43,7 +44,7 @@ const UserGuide: React.FC = () => {
     }
   ];
 
-  const models = [
+  const models: AIModel[] = [
     {
       icon: Search,
       name: "Basic Matcher",

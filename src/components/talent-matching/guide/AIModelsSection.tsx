@@ -1,19 +1,7 @@
 
 import React from "react";
-import { Info, Zap, Settings, ArrowRight } from "lucide-react";
-
-interface AIModel {
-  icon: React.ElementType;
-  name: string;
-  description: string;
-  accuracy: number;
-  complexity: string;
-  complexityColor: string;
-}
-
-interface AIModelsSectionProps {
-  models: AIModel[];
-}
+import { Info, Zap } from "lucide-react";
+import { AIModel, AIModelsSectionProps } from "./types";
 
 const AIModelsSection: React.FC<AIModelsSectionProps> = ({ models }) => {
   return (

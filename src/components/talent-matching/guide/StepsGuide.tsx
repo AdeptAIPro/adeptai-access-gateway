@@ -1,18 +1,8 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, CheckCircle2, Search, Settings } from "lucide-react";
-
-interface Step {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  points: string[];
-}
-
-interface StepsGuideProps {
-  steps: Step[];
-}
+import { CheckCircle2 } from "lucide-react";
+import { Step, StepsGuideProps } from "./types";
 
 const StepsGuide: React.FC<StepsGuideProps> = ({ steps }) => {
   return (
