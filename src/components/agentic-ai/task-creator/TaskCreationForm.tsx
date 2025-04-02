@@ -7,12 +7,13 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useAgenticAI } from '@/hooks/use-agentic';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, PlusCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import TaskTypeSelector from './TaskTypeSelector';
 import AgentSelector from './AgentSelector';
 import TaskGoalField from './TaskGoalField';
 import PrioritySelector from './PrioritySelector';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const formSchema = z.object({
   taskType: z.string().min(1, 'Task type is required'),
@@ -26,6 +27,7 @@ type FormValues = z.infer<typeof formSchema>;
 const TaskCreationForm = () => {
   const { user } = useAuth();
   const { agents, createTask, isLoading } = useAgenticAI();
+  const isMobile = useIsMobile();
   
   const [selectedTaskType, setSelectedTaskType] = useState<string>('');
   const [filteredAgents, setFilteredAgents] = useState(agents);
@@ -92,36 +94,45 @@ const TaskCreationForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Task Type Selector */}
-        <div className="bg-adept/5 p-4 rounded-lg border border-adept/20">
-          <TaskTypeSelector 
-            control={form.control}
-            onTaskTypeChange={(value) => setSelectedTaskType(value)}
-          />
-        </div>
-        
-        {/* Agent Selector */}
-        <div className="bg-card p-4 rounded-lg border border-border shadow-sm">
-          <AgentSelector 
-            control={form.control}
-            agents={filteredAgents}
-            selectedTaskType={selectedTaskType}
-          />
-        </div>
-        
-        {/* Task Goal Field */}
-        <div className="bg-adept/5 p-4 rounded-lg border border-adept/20">
-          <TaskGoalField control={form.control} />
-        </div>
-        
-        {/* Priority Selector */}
-        <div className="bg-card p-4 rounded-lg border border-border shadow-sm">
-          <PrioritySelector control={form.control} />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Form sections with improved styling */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left column */}
+          <div className="space-y-6">
+            {/* Task Type Selector */}
+            <div className="bg-adept/5 p-5 rounded-lg border border-adept/20 shadow-sm hover:shadow transition-shadow">
+              <TaskTypeSelector 
+                control={form.control}
+                onTaskTypeChange={(value) => setSelectedTaskType(value)}
+              />
+            </div>
+            
+            {/* Task Goal Field */}
+            <div className="bg-adept/5 p-5 rounded-lg border border-adept/20 shadow-sm hover:shadow transition-shadow">
+              <TaskGoalField control={form.control} />
+            </div>
+          </div>
+          
+          {/* Right column */}
+          <div className="space-y-6">
+            {/* Agent Selector */}
+            <div className="bg-card p-5 rounded-lg border border-border shadow-sm hover:shadow transition-shadow">
+              <AgentSelector 
+                control={form.control}
+                agents={filteredAgents}
+                selectedTaskType={selectedTaskType}
+              />
+            </div>
+            
+            {/* Priority Selector */}
+            <div className="bg-card p-5 rounded-lg border border-border shadow-sm hover:shadow transition-shadow">
+              <PrioritySelector control={form.control} />
+            </div>
+          </div>
         </div>
         
         {/* Submit Button */}
-        <div className="pt-3">
+        <div className="pt-4">
           <Button 
             type="submit" 
             className={`w-full py-6 text-lg font-medium transition-all ${taskCreationSuccess ? 'bg-green-600 hover:bg-green-700' : 'bg-adept hover:bg-adept/90'}`}
@@ -138,7 +149,10 @@ const TaskCreationForm = () => {
                 Task Created Successfully!
               </>
             ) : (
-              "Create Task"
+              <>
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Create Task
+              </>
             )}
           </Button>
         </div>

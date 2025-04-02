@@ -4,6 +4,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AgentTaskType } from '@/services/agentic-ai/types/AgenticTypes';
 import { Control } from 'react-hook-form';
+import { ListFilter } from 'lucide-react';
 
 interface TaskTypeSelectorProps {
   control: Control<any>;
@@ -17,13 +18,19 @@ const TaskTypeSelector = ({ control, onTaskTypeChange }: TaskTypeSelectorProps) 
       name="taskType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Task Type</FormLabel>
+          <FormLabel className="text-base font-medium flex items-center gap-2">
+            <ListFilter className="h-4 w-4 text-adept" />
+            Task Type
+          </FormLabel>
           <Select 
-            onValueChange={(value) => onTaskTypeChange(value)} 
-            defaultValue={field.value}
+            onValueChange={(value) => {
+              field.onChange(value);
+              onTaskTypeChange(value);
+            }}
+            value={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="h-10">
                 <SelectValue placeholder="Select a task type" />
               </SelectTrigger>
             </FormControl>
@@ -38,7 +45,7 @@ const TaskTypeSelector = ({ control, onTaskTypeChange }: TaskTypeSelectorProps) 
               <SelectItem value="onboarding-customization">Onboarding Customization</SelectItem>
             </SelectContent>
           </Select>
-          <FormDescription>
+          <FormDescription className="text-xs">
             Select the type of task you want the AI agent to perform
           </FormDescription>
           <FormMessage />

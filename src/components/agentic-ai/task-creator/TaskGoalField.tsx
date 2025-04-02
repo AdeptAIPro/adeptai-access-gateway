@@ -15,15 +15,15 @@ const TaskGoalField = ({ control }: TaskGoalFieldProps) => {
       name="goal"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Task Goal</FormLabel>
+          <FormLabel className="text-base font-medium">Task Goal</FormLabel>
           <FormControl>
             <Textarea 
               placeholder="Describe what you want the AI to do..." 
-              className="resize-none"
+              className="resize-none min-h-[100px]"
               {...field}
             />
           </FormControl>
-          <FormDescription>
+          <FormDescription className="text-xs">
             Clearly describe the goal of this task (max 200 characters)
           </FormDescription>
           <FormMessage />

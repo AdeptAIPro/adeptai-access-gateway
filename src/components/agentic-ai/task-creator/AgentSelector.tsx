@@ -4,11 +4,12 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
 import { Control } from 'react-hook-form';
+import { Bot } from 'lucide-react';
 
 interface AgentSelectorProps {
   control: Control<any>;
   selectedTaskType: string;
-  agents: Agent[];  // Fixed: added agents prop to the interface
+  agents: Agent[];
 }
 
 const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps) => {
@@ -22,15 +23,18 @@ const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps
       name="agentId"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Select Agent</FormLabel>
+          <FormLabel className="text-base font-medium flex items-center gap-2">
+            <Bot className="h-4 w-4 text-adept" />
+            Select Agent
+          </FormLabel>
           <div className="space-y-2">
             <Select 
               onValueChange={field.onChange} 
-              defaultValue={field.value}
+              value={field.value}
               disabled={!selectedTaskType || filteredAgents.length === 0}
             >
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="h-10">
                   <SelectValue placeholder={
                     !selectedTaskType 
                       ? "Select a task type first" 
@@ -49,13 +53,13 @@ const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps
               </SelectContent>
             </Select>
             {selectedTaskType && filteredAgents.length === 0 && (
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
                 No agents found with capability: {selectedTaskType}. 
                 Try seeding the database from the main page.
               </p>
             )}
           </div>
-          <FormDescription>
+          <FormDescription className="text-xs">
             Choose an AI agent capable of performing this task
           </FormDescription>
           <FormMessage />
