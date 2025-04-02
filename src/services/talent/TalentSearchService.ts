@@ -1,4 +1,3 @@
-
 import { TalentSearchParams, TalentSearchResponse, Talent } from './types';
 import { searchTalentsFromSupabase } from './SupabaseTalentService';
 import { searchTalentsFromExternalSource } from './ExternalTalentService';
@@ -101,17 +100,14 @@ export const searchTalentsWithAgenticIntelligence = async (
 const getAllAvailableSources = async (): Promise<string[]> => {
   const sources = await getTalentSources();
   return sources
-    .filter((source): source is { id: string } => {
-      // Check if source is an object with an id property
-      // Add null/undefined check and ensure the source is the correct type
-      return source !== null && 
-             typeof source === 'object' && 
-             'id' in source;
+    .filter((source): source is string => {
+      // Check if source is a non-null string
+      return typeof source === 'string' && source !== null;
     })
     .map(source => {
       // Since we've properly filtered the sources with the type predicate above,
-      // TypeScript knows that source is an object with an id property
-      return source.id;
+      // TypeScript knows that source is a string
+      return source;
     });
 };
 
