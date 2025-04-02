@@ -4,6 +4,10 @@ export interface MatchingOptions {
   minMatchScore: number;
   useComplianceVerification: boolean;
   prioritizeCulturalFit: boolean;
+  useSemanticMatching?: boolean;
+  useRAG?: boolean;
+  useSkillBasedFiltering?: boolean;
+  matchingModel?: string;
 }
 
 export interface Candidate {
@@ -73,4 +77,14 @@ export interface MatchingResult {
   matchTime?: number;
   insights?: MatchingInsights;
   crossSourceValidation?: CrossSourceValidation;
+}
+
+export interface MatchingModel {
+  id: string;
+  name: string;
+  description: string;
+  complexity: 'basic' | 'intermediate' | 'advanced';
+  performance: number;
+  accuracyScore: number;
+  icon?: React.ReactNode;
 }

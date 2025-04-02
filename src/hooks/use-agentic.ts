@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from './use-auth';
-import agenticService, { AgentTask, Agent, AgentTaskType } from '@/services/agentic-ai/AgenticService';
+import agenticService, { AgentTask, Agent, AgentTaskType, processTask } from '@/services/agentic-ai/AgenticService';
 import { toast } from './use-toast';
 
 export function useAgenticAI() {
@@ -118,7 +118,7 @@ export function useAgenticAI() {
   };
   
   // Process a task
-  const processTask = async (taskId: string) => {
+  const handleProcessTask = async (taskId: string) => {
     setIsLoading(true);
     try {
       // Find the task in our local state
@@ -127,7 +127,7 @@ export function useAgenticAI() {
         setActiveTask(task);
       }
       
-      const success = await agenticService.processTask(taskId);
+      const success = await processTask(taskId);
       
       if (success) {
         // Refresh the tasks to get the updated status
@@ -166,7 +166,7 @@ export function useAgenticAI() {
     isLoading,
     activeTask,
     createTask,
-    processTask,
+    processTask: handleProcessTask,
     refreshTasks: fetchUserTasks,
     refreshAgents: fetchAgents
   };

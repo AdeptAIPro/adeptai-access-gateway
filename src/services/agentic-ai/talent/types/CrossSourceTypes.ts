@@ -37,6 +37,7 @@ export interface CrossSourceCandidate {
   availability?: string;
   rate?: string;
   bio?: string;
+  culturalFitScore?: number;
 }
 
 export interface CrossSourceValidation {
@@ -45,4 +46,58 @@ export interface CrossSourceValidation {
   verifiedCandidates: number;
   verificationRate: number;
   averageCrossSourceScore: number;
+}
+
+export interface JobAnalysisResult {
+  requiredSkills: string[];
+  preferredSkills: string[];
+  experienceLevel: number;
+  locations: string[];
+  jobTitle: string;
+  jobDescription: string;
+  keyResponsibilities: string[];
+}
+
+export interface CrossSourceInsights {
+  talentPoolQuality: string;
+  crossSourceStatistics: {
+    totalCandidates: number;
+    verifiedCandidates: number;
+    verifiedPercentage: number;
+    averageCrossSourceScore: number;
+  };
+  recommendedSourcingStrategy?: SourcingStrategy;
+  competitivePositioning?: CompetitivePositioning;
+}
+
+export interface SourcingStrategy {
+  mostEffectiveSources: string[];
+  recommendedSources: string[];
+  suggestedOutreachOrder: string[];
+  untappedSources: string[];
+}
+
+export interface CompetitivePositioning {
+  talentAvailability: string;
+  competitiveness: string;
+  salaryRange: {
+    min: number;
+    max: number;
+    median: number;
+  };
+  timeToHire: string;
+}
+
+export interface OutreachStrategy {
+  recommendedChannels: string[];
+  suggestedTemplates: {
+    type: string;
+    subject?: string;
+    body: string;
+  }[];
+  bestTimesToContact?: string[];
+  followUpStrategy?: {
+    timing: string;
+    message: string;
+  };
 }

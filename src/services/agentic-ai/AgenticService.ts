@@ -1,3 +1,4 @@
+
 import agenticDatabaseService from './database/AgenticDatabaseService';
 import { AgentTask, Agent, AgentTaskType } from './types/AgenticTypes';
 import { processAgentTask } from './tasks/TaskProcessorService';
@@ -117,8 +118,7 @@ const processTask = async (taskId: string): Promise<boolean> => {
 };
 
 export type { AgentTask, Agent, AgentTaskType };
-export default agenticService;
 export { 
   agenticService as default,
-  processTask,
+  processTask
 };
