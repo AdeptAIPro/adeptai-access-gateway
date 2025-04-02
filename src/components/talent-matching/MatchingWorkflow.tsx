@@ -85,7 +85,7 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
 
       {isProcessing && (
         <div className="space-y-2 mt-4">
-          <Progress value={progress} className="h-2 bg-gray-200" indicatorClassName="bg-adept" />
+          <Progress value={progress} className="h-2 bg-gray-200" />
           <div className="flex justify-between items-center text-sm">
             <span className="text-adept font-medium">{progressText}</span>
             <span className="font-bold">{progress}%</span>
