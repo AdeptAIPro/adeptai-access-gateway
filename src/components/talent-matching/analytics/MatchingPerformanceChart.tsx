@@ -27,7 +27,7 @@ interface MatchingPerformanceChartProps {
 
 const MatchingPerformanceChart: React.FC<MatchingPerformanceChartProps> = ({ data, chartType }) => {
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-sm relative z-0">
       <CardHeader>
         <CardTitle className="flex items-center">
           <BarChart3 className="mr-2 h-5 w-5 text-adept" />
@@ -42,7 +42,7 @@ const MatchingPerformanceChart: React.FC<MatchingPerformanceChartProps> = ({ dat
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip containerStyle={{ zIndex: 20 }} />
                 <Legend />
                 <Bar dataKey="matches" name="Total Matches" fill="#8884d8" />
                 <Bar dataKey="hires" name="Successful Hires" fill="#82ca9d" />
@@ -52,7 +52,7 @@ const MatchingPerformanceChart: React.FC<MatchingPerformanceChartProps> = ({ dat
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip containerStyle={{ zIndex: 20 }} />
                 <Legend />
                 <Line 
                   type="monotone" 

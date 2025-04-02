@@ -37,7 +37,7 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
   userName
 }) => {
   return (
-    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 relative z-0">
       <CardHeader className="pb-0">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -97,7 +97,10 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
                   tick={{ fontSize: 12, fill: '#666' }}
                   width={40}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip 
+                  content={<CustomTooltip />}
+                  wrapperStyle={{ zIndex: 20 }}
+                />
                 <Legend wrapperStyle={{ paddingTop: 15 }} />
                 <Bar 
                   dataKey="value" 
