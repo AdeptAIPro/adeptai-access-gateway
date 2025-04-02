@@ -27,7 +27,7 @@ const TalentMatchingContainer: React.FC = () => {
   const [useSkillBasedFiltering, setUseSkillBasedFiltering] = useState(true);
   const [useCrossSourceIntelligence, setUseCrossSourceIntelligence] = useState(false);
   const [tab, setTab] = useState<string>("paste");
-  const [fileUploaded, setFileUploaded] = useState<boolean>(false);
+  const [fileUploaded, setFileUploaded] = useState<File | null>(null);
 
   // Construct matching options object
   const matchingOptions: MatchingOptions = {

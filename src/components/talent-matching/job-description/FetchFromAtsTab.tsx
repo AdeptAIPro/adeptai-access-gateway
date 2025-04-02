@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Database } from "lucide-react";
 
-const FetchFromAtsTab: React.FC = () => {
+interface FetchFromAtsTabProps {
+  setJobDescription: (text: string) => void;
+}
+
+const FetchFromAtsTab: React.FC<FetchFromAtsTabProps> = ({
+  setJobDescription
+}) => {
   const [selectedSystem, setSelectedSystem] = React.useState<string>("");
 
   return (
