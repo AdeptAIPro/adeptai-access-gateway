@@ -1,14 +1,15 @@
 
+import { CrossSourceCandidate } from '../types/CrossSourceTypes';
 import { CandidateWithMatchDetails } from '../types/TalentMatchingTypes';
 
 // Score and rank candidates based on job requirements
 export function rankCandidates(
-  candidates: any[],
+  candidates: CrossSourceCandidate[],
   requiredSkills: string[],
   preferredSkills: string[],
   prioritizeCulturalFit: boolean,
   jobAnalysis: any
-): CandidateWithMatchDetails[] {
+): CrossSourceCandidate[] {
   return candidates.map(candidate => {
     // Calculate skill match score
     const candidateSkills = candidate.skills || [];
@@ -24,13 +25,22 @@ export function rankCandidates(
       )
     ).length;
     
+    // Extract experience value - properly handle string experience format
+    let experienceValue = 0;
+    if (typeof candidate.experience === 'string') {
+      const experienceMatch = candidate.experience.match(/(\d+)/);
+      if (experienceMatch && experienceMatch[1]) {
+        experienceValue = parseInt(experienceMatch[1], 10);
+      }
+    }
+    
     // Calculate experience match 
-    const experienceScore = candidate.experience >= (jobAnalysis.suggestedExperience || 0) ? 1 : 
-      (candidate.experience / (jobAnalysis.suggestedExperience || 1));
+    const experienceScore = experienceValue >= (jobAnalysis.suggestedExperience || 0) ? 1 : 
+      (experienceValue / (jobAnalysis.suggestedExperience || 1));
     
     // Calculate cultural fit score (placeholder - in real system this would be more sophisticated)
     // This could use ML models trained on successful hires
-    const culturalFitScore = candidate.cultural_fit_score || Math.random() * 0.5 + 0.5; // Random score between 0.5-1
+    const culturalFitScore = candidate.culturalFitScore || Math.random() * 0.5 + 0.5; // Random score between 0.5-1
     
     // Calculate total score
     let totalScore = 0;
