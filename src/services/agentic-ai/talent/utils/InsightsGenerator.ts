@@ -1,73 +1,86 @@
 
-import { MatchingInsights, TalentMatchingTaskParams } from '../types/TalentMatchingTypes';
+import { 
+  CrossSourceCandidate, 
+  CrossSourceIntelligenceParams, 
+  CrossSourceInsights,
+  SourcingStrategy,
+  CompetitivePositioning
+} from "../types/CrossSourceTypes";
+import { calculateAverageCrossSourceScore } from "./CandidateCollector";
 
-// Generate insights about the matching results
-export function generateMatchingInsights(rankedCandidates: any[], params: TalentMatchingTaskParams): MatchingInsights {
-  // In a real implementation, this would use LLM to generate insights
-  // For now, we'll provide dummy insights
-  
-  const topCandidatesCount = Math.min(rankedCandidates.length, 5);
-  const averageScore = rankedCandidates.slice(0, topCandidatesCount)
-    .reduce((sum, c) => sum + c.matchScore, 0) / topCandidatesCount || 0;
-  
-  const skillsBreakdown: Record<string, number> = {};
-  
-  rankedCandidates.slice(0, topCandidatesCount).forEach(candidate => {
-    if (candidate.matchDetails?.matchedRequiredSkills) {
-      candidate.matchDetails.matchedRequiredSkills.forEach((skill: string) => {
-        skillsBreakdown[skill] = (skillsBreakdown[skill] || 0) + 1;
-      });
-    }
-  });
+/**
+ * Generate cross-source insights for the matched candidates
+ */
+export const generateCrossSourceInsights = async (
+  candidates: CrossSourceCandidate[], 
+  params: CrossSourceIntelligenceParams
+): Promise<CrossSourceInsights> => {
+  // In production, this would use an LLM to generate deeper insights
+  const crossSourceVerifiedCount = candidates.filter(c => c.crossSourceVerified).length;
+  const verifiedPercentage = candidates.length > 0 ? 
+    Math.round((crossSourceVerifiedCount / candidates.length) * 100) : 0;
   
   return {
-    topCandidatesAverageScore: Math.round(averageScore),
-    mostCommonSkills: Object.entries(skillsBreakdown)
-      .map(([skill, count]) => ({ skill, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3)
-      .map(item => item.skill),
-    candidatePoolQuality: averageScore > 85 ? 'Excellent' : 
-      averageScore > 70 ? 'Good' : 
-      averageScore > 50 ? 'Fair' : 'Poor',
-    mostMissingSkills: getMostMissingSkills(rankedCandidates),
-    recommendedInterviewQuestions: generateInterviewQuestions(params.requiredSkills || [])
+    crossSourceStatistics: {
+      totalCandidates: candidates.length,
+      verifiedCandidates: crossSourceVerifiedCount,
+      verifiedPercentage,
+      averageCrossSourceScore: calculateAverageCrossSourceScore(candidates)
+    },
+    talentPoolQuality: verifiedPercentage > 70 ? 'Excellent' : 
+      verifiedPercentage > 50 ? 'Good' : 'Needs Expansion',
+    recommendedSourcingStrategy: generateSourcingStrategy(candidates, params),
+    competitivePositioning: analyzeMarketPosition(candidates, params)
   };
-}
+};
 
-// Find skills that are most commonly missing from candidates
-export function getMostMissingSkills(candidates: any[]): string[] {
-  const missingSkillsCount: Record<string, number> = {};
-  
+/**
+ * Generate a sourcing strategy based on candidate analysis
+ */
+export const generateSourcingStrategy = (
+  candidates: CrossSourceCandidate[], 
+  params: CrossSourceIntelligenceParams
+): SourcingStrategy => {
+  // Analysis to determine where to focus sourcing efforts
+  const sourceDistribution: Record<string, number> = {};
   candidates.forEach(candidate => {
-    if (candidate.matchDetails?.missingSkills) {
-      candidate.matchDetails.missingSkills.forEach((skill: string) => {
-        missingSkillsCount[skill] = (missingSkillsCount[skill] || 0) + 1;
-      });
+    if (candidate.source) {
+      sourceDistribution[candidate.source] = (sourceDistribution[candidate.source] || 0) + 1;
     }
   });
   
-  return Object.entries(missingSkillsCount)
-    .map(([skill, count]) => ({ skill, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 3)
-    .map(item => item.skill);
-}
+  // Find the most effective sources
+  const sortedSources = Object.entries(sourceDistribution)
+    .sort(([, countA], [, countB]) => (countB as number) - (countA as number))
+    .map(([source]) => source);
+  
+  return {
+    mostEffectiveSources: sortedSources.slice(0, 3),
+    recommendedSources: sortedSources,
+    suggestedOutreachOrder: sortedSources,
+    untappedSources: params.sources.filter(s => !sortedSources.includes(s))
+  };
+};
 
-// Generate interview questions based on required skills
-export function generateInterviewQuestions(skills: string[]): string[] {
-  // In a real system, this would use an LLM to generate questions
-  // Here we'll use a simple template-based approach
-  const questions: string[] = [];
+/**
+ * Analyze competitive positioning in the talent market
+ */
+export const analyzeMarketPosition = (
+  candidates: CrossSourceCandidate[], 
+  params: CrossSourceIntelligenceParams
+): CompetitivePositioning => {
+  // In production, this would use actual market data
+  const hasTopCandidates = candidates.some(c => c.matchScore > 90);
+  const competitiveLevel = hasTopCandidates ? 'High' : 'Medium';
   
-  skills.slice(0, 3).forEach(skill => {
-    questions.push(`Can you describe a project where you used ${skill}?`);
-    questions.push(`What challenges have you faced when working with ${skill}?`);
-  });
-  
-  // Add some general questions
-  questions.push("How do you approach learning new technologies?");
-  questions.push("Describe a situation where you had to work under pressure to meet a deadline.");
-  
-  return questions.slice(0, 5); // Return up to 5 questions
-}
+  return {
+    talentAvailability: candidates.length > 10 ? 'Abundant' : 'Limited',
+    competitiveness: competitiveLevel,
+    salaryRange: {
+      min: 80000,
+      max: 150000,
+      median: 115000
+    },
+    timeToHire: competitiveLevel === 'High' ? '4-6 weeks' : '2-4 weeks'
+  };
+};
