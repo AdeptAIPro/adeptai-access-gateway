@@ -13,8 +13,8 @@ interface JobDescriptionInputProps {
   setJobDescription: (text: string) => void;
   tab: string;
   setTab: (tab: string) => void;
-  fileUploaded: boolean;
-  setFileUploaded: React.Dispatch<React.SetStateAction<boolean>>;
+  fileUploaded: File | null;
+  setFileUploaded: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
@@ -64,14 +64,18 @@ const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
 
           <TabsContent value="upload">
             <UploadDocumentTab
-              setJobDescription={setJobDescription}
               fileUploaded={fileUploaded}
               setFileUploaded={setFileUploaded}
             />
           </TabsContent>
 
           <TabsContent value="image">
-            <ImageToTextTab setJobDescription={setJobDescription} />
+            <ImageToTextTab 
+              fileUploaded={fileUploaded}
+              setFileUploaded={setFileUploaded}
+              jobDescription={jobDescription}
+              setJobDescription={setJobDescription}
+            />
           </TabsContent>
 
           <TabsContent value="ats">
