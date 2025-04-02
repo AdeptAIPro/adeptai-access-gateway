@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({
   toggleTheme 
 }) => {
   return (
-    <header className="hidden md:flex h-16 items-center justify-between bg-card border-b border-border px-6 sticky top-0 z-20 shadow-sm">
+    <header className="md:flex h-16 items-center justify-between bg-card border-b border-border px-6 sticky top-0 z-20 shadow-sm hidden">
       <div className="flex items-center">
         <Button 
           variant="ghost" 

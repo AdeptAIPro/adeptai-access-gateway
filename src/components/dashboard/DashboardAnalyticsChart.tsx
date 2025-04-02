@@ -99,7 +99,7 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
                 />
                 <Tooltip 
                   content={<CustomTooltip />}
-                  wrapperStyle={{ zIndex: 1000 }}
+                  wrapperStyle={{ zIndex: 10 }}
                 />
                 <Legend wrapperStyle={{ paddingTop: 15 }} />
                 <Bar 

@@ -40,7 +40,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
       />
 
       {/* Sidebar */}
-      <div className={`md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col ${!sidebarOpen && "md:hidden"}`}>
+      <div className={`md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col z-30 ${!sidebarOpen && "md:hidden"}`}>
         <Sidebar 
           sidebarOpen={sidebarOpen} 
           setSidebarOpen={setSidebarOpen} 
@@ -49,9 +49,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
         />
       </div>
 
-      {/* Main content */}
+      {/* Main content wrapper */}
       <div className={cn(
-        "flex-1 transition-all duration-300 ease-in-out",
+        "flex-1 flex flex-col transition-all duration-300 ease-in-out",
         sidebarOpen ? "md:ml-64" : "md:ml-0",
       )}>
         {/* Desktop header */}
@@ -62,8 +62,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
           toggleTheme={toggleTheme} 
         />
 
-        {/* Page content */}
-        <main className="p-6 bg-background">{children}</main>
+        {/* Page content - with proper padding to avoid header overlap */}
+        <main className="flex-1 p-6 pt-16 md:pt-6 bg-background">{children}</main>
         
         {/* Footer */}
         <Footer />
