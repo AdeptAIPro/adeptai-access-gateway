@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ChevronDown, ChevronUp, Cog, Play, Loader2, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Cog, Play, Loader2, Sparkles, Info, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MatchingWorkflowProps {
@@ -34,16 +34,16 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
   isReadyToStart = false,
 }) => {
   return (
-    <Card className="p-4 border-adept/20 shadow-md hover:shadow-lg transition-shadow">
-      <div className={cn("flex justify-between items-center", isProcessing && "mb-4")}>
+    <Card className="p-6 border-adept/20 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-r from-slate-50 to-white">
+      <div className={cn("flex flex-col md:flex-row md:justify-between md:items-center gap-4", isProcessing && "mb-4")}>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="flex items-center font-normal text-adept hover:bg-adept/10"
+          className="flex items-center font-normal text-adept hover:bg-adept/10 border-adept/30"
           onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
         >
           <Cog className="h-4 w-4 mr-2" />
-          Advanced Options
+          Advanced Matching Options
           {showAdvancedOptions ? (
             <ChevronUp className="h-4 w-4 ml-2" />
           ) : (
@@ -62,19 +62,19 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
               onClick={onStartMatching}
               disabled={!isReadyToStart}
               className={cn(
-                "bg-adept hover:bg-adept/90 text-white transition-all",
+                "bg-adept hover:bg-adept/90 text-white transition-all px-8 py-6 text-lg",
                 isReadyToStart && "animate-pulse duration-700",
                 !isReadyToStart && "opacity-50 cursor-not-allowed"
               )}
             >
               {isProcessing ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                   Processing...
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-5 w-5" />
+                  <Sparkles className="mr-2 h-6 w-6" />
                   Start AI Matching
                 </>
               )}
@@ -84,12 +84,26 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
       </div>
 
       {isProcessing && (
-        <div className="space-y-2 mt-4">
-          <Progress value={progress} className="h-2 bg-gray-200" />
+        <div className="space-y-2 mt-6">
+          <Progress value={progress} className="h-3 bg-gray-200" />
           <div className="flex justify-between items-center text-sm">
             <span className="text-adept font-medium">{progressText}</span>
             <span className="font-bold">{progress}%</span>
           </div>
+        </div>
+      )}
+
+      {!isProcessing && !isReadyToStart && (
+        <div className="mt-4 text-sm text-gray-500 flex items-center">
+          <Info className="h-4 w-4 mr-2" />
+          Enter a job description to enable AI matching (minimum 50 characters)
+        </div>
+      )}
+
+      {!isProcessing && isReadyToStart && (
+        <div className="mt-4 text-sm text-green-600 flex items-center">
+          <CheckCircle2 className="h-4 w-4 mr-2" />
+          Job description ready for analysis! Click "Start AI Matching" to find candidates.
         </div>
       )}
     </Card>

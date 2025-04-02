@@ -8,6 +8,7 @@ import AnalyticsTabContent from "@/components/talent-matching/analytics/Analytic
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, Sparkles, CheckCircle2, BookOpen, ArrowRight, Zap, Settings, Search } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const TalentMatching: React.FC = () => {
   return (
@@ -23,26 +24,36 @@ const TalentMatching: React.FC = () => {
         </div>
       </Alert>
       
-      <Tabs defaultValue="matching" className="w-full">
-        <TabsList className="w-full max-w-3xl mx-auto mb-6 bg-background border border-border p-1 rounded-lg overflow-x-auto flex md:inline-flex shadow-sm">
-          <TabsTrigger value="matching" className="flex-1 py-3 data-[state=active]:bg-adept data-[state=active]:text-white">
-            <Sparkles className="h-4 w-4 mr-2" />
-            AI Job Matching
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex-1 py-3 data-[state=active]:bg-adept data-[state=active]:text-white">
-            Performance Analytics
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="matching">
-          <TalentMatchingContainer />
-        </TabsContent>
-        <TabsContent value="analytics">
-          <AnalyticsTabContent />
-        </TabsContent>
-      </Tabs>
+      {/* Main Functionality Section */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-12 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <Sparkles className="h-5 w-5 text-adept mr-2" />
+          AI Job Matching Tool
+        </h2>
+        
+        <Tabs defaultValue="matching" className="w-full">
+          <TabsList className="w-full max-w-3xl mx-auto mb-6 bg-background border border-border p-1 rounded-lg overflow-x-auto flex md:inline-flex shadow-sm">
+            <TabsTrigger value="matching" className="flex-1 py-3 data-[state=active]:bg-adept data-[state=active]:text-white">
+              <Sparkles className="h-4 w-4 mr-2" />
+              AI Job Matching
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex-1 py-3 data-[state=active]:bg-adept data-[state=active]:text-white">
+              Performance Analytics
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="matching">
+            <TalentMatchingContainer />
+          </TabsContent>
+          <TabsContent value="analytics">
+            <AnalyticsTabContent />
+          </TabsContent>
+        </Tabs>
+      </div>
+      
+      <Separator className="my-12" />
       
       {/* User Guide Section */}
-      <section className="mt-12 mb-8">
+      <section className="mt-6 mb-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900">How to Use AI Talent Matchmaking</h2>
