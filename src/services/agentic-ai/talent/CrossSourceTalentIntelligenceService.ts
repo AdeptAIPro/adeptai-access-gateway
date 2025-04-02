@@ -2,7 +2,11 @@
 import { AgentTask } from "../types/AgenticTypes";
 import { CrossSourceIntelligenceParams, CrossSourceTaskResult } from "./types/CrossSourceTypes";
 import { analyzeJobDescription } from "./utils/JobAnalyzer";
-import { collectCandidatesFromAllSources, crossReferenceMultipleSourceCandidates, calculateAverageCrossSourceScore } from "./utils/CandidateCollector";
+import { 
+  collectCandidatesFromAllSources, 
+  crossReferenceMultipleSourceCandidates, 
+  calculateAverageCrossSourceScore 
+} from "./utils/CandidateCollector";
 import { rankCandidates } from "./utils/CandidateRanking";
 import { generateCrossSourceInsights } from "./utils/InsightsGenerator";
 import { generateCustomOutreachStrategies } from "./utils/OutreachStrategiesGenerator";

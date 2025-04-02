@@ -33,7 +33,7 @@ export interface CrossSourceCandidate {
   id: string;
   name: string;
   skills?: string[];
-  experience?: string;
+  experience?: string; // Changed from any to string
   source?: string;
   sourcesFound?: string[];
   crossSourceVerified?: boolean;

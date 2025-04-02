@@ -22,7 +22,7 @@ export async function collectCandidatesFromAllSources(
       title: "Senior Software Engineer",
       location: "San Francisco, CA",
       skills: ["React", "TypeScript", "Node.js", "AWS"],
-      experience: 7,
+      experience: "7 years", // Changed from number to string
       education: "M.S. Computer Science, Stanford University",
       sourcesFound: mockSources.slice(0, 3)
     },
@@ -32,7 +32,7 @@ export async function collectCandidatesFromAllSources(
       title: "DevOps Engineer",
       location: "Austin, TX",
       skills: ["Kubernetes", "Docker", "CI/CD", "Terraform"],
-      experience: 5,
+      experience: "5 years", // Changed from number to string
       education: "B.S. Computer Engineering, UT Austin",
       sourcesFound: mockSources.slice(1, 4)
     }
@@ -70,7 +70,7 @@ export async function collectCandidatesFromAllSources(
           "JavaScript", "Python", "React", "SQL", "AWS", 
           "Product Management", "UI/UX", "Data Analysis"
         ].sort(() => 0.5 - Math.random()).slice(0, 3 + Math.floor(Math.random() * 3)),
-        experience: 2 + Math.floor(Math.random() * 8),
+        experience: `${2 + Math.floor(Math.random() * 8)} years`, // Changed from number to string
         education: ["B.S. Computer Science", "M.S. Data Science", "B.A. Design", "MBA"][Math.floor(Math.random() * 4)],
         matchScore: 70 + Math.floor(Math.random() * 20),
         source,
@@ -87,6 +87,37 @@ export async function collectCandidatesFromAllSources(
   });
   
   return candidates;
+}
+
+/**
+ * Cross-reference candidates across multiple sources to validate information
+ * and provide unified candidate profiles
+ */
+export async function crossReferenceMultipleSourceCandidates(
+  candidates: CrossSourceCandidate[]
+): Promise<CrossSourceCandidate[]> {
+  // In a real implementation, this would analyze candidates from different sources
+  // to find matching profiles and cross-validate information
+  
+  // For demo purposes, we'll just pass through the candidates
+  // and simulate some basic cross-referencing
+  return candidates.map(candidate => {
+    if (candidate.crossSourceOccurrences && candidate.crossSourceOccurrences > 1) {
+      // For candidates that appear in multiple sources, add cross-source score
+      return {
+        ...candidate,
+        crossSourceScore: Math.min(95, candidate.matchScore + 5),
+        verificationStatus: 'verified' as const,
+        informationConsistency: {
+          score: 85 + Math.floor(Math.random() * 15),
+          inconsistencies: []
+        }
+      };
+    }
+    
+    // For single-source candidates, leave as is
+    return candidate;
+  });
 }
 
 /**
