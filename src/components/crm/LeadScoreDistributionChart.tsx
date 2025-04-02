@@ -39,7 +39,7 @@ const LeadScoreDistributionChart: React.FC<LeadScoreDistributionChartProps> = ({
   const hasData = scoreData.some(item => item.value > 0);
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader>
         <CardTitle className="text-md">Lead Score Distribution</CardTitle>
       </CardHeader>
@@ -49,28 +49,31 @@ const LeadScoreDistributionChart: React.FC<LeadScoreDistributionChartProps> = ({
             No scored leads to display
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie
-                data={scoreData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {scoreData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip 
-                formatter={(value) => [`${value} leads`, '']}
-                contentStyle={{ borderRadius: '8px' }}
-              />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div className="h-[200px] relative z-10">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={scoreData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {scoreData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [`${value} leads`, '']}
+                  contentStyle={{ borderRadius: '8px' }}
+                  wrapperStyle={{ zIndex: 20 }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </CardContent>
     </Card>

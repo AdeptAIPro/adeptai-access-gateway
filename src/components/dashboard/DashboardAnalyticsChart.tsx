@@ -37,7 +37,7 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
   userName
 }) => {
   return (
-    <Card className="border shadow-lg bg-white dark:bg-gray-900 relative">
+    <Card className="border shadow-lg bg-white dark:bg-gray-900 relative overflow-hidden">
       <CardHeader className="pb-0">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -74,8 +74,8 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-6">
-        <div className="h-[350px] w-full relative">
+      <CardContent className="pt-6 relative">
+        <div className="h-[350px] w-full relative z-10">
           <ChartContainer config={{ value: { theme: { light: '#5E19E6', dark: '#4F46E5' } } }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
@@ -100,6 +100,7 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
                 <Tooltip 
                   content={<CustomTooltip />}
                   cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                  wrapperStyle={{ zIndex: 20 }}
                 />
                 <Legend wrapperStyle={{ paddingTop: 15 }} />
                 <Bar 

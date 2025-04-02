@@ -143,6 +143,31 @@
   }
 }
 
+/* Chart container fix */
+.recharts-wrapper {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.recharts-tooltip-wrapper {
+  z-index: 50 !important;
+}
+
+/* Prevent chart overflow */
+.recharts-responsive-container {
+  overflow: visible !important;
+}
+
+/* Fix chart positioning */
+.recharts-wrapper .recharts-cartesian-grid-horizontal line,
+.recharts-wrapper .recharts-cartesian-grid-vertical line {
+  z-index: 5;
+}
+
+.recharts-wrapper .recharts-layer {
+  z-index: 15;
+}
+
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
