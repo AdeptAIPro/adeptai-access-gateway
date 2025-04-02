@@ -19,14 +19,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleTheme 
 }) => {
   return (
-    <div 
-      className={cn(
-        "bg-card border-r border-border h-full w-64 overflow-y-auto",
-        sidebarOpen ? "block" : "hidden md:block"
-      )}
-    >
+    <div className="h-full flex flex-col overflow-hidden">
       <SidebarHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <SidebarItems />
+      <div className="flex-1 overflow-y-auto">
+        <SidebarItems />
+      </div>
       <SidebarFooter theme={theme} toggleTheme={toggleTheme} />
     </div>
   );

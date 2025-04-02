@@ -4,12 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 import { Lead } from '@/services/crm/types';
 import { getLeadPriority } from '@/services/crm/LeadScoringService';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LeadScoreDistributionChartProps {
   leads: Lead[];
 }
 
 const LeadScoreDistributionChart: React.FC<LeadScoreDistributionChartProps> = ({ leads }) => {
+  const isMobile = useIsMobile();
+  
   const scoreData = useMemo(() => {
     // Filter out leads without scores
     const scoredLeads = leads.filter(lead => lead.score !== undefined);
@@ -41,15 +44,15 @@ const LeadScoreDistributionChart: React.FC<LeadScoreDistributionChartProps> = ({
   return (
     <Card className="overflow-hidden">
       <CardHeader>
-        <CardTitle className="text-md">Lead Score Distribution</CardTitle>
+        <CardTitle className="text-sm md:text-md">Lead Score Distribution</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-2 md:p-6">
         {!hasData ? (
-          <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+          <div className="h-[150px] md:h-[200px] flex items-center justify-center text-muted-foreground">
             No scored leads to display
           </div>
         ) : (
-          <div className="h-[200px] relative z-10">
+          <div className="h-[150px] md:h-[200px] relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -57,7 +60,7 @@ const LeadScoreDistributionChart: React.FC<LeadScoreDistributionChartProps> = ({
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={80}
+                  outerRadius={isMobile ? 60 : 80}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -70,7 +73,11 @@ const LeadScoreDistributionChart: React.FC<LeadScoreDistributionChartProps> = ({
                   contentStyle={{ borderRadius: '8px' }}
                   wrapperStyle={{ zIndex: 20 }}
                 />
-                <Legend />
+                <Legend 
+                  wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} 
+                  verticalAlign={isMobile ? "bottom" : undefined}
+                  height={36}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

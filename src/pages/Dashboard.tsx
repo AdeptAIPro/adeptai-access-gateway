@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout title="Dashboard">
-      <div className="grid gap-8 animate-fade-in-up">
+      <div className="grid gap-4 md:gap-8 animate-fade-in-up">
         <DashboardMetricsCards />
         <DashboardAnalyticsChart 
           analyticsData={analyticsData} 

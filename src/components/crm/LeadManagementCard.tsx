@@ -6,6 +6,7 @@ import { Download, RefreshCw } from "lucide-react";
 import LeadFilters from "./LeadFilters";
 import LeadTable from "./LeadTable";
 import { Lead, LeadFilter } from "@/services/crm/types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LeadManagementCardProps {
   leads: Lead[];
@@ -46,6 +47,8 @@ const LeadManagementCard: React.FC<LeadManagementCardProps> = ({
   exportToCsv,
   handleStatusChange,
 }) => {
+  const isMobile = useIsMobile();
+  
   // Filter leads based on search query
   const filteredLeads = leads.filter(lead => {
     if (!searchQuery) return true;
@@ -59,7 +62,7 @@ const LeadManagementCard: React.FC<LeadManagementCardProps> = ({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0 pb-2">
         <div>
           <CardTitle>Lead Management</CardTitle>
           <CardDescription>Manage and track your sales leads</CardDescription>
@@ -67,11 +70,11 @@ const LeadManagementCard: React.FC<LeadManagementCardProps> = ({
         <div className="flex items-center space-x-2">
           <Button size="sm" variant="outline" onClick={fetchLeads}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            {isMobile ? '' : 'Refresh'}
           </Button>
           <Button size="sm" variant="outline" onClick={exportToCsv}>
             <Download className="mr-2 h-4 w-4" />
-            Export
+            {isMobile ? '' : 'Export'}
           </Button>
         </div>
       </CardHeader>

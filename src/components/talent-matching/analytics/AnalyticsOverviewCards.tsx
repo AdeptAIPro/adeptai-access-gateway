@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AnalyticsCardProps {
   title: string;
@@ -9,23 +10,27 @@ interface AnalyticsCardProps {
   isPositive?: boolean;
 }
 
-const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title, value, change, isPositive = true }) => (
-  <Card className="shadow-sm">
-    <CardHeader className="pb-2">
-      <CardTitle className="text-sm text-gray-500">{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="text-3xl font-bold">{value}</div>
-      <p className={`text-sm ${isPositive ? "text-green-500" : "text-red-500"} mt-1`}>
-        {change}
-      </p>
-    </CardContent>
-  </Card>
-);
+const AnalyticsCard: React.FC<AnalyticsCardProps> = ({ title, value, change, isPositive = true }) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <Card className="shadow-sm">
+      <CardHeader className={`pb-1 ${isMobile ? 'px-3 py-2' : 'pb-2'}`}>
+        <CardTitle className="text-xs sm:text-sm text-gray-500">{title}</CardTitle>
+      </CardHeader>
+      <CardContent className={isMobile ? 'px-3 pb-3' : ''}>
+        <div className="text-xl sm:text-2xl md:text-3xl font-bold">{value}</div>
+        <p className={`text-xs sm:text-sm ${isPositive ? "text-green-500" : "text-red-500"} mt-1`}>
+          {change}
+        </p>
+      </CardContent>
+    </Card>
+  );
+};
 
 const AnalyticsOverviewCards: React.FC = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
       <AnalyticsCard 
         title="Total Matches" 
         value="624" 

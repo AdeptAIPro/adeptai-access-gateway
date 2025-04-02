@@ -5,6 +5,7 @@ import AnalyticsControls from "./AnalyticsControls";
 import MatchingPerformanceChart from "./MatchingPerformanceChart";
 import MatchQualityPieChart from "./MatchQualityPieChart";
 import MatchingEfficiencyChart from "./MatchingEfficiencyChart";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Sample data
 const matchingData = [
@@ -38,6 +39,7 @@ const sourceMatchingData = [
 const AnalyticsTabContent: React.FC = () => {
   const [timeframe, setTimeframe] = useState("month");
   const [chartType, setChartType] = useState("bar");
+  const isMobile = useIsMobile();
 
   const handleTimeframeChange = (value: string) => {
     setTimeframe(value);
@@ -52,7 +54,7 @@ const AnalyticsTabContent: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
       <AnalyticsControls 
         timeframe={timeframe}
         onTimeframeChange={handleTimeframeChange}
@@ -62,9 +64,9 @@ const AnalyticsTabContent: React.FC = () => {
 
       <AnalyticsOverviewCards />
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <MatchingPerformanceChart 
-          data={matchingData}
+          data={isMobile ? matchingData.slice(0, 5) : matchingData}
           chartType={chartType}
         />
         
@@ -74,7 +76,7 @@ const AnalyticsTabContent: React.FC = () => {
       </div>
       
       <MatchingEfficiencyChart 
-        data={sourceMatchingData}
+        data={isMobile ? sourceMatchingData.slice(0, 4) : sourceMatchingData}
       />
     </div>
   );
