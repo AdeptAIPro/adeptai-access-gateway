@@ -13,6 +13,9 @@ import { MatchingOptions } from "@/components/talent-matching/types";
 import { checkSupabaseConnection } from "@/components/talent-matching/utils/matching-utils";
 import { extractTextFromImage } from "@/services/talent-matching/ImageProcessingService";
 import useMatchingProcess from "@/hooks/use-matching-process";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Sparkles } from "lucide-react";
 
 const TalentMatchingContainer: React.FC = () => {
   const { user } = useAuth();
@@ -23,6 +26,7 @@ const TalentMatchingContainer: React.FC = () => {
   const [selectedSource, setSelectedSource] = useState("all");
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [useCrossSourceIntelligence, setUseCrossSourceIntelligence] = useState(false);
   const [matchingOptions, setMatchingOptions] = useState<MatchingOptions>({
     useSemanticMatching: true,
     useSkillBasedFiltering: true,
@@ -40,7 +44,7 @@ const TalentMatchingContainer: React.FC = () => {
     startMatching,
     saveCandidate,
     contactCandidate
-  } = useMatchingProcess(user, jobDescription, matchingOptions, toast);
+  } = useMatchingProcess(user, jobDescription, matchingOptions, toast, useCrossSourceIntelligence);
   
   React.useEffect(() => {
     if (!user) {
@@ -115,6 +119,17 @@ const TalentMatchingContainer: React.FC = () => {
     setShowAdvancedOptions(!showAdvancedOptions);
   };
 
+  const toggleCrossSourceIntelligence = () => {
+    const newValue = !useCrossSourceIntelligence;
+    setUseCrossSourceIntelligence(newValue);
+    toast({
+      title: newValue ? "Cross-Source Intelligence Enabled" : "Standard Matching Enabled",
+      description: newValue 
+        ? "Using AI to analyze candidates across multiple talent sources" 
+        : "Using standard candidate matching algorithm",
+    });
+  };
+
   const filteredCandidates = selectedSource === "all" 
     ? matchingCandidates 
     : matchingCandidates.filter(candidate => candidate.source.toLowerCase() === selectedSource.toLowerCase());
@@ -131,6 +146,21 @@ const TalentMatchingContainer: React.FC = () => {
         
         <CardContent>
           <MatchingWorkflow />
+          
+          <div className="flex items-center space-x-2 p-4 bg-muted/40 rounded-lg border mb-4">
+            <Sparkles className="h-5 w-5 text-amber-500" />
+            <h3 className="font-medium">Cross-Source Talent Intelligence</h3>
+            <div className="ml-auto flex items-center space-x-2">
+              <Label htmlFor="agentic-mode">
+                {useCrossSourceIntelligence ? "Enabled" : "Disabled"}
+              </Label>
+              <Switch
+                id="agentic-mode"
+                checked={useCrossSourceIntelligence}
+                onCheckedChange={toggleCrossSourceIntelligence}
+              />
+            </div>
+          </div>
           
           <JobDescriptionInput 
             tab={tab}
@@ -167,6 +197,7 @@ const TalentMatchingContainer: React.FC = () => {
         filteredCandidates={filteredCandidates}
         saveCandidate={saveCandidate}
         contactCandidate={contactCandidate}
+        useCrossSourceIntelligence={useCrossSourceIntelligence}
       />
     </div>
   );

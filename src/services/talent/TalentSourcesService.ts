@@ -1,34 +1,41 @@
 
 import { supabase } from "@/lib/supabase";
 
-// Get available talent sources (could be fetched from Supabase in a real app)
 export const getTalentSources = async (): Promise<string[]> => {
   try {
-    // This would typically come from your database of integrated sources
+    // Try to fetch sources from Supabase
     const { data, error } = await supabase
       .from('talent_sources')
       .select('name');
     
     if (error) {
-      console.error('Error fetching from supabase:', error);
-      throw error;
+      console.error('Error fetching talent sources:', error);
+      return getDefaultSources();
     }
     
-    return data?.map(source => source.name) || getDefaultSources();
+    // If we have data, extract the source names
+    if (data && data.length > 0) {
+      return data.map(source => source.name);
+    }
+    
+    // Fallback to default sources if no data
+    return getDefaultSources();
   } catch (error) {
-    console.error('Error fetching talent sources:', error);
+    console.error('Exception in getTalentSources:', error);
     return getDefaultSources();
   }
 };
 
-export const getDefaultSources = (): string[] => {
+// Default sources to use if Supabase is not available or returns no data
+const getDefaultSources = (): string[] => {
   return [
-    'Internal Database',
     'LinkedIn',
     'Indeed',
-    'Dice',
-    'ZipRecruiter',
+    'Glassdoor',
     'Monster',
-    'CareerBuilder'
+    'ZipRecruiter',
+    'Ceipal',
+    'JobDiva',
+    'Internal Database'
   ];
 };

@@ -1,4 +1,3 @@
-
 export interface Candidate {
   id: string;
   name: string;
@@ -28,8 +27,53 @@ export interface MatchingModel {
 
 export interface MatchingResult {
   candidates: Candidate[];
-  matchingModelUsed: string;
-  matchingTime: number;
+  jobTitle?: string;
+  extractedSkills?: string[];
+  suggestedExperience?: number;
+  keyResponsibilities?: string[];
+  matchingModelUsed?: string;
+  totalCandidatesScanned?: number;
+  matchTime?: number;
+  
+  // Cross-source intelligence fields
+  insights?: {
+    talentPoolQuality: string;
+    crossSourceStatistics?: {
+      totalCandidates: number;
+      verifiedCandidates: number;
+      verifiedPercentage: number;
+      averageCrossSourceScore: number;
+    };
+    recommendedSourcingStrategy?: {
+      mostEffectiveSources: string[];
+      recommendedSources: string[];
+      suggestedOutreachOrder: string[];
+      untappedSources: string[];
+    };
+    competitivePositioning?: {
+      talentAvailability: string;
+      competitiveness: string;
+      salaryRange: {
+        min: number;
+        max: number;
+        median: number;
+      };
+      timeToHire: string;
+    };
+  };
+  crossSourceValidation?: {
+    candidatesFound: number;
+    sourcesSearched: string[];
+    averageCrossSourceScore: number;
+  };
+  outreachStrategies?: Array<{
+    candidateId: string;
+    candidateName: string;
+    recommendedApproach: string;
+    suggestedTalkingPoints: string[];
+    estimatedResponseRate: string;
+    bestContactMethod: string;
+  }>;
 }
 
 export interface MatchingCriteria {

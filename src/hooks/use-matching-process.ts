@@ -3,6 +3,7 @@ import { useState } from "react";
 import { matchCandidatesWithJobDescription } from "@/services/talent-matching/MatchingService";
 import { MatchingOptions, MatchingResult, Candidate } from "@/components/talent-matching/types";
 import { supabase } from "@/lib/supabase";
+import { searchTalentsWithAgenticIntelligence } from "@/services/talent/TalentSearchService";
 
 type ToastFunction = {
   (props: {
@@ -16,7 +17,8 @@ const useMatchingProcess = (
   user: any,
   jobDescription: string,
   matchingOptions: MatchingOptions,
-  toast: ToastFunction
+  toast: ToastFunction,
+  useCrossSourceIntelligence: boolean = false
 ) => {
   const [isLoading, setIsLoading] = useState(false);
   const [matchingProgress, setMatchingProgress] = useState(0);
@@ -33,12 +35,42 @@ const useMatchingProcess = (
           clearInterval(interval);
           return 90;
         }
-        return prev + 5;
+        return prev + (useCrossSourceIntelligence ? 3 : 5); // Slower progress for cross-source
       });
     }, 200);
 
     try {
-      const result = await matchCandidatesWithJobDescription(descriptionToUse, matchingOptions);
+      let result: any;
+      
+      if (useCrossSourceIntelligence) {
+        // Extract skills from job description (simplified version)
+        const extractedSkills = extractSkillsFromJobDescription(descriptionToUse);
+        
+        // Use the agentic intelligence service
+        result = await searchTalentsWithAgenticIntelligence(
+          {
+            skills: extractedSkills,
+            limit: 20,
+          },
+          descriptionToUse,
+          extractedSkills.slice(0, 5), // Required skills (first 5)
+          extractedSkills.slice(5) // Preferred skills (rest)
+        );
+        
+        // Format the result to match the expected structure
+        result = {
+          ...result,
+          jobTitle: extractedSkills.length > 0 ? `Role requiring ${extractedSkills[0]}` : "Job Role",
+          extractedSkills,
+          suggestedExperience: 3,
+          matchingModelUsed: "cross-source-intelligence",
+          totalCandidatesScanned: result.crossSourceValidation?.candidatesFound || 0,
+          matchTime: 4.5
+        };
+      } else {
+        // Use the standard matching service
+        result = await matchCandidatesWithJobDescription(descriptionToUse, matchingOptions);
+      }
       
       clearInterval(interval);
       setMatchingProgress(100);
@@ -48,7 +80,9 @@ const useMatchingProcess = (
       
       toast({
         title: "Matching Complete",
-        description: `Found ${result.candidates.length} matching candidates using ${result.matchingModelUsed.split('-').join(' ')} model`,
+        description: `Found ${result.candidates.length} matching candidates${
+          useCrossSourceIntelligence ? " with cross-source intelligence" : ""
+        }`,
       });
       
       if (descriptionToUse) {
@@ -71,6 +105,22 @@ const useMatchingProcess = (
         variant: "destructive",
       });
     }
+  };
+
+  // Simple function to extract skills from job description
+  const extractSkillsFromJobDescription = (text: string): string[] => {
+    const commonSkills = [
+      "JavaScript", "TypeScript", "React", "Angular", "Vue", "Node.js",
+      "Python", "Java", "C#", "Ruby", "PHP", "Go", "Rust", "Swift",
+      "SQL", "MongoDB", "PostgreSQL", "MySQL", "AWS", "Azure", "GCP",
+      "Docker", "Kubernetes", "CI/CD", "DevOps", "Machine Learning",
+      "Data Science", "AI", "Project Management", "Agile", "Scrum"
+    ];
+    
+    // Return skills that are mentioned in the text
+    return commonSkills.filter(skill => 
+      text.toLowerCase().includes(skill.toLowerCase())
+    ).slice(0, 10); // Limit to 10 skills
   };
 
   const saveRecentSearch = async (user: any, searchText: string) => {
