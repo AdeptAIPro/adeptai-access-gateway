@@ -21,8 +21,8 @@ interface DashboardAnalyticsChartProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm border border-gray-200 p-4 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-900">{`${label}`}</p>
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-lg shadow-lg">
+        <p className="font-medium text-gray-900 dark:text-gray-100">{`${label}`}</p>
         <p className="text-adept font-semibold">{`${payload[0].value} jobs`}</p>
       </div>
     );
@@ -37,7 +37,7 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
   userName
 }) => {
   return (
-    <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 relative z-0">
+    <Card className="border shadow-lg bg-white dark:bg-gray-900 relative">
       <CardHeader className="pb-0">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -74,8 +74,8 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="mt-4 h-[350px] w-full">
+      <CardContent className="pt-6">
+        <div className="h-[350px] w-full relative">
           <ChartContainer config={{ value: { theme: { light: '#5E19E6', dark: '#4F46E5' } } }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
@@ -99,7 +99,7 @@ const DashboardAnalyticsChart: React.FC<DashboardAnalyticsChartProps> = ({
                 />
                 <Tooltip 
                   content={<CustomTooltip />}
-                  wrapperStyle={{ zIndex: 10 }}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                 />
                 <Legend wrapperStyle={{ paddingTop: 15 }} />
                 <Bar 
