@@ -86,6 +86,10 @@ export const seedAgenticAIData = async (): Promise<boolean> => {
         CREATE INDEX idx_agent_tasks_status ON agent_tasks(status);
       `);
       
+      // Since tables don't exist, let's simulate creating mock agents for testing purposes
+      const mockAgents = createMockAgents();
+      console.log("Created mock agents for testing:", mockAgents);
+      
       return false;
     }
     
@@ -95,7 +99,7 @@ export const seedAgenticAIData = async (): Promise<boolean> => {
         name: "TalentFinder AI",
         description: "Specialized AI agent for finding and filtering talent from multiple sources",
         type: "talent",
-        capabilities: ["talent-search", "talent-matching"],
+        capabilities: ["talent-search", "talent-matching", "cross-source-talent-intelligence"],
         parameters: {},
         status: "active"
       },
@@ -119,11 +123,22 @@ export const seedAgenticAIData = async (): Promise<boolean> => {
         name: "InsightsEngine AI",
         description: "AI agent that generates insights from analytics data",
         type: "analytics",
-        capabilities: ["analytics-insight"],
+        capabilities: ["analytics-insight", "skills-recommendation"],
+        parameters: {},
+        status: "active"
+      },
+      {
+        name: "OnboardingAssistant AI",
+        description: "AI agent that customizes and manages employee onboarding processes",
+        type: "hr",
+        capabilities: ["onboarding-customization"],
         parameters: {},
         status: "active"
       }
     ];
+    
+    console.log("Attempting to seed agents with these capabilities:", 
+      sampleAgents.map(a => ({ name: a.name, capabilities: a.capabilities })));
     
     // Insert agents if they don't exist
     for (const agent of sampleAgents) {
@@ -149,6 +164,26 @@ export const seedAgenticAIData = async (): Promise<boolean> => {
           
         if (insertError) {
           console.error("Error inserting agent:", insertError);
+        } else {
+          console.log(`Successfully inserted agent: ${agent.name}`);
+        }
+      } else {
+        console.log(`Agent ${agent.name} already exists, updating capabilities...`);
+        
+        // Update the existing agent's capabilities to ensure they match our expected values
+        if (existingAgents && existingAgents.length > 0) {
+          const { error: updateError } = await supabase
+            .from('agents')
+            .update({
+              capabilities: agent.capabilities
+            })
+            .eq('name', agent.name);
+            
+          if (updateError) {
+            console.error(`Error updating agent ${agent.name} capabilities:`, updateError);
+          } else {
+            console.log(`Updated capabilities for agent: ${agent.name}`);
+          }
         }
       }
     }
@@ -169,3 +204,39 @@ export const seedAgenticAIData = async (): Promise<boolean> => {
     return false;
   }
 };
+
+// Create mock agents for testing when database is not connected
+function createMockAgents(): Agent[] {
+  return [
+    {
+      id: "mock-agent-1",
+      name: "TalentFinder AI",
+      description: "Specialized AI agent for finding and filtering talent from multiple sources",
+      type: "talent",
+      capabilities: ["talent-search", "talent-matching", "cross-source-talent-intelligence"],
+      parameters: {},
+      status: "active",
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "mock-agent-2",
+      name: "PayrollMaster AI",
+      description: "AI agent that handles payroll processing with tax optimization capabilities",
+      type: "finance",
+      capabilities: ["payroll-processing"],
+      parameters: {},
+      status: "active",
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "mock-agent-3",
+      name: "ComplianceGuard AI",
+      description: "AI agent that monitors and ensures compliance with regulations",
+      type: "legal",
+      capabilities: ["compliance-check"],
+      parameters: {},
+      status: "active",
+      createdAt: new Date().toISOString()
+    }
+  ];
+}

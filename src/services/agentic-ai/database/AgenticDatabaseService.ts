@@ -1,5 +1,6 @@
 
-import { AgentTask, Agent } from '../types/AgenticTypes';
+import { AgentTask, Agent, AgentTaskType } from '../types/AgenticTypes';
+import { createMockAgents } from '../db/mockAgentsData';
 
 // Mock database service for demonstration
 const agenticDatabaseService = {
@@ -44,7 +45,12 @@ const agenticDatabaseService = {
   
   async getAgents(): Promise<Agent[]> {
     console.log('Fetching available agents');
-    return []; // In a real app, this would fetch from a database
+    
+    // Return mock agents for testing
+    const mockAgents = createMockAgents();
+    console.log(`Returning ${mockAgents.length} mock agents:`, mockAgents);
+    
+    return mockAgents;
   },
   
   // Generic database query function to support TalentMatchingAgenticService

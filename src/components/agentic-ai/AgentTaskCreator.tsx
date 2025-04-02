@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { AgentTaskType } from '@/services/agentic-ai/types/AgenticTypes';
-import { Bot, Loader2 } from 'lucide-react';
+import { Bot, Loader2, RefreshCw } from 'lucide-react';
 
 // Create a schema for task creation
 const taskSchema = z.object({
@@ -27,13 +27,10 @@ const taskSchema = z.object({
 type TaskFormValues = z.infer<typeof taskSchema>;
 
 const AgentTaskCreator = () => {
-  const { agents, createTask, isLoading } = useAgenticAI();
+  const { agents, createTask, isLoading, refreshAgents } = useAgenticAI();
   const [selectedTaskType, setSelectedTaskType] = useState<AgentTaskType | ''>('');
-  
-  // Get task-type specific agents
-  const filteredAgents = selectedTaskType 
-    ? agents.filter(agent => agent.capabilities.includes(selectedTaskType))
-    : agents;
+  const [filteredAgents, setFilteredAgents] = useState(agents);
+  const [isRefreshingAgents, setIsRefreshingAgents] = useState(false);
   
   // Initialize form
   const form = useForm<TaskFormValues>({
@@ -46,6 +43,25 @@ const AgentTaskCreator = () => {
       params: {},
     },
   });
+  
+  // Update filtered agents whenever task type or agents list changes
+  useEffect(() => {
+    if (selectedTaskType) {
+      const filtered = agents.filter(agent => 
+        agent.capabilities && agent.capabilities.includes(selectedTaskType)
+      );
+      
+      console.log(`Filtering agents for task type "${selectedTaskType}":`, filtered);
+      
+      if (filtered.length === 0) {
+        console.warn(`No agents found with capability: ${selectedTaskType}`);
+      }
+      
+      setFilteredAgents(filtered);
+    } else {
+      setFilteredAgents(agents);
+    }
+  }, [selectedTaskType, agents]);
   
   const onSubmit = async (values: TaskFormValues) => {
     try {
@@ -74,14 +90,25 @@ const AgentTaskCreator = () => {
   };
 
   const handleTaskTypeChange = (value: string) => {
+    console.log(`Task type changed to: ${value}`);
     setSelectedTaskType(value as AgentTaskType);
     form.setValue("taskType", value);
     form.setValue("agentId", ""); // Reset agent selection when task type changes
   };
+  
+  const handleRefreshAgents = async () => {
+    setIsRefreshingAgents(true);
+    await refreshAgents();
+    setIsRefreshingAgents(false);
+    toast({
+      title: "Agents Refreshed",
+      description: "Agent list has been updated.",
+    });
+  };
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className="relative">
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-primary" />
           Create New AI Task
@@ -89,6 +116,20 @@ const AgentTaskCreator = () => {
         <CardDescription>
           Select an agent type and define your task goal
         </CardDescription>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="absolute right-4 top-4"
+          onClick={handleRefreshAgents}
+          disabled={isRefreshingAgents}
+        >
+          {isRefreshingAgents ? (
+            <RefreshCw className="h-4 w-4 animate-spin mr-1" />
+          ) : (
+            <RefreshCw className="h-4 w-4 mr-1" />
+          )}
+          Refresh
+        </Button>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -133,30 +174,38 @@ const AgentTaskCreator = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Select Agent</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value}
-                    disabled={!selectedTaskType || filteredAgents.length === 0}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={
-                          !selectedTaskType 
-                            ? "Select a task type first" 
-                            : filteredAgents.length === 0 
-                              ? "No agents available for this task" 
-                              : "Select an agent"
-                        } />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {filteredAgents.map(agent => (
-                        <SelectItem key={agent.id} value={agent.id}>
-                          {agent.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                      disabled={!selectedTaskType || filteredAgents.length === 0}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={
+                            !selectedTaskType 
+                              ? "Select a task type first" 
+                              : filteredAgents.length === 0 
+                                ? "No agents available for this task" 
+                                : "Select an agent"
+                          } />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {filteredAgents.map(agent => (
+                          <SelectItem key={agent.id} value={agent.id}>
+                            {agent.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedTaskType && filteredAgents.length === 0 && (
+                      <p className="text-sm text-amber-600">
+                        No agents found with capability: {selectedTaskType}. 
+                        Try seeding the database from the main page.
+                      </p>
+                    )}
+                  </div>
                   <FormDescription>
                     Choose an AI agent capable of performing this task
                   </FormDescription>

@@ -43,9 +43,25 @@ export function useAgenticAI() {
   const fetchAgents = async () => {
     try {
       const availableAgents = await agenticService.getAgents();
+      console.log('Fetched agents:', availableAgents);
+      
+      if (availableAgents.length === 0) {
+        console.warn('No agents found. This will cause the agent selection dropdown to be empty.');
+      } else {
+        // Debug log for agent capabilities
+        availableAgents.forEach(agent => {
+          console.log(`Agent ${agent.name} capabilities:`, agent.capabilities);
+        });
+      }
+      
       setAgents(availableAgents);
     } catch (error) {
       console.error('Error fetching agents:', error);
+      toast({
+        title: "Failed to Load Agents",
+        description: "We couldn't fetch available AI agents.",
+        variant: "destructive",
+      });
     }
   };
   
@@ -151,6 +167,7 @@ export function useAgenticAI() {
     activeTask,
     createTask,
     processTask,
-    refreshTasks: fetchUserTasks
+    refreshTasks: fetchUserTasks,
+    refreshAgents: fetchAgents
   };
 }
