@@ -1,135 +1,222 @@
 
-import { AgentTask } from "../types/AgenticTypes";
-import agenticDatabaseService from "../database/AgenticDatabaseService";
-import { rankCandidates } from "./utils/CandidateRanking";
-import { generateMatchingInsights } from "./utils/InsightsGenerator";
-import { generateNextSteps } from "./utils/NextStepsGenerator";
-import { TalentMatchingTaskParams } from './types/TalentMatchingTypes';
+import { AgentTask } from '../types/AgenticTypes';
+import { executeQuery } from '../database/AgenticDatabaseService';
+import { CrossSourceCandidate } from './types/CrossSourceTypes';
 
-const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> => {
+export const processTalentMatchingTask = async (task: AgentTask): Promise<AgentTask> => {
   console.log(`Processing talent matching task: ${task.id}`);
   
-  // Mark task as processing
-  const updatedTask = { ...task, status: "processing" as const };
-  
   try {
-    // Simulating matching process
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Extract job description from task params
+    const { jobDescription } = task.params;
     
-    // Ensure we have jobDescription in params
-    const params = task.params as TalentMatchingTaskParams;
-    if (!params.jobDescription) {
-      throw new Error("Missing required parameter: jobDescription");
+    if (!jobDescription) {
+      return {
+        ...task,
+        status: "failed",
+        error: "No job description provided in task parameters"
+      };
     }
     
-    const candidates = await fetchCandidates(params.jobDescription);
+    // Extract skills from job description (simplified for demo)
+    const extractedSkills = extractSkills(jobDescription);
     
-    // Job analysis parameters
-    const jobAnalysis = {
-      suggestedExperience: 3,
-      companyValues: ["innovation", "teamwork", "customer-focus"]
-    };
+    // Query for candidates that match these skills
+    const candidates = await fetchCandidates(extractedSkills);
     
-    const requiredSkills = params.requiredSkills || [];
-    const preferredSkills = params.preferredSkills || [];
-    const prioritizeCulturalFit = params.prioritizeCulturalFit || false;
-    
-    const rankedCandidates = rankCandidates(
-      candidates, 
-      requiredSkills, 
-      preferredSkills, 
-      prioritizeCulturalFit,
-      jobAnalysis
-    );
-    
-    const insights = generateMatchingInsights(rankedCandidates, params);
-    const nextSteps = generateNextSteps(rankedCandidates.length > 0, params);
-    
-    // Update task with candidates, insights, and next steps
-    return {
-      ...updatedTask,
-      status: "completed",
-      result: {
-        candidates: rankedCandidates,
-        insights,
-        nextSteps
+    // Create matching result
+    const matchingResult = {
+      jobTitle: extractJobTitle(jobDescription),
+      extractedSkills,
+      suggestedExperience: 3, // Example value
+      candidates: candidates.map(candidate => ({
+        ...candidate,
+        source: candidate.source || 'internal', // Ensure source is always set
+        title: candidate.title || 'Unknown Position', // Ensure title is always set
+        location: candidate.location || 'Remote', // Ensure location is always set
+      })),
+      totalCandidatesScanned: candidates.length + 10, // Demo value
+      matchTime: 3.2, // Demo value in seconds
+      crossSourceValidation: {
+        sourcesSearched: ["LinkedIn", "Indeed", "Internal Database"],
+        candidatesFound: candidates.length + 5,
+        verifiedCandidates: Math.floor(candidates.length / 2),
+        verificationRate: 0.42,
+        averageCrossSourceScore: 0.78
       }
     };
-  } catch (error) {
-    console.error(`Error processing talent matching task: ${error}`);
+    
+    // Update task with result
     return {
-      ...updatedTask,
+      ...task,
+      status: "completed",
+      result: matchingResult
+    };
+  } catch (error) {
+    console.error(`Error in talent matching task: ${error}`);
+    return {
+      ...task,
       status: "failed",
-      error: `Failed to process task: ${error}`
+      error: `Error processing talent matching task: ${error}`
     };
   }
 };
 
-const fetchCandidates = async (jobDescription: string) => {
+// Helper function to extract skills from job description
+const extractSkills = (jobDescription: string): string[] => {
+  // Simplified skill extraction for demo
+  const commonSkills = ["JavaScript", "React", "TypeScript", "Node.js", "Python", "SQL", "NoSQL", "AWS", "Docker"];
+  
+  // Return skills that appear in the job description
+  return commonSkills.filter(skill => 
+    jobDescription.toLowerCase().includes(skill.toLowerCase())
+  ).length > 0 
+    ? commonSkills.filter(skill => 
+        jobDescription.toLowerCase().includes(skill.toLowerCase())
+      ) 
+    : commonSkills.slice(0, 3); // Return at least some skills for demo purposes
+};
+
+// Helper function to extract job title
+const extractJobTitle = (jobDescription: string): string => {
+  // Simplified job title extraction for demo
+  const firstLine = jobDescription.split('\n')[0];
+  if (firstLine.toLowerCase().includes('title:')) {
+    return firstLine.split('title:')[1].trim();
+  }
+  if (firstLine.length < 50) {
+    return firstLine.trim();
+  }
+  return "Software Engineer"; // Default title
+};
+
+// Fetch candidates that match the given skills
+const fetchCandidates = async (skills: string[]): Promise<CrossSourceCandidate[]> => {
   try {
-    console.log(`Fetching candidates for job: ${jobDescription.substring(0, 20)}...`);
-    
-    // Query the database for candidates using agenticDatabaseService instead of direct executeQuery
-    const candidatesResult = await agenticDatabaseService.executeQuery(
-      "SELECT * FROM candidates WHERE status = 'active' LIMIT 10"
+    // Query candidates from database
+    const candidatesData = await executeQuery(
+      "SELECT * FROM candidates WHERE skills && $1",
+      [skills]
     );
     
-    // Simulate some processing time
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock data if no results from the database
-    if (!candidatesResult || candidatesResult.length === 0) {
-      return mockCandidates;
-    }
-    
-    return candidatesResult.map((candidate: any) => ({
+    // Map to proper CrossSourceCandidate type
+    return candidatesData.map(candidate => ({
       id: candidate.id,
       name: candidate.name,
-      skills: candidate.skills || [],
-      experience: candidate.experience || [],
-      education: candidate.education || [],
-      matchScore: Math.floor(Math.random() * 40) + 60 // Random score between 60-99
+      title: candidate.title || "Software Developer", // Add default for required field
+      location: candidate.location || "Remote", // Add default for required field
+      skills: candidate.skills,
+      experience: candidate.experience,
+      education: candidate.education || "Bachelor's Degree",
+      matchScore: calculateMatchScore(candidate.skills, skills),
+      source: candidate.source || "Internal Database", // Add default for required field
+      crossSourceVerified: Math.random() > 0.5,
+      crossSourceOccurrences: Math.floor(Math.random() * 3) + 1,
+      crossSourceSources: ["LinkedIn", "GitHub", "Indeed"].slice(0, Math.floor(Math.random() * 3) + 1),
+      crossSourceScore: Math.random() * 0.5 + 0.5, // Random score between 0.5 and 1.0
     }));
   } catch (error) {
     console.error("Error fetching candidates:", error);
-    return mockCandidates;
+    
+    // Return mock candidates for demo purposes
+    return generateMockCandidates(skills);
   }
 };
 
-const mockCandidates = [
-  {
-    id: "c1",
-    name: "Jane Smith",
-    skills: ["JavaScript", "React", "TypeScript", "Node.js"],
-    experience: [
-      "Senior Frontend Developer at Tech Co (2020-present)",
-      "Frontend Developer at App Inc (2018-2020)"
-    ],
-    education: ["B.S. Computer Science, University of Technology"],
-    matchScore: 95
-  },
-  {
-    id: "c2",
-    name: "Michael Johnson",
-    skills: ["JavaScript", "Angular", "Java", "Spring Boot"],
-    experience: [
-      "Full Stack Developer at Software Solutions Ltd (2019-present)",
-      "Backend Developer at Enterprise Apps (2016-2019)"
-    ],
-    education: ["M.S. Software Engineering, State University"],
-    matchScore: 88
-  },
-  {
-    id: "c3",
-    name: "Emily Davis",
-    skills: ["JavaScript", "Vue.js", "Python", "Django"],
-    experience: [
-      "Web Developer at Creative Agency (2018-present)",
-      "Junior Developer at Tech Startups Inc (2017-2018)"
-    ],
-    education: ["B.A. Web Development, Design Institute"],
-    matchScore: 75
+// Calculate match score between candidate skills and job skills
+const calculateMatchScore = (candidateSkills: string[], jobSkills: string[]): number => {
+  if (!candidateSkills || !jobSkills || jobSkills.length === 0) {
+    return 0;
   }
-];
+  
+  const matchingSkills = candidateSkills.filter(skill => 
+    jobSkills.some(jobSkill => 
+      jobSkill.toLowerCase() === skill.toLowerCase()
+    )
+  );
+  
+  return Math.min(100, Math.round((matchingSkills.length / jobSkills.length) * 100));
+};
 
-export { processTalentMatchingTask };
+// Generate mock candidates for demo
+const generateMockCandidates = (skills: string[]): CrossSourceCandidate[] => {
+  const mockNames = [
+    "Alex Johnson",
+    "Sam Rivera",
+    "Jordan Smith",
+    "Taylor Williams",
+    "Casey Martinez",
+    "Morgan Lee"
+  ];
+  
+  const mockTitles = [
+    "Senior Software Engineer",
+    "Full Stack Developer",
+    "Frontend Developer",
+    "Backend Engineer",
+    "DevOps Specialist",
+    "Software Architect"
+  ];
+  
+  const mockLocations = [
+    "San Francisco, CA",
+    "New York, NY",
+    "Austin, TX",
+    "Seattle, WA",
+    "Boston, MA",
+    "Remote"
+  ];
+  
+  const mockSources = [
+    "LinkedIn",
+    "Indeed",
+    "GitHub",
+    "Internal Database",
+    "Referral",
+    "StackOverflow"
+  ];
+  
+  const allSkills = [
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Node.js",
+    "Python",
+    "Java",
+    "C#",
+    "SQL",
+    "MongoDB",
+    "AWS",
+    "Docker",
+    "Kubernetes",
+    "GraphQL",
+    "REST API",
+    "HTML/CSS"
+  ];
+  
+  return mockNames.map((name, index) => {
+    // Ensure some skills match the job requirements
+    const candidateSkills = [
+      ...skills.slice(0, Math.floor(Math.random() * skills.length) + 1),
+      ...allSkills.slice(0, 3 + Math.floor(Math.random() * 5))
+    ].filter((skill, i, arr) => arr.indexOf(skill) === i).slice(0, 5 + Math.floor(Math.random() * 5));
+    
+    const matchScore = calculateMatchScore(candidateSkills, skills);
+    
+    return {
+      id: `candidate-${index}`,
+      name,
+      title: mockTitles[index % mockTitles.length],
+      location: mockLocations[index % mockLocations.length],
+      skills: candidateSkills,
+      experience: 2 + Math.floor(Math.random() * 8),
+      education: "Bachelor's in Computer Science",
+      matchScore,
+      source: mockSources[index % mockSources.length],
+      crossSourceVerified: Math.random() > 0.5,
+      crossSourceOccurrences: Math.floor(Math.random() * 3) + 1,
+      crossSourceSources: mockSources.slice(0, Math.floor(Math.random() * 3) + 1),
+      crossSourceScore: Math.random() * 0.5 + 0.5,
+    };
+  });
+};

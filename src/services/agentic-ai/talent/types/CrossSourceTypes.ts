@@ -56,6 +56,7 @@ export interface JobAnalysisResult {
   jobTitle: string;
   jobDescription: string;
   keyResponsibilities: string[];
+  suggestedExperience?: number; // Added to fix type error
 }
 
 export interface CrossSourceInsights {

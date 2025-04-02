@@ -8,10 +8,14 @@ import { Control } from 'react-hook-form';
 interface AgentSelectorProps {
   control: Control<any>;
   selectedTaskType: string;
-  filteredAgents: Agent[];
+  agents: Agent[];  // Fixed: added agents prop to the interface
 }
 
-const AgentSelector = ({ control, selectedTaskType, filteredAgents }: AgentSelectorProps) => {
+const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps) => {
+  const filteredAgents = selectedTaskType
+    ? agents.filter(agent => agent.capabilities.includes(selectedTaskType))
+    : agents;
+
   return (
     <FormField
       control={control}

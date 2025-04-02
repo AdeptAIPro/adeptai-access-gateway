@@ -87,4 +87,5 @@ export interface MatchingModel {
   performance: number;
   accuracyScore: number;
   icon?: React.ReactNode;
+  type?: string; // Add type property to fix error
 }
