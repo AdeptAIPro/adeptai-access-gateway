@@ -31,6 +31,13 @@ const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
     setUseCrossSourceIntelligence(checked);
   };
 
+  const handleToggleChange = (option: keyof MatchingOptions) => {
+    setMatchingOptions({
+      ...matchingOptions,
+      [option]: !matchingOptions[option],
+    });
+  };
+
   return (
     <Card className="p-4 mb-4">
       <div className="flex items-center justify-between mb-4 pb-4 border-b">
@@ -64,12 +71,14 @@ const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
         <TabsContent value="filters">
           <FiltersTab
             matchingOptions={matchingOptions}
+            handleToggleChange={handleToggleChange}
             setMatchingOptions={setMatchingOptions}
           />
         </TabsContent>
         <TabsContent value="algorithms">
           <AlgorithmsTab
             matchingOptions={matchingOptions}
+            handleToggleChange={handleToggleChange}
             setMatchingOptions={setMatchingOptions}
           />
         </TabsContent>

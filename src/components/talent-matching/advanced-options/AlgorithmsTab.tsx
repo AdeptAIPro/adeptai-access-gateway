@@ -3,16 +3,17 @@ import React from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { MatchingOptions } from "../types";
-import { Brain } from "lucide-react";
 
 interface AlgorithmsTabProps {
   matchingOptions: MatchingOptions;
   handleToggleChange: (option: keyof MatchingOptions) => void;
+  setMatchingOptions: (options: MatchingOptions) => void;
 }
 
 const AlgorithmsTab: React.FC<AlgorithmsTabProps> = ({
   matchingOptions,
   handleToggleChange,
+  setMatchingOptions,
 }) => {
   return (
     <div className="space-y-4">

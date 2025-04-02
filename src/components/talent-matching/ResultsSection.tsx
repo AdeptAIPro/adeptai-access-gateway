@@ -11,11 +11,15 @@ import MatchingInsights from "./MatchingInsights";
 export interface ResultsSectionProps {
   matchResult: MatchingResult;
   onStartNewMatch: () => void;
+  saveCandidate?: (id: string) => void;
+  contactCandidate?: (id: string) => void;
 }
 
 const ResultsSection: React.FC<ResultsSectionProps> = ({
   matchResult,
-  onStartNewMatch
+  onStartNewMatch,
+  saveCandidate,
+  contactCandidate
 }) => {
   const [activeTab, setActiveTab] = useState("candidates");
 
@@ -65,7 +69,11 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
         </TabsList>
         
         <TabsContent value="candidates">
-          <CandidateResults candidates={matchResult.candidates} />
+          <CandidateResults 
+            candidates={matchResult.candidates} 
+            saveCandidate={saveCandidate}
+            contactCandidate={contactCandidate}
+          />
         </TabsContent>
         
         <TabsContent value="insights">

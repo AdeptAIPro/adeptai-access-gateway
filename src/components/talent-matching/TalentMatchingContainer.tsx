@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import useMatchingProcess from "@/hooks/use-matching-process"; // Fixed import
+import useMatchingProcess from "@/hooks/use-matching-process"; 
 import { MatchingResult, MatchingOptions } from "./types";
 import JobDescriptionInput from "./JobDescriptionInput";
 import ResultsSection from "./ResultsSection";
 import MatchingWorkflow from "./MatchingWorkflow";
-import AdvancedMatchingOptions from "./AdvancedMatchingOptions";
+import AdvancedOptionsToggle from "./AdvancedOptionsToggle";
 import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
 import { MatchingModel } from "./types";
 
@@ -46,6 +46,8 @@ const TalentMatchingContainer: React.FC = () => {
     matchingProgress,
     matchResult,
     startMatching,
+    saveCandidate,
+    contactCandidate
   } = useMatchingProcess(
     user,
     jobDescription,
@@ -106,25 +108,24 @@ const TalentMatchingContainer: React.FC = () => {
             setFileUploaded={setFileUploaded}
           />
           
-          {showAdvancedOptions && (
-            <AdvancedMatchingOptions
-              matchingOptions={matchingOptions}
-              setMatchingOptions={(options: MatchingOptions) => {
-                setMinMatchScore(options.minMatchScore);
-                setUseComplianceVerification(options.useComplianceVerification);
-                setPrioritizeCulturalFit(options.prioritizeCulturalFit);
-                setUseSemanticMatching(options.useSemanticMatching || false);
-                setUseRAG(options.useRAG || false);
-                setUseSkillBasedFiltering(options.useSkillBasedFiltering || true);
-                if (options.matchingModel) {
-                  setSelectedModelId(options.matchingModel);
-                }
-              }}
-              matchingModels={availableModels}
-              setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
-              useCrossSourceIntelligence={useCrossSourceIntelligence}
-            />
-          )}
+          <AdvancedOptionsToggle
+            showAdvancedOptions={showAdvancedOptions}
+            matchingOptions={matchingOptions}
+            setMatchingOptions={(options: MatchingOptions) => {
+              setMinMatchScore(options.minMatchScore);
+              setUseComplianceVerification(options.useComplianceVerification);
+              setPrioritizeCulturalFit(options.prioritizeCulturalFit);
+              setUseSemanticMatching(options.useSemanticMatching || false);
+              setUseRAG(options.useRAG || false);
+              setUseSkillBasedFiltering(options.useSkillBasedFiltering || true);
+              if (options.matchingModel) {
+                setSelectedModelId(options.matchingModel);
+              }
+            }}
+            matchingModels={availableModels}
+            useCrossSourceIntelligence={useCrossSourceIntelligence}
+            setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
+          />
           
           <MatchingWorkflow
             isStarted={false}
@@ -145,6 +146,8 @@ const TalentMatchingContainer: React.FC = () => {
           <ResultsSection
             matchResult={matchResult}
             onStartNewMatch={handleStartNewMatch}
+            saveCandidate={saveCandidate}
+            contactCandidate={contactCandidate}
           />
         )
       )}

@@ -1,62 +1,98 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Search, User, UserCheck, CheckCircle, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { ChevronDown, ChevronUp, Cog, Play, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const MatchingWorkflow: React.FC = () => {
+interface MatchingWorkflowProps {
+  isStarted?: boolean;
+  isProcessing?: boolean;
+  isComplete?: boolean;
+  currentStep?: number;
+  progress?: number;
+  progressText?: string;
+  showAdvancedOptions?: boolean;
+  setShowAdvancedOptions?: (show: boolean) => void;
+  onStartMatching?: () => void;
+  onCancel?: () => void;
+  isReadyToStart?: boolean;
+}
+
+const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
+  isStarted = false,
+  isProcessing = false,
+  isComplete = false,
+  currentStep = 1,
+  progress = 0,
+  progressText = "",
+  showAdvancedOptions = false,
+  setShowAdvancedOptions = () => {},
+  onStartMatching = () => {},
+  onCancel = () => {},
+  isReadyToStart = false,
+}) => {
   return (
-    <Card className="my-6">
-      <CardContent className="pt-6">
-        <h3 className="text-lg font-semibold mb-4">Talent Matching Workflow</h3>
-        
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          {steps.map((step, index) => (
-            <React.Fragment key={index}>
-              <div className="flex flex-col items-center text-center max-w-[150px] p-2">
-                <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
-                  <step.icon className="h-6 w-6 text-indigo-600" />
-                </div>
-                <h4 className="font-medium text-sm mb-1">{step.title}</h4>
-                <p className="text-xs text-gray-500">{step.description}</p>
-              </div>
-              
-              {index < steps.length - 1 && (
-                <ArrowRight className="text-gray-300 mx-2 hidden md:block" />
+    <Card className="p-4">
+      <div className={cn("flex justify-between items-center", isProcessing && "mb-4")}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center font-normal text-muted-foreground hover:text-foreground"
+          onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+        >
+          <Cog className="h-4 w-4 mr-2" />
+          Advanced Options
+          {showAdvancedOptions ? (
+            <ChevronUp className="h-4 w-4 ml-2" />
+          ) : (
+            <ChevronDown className="h-4 w-4 ml-2" />
+          )}
+        </Button>
+
+        <div className="flex items-center gap-2">
+          {isProcessing ? (
+            <Button variant="outline" size="sm" onClick={onCancel}>
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              onClick={onStartMatching}
+              disabled={!isReadyToStart}
+              className={cn(
+                "bg-adept hover:bg-adept/90",
+                !isReadyToStart && "opacity-50 cursor-not-allowed"
               )}
-            </React.Fragment>
-          ))}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Play className="mr-2 h-4 w-4" />
+                  Start Matching
+                </>
+              )}
+            </Button>
+          )}
         </div>
-      </CardContent>
+      </div>
+
+      {isProcessing && (
+        <div className="space-y-2">
+          <Progress value={progress} className="h-2" />
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
+            <span>{progressText}</span>
+            <span>{progress}%</span>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };
-
-const steps = [
-  {
-    title: "Import Job Description",
-    description: "Upload, paste or extract job description from various sources",
-    icon: FileText
-  },
-  {
-    title: "AI Analysis",
-    description: "Our AI analyses the job requirements and skills needed",
-    icon: Search
-  },
-  {
-    title: "Match Candidates",
-    description: "AI matches the best candidates from our talent pool",
-    icon: User
-  },
-  {
-    title: "Verify & Shortlist",
-    description: "Review and approve the most suitable candidates",
-    icon: UserCheck
-  },
-  {
-    title: "Hire & Onboard",
-    description: "Complete the hiring process and start onboarding",
-    icon: CheckCircle
-  }
-];
 
 export default MatchingWorkflow;
