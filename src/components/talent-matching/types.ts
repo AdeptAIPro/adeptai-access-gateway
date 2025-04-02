@@ -86,6 +86,6 @@ export interface MatchingModel {
   complexity: 'basic' | 'intermediate' | 'advanced';
   performance: number;
   accuracyScore: number;
-  icon?: React.ReactNode;
-  type?: string; // Add type property to fix error
+  icon?: any; // Changed from React.ReactNode to any to resolve type issues
+  type?: string;
 }

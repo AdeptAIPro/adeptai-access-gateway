@@ -1,101 +1,152 @@
 
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import useMatchingProcess from "@/hooks/use-matching-process"; // Fixed import
+import { MatchingResult, MatchingOptions } from "./types";
 import JobDescriptionInput from "./JobDescriptionInput";
-import MatchingWorkflow from "./MatchingWorkflow";
 import ResultsSection from "./ResultsSection";
+import MatchingWorkflow from "./MatchingWorkflow";
 import AdvancedMatchingOptions from "./AdvancedMatchingOptions";
-import { getDefaultMatchingModel } from "@/services/talent-matching/models/MatchingModelsService";
-import { MatchingOptions, MatchingResult } from "./types";
-import { useMatchingProcess } from "@/hooks/use-matching-process";
+import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
+import { MatchingModel } from "./types";
 
 const TalentMatchingContainer: React.FC = () => {
-  const [jobDescription, setJobDescription] = useState<string>("");
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false);
-  const [selectedModelId, setSelectedModelId] = useState<string>(getDefaultMatchingModel().id);
-  const [minMatchScore, setMinMatchScore] = useState<number>(70);
-  const [useComplianceVerification, setUseComplianceVerification] = useState<boolean>(false);
-  const [prioritizeCulturalFit, setPrioritizeCulturalFit] = useState<boolean>(false);
-  const [useSemanticMatching, setUseSemanticMatching] = useState<boolean>(true);
-  const [useRAG, setUseRAG] = useState<boolean>(false);
-  const [useSkillBasedFiltering, setUseSkillBasedFiltering] = useState<boolean>(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [jobDescription, setJobDescription] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [availableModels, setAvailableModels] = useState<MatchingModel[]>([]);
+  const [selectedModelId, setSelectedModelId] = useState("");
+  const [minMatchScore, setMinMatchScore] = useState(75);
+  const [useComplianceVerification, setUseComplianceVerification] = useState(false);
+  const [prioritizeCulturalFit, setPrioritizeCulturalFit] = useState(false);
+  const [useSemanticMatching, setUseSemanticMatching] = useState(false);
+  const [useRAG, setUseRAG] = useState(false);
+  const [useSkillBasedFiltering, setUseSkillBasedFiltering] = useState(true);
+  const [useCrossSourceIntelligence, setUseCrossSourceIntelligence] = useState(false);
+  const [tab, setTab] = useState<string>("paste");
+  const [fileUploaded, setFileUploaded] = useState<boolean>(false);
 
-  const { 
-    matchingState, 
-    startMatching, 
-    cancelMatching, 
-    matchingResult 
-  } = useMatchingProcess();
+  // Construct matching options object
+  const matchingOptions: MatchingOptions = {
+    model: "basic", // Default model
+    minMatchScore,
+    useComplianceVerification,
+    prioritizeCulturalFit,
+    useSemanticMatching,
+    useRAG,
+    useSkillBasedFiltering,
+    matchingModel: selectedModelId,
+  };
+
+  const {
+    isLoading,
+    matchingProgress,
+    matchResult,
+    startMatching,
+  } = useMatchingProcess(
+    user,
+    jobDescription,
+    matchingOptions,
+    toast,
+    useCrossSourceIntelligence
+  );
+
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        const models = await getAvailableMatchingModels();
+        setAvailableModels(models);
+        if (models.length > 0) {
+          setSelectedModelId(models[0].id);
+        }
+      } catch (error) {
+        console.error("Error loading models:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load matching models",
+          variant: "destructive",
+        });
+      }
+    };
+
+    loadModels();
+  }, [toast]);
 
   const handleStartMatching = () => {
-    const matchingOptions: MatchingOptions = {
-      model: selectedModelId,
-      minMatchScore,
-      useComplianceVerification,
-      prioritizeCulturalFit,
-      useSemanticMatching,
-      useRAG,
-      useSkillBasedFiltering,
-      matchingModel: selectedModelId
-    };
-    startMatching(jobDescription, matchingOptions);
+    if (!jobDescription) {
+      toast({
+        title: "Missing Job Description",
+        description: "Please enter a job description to start matching",
+      });
+      return;
+    }
+    
+    startMatching(jobDescription);
+    setShowResults(true);
+  };
+
+  const handleStartNewMatch = () => {
+    setJobDescription("");
+    setShowResults(false);
   };
 
   return (
     <div className="space-y-6">
-      {!matchingState.isComplete ? (
+      {!showResults ? (
         <>
-          <Card>
-            <CardContent className="p-6">
-              <JobDescriptionInput 
-                jobDescription={jobDescription}
-                setJobDescription={setJobDescription}
-              />
-            </CardContent>
-          </Card>
-
+          <JobDescriptionInput 
+            jobDescription={jobDescription} 
+            setJobDescription={setJobDescription}
+            tab={tab}
+            setTab={setTab}
+            fileUploaded={fileUploaded}
+            setFileUploaded={setFileUploaded}
+          />
+          
           {showAdvancedOptions && (
-            <AdvancedMatchingOptions 
-              selectedModelId={selectedModelId}
-              setSelectedModelId={setSelectedModelId}
-              minMatchScore={minMatchScore}
-              setMinMatchScore={setMinMatchScore}
-              useComplianceVerification={useComplianceVerification}
-              setUseComplianceVerification={setUseComplianceVerification}
-              prioritizeCulturalFit={prioritizeCulturalFit}
-              setPrioritizeCulturalFit={setPrioritizeCulturalFit}
-              useSemanticMatching={useSemanticMatching}
-              setUseSemanticMatching={setUseSemanticMatching}
-              useRAG={useRAG}
-              setUseRAG={setUseRAG}
-              useSkillBasedFiltering={useSkillBasedFiltering}
-              setUseSkillBasedFiltering={setUseSkillBasedFiltering}
+            <AdvancedMatchingOptions
+              matchingOptions={matchingOptions}
+              setMatchingOptions={(options: MatchingOptions) => {
+                setMinMatchScore(options.minMatchScore);
+                setUseComplianceVerification(options.useComplianceVerification);
+                setPrioritizeCulturalFit(options.prioritizeCulturalFit);
+                setUseSemanticMatching(options.useSemanticMatching || false);
+                setUseRAG(options.useRAG || false);
+                setUseSkillBasedFiltering(options.useSkillBasedFiltering || true);
+                if (options.matchingModel) {
+                  setSelectedModelId(options.matchingModel);
+                }
+              }}
+              matchingModels={availableModels}
+              setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
+              useCrossSourceIntelligence={useCrossSourceIntelligence}
             />
           )}
-
-          <MatchingWorkflow 
-            jobDescription={jobDescription}
-            isStarted={matchingState.isStarted}
-            isProcessing={matchingState.isProcessing}
-            isComplete={matchingState.isComplete}
-            currentStep={matchingState.currentStep}
-            progress={matchingState.progress}
-            progressText={matchingState.progressText}
+          
+          <MatchingWorkflow
+            isStarted={false}
+            isProcessing={isLoading}
+            isComplete={matchResult !== null}
+            currentStep={matchResult !== null ? 3 : isLoading ? 2 : 1}
+            progress={matchingProgress}
+            progressText={`${matchingProgress}% - Analyzing candidates`}
             showAdvancedOptions={showAdvancedOptions}
             setShowAdvancedOptions={setShowAdvancedOptions}
             onStartMatching={handleStartMatching}
-            onCancel={cancelMatching}
+            onCancel={() => {}}
             isReadyToStart={jobDescription.length > 50}
           />
         </>
       ) : (
-        <ResultsSection 
-          matchingResult={matchingResult as MatchingResult} 
-          onStartNewMatch={() => {
-            window.scrollTo(0, 0);
-            cancelMatching();
-          }}
-        />
+        matchResult && (
+          <ResultsSection
+            matchResult={matchResult}
+            onStartNewMatch={handleStartNewMatch}
+          />
+        )
       )}
     </div>
   );

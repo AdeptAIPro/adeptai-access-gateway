@@ -13,7 +13,7 @@ export const getAvailableMatchingModels = (): MatchingModel[] => {
       performance: 70,
       accuracyScore: 65,
       icon: Brain,
-      type: "keyword" // Add type property
+      type: "keyword"
     },
     {
       id: "advanced-semantic",
@@ -23,7 +23,7 @@ export const getAvailableMatchingModels = (): MatchingModel[] => {
       performance: 92,
       accuracyScore: 88,
       icon: Network,
-      type: "semantic" // Add type property
+      type: "semantic"
     },
     {
       id: "hybrid-match",
@@ -33,7 +33,7 @@ export const getAvailableMatchingModels = (): MatchingModel[] => {
       performance: 85,
       accuracyScore: 82,
       icon: Cpu,
-      type: "hybrid" // Add type property
+      type: "hybrid"
     },
     {
       id: "ml-prediction",
@@ -43,9 +43,22 @@ export const getAvailableMatchingModels = (): MatchingModel[] => {
       performance: 95,
       accuracyScore: 89,
       icon: LineChart,
-      type: "ml" // Add type property
+      type: "ml"
     }
   ];
+};
+
+// Add the function that was being imported but was missing
+export const getAvailableMatchingModelsFromDatabase = async (): Promise<MatchingModel[]> => {
+  try {
+    // In a real implementation, this would fetch from a database
+    // For now, just return the static models after a small delay to simulate async behavior
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return getAvailableMatchingModels();
+  } catch (error) {
+    console.error("Error fetching matching models from database:", error);
+    return [];
+  }
 };
 
 export const getDefaultMatchingModel = (): MatchingModel => {

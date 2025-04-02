@@ -1,128 +1,116 @@
 
-import React from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Sparkles } from "lucide-react";
-import MatchingProgress from "./MatchingProgress";
+import React, { useState } from "react";
+import { MatchingResult } from "./types";
 import CandidateResults from "./CandidateResults";
-import { MatchingResult, Candidate } from "./types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, FileText, Briefcase, Trophy, CheckCircle, Users, History } from "lucide-react";
+import MatchingInsights from "./MatchingInsights";
 
-interface ResultsSectionProps {
-  isLoading: boolean;
-  matchingProgress: number;
-  matchResult: MatchingResult | null;
-  matchingCandidates: Candidate[];
-  filteredCandidates: Candidate[];
-  saveCandidate: (id: string) => void;
-  contactCandidate: (id: string) => void;
-  useCrossSourceIntelligence?: boolean;
+export interface ResultsSectionProps {
+  matchResult: MatchingResult;
+  onStartNewMatch: () => void;
 }
 
 const ResultsSection: React.FC<ResultsSectionProps> = ({
-  isLoading,
-  matchingProgress,
   matchResult,
-  matchingCandidates,
-  filteredCandidates,
-  saveCandidate,
-  contactCandidate,
-  useCrossSourceIntelligence = false
+  onStartNewMatch
 }) => {
-  if (isLoading) {
-    return <MatchingProgress progress={matchingProgress} />;
-  }
-
-  if (!matchResult) {
-    return null;
-  }
+  const [activeTab, setActiveTab] = useState("candidates");
 
   return (
-    <>
-      <Alert variant="default" className="bg-muted">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Matching Results</AlertTitle>
-        <AlertDescription>
-          Found {matchingCandidates.length} candidates in {matchResult.matchTime?.toFixed(1) || '0.0'} seconds 
-          using {matchResult.matchingModelUsed?.split('-').join(' ') || 'AI'} model
-          {useCrossSourceIntelligence && matchResult.crossSourceValidation && 
-            ` with cross-source validation across ${matchResult.crossSourceValidation.sourcesSearched?.length || 0} sources`}
-        </AlertDescription>
-      </Alert>
-      
-      {useCrossSourceIntelligence && matchResult.insights && (
-        <Card className="mt-4 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
-          <CardHeader className="pb-2">
-            <div className="flex items-center">
-              <Sparkles className="h-5 w-5 text-amber-500 mr-2" />
-              <CardTitle className="text-lg">Cross-Source Intelligence Insights</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-medium mb-2">Talent Pool Analysis</h4>
-                <p className="text-sm mb-2">Quality: <Badge variant="outline" className="ml-1">{matchResult.insights.talentPoolQuality}</Badge></p>
-                <p className="text-sm mb-2">Cross-Source Verification: <Badge variant="outline" className="ml-1">
-                  {matchResult.insights.crossSourceStatistics?.verifiedPercentage}% verified
-                </Badge></p>
-              </div>
-              <div>
-                <h4 className="font-medium mb-2">Sourcing Strategy</h4>
-                <p className="text-sm mb-1">Most Effective Sources:</p>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {matchResult.insights.recommendedSourcingStrategy?.mostEffectiveSources?.map((source, i) => (
-                    <Badge key={i} variant="secondary" className="text-xs">{source}</Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
+    <div className="space-y-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="outline" size="sm" onClick={onStartNewMatch}>
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              New Match
+            </Button>
+            <Badge variant="outline" className="ml-2">
+              {matchResult.candidates.length} candidates matched
+            </Badge>
+            {matchResult.matchTime && (
+              <Badge variant="outline">
+                <History className="mr-1 h-3 w-3" /> {matchResult.matchTime.toFixed(1)}s
+              </Badge>
+            )}
+          </div>
+          <h2 className="text-xl font-bold">{matchResult.jobTitle}</h2>
+          <div className="flex flex-wrap gap-1 mt-2">
+            {matchResult.extractedSkills && matchResult.extractedSkills.map((skill) => (
+              <Badge key={skill} variant="secondary" className="mr-1 mb-1">
+                {skill}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="candidates">
+            <Users className="mr-1 h-4 w-4" />
+            Matched Candidates
+          </TabsTrigger>
+          <TabsTrigger value="insights">
+            <Trophy className="mr-1 h-4 w-4" />
+            Insights
+          </TabsTrigger>
+          <TabsTrigger value="job-details">
+            <Briefcase className="mr-1 h-4 w-4" />
+            Job Details
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="candidates">
+          <CandidateResults candidates={matchResult.candidates} />
+        </TabsContent>
+        
+        <TabsContent value="insights">
+          <MatchingInsights matchResult={matchResult} />
+        </TabsContent>
+        
+        <TabsContent value="job-details">
+          <div className="bg-card border rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">Job Description Analysis</h3>
             
-            {/* New section to display cross-source validation details */}
-            {matchResult.crossSourceValidation && (
-              <div className="mt-4 border-t pt-4">
-                <h4 className="font-medium mb-2">Cross-Source Validation</h4>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Total Candidates</TableHead>
-                      <TableHead>Verified Candidates</TableHead>
-                      <TableHead>Verification Rate</TableHead>
-                      <TableHead>Avg. Cross-Source Score</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>{matchResult.crossSourceValidation.candidatesFound}</TableCell>
-                      <TableCell>{matchResult.crossSourceValidation.verifiedCandidates}</TableCell>
-                      <TableCell>
-                        <Badge variant={matchResult.crossSourceValidation.verificationRate > 50 ? "success" : "outline"}>
-                          {matchResult.crossSourceValidation.verificationRate}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{matchResult.crossSourceValidation.averageCrossSourceScore}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Sources searched: {matchResult.crossSourceValidation.sourcesSearched?.join(", ")}
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                  <FileText className="inline mr-1 h-4 w-4" />
+                  Key Responsibilities
+                </h4>
+                <ul className="list-disc list-inside space-y-1">
+                  {matchResult.keyResponsibilities?.map((responsibility, index) => (
+                    <li key={index} className="text-sm">{responsibility}</li>
+                  )) || <li className="text-sm text-muted-foreground">No key responsibilities extracted</li>}
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                  <CheckCircle className="inline mr-1 h-4 w-4" />
+                  Experience Level
+                </h4>
+                <p className="text-sm">
+                  {matchResult.suggestedExperience} years of recommended experience
                 </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {matchingCandidates.length > 0 && (
-        <CandidateResults 
-          filteredCandidates={filteredCandidates}
-          matchingCandidates={matchingCandidates}
-          saveCandidate={saveCandidate}
-          contactCandidate={contactCandidate}
-        />
-      )}
-    </>
+              
+              <div>
+                <h4 className="font-medium text-sm text-muted-foreground mb-2">
+                  <Briefcase className="inline mr-1 h-4 w-4" />
+                  Job Title Suggestion
+                </h4>
+                <p className="text-sm">{matchResult.jobTitle}</p>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

@@ -1,99 +1,79 @@
 
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
-import { MatchingOptions, MatchingModel } from "./types";
-import { Brain, Filter, Gauge, Sparkles } from "lucide-react";
-import AlgorithmsTab from "./advanced-options/AlgorithmsTab";
-import FiltersTab from "./advanced-options/FiltersTab";
+import { MatchingModel, MatchingOptions } from "./types";
 import ModelsTab from "./advanced-options/ModelsTab";
+import FiltersTab from "./advanced-options/FiltersTab";
+import AlgorithmsTab from "./advanced-options/AlgorithmsTab";
+import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Sparkles } from "lucide-react";
 
 interface AdvancedMatchingOptionsProps {
   matchingOptions: MatchingOptions;
   setMatchingOptions: (options: MatchingOptions) => void;
+  matchingModels: MatchingModel[];
+  useCrossSourceIntelligence: boolean;
+  setUseCrossSourceIntelligence: (value: boolean) => void;
 }
 
 const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
   matchingOptions,
   setMatchingOptions,
+  matchingModels,
+  useCrossSourceIntelligence,
+  setUseCrossSourceIntelligence
 }) => {
-  const [matchingModels, setMatchingModels] = useState<MatchingModel[]>([]);
-  
-  // Fetch matching models when component mounts
-  useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        const models = await getAvailableMatchingModels();
-        setMatchingModels(models);
-      } catch (error) {
-        console.error("Error fetching matching models:", error);
-        setMatchingModels([]);
-      }
-    };
-    
-    fetchModels();
-  }, []);
+  const [activeTab, setActiveTab] = useState("models");
 
-  const handleToggleChange = (option: keyof MatchingOptions) => {
-    setMatchingOptions({
-      ...matchingOptions,
-      [option]: !matchingOptions[option as keyof MatchingOptions],
-    });
+  const handleCrossSourceToggle = (checked: boolean) => {
+    setUseCrossSourceIntelligence(checked);
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Sparkles className="mr-2 h-5 w-5 text-primary" />
-          Advanced Matching Options
-        </CardTitle>
-        <CardDescription>
-          Configure AI-powered matching algorithms and processing techniques
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="algorithms" className="w-full">
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="algorithms">
-              <Brain className="mr-2 h-4 w-4" />
-              Algorithms
-            </TabsTrigger>
-            <TabsTrigger value="filters">
-              <Filter className="mr-2 h-4 w-4" />
-              Filters
-            </TabsTrigger>
-            <TabsTrigger value="models">
-              <Gauge className="mr-2 h-4 w-4" />
-              Models
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="algorithms">
-            <AlgorithmsTab 
-              matchingOptions={matchingOptions} 
-              handleToggleChange={handleToggleChange} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="filters">
-            <FiltersTab 
-              matchingOptions={matchingOptions}
-              handleToggleChange={handleToggleChange}
-              setMatchingOptions={setMatchingOptions}
-            />
-          </TabsContent>
-          
-          <TabsContent value="models">
-            <ModelsTab 
-              matchingOptions={matchingOptions}
-              setMatchingOptions={setMatchingOptions}
-              matchingModels={matchingModels}
-            />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
+    <Card className="p-4 mb-4">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b">
+        <h3 className="text-lg font-semibold">Advanced Matching Options</h3>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="cross-source-intel" className="flex items-center gap-1">
+            <Sparkles className="h-4 w-4 text-amber-500" />
+            Cross-Source Intelligence
+          </Label>
+          <Switch 
+            id="cross-source-intel" 
+            checked={useCrossSourceIntelligence}
+            onCheckedChange={handleCrossSourceToggle}
+          />
+        </div>
+      </div>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="models">AI Models</TabsTrigger>
+          <TabsTrigger value="filters">Match Filters</TabsTrigger>
+          <TabsTrigger value="algorithms">Algorithms</TabsTrigger>
+        </TabsList>
+        <TabsContent value="models">
+          <ModelsTab
+            matchingOptions={matchingOptions}
+            setMatchingOptions={setMatchingOptions}
+            matchingModels={matchingModels}
+          />
+        </TabsContent>
+        <TabsContent value="filters">
+          <FiltersTab
+            matchingOptions={matchingOptions}
+            setMatchingOptions={setMatchingOptions}
+          />
+        </TabsContent>
+        <TabsContent value="algorithms">
+          <AlgorithmsTab
+            matchingOptions={matchingOptions}
+            setMatchingOptions={setMatchingOptions}
+          />
+        </TabsContent>
+      </Tabs>
     </Card>
   );
 };
