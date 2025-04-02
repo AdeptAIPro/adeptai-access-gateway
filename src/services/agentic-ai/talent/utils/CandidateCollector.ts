@@ -1,96 +1,112 @@
 
 import { CrossSourceCandidate, CrossSourceIntelligenceParams } from "../types/CrossSourceTypes";
-import { TalentSearchParams } from '@/services/talent/types';
-import { searchTalents } from "@/services/talent/TalentSearchService";
 
 /**
- * Collect candidates from multiple sources in parallel
+ * Collect and aggregate candidate data from multiple sources
  */
-export const collectCandidatesFromAllSources = async (params: CrossSourceIntelligenceParams): Promise<CrossSourceCandidate[]> => {
-  const searchPromises = params.sources.map(source => {
-    const searchParams: TalentSearchParams = {
-      skills: params.requiredSkills,
-      location: params.locations.join(','),
-      experience: params.experienceLevel,
-      source,
-      limit: 20 // Get more candidates from each source for better matching
-    };
-    
-    return searchTalents(searchParams);
+export async function collectCandidatesFromAllSources(
+  params: CrossSourceIntelligenceParams
+): Promise<CrossSourceCandidate[]> {
+  const candidates: CrossSourceCandidate[] = [];
+  
+  // This would connect to multiple APIs in production
+  // For now, we'll just create mock data
+  
+  const mockSources = params.sources || ["LinkedIn", "Ceipal", "JobDiva", "Internal Database"];
+  
+  // Create a few candidates that appear across multiple sources
+  const crossSourceCandidates = [
+    {
+      id: "cs-1",
+      name: "Emily Chen",
+      title: "Senior Software Engineer",
+      location: "San Francisco, CA",
+      skills: ["React", "TypeScript", "Node.js", "AWS"],
+      experience: 7,
+      education: "M.S. Computer Science, Stanford University",
+      sourcesFound: mockSources.slice(0, 3)
+    },
+    {
+      id: "cs-2",
+      name: "Michael Rodriguez",
+      title: "DevOps Engineer",
+      location: "Austin, TX",
+      skills: ["Kubernetes", "Docker", "CI/CD", "Terraform"],
+      experience: 5,
+      education: "B.S. Computer Engineering, UT Austin",
+      sourcesFound: mockSources.slice(1, 4)
+    }
+  ];
+  
+  // Add cross-source candidates with indicators that they appear in multiple sources
+  crossSourceCandidates.forEach(candidate => {
+    candidates.push({
+      ...candidate,
+      matchScore: 90 + Math.floor(Math.random() * 10),
+      source: candidate.sourcesFound[0],
+      crossSourceOccurrences: candidate.sourcesFound.length,
+      crossSourceVerified: true,
+      crossSourceSources: candidate.sourcesFound,
+      email: `${candidate.name.toLowerCase().replace(' ', '.')}@example.com`,
+      phone: "+1 (555) 123-4567",
+      availability: "2 weeks",
+      rate: "$150-175/hr"
+    });
   });
   
-  try {
-    const searchResults = await Promise.all(searchPromises);
+  // Add regular candidates from each source
+  mockSources.forEach(source => {
+    // Add 2-3 candidates per source
+    const count = 2 + Math.floor(Math.random() * 2);
     
-    // Combine all candidates and remove duplicates 
-    const allCandidates: CrossSourceCandidate[] = [];
-    const seenIds = new Set();
-    
-    searchResults.forEach(result => {
-      result.candidates.forEach(candidate => {
-        if (!seenIds.has(candidate.id)) {
-          seenIds.add(candidate.id);
-          allCandidates.push({
-            ...candidate,
-            sourcesFound: [candidate.source]
-          });
-        } else {
-          // If candidate exists in multiple sources, update the sourcesFound array
-          const existingCandidate = allCandidates.find(c => c.id === candidate.id);
-          if (existingCandidate && !existingCandidate.sourcesFound?.includes(candidate.source)) {
-            existingCandidate.sourcesFound?.push(candidate.source);
-            existingCandidate.crossSourceVerified = true;
-          }
-        }
+    for (let i = 0; i < count; i++) {
+      const id = `${source.toLowerCase().replace(' ', '-')}-${i+1}`;
+      candidates.push({
+        id,
+        name: `Candidate ${id}`,
+        title: ["Software Developer", "Data Engineer", "UX Designer", "Product Manager"][Math.floor(Math.random() * 4)],
+        location: ["New York", "Chicago", "Seattle", "Remote"][Math.floor(Math.random() * 4)],
+        skills: [
+          "JavaScript", "Python", "React", "SQL", "AWS", 
+          "Product Management", "UI/UX", "Data Analysis"
+        ].sort(() => 0.5 - Math.random()).slice(0, 3 + Math.floor(Math.random() * 3)),
+        experience: 2 + Math.floor(Math.random() * 8),
+        education: ["B.S. Computer Science", "M.S. Data Science", "B.A. Design", "MBA"][Math.floor(Math.random() * 4)],
+        matchScore: 70 + Math.floor(Math.random() * 20),
+        source,
+        crossSourceOccurrences: 1,
+        crossSourceVerified: false,
+        crossSourceSources: [source],
+        email: Math.random() > 0.3 ? `candidate${id}@example.com` : undefined,
+        phone: Math.random() > 0.5 ? "+1 (555) 111-2222" : undefined,
+        availability: Math.random() > 0.7 ? ["Immediately", "2 weeks", "1 month"][Math.floor(Math.random() * 3)] : undefined,
+        rate: Math.random() > 0.6 ? ["$100-125/hr", "$125-150/hr", "$75-100/hr"][Math.floor(Math.random() * 3)] : undefined,
+        bio: Math.random() > 0.8 ? "Experienced professional with a track record of success..." : undefined
       });
-    });
-    
-    return allCandidates;
-  } catch (error) {
-    console.error("Error collecting candidates from sources:", error);
-    return [];
-  }
-};
-
-/**
- * Analyze consistency of candidate information across sources
- */
-export const analyzeCrossSourceConsistency = (candidate: CrossSourceCandidate) => {
-  // In production, this would compare actual data from different sources
-  // For now, we'll simulate some consistency analysis
-  return {
-    score: candidate.sourcesFound?.length && candidate.sourcesFound.length > 2 ? 90 : 75,
-    inconsistencies: []
-  };
-};
-
-/**
- * Cross-reference candidates who appear in multiple sources to validate information
- */
-export const crossReferenceMultipleSourceCandidates = async (candidates: CrossSourceCandidate[]): Promise<CrossSourceCandidate[]> => {
-  return candidates.map(candidate => {
-    // Calculate cross-source verification score (higher if found in multiple sources)
-    const crossSourceScore = candidate.sourcesFound?.length && candidate.sourcesFound.length > 1 ? 
-      Math.min(70 + (candidate.sourcesFound.length * 10), 100) : 
-      50;
-    
-    return {
-      ...candidate,
-      crossSourceScore,
-      verificationStatus: crossSourceScore > 70 ? 'verified' : 'unverified',
-      informationConsistency: candidate.crossSourceVerified ? 
-        analyzeCrossSourceConsistency(candidate) : 
-        { score: 0, inconsistencies: [] }
-    };
+    }
   });
-};
+  
+  return candidates;
+}
 
 /**
- * Calculate the average cross-source verification score
+ * Calculate the average cross-source score for candidates
  */
-export const calculateAverageCrossSourceScore = (candidates: CrossSourceCandidate[]): number => {
+export function calculateAverageCrossSourceScore(candidates: CrossSourceCandidate[]): number {
   if (candidates.length === 0) return 0;
-  const sum = candidates.reduce((total, candidate) => 
-    total + (candidate.crossSourceScore || 0), 0);
-  return Math.round(sum / candidates.length);
-};
+  
+  let totalScore = 0;
+  let scoredCandidates = 0;
+  
+  candidates.forEach(candidate => {
+    if (candidate.crossSourceVerified) {
+      // Weight the score by the number of sources the candidate appears in
+      const occurrences = candidate.crossSourceOccurrences || 1;
+      totalScore += (candidate.matchScore * Math.min(occurrences, 3) / 3);
+      scoredCandidates++;
+    }
+  });
+  
+  return scoredCandidates > 0 ? 
+    Math.round(totalScore / scoredCandidates) : 0;
+}

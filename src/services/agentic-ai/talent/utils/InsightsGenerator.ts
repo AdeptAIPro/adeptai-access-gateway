@@ -35,6 +35,30 @@ export const generateCrossSourceInsights = async (
 };
 
 /**
+ * Generate matching insights for regular candidate matching process
+ * This function was missing and causing the import error
+ */
+export const generateMatchingInsights = (candidates: any[], params: any) => {
+  // Generate basic insights for the matching process
+  const candidatesCount = candidates.length;
+  const highMatchCount = candidates.filter(c => c.matchScore >= 85).length;
+  const matchQuality = highMatchCount > (candidatesCount * 0.6) ? 'High' : 
+                       highMatchCount > (candidatesCount * 0.3) ? 'Medium' : 'Low';
+  
+  return {
+    talentPoolQuality: matchQuality,
+    totalCandidates: candidatesCount,
+    highMatchCandidates: highMatchCount,
+    averageMatchScore: candidates.length > 0 
+      ? Math.round(candidates.reduce((sum, c) => sum + c.matchScore, 0) / candidatesCount) 
+      : 0,
+    recommendedNextSteps: candidates.length > 0 
+      ? ['Review top candidates', 'Schedule interviews', 'Prepare offer packages'] 
+      : ['Expand search criteria', 'Try different sources', 'Adjust requirements']
+  };
+};
+
+/**
  * Generate a sourcing strategy based on candidate analysis
  */
 export const generateSourcingStrategy = (

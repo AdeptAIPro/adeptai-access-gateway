@@ -1,5 +1,5 @@
 
-import { Candidate, MatchingResult } from "../types";
+import { Candidate, MatchingResult } from "../types/MatchingTypes";
 
 export const getFallbackCandidates = (): Candidate[] => {
   return [
