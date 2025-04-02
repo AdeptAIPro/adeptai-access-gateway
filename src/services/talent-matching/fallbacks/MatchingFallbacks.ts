@@ -1,3 +1,4 @@
+
 import { Candidate, MatchingResult } from "../types";
 
 export const getFallbackCandidates = (): Candidate[] => {
@@ -72,7 +73,7 @@ export const getFallbackMatchingResult = (): MatchingResult => {
     ],
     matchingModelUsed: 'adept-matching-v2',
     totalCandidatesScanned: 247,
-    matchTime: 2.3, // Fixed property name from 'matchingTime' to 'matchTime'
+    matchTime: 2.3, // Changed from 'matchingTime' to 'matchTime' to match the type definition
     insights: {
       talentPoolQuality: 'Good',
       crossSourceStatistics: {
