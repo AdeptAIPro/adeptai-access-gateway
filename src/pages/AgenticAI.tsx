@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import AgenticDashboard from "@/components/agentic-ai/AgenticDashboard";
+import AgenticProcessFlow from "@/components/agentic-ai/AgenticProcessFlow";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,9 @@ const AgenticAI = () => {
             {isSeeding ? "Adding Sample Data..." : "Seed Database"}
           </Button>
         </div>
+        
+        {/* Add the new process flow component here */}
+        <AgenticProcessFlow />
         
         <Card>
           <CardHeader>

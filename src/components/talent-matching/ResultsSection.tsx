@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Sparkles } from "lucide-react";
@@ -41,7 +40,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Matching Results</AlertTitle>
             <AlertDescription>
-              Found {matchingCandidates.length} candidates in {matchResult.matchingTime?.toFixed(1) || '0.0'} seconds 
+              Found {matchingCandidates.length} candidates in {matchResult.matchTime?.toFixed(1) || '0.0'} seconds 
               using {matchResult.matchingModelUsed?.split('-').join(' ') || 'AI'} model
               {useCrossSourceIntelligence && matchResult.crossSourceValidation && 
                 ` with cross-source validation across ${matchResult.crossSourceValidation.sourcesSearched?.length || 0} sources`}
