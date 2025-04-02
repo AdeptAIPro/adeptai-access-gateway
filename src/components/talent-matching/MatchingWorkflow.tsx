@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ChevronDown, ChevronUp, Cog, Play, Loader2, Sparkles, Info, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Cog, Loader2, Sparkles, Info, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MatchingWorkflowProps {
