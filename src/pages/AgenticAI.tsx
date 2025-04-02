@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, Database, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const AgenticAI = () => {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ const AgenticAI = () => {
   const [isSeeding, setIsSeeding] = useState<boolean>(false);
   const [needsSetup, setNeedsSetup] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const checkTables = async () => {
@@ -78,17 +80,84 @@ const AgenticAI = () => {
         {/* Add the process flow component here */}
         <AgenticProcessFlow />
         
-        {/* Add tabs for different sections */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-2 mb-6">
-            <TabsTrigger value="create">Create New Task</TabsTrigger>
-            <TabsTrigger value="dashboard">Task Dashboard</TabsTrigger>
+        {/* Make the tabs more prominent with better styling */}
+        <Tabs 
+          value={activeTab} 
+          onValueChange={setActiveTab} 
+          className="w-full"
+        >
+          <TabsList className="grid grid-cols-2 mb-6 bg-card shadow-md border border-border p-1 rounded-lg w-full md:w-2/3 mx-auto">
+            <TabsTrigger 
+              value="create" 
+              className="text-base py-3 data-[state=active]:bg-adept data-[state=active]:text-white"
+            >
+              <span className="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Create New Task
+              </span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="dashboard"
+              className="text-base py-3 data-[state=active]:bg-adept data-[state=active]:text-white"
+            >
+              <span className="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <rect width="7" height="9" x="3" y="3" rx="1" />
+                  <rect width="7" height="5" x="14" y="3" rx="1" />
+                  <rect width="7" height="9" x="14" y="12" rx="1" />
+                  <rect width="7" height="5" x="3" y="16" rx="1" />
+                </svg>
+                Task Dashboard
+              </span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="create">
             <div className="grid gap-6 md:grid-cols-2">
-              {/* Task Creator */}
-              <AgentTaskCreator />
+              {/* Task Creator with enhanced visuals */}
+              <Card className="border-2 border-adept/30 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-adept/10 to-adept/5 pb-4">
+                  <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-6 w-6 text-adept"
+                    >
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Create New Task
+                  </CardTitle>
+                  <CardDescription>Let our AI agents help you with your tasks</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <AgentTaskCreator />
+                </CardContent>
+              </Card>
               
               {/* How it works card */}
               <HowItWorksCard />
@@ -96,9 +165,26 @@ const AgenticAI = () => {
           </TabsContent>
           
           <TabsContent value="dashboard">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Agent Dashboard</CardTitle>
+            <Card className="border-2 border-adept/30 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-adept/10 to-adept/5">
+                <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-6 w-6 text-adept"
+                  >
+                    <rect width="7" height="9" x="3" y="3" rx="1" />
+                    <rect width="7" height="5" x="14" y="3" rx="1" />
+                    <rect width="7" height="9" x="14" y="12" rx="1" />
+                    <rect width="7" height="5" x="3" y="16" rx="1" />
+                  </svg>
+                  AI Agent Dashboard
+                </CardTitle>
                 <CardDescription>
                   Manage your AI agents and their tasks
                 </CardDescription>

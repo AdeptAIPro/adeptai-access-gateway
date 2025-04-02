@@ -7,7 +7,7 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useAgenticAI } from '@/hooks/use-agentic';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import TaskTypeSelector from './TaskTypeSelector';
 import AgentSelector from './AgentSelector';
@@ -92,40 +92,51 @@ const TaskCreationForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         {/* Task Type Selector */}
-        <TaskTypeSelector 
-          control={form.control}
-          onTaskTypeChange={(value) => setSelectedTaskType(value)}
-        />
+        <div className="bg-adept/5 p-4 rounded-lg border border-adept/20">
+          <TaskTypeSelector 
+            control={form.control}
+            onTaskTypeChange={(value) => setSelectedTaskType(value)}
+          />
+        </div>
         
         {/* Agent Selector */}
-        <AgentSelector 
-          control={form.control}
-          agents={filteredAgents}
-          selectedTaskType={selectedTaskType}
-        />
+        <div className="bg-card p-4 rounded-lg border border-border shadow-sm">
+          <AgentSelector 
+            control={form.control}
+            agents={filteredAgents}
+            selectedTaskType={selectedTaskType}
+          />
+        </div>
         
         {/* Task Goal Field */}
-        <TaskGoalField control={form.control} />
+        <div className="bg-adept/5 p-4 rounded-lg border border-adept/20">
+          <TaskGoalField control={form.control} />
+        </div>
         
         {/* Priority Selector */}
-        <PrioritySelector control={form.control} />
+        <div className="bg-card p-4 rounded-lg border border-border shadow-sm">
+          <PrioritySelector control={form.control} />
+        </div>
         
         {/* Submit Button */}
-        <div className="pt-2">
+        <div className="pt-3">
           <Button 
             type="submit" 
-            className="w-full" 
+            className={`w-full py-6 text-lg font-medium transition-all ${taskCreationSuccess ? 'bg-green-600 hover:bg-green-700' : 'bg-adept hover:bg-adept/90'}`}
             disabled={isLoading || taskCreationSuccess}
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Creating Task...
               </>
             ) : taskCreationSuccess ? (
-              "Task Created Successfully!"
+              <>
+                <CheckCircle className="mr-2 h-5 w-5" />
+                Task Created Successfully!
+              </>
             ) : (
               "Create Task"
             )}
