@@ -1,3 +1,11 @@
+
+export interface MatchingOptions {
+  model: string;
+  minMatchScore: number;
+  useComplianceVerification: boolean;
+  prioritizeCulturalFit: boolean;
+}
+
 export interface Candidate {
   id: string;
   name: string;
@@ -15,81 +23,54 @@ export interface Candidate {
   implicitCompetencies?: string[];
   embeddings?: number[];
   historicalSuccessRate?: number;
+  crossSourceVerified?: boolean;
+  crossSourceOccurrences?: number;
+  crossSourceSources?: string[];
 }
 
-export interface MatchingModel {
-  id: string;
-  name: string;
-  type: "openai" | "tensorflow" | "pytorch" | "hybrid";
-  description: string;
-  capabilities?: string[];
+export interface MatchingInsights {
+  talentPoolQuality: string;
+  crossSourceStatistics?: {
+    totalCandidates: number;
+    verifiedCandidates: number;
+    verifiedPercentage: number;
+    averageCrossSourceScore: number;
+  };
+  recommendedSourcingStrategy?: {
+    mostEffectiveSources: string[];
+    recommendedSources: string[];
+    suggestedOutreachOrder: string[];
+    untappedSources: string[];
+  };
+  competitivePositioning?: {
+    talentAvailability: string;
+    competitiveness: string;
+    salaryRange: {
+      min: number;
+      max: number;
+      median: number;
+    };
+    timeToHire: string;
+  };
+}
+
+export interface CrossSourceValidation {
+  sourcesSearched: string[];
+  candidatesFound: number;
+  verifiedCandidates: number;
+  verificationRate: number;
+  averageCrossSourceScore: number;
 }
 
 export interface MatchingResult {
   candidates: Candidate[];
-  jobTitle?: string;
-  extractedSkills?: string[];
-  suggestedExperience?: number;
+  jobTitle: string;
+  extractedSkills: string[];
+  suggestedExperience: number;
   keyResponsibilities?: string[];
   matchingModelUsed?: string;
   totalCandidatesScanned?: number;
   matchTime?: number;
-  
-  // Cross-source intelligence fields
-  insights?: {
-    talentPoolQuality: string;
-    crossSourceStatistics?: {
-      totalCandidates: number;
-      verifiedCandidates: number;
-      verifiedPercentage: number;
-      averageCrossSourceScore: number;
-    };
-    recommendedSourcingStrategy?: {
-      mostEffectiveSources: string[];
-      recommendedSources: string[];
-      suggestedOutreachOrder: string[];
-      untappedSources: string[];
-    };
-    competitivePositioning?: {
-      talentAvailability: string;
-      competitiveness: string;
-      salaryRange: {
-        min: number;
-        max: number;
-        median: number;
-      };
-      timeToHire: string;
-    };
-  };
-  crossSourceValidation?: {
-    candidatesFound: number;
-    sourcesSearched: string[];
-    averageCrossSourceScore: number;
-  };
-  outreachStrategies?: Array<{
-    candidateId: string;
-    candidateName: string;
-    recommendedApproach: string;
-    suggestedTalkingPoints: string[];
-    estimatedResponseRate: string;
-    bestContactMethod: string;
-  }>;
-}
-
-export interface MatchingCriteria {
-  skills: boolean;
-  experience: boolean;
-  education: boolean;
-  location: boolean;
-  culturalFit: boolean;
-  compliance: boolean;
-}
-
-export interface MatchingOptions {
-  useSemanticMatching: boolean;
-  useSkillBasedFiltering: boolean;
-  useComplianceVerification: boolean;
-  useRAG: boolean;
-  matchingModel: string;
-  minMatchScore: number;
+  insights?: MatchingInsights;
+  crossSourceValidation?: CrossSourceValidation;
 }

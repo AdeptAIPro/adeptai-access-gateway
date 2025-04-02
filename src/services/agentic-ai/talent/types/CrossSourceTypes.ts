@@ -1,99 +1,48 @@
 
-import { AgentTask } from "../../types/AgenticTypes";
-
 export interface CrossSourceIntelligenceParams {
-  jobDescription: string;
-  requiredSkills: string[];
-  preferredSkills: string[];
-  experienceLevel: number;
-  locations: string[];
-  sources: string[];
-  culturalFitPriority: number; // 0-10 scale
-  minMatchScore: number;
-}
-
-export interface JobAnalysisResult {
-  suggestedExperience: number;
-  companyCulture: string;
-  teamDynamics: string;
-  projectComplexity: string;
-  suggestedSkills: string[];
-}
-
-export interface SourceDistribution {
-  [source: string]: number;
-}
-
-export interface CandidateConsistencyInfo {
-  score: number;
-  inconsistencies: string[];
+  jobDescription?: string;
+  requiredSkills?: string[];
+  preferredSkills?: string[];
+  experienceLevel?: number;
+  locations?: string[];
+  sources?: string[];
+  culturalFitPriority?: number; // 0-10 scale
+  minMatchScore?: number;
 }
 
 export interface CrossSourceCandidate {
   id: string;
   name: string;
-  skills?: string[];
-  experience?: string; // Changed from any to string
-  source?: string;
-  sourcesFound?: string[];
-  crossSourceVerified?: boolean;
+  title: string;
+  location: string;
+  skills: string[];
+  experience: string | number;
+  education: string;
   matchScore: number;
+  source: string;
+  crossSourceOccurrences?: number;
+  crossSourceVerified?: boolean;
+  crossSourceSources?: string[];
   crossSourceScore?: number;
-  verificationStatus?: 'verified' | 'unverified';
-  informationConsistency?: CandidateConsistencyInfo;
-  [key: string]: any;
-}
-
-export interface OutreachStrategy {
-  candidateId: string;
-  candidateName: string;
-  recommendedApproach: string;
-  suggestedTalkingPoints: string[];
-  estimatedResponseRate: string;
-  bestContactMethod: string;
-}
-
-export interface CrossSourceStatistics {
-  totalCandidates: number;
-  verifiedCandidates: number;
-  verifiedPercentage: number;
-  averageCrossSourceScore: number;
-}
-
-export interface SourcingStrategy {
-  mostEffectiveSources: string[];
-  recommendedSources: string[];
-  suggestedOutreachOrder: string[];
-  untappedSources: string[];
-}
-
-export interface CompetitivePositioning {
-  talentAvailability: string;
-  competitiveness: string;
-  salaryRange: {
-    min: number;
-    max: number;
-    median: number;
+  informationConsistency?: {
+    score: number;
+    inconsistencies: {
+      field: string;
+      values: string[];
+    }[];
   };
-  timeToHire: string;
-}
-
-export interface CrossSourceInsights {
-  crossSourceStatistics: CrossSourceStatistics;
-  talentPoolQuality: string;
-  recommendedSourcingStrategy: SourcingStrategy;
-  competitivePositioning: CompetitivePositioning;
+  verificationStatus?: 'verified' | 'partial' | 'unverified';
+  email?: string;
+  phone?: string;
+  availability?: string;
+  rate?: string;
+  bio?: string;
 }
 
 export interface CrossSourceValidation {
-  candidatesFound: number;
   sourcesSearched: string[];
+  candidatesFound: number;
+  verifiedCandidates: number;
+  verificationRate: number;
   averageCrossSourceScore: number;
-}
-
-export interface CrossSourceTaskResult {
-  candidates: CrossSourceCandidate[];
-  insights: CrossSourceInsights;
-  outreachStrategies: OutreachStrategy[];
-  crossSourceValidation: CrossSourceValidation;
 }

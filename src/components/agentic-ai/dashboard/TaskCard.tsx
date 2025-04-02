@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AgentTask } from '@/services/agentic-ai/AgenticService';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, Loader2 } from 'lucide-react';
+import { Play, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import TaskResultDisplay from '../task-result/TaskResultDisplay';
 
 interface TaskCardProps {
   task: AgentTask;
@@ -14,8 +15,11 @@ interface TaskCardProps {
 }
 
 const TaskCard = ({ task, onProcess, isProcessing }: TaskCardProps) => {
+  const [showResults, setShowResults] = useState<boolean>(false);
+  
   const statusColors = {
     'pending': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+    'processing': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
     'in-progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
     'completed': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
     'failed': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
@@ -42,7 +46,7 @@ const TaskCard = ({ task, onProcess, isProcessing }: TaskCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="pb-2">
-        {task.status === 'in-progress' && (
+        {(task.status === 'in-progress' || task.status === 'processing') && (
           <div className="mb-4">
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm font-medium">Processing</span>
@@ -52,11 +56,25 @@ const TaskCard = ({ task, onProcess, isProcessing }: TaskCardProps) => {
           </div>
         )}
         
-        {task.result && (
+        {task.result && !showResults && (
           <div className="border rounded-md p-2 bg-muted/30 text-sm">
-            <div>
-              <strong>Result Summary:</strong> {Object.keys(task.result).length} items processed
+            <div className="flex justify-between items-center">
+              <span><strong>Result Summary:</strong> {Object.keys(task.result).length} items processed</span>
+              <Button variant="ghost" size="sm" onClick={() => setShowResults(true)}>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
             </div>
+          </div>
+        )}
+        
+        {task.result && showResults && (
+          <div>
+            <div className="flex justify-end mb-2">
+              <Button variant="ghost" size="sm" onClick={() => setShowResults(false)}>
+                <ChevronUp className="h-4 w-4" />
+              </Button>
+            </div>
+            <TaskResultDisplay task={task} />
           </div>
         )}
         
@@ -91,8 +109,12 @@ const TaskCard = ({ task, onProcess, isProcessing }: TaskCardProps) => {
           </Button>
         )}
         
-        {task.status === 'completed' && (
-          <Button size="sm" variant="outline">View Results</Button>
+        {task.status === 'completed' && !showResults && (
+          <Button size="sm" variant="outline" onClick={() => setShowResults(true)}>View Results</Button>
+        )}
+        
+        {task.status === 'completed' && showResults && (
+          <Button size="sm" variant="outline" onClick={() => setShowResults(false)}>Hide Results</Button>
         )}
         
         {task.status === 'failed' && (
@@ -122,6 +144,8 @@ export const formatTaskType = (taskType: string): string => {
       return 'Compliance Check';
     case 'onboarding-customization':
       return 'Onboarding Customization';
+    case 'cross-source-talent-intelligence':
+      return 'Cross-Source Talent Intelligence';
     default:
       return taskType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
