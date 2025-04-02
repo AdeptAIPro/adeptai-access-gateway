@@ -42,7 +42,7 @@ const MatchingPerformanceChart: React.FC<MatchingPerformanceChartProps> = ({ dat
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip containerStyle={{ zIndex: 20 }} />
+                <Tooltip wrapperStyle={{ zIndex: 1000 }} />
                 <Legend />
                 <Bar dataKey="matches" name="Total Matches" fill="#8884d8" />
                 <Bar dataKey="hires" name="Successful Hires" fill="#82ca9d" />
@@ -52,7 +52,7 @@ const MatchingPerformanceChart: React.FC<MatchingPerformanceChartProps> = ({ dat
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip containerStyle={{ zIndex: 20 }} />
+                <Tooltip wrapperStyle={{ zIndex: 1000 }} />
                 <Legend />
                 <Line 
                   type="monotone" 
