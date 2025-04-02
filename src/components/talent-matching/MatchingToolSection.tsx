@@ -4,14 +4,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TalentMatchingContainer from "./TalentMatchingContainer";
 import AnalyticsTabContent from "./analytics/AnalyticsTabContent";
 import { Sparkles } from "lucide-react";
+import { SectionCard, SectionHeader } from "@/components/ui/section-card";
 
 const MatchingToolSection: React.FC = () => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-12 p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-        <Sparkles className="h-5 w-5 text-adept mr-2" />
-        AI Job Matching Tool
-      </h2>
+    <SectionCard>
+      <SectionHeader 
+        title="AI Job Matching Tool" 
+        icon={<Sparkles className="h-5 w-5 text-adept" />} 
+      />
       
       <Tabs defaultValue="matching" className="w-full">
         <TabsList className="w-full max-w-3xl mx-auto mb-6 bg-background border border-border p-1 rounded-lg overflow-x-auto flex md:inline-flex shadow-sm">
@@ -30,7 +31,7 @@ const MatchingToolSection: React.FC = () => {
           <AnalyticsTabContent />
         </TabsContent>
       </Tabs>
-    </div>
+    </SectionCard>
   );
 };
 

@@ -1,95 +1,106 @@
 
 import React from "react";
-import { BookOpen, Settings, Search, Info, Zap, ArrowRight } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import StepsGuide from "./StepsGuide";
 import AIModelsSection from "./AIModelsSection";
-import AdvancedFeaturesSection from "./AdvancedFeaturesSection";
-
-// Step-by-step guide data
-const steps = [
-  {
-    icon: BookOpen,
-    title: "Create Job Description",
-    description: "Enter or upload your job requirements",
-    points: [
-      "Paste an existing job description",
-      "Upload from PDF or Word document",
-      "Take a photo of printed job descriptions",
-      "Import directly from your ATS"
-    ]
-  },
-  {
-    icon: Settings,
-    title: "Configure AI Settings",
-    description: "Customize your matching preferences",
-    points: [
-      "Select the AI matching model",
-      "Set minimum match score threshold",
-      "Enable cross-source verification",
-      "Choose matching algorithms and filters"
-    ]
-  },
-  {
-    icon: Search,
-    title: "Review Results",
-    description: "Evaluate AI-matched candidates",
-    points: [
-      "View ranked candidates by match percentage",
-      "Compare skills and experience alignment",
-      "See candidate availability and contact info",
-      "Take action directly from results screen"
-    ]
-  }
-];
-
-// AI model data
-const models = [
-  {
-    icon: Info,
-    name: "Basic Skill Matching",
-    description: "Simple keyword-based matching for skills and experience",
-    accuracy: 70,
-    complexity: "Basic",
-    complexityColor: "bg-gray-100 text-gray-700"
-  },
-  {
-    icon: Zap,
-    name: "Advanced Semantic",
-    description: "Uses NLP to understand job requirements semantically",
-    accuracy: 92,
-    complexity: "Advanced",
-    complexityColor: "bg-blue-100 text-blue-700"
-  },
-  {
-    icon: Settings,
-    name: "Hybrid Matching",
-    description: "Combines keyword matching with semantic understanding",
-    accuracy: 85,
-    complexity: "Intermediate",
-    complexityColor: "bg-green-100 text-green-700"
-  },
-  {
-    icon: ArrowRight,
-    name: "ML Prediction Model",
-    description: "Uses machine learning to predict candidate success",
-    accuracy: 95,
-    complexity: "Advanced",
-    complexityColor: "bg-purple-100 text-purple-700"
-  }
-];
+import { Settings, BookOpen, Search, CheckCircle2 } from "lucide-react";
+import { SectionCard, SectionHeader } from "@/components/ui/section-card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const UserGuide: React.FC = () => {
+  const steps = [
+    {
+      icon: BookOpen,
+      title: "Prepare Job Description",
+      description: "Provide a detailed job description",
+      points: [
+        "Paste your job description directly",
+        "Upload from a document file",
+        "Import from your ATS",
+        "Include key responsibilities and requirements"
+      ]
+    },
+    {
+      icon: Settings,
+      title: "Configure Matching Options",
+      description: "Customize how candidates are matched",
+      points: [
+        "Select AI matching models",
+        "Set minimum match score threshold",
+        "Enable cross-source intelligence",
+        "Turn on compliance verification"
+      ]
+    },
+    {
+      icon: Search,
+      title: "Review Results & Take Action",
+      description: "Analyze and act on match results",
+      points: [
+        "View ranked candidates by match score",
+        "Examine skill-by-skill breakdown",
+        "Save candidates to your shortlist",
+        "Initiate contact with top matches"
+      ]
+    }
+  ];
+
+  const models = [
+    {
+      icon: Search,
+      name: "Basic Matcher",
+      description: "Standard keyword and experience matching",
+      accuracy: 85,
+      complexity: "Low",
+      complexityColor: "bg-green-100 text-green-800"
+    },
+    {
+      icon: Settings,
+      name: "Semantic Analysis",
+      description: "Contextual understanding of skills and experience",
+      accuracy: 92,
+      complexity: "Medium",
+      complexityColor: "bg-blue-100 text-blue-800"
+    },
+    {
+      icon: CheckCircle2,
+      name: "Neural Matcher",
+      description: "Deep learning model for nuanced job fit analysis",
+      accuracy: 96,
+      complexity: "High",
+      complexityColor: "bg-purple-100 text-purple-800"
+    },
+    {
+      icon: BookOpen,
+      name: "RAG-Enhanced",
+      description: "Retrieval augmented generation for context-aware matching",
+      accuracy: 98,
+      complexity: "Advanced",
+      complexityColor: "bg-indigo-100 text-indigo-800"
+    }
+  ];
+
   return (
-    <section className="mt-6 mb-8">
-      <Separator className="my-12" />
-      
-      <div className="max-w-7xl mx-auto">
-        <StepsGuide steps={steps} />
-        <AIModelsSection models={models} />
-        <AdvancedFeaturesSection />
-      </div>
-    </section>
+    <SectionCard>
+      <SectionHeader 
+        title="Talent Matching Guide" 
+        icon={<BookOpen className="h-5 w-5 text-adept" />} 
+      />
+
+      <Accordion type="single" collapsible defaultValue="steps" className="w-full">
+        <AccordionItem value="steps">
+          <AccordionTrigger className="text-lg font-semibold">How to Use</AccordionTrigger>
+          <AccordionContent>
+            <StepsGuide steps={steps} />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="models">
+          <AccordionTrigger className="text-lg font-semibold">Available AI Models</AccordionTrigger>
+          <AccordionContent>
+            <AIModelsSection models={models} />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </SectionCard>
   );
 };
 
