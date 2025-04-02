@@ -95,12 +95,12 @@ const TaskCreationForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Form sections with improved styling */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Improved form layout with more consistent spacing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Left column */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Task Type Selector */}
-            <div className="bg-adept/5 p-5 rounded-lg border border-adept/20 shadow-sm hover:shadow transition-shadow">
+            <div className="bg-card p-4 rounded-lg border border-border shadow-sm hover:shadow-md transition-all">
               <TaskTypeSelector 
                 control={form.control}
                 onTaskTypeChange={(value) => setSelectedTaskType(value)}
@@ -108,15 +108,15 @@ const TaskCreationForm = () => {
             </div>
             
             {/* Task Goal Field */}
-            <div className="bg-adept/5 p-5 rounded-lg border border-adept/20 shadow-sm hover:shadow transition-shadow">
+            <div className="bg-card p-4 rounded-lg border border-border shadow-sm hover:shadow-md transition-all">
               <TaskGoalField control={form.control} />
             </div>
           </div>
           
           {/* Right column */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Agent Selector */}
-            <div className="bg-card p-5 rounded-lg border border-border shadow-sm hover:shadow transition-shadow">
+            <div className="bg-card p-4 rounded-lg border border-border shadow-sm hover:shadow-md transition-all">
               <AgentSelector 
                 control={form.control}
                 agents={filteredAgents}
@@ -125,17 +125,17 @@ const TaskCreationForm = () => {
             </div>
             
             {/* Priority Selector */}
-            <div className="bg-card p-5 rounded-lg border border-border shadow-sm hover:shadow transition-shadow">
+            <div className="bg-card p-4 rounded-lg border border-border shadow-sm hover:shadow-md transition-all">
               <PrioritySelector control={form.control} />
             </div>
           </div>
         </div>
         
         {/* Submit Button */}
-        <div className="pt-4">
+        <div className="pt-2">
           <Button 
             type="submit" 
-            className={`w-full py-6 text-lg font-medium transition-all ${taskCreationSuccess ? 'bg-green-600 hover:bg-green-700' : 'bg-adept hover:bg-adept/90'}`}
+            className={`w-full py-5 text-base font-medium transition-all ${taskCreationSuccess ? 'bg-green-600 hover:bg-green-700' : 'bg-adept hover:bg-adept/90'}`}
             disabled={isLoading || taskCreationSuccess}
           >
             {isLoading ? (

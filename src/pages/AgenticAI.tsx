@@ -80,57 +80,59 @@ const AgenticAI = () => {
         {/* Add the process flow component here */}
         <AgenticProcessFlow />
         
-        {/* Make the tabs more prominent with better styling */}
+        {/* Redesigned tabs with better alignment and visual appearance */}
         <Tabs 
           value={activeTab} 
           onValueChange={setActiveTab} 
           className="w-full"
         >
-          <TabsList className="grid grid-cols-2 mb-6 bg-card shadow-md border border-border p-1 rounded-lg w-full md:w-2/3 mx-auto">
-            <TabsTrigger 
-              value="create" 
-              className="text-base py-3 data-[state=active]:bg-adept data-[state=active]:text-white"
-            >
-              <span className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5"
-                >
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                Create New Task
-              </span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="dashboard"
-              className="text-base py-3 data-[state=active]:bg-adept data-[state=active]:text-white"
-            >
-              <span className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5"
-                >
-                  <rect width="7" height="9" x="3" y="3" rx="1" />
-                  <rect width="7" height="5" x="14" y="3" rx="1" />
-                  <rect width="7" height="9" x="14" y="12" rx="1" />
-                  <rect width="7" height="5" x="3" y="16" rx="1" />
-                </svg>
-                Task Dashboard
-              </span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center mb-6">
+            <TabsList className="flex w-full md:w-2/3 overflow-hidden rounded-lg border-0 shadow-md bg-card">
+              <TabsTrigger 
+                value="create" 
+                className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Create New Task
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="dashboard"
+                className="flex-1 px-4 py-3 text-base font-medium data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5"
+                  >
+                    <rect width="7" height="9" x="3" y="3" rx="1" />
+                    <rect width="7" height="5" x="14" y="3" rx="1" />
+                    <rect width="7" height="9" x="14" y="12" rx="1" />
+                    <rect width="7" height="5" x="3" y="16" rx="1" />
+                  </svg>
+                  Task Dashboard
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
           <TabsContent value="create">
             <div className="grid gap-6 md:grid-cols-2">

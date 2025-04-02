@@ -22,30 +22,30 @@ const TaskTypeSelector = ({ control, onTaskTypeChange }: TaskTypeSelectorProps) 
             <ListFilter className="h-4 w-4 text-adept" />
             Task Type
           </FormLabel>
-          <Select 
-            onValueChange={(value) => {
-              field.onChange(value);
-              onTaskTypeChange(value);
-            }}
-            value={field.value}
-          >
-            <FormControl>
-              <SelectTrigger className="h-10">
+          <FormControl>
+            <Select 
+              onValueChange={(value) => {
+                field.onChange(value);
+                onTaskTypeChange(value);
+              }}
+              value={field.value}
+            >
+              <SelectTrigger className="h-10 w-full border-border">
                 <SelectValue placeholder="Select a task type" />
               </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectItem value="talent-search">Talent Search</SelectItem>
-              <SelectItem value="talent-matching">Talent Matching</SelectItem>
-              <SelectItem value="cross-source-talent-intelligence">Cross-Source Talent Intelligence</SelectItem>
-              <SelectItem value="payroll-processing">Payroll Processing</SelectItem>
-              <SelectItem value="skills-recommendation">Skills Recommendation</SelectItem>
-              <SelectItem value="analytics-insight">Analytics Insight</SelectItem>
-              <SelectItem value="compliance-check">Compliance Check</SelectItem>
-              <SelectItem value="onboarding-customization">Onboarding Customization</SelectItem>
-            </SelectContent>
-          </Select>
-          <FormDescription className="text-xs">
+              <SelectContent>
+                <SelectItem value="talent-search">Talent Search</SelectItem>
+                <SelectItem value="talent-matching">Talent Matching</SelectItem>
+                <SelectItem value="cross-source-talent-intelligence">Cross-Source Talent Intelligence</SelectItem>
+                <SelectItem value="payroll-processing">Payroll Processing</SelectItem>
+                <SelectItem value="skills-recommendation">Skills Recommendation</SelectItem>
+                <SelectItem value="analytics-insight">Analytics Insight</SelectItem>
+                <SelectItem value="compliance-check">Compliance Check</SelectItem>
+                <SelectItem value="onboarding-customization">Onboarding Customization</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormControl>
+          <FormDescription className="text-xs mt-1">
             Select the type of task you want the AI agent to perform
           </FormDescription>
           <FormMessage />
