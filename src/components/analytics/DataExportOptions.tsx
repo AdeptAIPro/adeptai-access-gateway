@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Download, FileSpreadsheet, FileText, FileCsv } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, Files } from "lucide-react";
 import PlanRestriction from "@/components/shared/PlanRestriction";
 import { getFeatureRequirement } from "@/utils/planUtils";
 
@@ -145,7 +145,7 @@ const DataExportOptions: React.FC<DataExportOptionsProps> = ({
   
   // Icon mapping
   const formatIcons = {
-    csv: <FileCsv className="h-4 w-4 mr-2" />,
+    csv: <Files className="h-4 w-4 mr-2" />,
     excel: <FileSpreadsheet className="h-4 w-4 mr-2" />,
     pdf: <FileText className="h-4 w-4 mr-2" />,
     json: <FileText className="h-4 w-4 mr-2" />

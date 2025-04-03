@@ -23,12 +23,12 @@ interface PlanRestrictionProps {
 }
 
 // Plan level mapping for comparison operations
-const planLevelMap: Record<PlanType, number> = {
+const planLevelMap: Record<string, number> = {
   "free_trial": 1,
   "pro": 2,
   "business": 3,
   "enterprise": 4,
-  null: 0
+  "null": 0
 };
 
 export const PlanRestriction: React.FC<PlanRestrictionProps> = ({
@@ -40,7 +40,7 @@ export const PlanRestriction: React.FC<PlanRestrictionProps> = ({
 }) => {
   const { user } = useAuth();
   const userPlan = user?.plan as PlanType;
-  const userPlanLevel = planLevelMap[userPlan] || 0;
+  const userPlanLevel = userPlan ? planLevelMap[userPlan] : planLevelMap["null"];
   const hasAccess = userPlanLevel >= requiredPlan.planLevel;
 
   if (hasAccess) {

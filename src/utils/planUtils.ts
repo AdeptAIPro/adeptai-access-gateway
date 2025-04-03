@@ -8,21 +8,21 @@ export interface PlanRequirement {
 }
 
 // Plan level mapping for comparison operations
-export const planLevelMap: Record<PlanType, number> = {
+export const planLevelMap: Record<string, number> = {
   "free_trial": 1,
   "pro": 2,
   "business": 3,
   "enterprise": 4,
-  null: 0
+  "null": 0
 };
 
 // Display names for plans
-export const planDisplayNames: Record<PlanType, string> = {
+export const planDisplayNames: Record<string, string> = {
   "free_trial": "Free Trial",
   "pro": "Professional",
   "business": "Business",
   "enterprise": "Enterprise",
-  null: "No Plan"
+  "null": "No Plan"
 };
 
 // Check if user plan meets the requirement
@@ -30,7 +30,7 @@ export const doesPlanMeetRequirement = (
   userPlan: PlanType,
   requiredPlan: PlanRequirement
 ): boolean => {
-  const userPlanLevel = planLevelMap[userPlan] || 0;
+  const userPlanLevel = userPlan ? planLevelMap[userPlan] : planLevelMap["null"];
   return userPlanLevel >= requiredPlan.planLevel;
 };
 

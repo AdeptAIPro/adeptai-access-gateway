@@ -1,104 +1,59 @@
 
-// This code should be implemented as an Edge Function in Supabase
-// File: supabase/functions/create-checkout/index.ts
+// Simulated client-side version of the Supabase Edge Function
+// In a real project, you would call the deployed Edge Function via fetch
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { supabase } from '@/lib/supabase';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+interface CreateCheckoutParams {
+  planId: string;
+  billingPeriod?: "monthly" | "yearly";
+  successUrl?: string;
+  cancelUrl?: string;
+}
 
-// Map from our plan IDs to Stripe price IDs
-// Replace these with your actual Stripe price IDs
-const PLAN_PRICES = {
-  basic: {
-    monthly: "price_basic_monthly", // Replace with actual Stripe price ID
-    yearly: "price_basic_yearly"   // Replace with actual Stripe price ID
-  },
-  professional: {
-    monthly: "price_professional_monthly", // Replace with actual Stripe price ID
-    yearly: "price_professional_yearly"   // Replace with actual Stripe price ID
-  }
-};
+interface CheckoutResponse {
+  url?: string;
+  error?: string;
+}
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
-
+export async function createCheckout(params: CreateCheckoutParams): Promise<CheckoutResponse> {
   try {
-    // Retrieve user from auth header
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-
-    // Get request body
-    const { planId, billingPeriod = "monthly", successUrl, cancelUrl } = await req.json();
+    // In a real implementation, this would call the actual Supabase Edge Function
+    // For now, we'll simulate the response
     
-    if (!planId || !PLAN_PRICES[planId]) {
-      throw new Error("Invalid plan selected");
+    // Get user from Supabase auth
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return {
+        error: "User not authenticated"
+      };
     }
-
-    // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
-    });
-
-    // Check if an existing Stripe customer record exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-    } else {
-      // Create a new customer
-      const newCustomer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          user_id: user.id
-        }
-      });
-      customerId = newCustomer.id;
+    
+    // Simple validation
+    if (!params.planId) {
+      return {
+        error: "Invalid plan selected"
+      };
     }
-
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [
-        {
-          price: PLAN_PRICES[planId][billingPeriod],
-          quantity: 1,
-        },
-      ],
-      mode: "subscription",
-      success_url: successUrl || `${req.headers.get("origin")}/payment-success`,
-      cancel_url: cancelUrl || `${req.headers.get("origin")}/payment-canceled`,
-      subscription_data: {
-        metadata: {
-          user_id: user.id
-        }
-      }
-    });
-
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    
+    // In a real implementation, this would create a Stripe Checkout session
+    // and return the URL. For now, we'll just mock it.
+    
+    // Mock success URL that would normally come from Stripe
+    const mockCheckoutUrl = `https://checkout.stripe.com/mock-checkout/${params.planId}/${params.billingPeriod || "monthly"}/${Math.random().toString(36).substring(2, 15)}`;
+    
+    return {
+      url: mockCheckoutUrl
+    };
+    
   } catch (error) {
     console.error("Error creating checkout session:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    return {
+      error: error instanceof Error ? error.message : "Unknown error creating checkout"
+    };
   }
-});
+}
+
+// For TypeScript to be happy, we need to export something else as the default
+export default {};

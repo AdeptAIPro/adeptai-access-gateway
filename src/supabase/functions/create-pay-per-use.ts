@@ -1,100 +1,51 @@
 
-// This code should be implemented as an Edge Function in Supabase
-// File: supabase/functions/create-pay-per-use/index.ts
+// Simulated client-side version of the Supabase Edge Function
+// In a real project, you would call the deployed Edge Function via fetch
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@14.21.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { supabase } from '@/lib/supabase';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+interface CreatePayPerUseParams {
+  successUrl?: string;
+  cancelUrl?: string;
+  quantity?: number;
+}
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+interface PayPerUseResponse {
+  url?: string;
+  error?: string;
+}
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
-
+export async function createPayPerUse(params: CreatePayPerUseParams = {}): Promise<PayPerUseResponse> {
   try {
-    // Retrieve user from auth header
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-
-    // Get request body
-    const { successUrl, cancelUrl } = await req.json();
-
-    // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
-    });
-
-    // Check if an existing Stripe customer record exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-    } else {
-      // Create a new customer
-      const newCustomer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          user_id: user.id
-        }
-      });
-      customerId = newCustomer.id;
+    // In a real implementation, this would call the actual Supabase Edge Function
+    // For now, we'll simulate the response
+    
+    // Get user from Supabase auth
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return {
+        error: "User not authenticated"
+      };
     }
-
-    // Create checkout session for one-time payment
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "AdeptAI Pro - Pay Per Use Credits",
-              description: "Credits for pay-per-use AI features ($9 per use)"
-            },
-            unit_amount: 900, // $9.00
-          },
-          quantity: 5, // Default to buying 5 credits
-          adjustable_quantity: {
-            enabled: true,
-            minimum: 1,
-            maximum: 100
-          }
-        },
-      ],
-      mode: "payment", // One-time payment
-      success_url: successUrl || `${req.headers.get("origin")}/payment-success`,
-      cancel_url: cancelUrl || `${req.headers.get("origin")}/payment-canceled`,
-      payment_intent_data: {
-        metadata: {
-          user_id: user.id,
-          payment_type: "pay_per_use"
-        }
-      }
-    });
-
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    
+    // In a real implementation, this would create a Stripe Checkout session
+    // for a one-time payment and return the URL
+    
+    // Mock success URL that would normally come from Stripe
+    const mockCheckoutUrl = `https://checkout.stripe.com/mock-pay-per-use/${Math.random().toString(36).substring(2, 15)}`;
+    
+    return {
+      url: mockCheckoutUrl
+    };
+    
   } catch (error) {
     console.error("Error creating pay-per-use session:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    return {
+      error: error instanceof Error ? error.message : "Unknown error creating pay-per-use session"
+    };
   }
-});
+}
+
+// For TypeScript to be happy, we need to export something else as the default
+export default {};
