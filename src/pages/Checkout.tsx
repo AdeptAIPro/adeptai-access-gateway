@@ -160,7 +160,7 @@ const Checkout = () => {
     if (planId === "free_trial") return "$0";
     if (planId === "enterprise") return "Custom pricing";
     if (planId === "pay_per_use") return `$${plan.price} per use`;
-    if (planId === "api_pay_as_you_go") return `$0.01 per API call`;
+    if (planId === "api_pay_as_you_go") return "$0.01 per API call";
     
     return billingPeriod === "monthly" 
       ? `$${plan.price}/month` 
