@@ -9,8 +9,7 @@ import {
   KeyRound, 
   BarChart2,
   Sparkles,
-  GanttChart,
-  FileText
+  GanttChart
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -45,23 +44,6 @@ const IntegrationsNavigation: React.FC = () => {
             </div>
             <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
               Enterprise
-            </Badge>
-          </Button>
-        )}
-      </NavLink>
-      
-      <NavLink to="/dashboard/workflows">
-        {({ isActive: active }) => (
-          <Button
-            variant={active ? "default" : "ghost"}
-            className="w-full justify-between"
-          >
-            <div className="flex items-center">
-              <FileText className="mr-2 h-4 w-4" />
-              Workflow Management
-            </div>
-            <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-              New
             </Badge>
           </Button>
         )}

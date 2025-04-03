@@ -26,7 +26,6 @@ import Index from "@/pages/Index";
 import Unauthorized from "@/pages/Unauthorized";
 import Integrations from "@/pages/Integrations";
 import Onboarding from "@/pages/Onboarding";
-import WorkflowManagement from "@/pages/WorkflowManagement";
 import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
 
 // Components
@@ -61,7 +60,6 @@ const AppRoutes = () => {
       <Route path="/settings/*" element={<ProtectedRoute requiredPermission="viewDashboard"><Settings /></ProtectedRoute>} />
       <Route path="/compliance" element={<ProtectedRoute requiredPermission="viewDashboard"><Compliance /></ProtectedRoute>} />
       <Route path="/onboarding" element={<ProtectedRoute requiredPermission="viewDashboard"><Onboarding /></ProtectedRoute>} />
-      <Route path="/dashboard/workflows/*" element={<ProtectedRoute requiredPermission="viewDashboard"><WorkflowManagement /></ProtectedRoute>} />
       
       {/* Catch all route */}
       <Route path="*" element={<NotFound />} />

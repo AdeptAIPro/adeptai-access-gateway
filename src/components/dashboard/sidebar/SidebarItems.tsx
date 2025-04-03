@@ -21,14 +21,6 @@ const SidebarItems = () => {
   const sidebarItems: SidebarItem[] = [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard", requiredPermission: "viewDashboard" },
     { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations", requiredPermission: "viewDashboard" },
-    { 
-      title: "Workflow Management", 
-      icon: FileText, 
-      href: "/dashboard/workflows",
-      badge: "New",
-      badgeVariant: "default", 
-      requiredPermission: "viewDashboard"
-    },
     { title: "Talent Search", icon: Search, href: "/dashboard/talent-search", requiredPermission: "viewDashboard" },
     { 
       title: "Talent Matchmaking", 
@@ -131,8 +123,7 @@ import {
   Settings,
   Search,
   DollarSign,
-  Bot,
-  FileText
+  Bot
 } from "lucide-react";
 
 export default SidebarItems;
