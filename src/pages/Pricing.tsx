@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +9,20 @@ import PricingCard from "@/components/pricing/PricingCard";
 import PricingFaq from "@/components/pricing/PricingFaq";
 import ComparisonTable from "@/components/pricing/ComparisonTable";
 import ApiPricing from "@/components/pricing/ApiPricing";
+import { toast } from "sonner";
 
 const Pricing = () => {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading of pricing data
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const pricingPlans = [
     {
@@ -102,6 +113,23 @@ const Pricing = () => {
     return Math.round((price * 12 * 0.17)); // 17% savings for annual
   };
 
+  // Handle a debug click to verify the component is working
+  const handleDebugClick = () => {
+    toast.success("Pricing plan component is working");
+    console.log("Pricing plans:", pricingPlans);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+          <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header section */}
@@ -121,7 +149,8 @@ const Pricing = () => {
           
           <div className="flex justify-center pt-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             <Tabs 
-              defaultValue="monthly" 
+              defaultValue={billingPeriod}
+              value={billingPeriod}
               className="bg-muted/50 rounded-full p-1"
               onValueChange={(value) => setBillingPeriod(value as "monthly" | "yearly")}
             >
@@ -162,6 +191,13 @@ const Pricing = () => {
         {/* API Pay-As-You-Go option */}
         <div className="max-w-6xl mx-auto mt-12 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
           <ApiPricing />
+        </div>
+        
+        {/* Debug button - only for development */}
+        <div className="flex justify-center mt-8">
+          <Button variant="ghost" size="sm" onClick={handleDebugClick} className="text-xs text-muted-foreground">
+            Verify Plans
+          </Button>
         </div>
       </section>
       
@@ -225,12 +261,16 @@ const Pricing = () => {
             Start with our free tier today. No credit card required.
           </p>
           <div className="pt-4 flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="bg-adept hover:bg-adept-dark text-white px-8">
-              Get Started For Free
-            </Button>
-            <Button size="lg" variant="outline">
-              Schedule a Demo
-            </Button>
+            <Link to="/signup?plan=free_trial">
+              <Button size="lg" className="bg-adept hover:bg-adept-dark text-white px-8">
+                Get Started For Free
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button size="lg" variant="outline">
+                Schedule a Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

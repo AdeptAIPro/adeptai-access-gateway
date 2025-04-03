@@ -1,21 +1,20 @@
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard, Loader2 } from "lucide-react";
-
-interface PlanFeature {
-  text: string;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface CheckoutDetailsProps {
   planName: string;
   price: string;
   planId: string;
-  billingPeriod: string;
-  isLoading: boolean;
+  billingPeriod: "monthly" | "yearly";
   isPlanWithBilling: boolean;
   features: string[];
+  isLoading: boolean;
   processingStep: "initializing" | "creating_session" | "redirecting" | null;
   handleCheckout: () => void;
   ProcessingStepMessage: React.FC;
@@ -26,9 +25,9 @@ const CheckoutDetails: React.FC<CheckoutDetailsProps> = ({
   price,
   planId,
   billingPeriod,
-  isLoading,
   isPlanWithBilling,
   features,
+  isLoading,
   processingStep,
   handleCheckout,
   ProcessingStepMessage
@@ -36,87 +35,68 @@ const CheckoutDetails: React.FC<CheckoutDetailsProps> = ({
   return (
     <Card className="animate-fade-in-up">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CreditCard className="h-5 w-5 text-adept" />
-          Secure Checkout
-        </CardTitle>
-        <CardDescription>
-          {planId === 'enterprise' ? 
-            'Contact our sales team to customize your solution' : 
-            'You'll be redirected to our secure payment processor'}
-        </CardDescription>
+        <CardTitle>Complete Your Purchase</CardTitle>
+        <CardDescription>Review your plan details before checkout</CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
-        <div className="bg-muted/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-2">
-            <span className="font-medium">Selected Plan</span>
-            <span className="text-adept font-medium">{planName}</span>
+        <div className="bg-muted/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-adept/5 text-adept border-adept/20">
+                {planName}
+              </Badge>
+            </div>
+            <div className="text-lg font-medium">{price}</div>
           </div>
+          
           {isPlanWithBilling && (
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">Billing Period</span>
-              <span className="capitalize">{billingPeriod}</span>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="billing-toggle">Billing Period</Label>
+              <div className="flex items-center gap-2">
+                <span className={`text-sm ${billingPeriod === "monthly" ? "font-medium" : ""}`}>
+                  Monthly
+                </span>
+                <Switch id="billing-toggle" disabled checked={billingPeriod === "yearly"} />
+                <span className={`text-sm ${billingPeriod === "yearly" ? "font-medium" : ""}`}>
+                  Yearly
+                </span>
+              </div>
             </div>
           )}
-          <div className="flex items-center justify-between">
-            <span className="font-medium">Total</span>
-            <span className="text-lg font-bold">{price}</span>
-          </div>
         </div>
         
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">What's included:</h3>
-          <ul className="space-y-2">
-            {features.map((feature, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+          <h3 className="font-medium">What's included:</h3>
+          <div className="space-y-3">
+            {features.map((feature, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <CheckIcon className="h-5 w-5 text-adept flex-shrink-0" />
                 <span>{feature}</span>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
-      </CardContent>
-      
-      <CardFooter className="flex-col space-y-4">
-        <Button 
-          onClick={handleCheckout}
-          className={`w-full ${
-            planId === "enterprise" 
-              ? "bg-indigo-600 hover:bg-indigo-700" 
-              : planId === "api_pay_as_you_go"
-              ? "bg-blue-600 hover:bg-blue-700"
-              : "bg-adept hover:bg-adept-dark"
-          } text-white`}
-          disabled={isLoading}
-          size="lg"
-        >
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Processing...
-            </span>
-          ) : (
-            planId === "free_trial" 
-              ? "Start Free Trial" 
-              : planId === "enterprise"
-              ? "Contact Sales"
-              : `Proceed to ${planId === "pay_per_use" || planId === "api_pay_as_you_go" ? "Payment" : "Checkout"}`
-          )}
-        </Button>
         
-        {processingStep && (
-          <div className="w-full pt-2">
+        {isLoading ? (
+          <div className="flex items-center justify-center pt-4">
             <ProcessingStepMessage />
           </div>
+        ) : (
+          <Button 
+            onClick={handleCheckout} 
+            disabled={isLoading}
+            className="w-full bg-adept hover:bg-adept-dark text-white mt-2"
+          >
+            {planId === "free_trial" 
+              ? "Start Free Trial" 
+              : planId === "enterprise"
+                ? "Contact Sales"
+                : `Proceed to ${planId === "pay_per_use" || planId === "api_pay_as_you_go" ? "Setup" : "Payment"}`
+            }
+          </Button>
         )}
-        
-        {!isLoading && (
-          <p className="text-xs text-center text-muted-foreground">
-            By proceeding, you agree to our Terms of Service and Privacy Policy
-          </p>
-        )}
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 };
