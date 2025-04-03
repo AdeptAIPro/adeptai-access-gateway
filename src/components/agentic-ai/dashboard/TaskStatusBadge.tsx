@@ -23,7 +23,7 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({ status }) => {
         return 'destructive';
       case 'processing':
         return 'default';
-      case 'queued':
+      case 'pending': // Updated from 'queued' to 'pending'
         return 'secondary';
       default:
         return 'outline';
@@ -38,7 +38,7 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({ status }) => {
         return <AlertCircle className="h-4 w-4 mr-1" />;
       case 'processing':
         return <span className="animate-spin mr-1">◌</span>;
-      case 'queued':
+      case 'pending': // Updated from 'queued' to 'pending'
         return <Clock className="h-4 w-4 mr-1" />;
       default:
         return null;

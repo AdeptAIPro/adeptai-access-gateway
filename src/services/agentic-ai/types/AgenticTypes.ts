@@ -9,6 +9,8 @@ export interface AgentTask {
   updatedAt: string;
   userId: string;
   agentId: string;
+  agent?: string; // Added agent property
+  title?: string; // Added title property
   result?: any;
   error?: string;
   priority: 'low' | 'medium' | 'high';

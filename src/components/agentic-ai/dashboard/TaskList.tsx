@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AgentTask } from '@/services/agentic-ai/AgenticService';
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 import { Card, CardContent } from "@/components/ui/card";
 import { Bot } from 'lucide-react';
 import TaskCard from './TaskCard';

@@ -14,6 +14,7 @@ import { AlertCircle, Database, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { AgentTask } from "@/services/agentic-ai/types/AgenticTypes";
 
 const AgenticAI = () => {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ const AgenticAI = () => {
   const [isSeeding, setIsSeeding] = useState<boolean>(false);
   const [needsSetup, setNeedsSetup] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [tasks, setTasks] = useState<AgentTask[]>([]); // Added tasks state
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -78,7 +80,7 @@ const AgenticAI = () => {
         </div>
         
         {/* Add the process flow component here */}
-        <AgenticProcessFlow />
+        <AgenticProcessFlow tasks={tasks} />
         
         {/* Redesigned tabs with better alignment and visual appearance */}
         <Tabs 

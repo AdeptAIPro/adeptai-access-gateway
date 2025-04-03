@@ -42,7 +42,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
     }
     
     try {
-      if (task.status === 'queued') {
+      if (task.status === 'pending') { // Changed from 'queued' to 'pending' to match the AgentTask type
         setIsProcessing(true);
         // In a real implementation, you would call an API to process the task
         // For demo purposes, we're simulating processing with a timeout

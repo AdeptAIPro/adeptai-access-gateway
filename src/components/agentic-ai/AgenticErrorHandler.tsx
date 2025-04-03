@@ -1,58 +1,44 @@
 
-import React from "react";
-import { AlertCircle, RefreshCcw } from "lucide-react";
+import React from 'react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { toast } from "sonner";
+import { AlertCircle, RefreshCcw } from 'lucide-react';
 
 interface AgenticErrorHandlerProps {
-  error: string | null;
+  error: string;
   onRetry?: () => void;
-  title?: string;
-  showToast?: boolean;
 }
 
-const AgenticErrorHandler: React.FC<AgenticErrorHandlerProps> = ({
-  error,
-  onRetry,
-  title = "AI Task Error",
-  showToast = true,
+const AgenticErrorHandler: React.FC<AgenticErrorHandlerProps> = ({ 
+  error, 
+  onRetry 
 }) => {
-  // Show toast notification
-  React.useEffect(() => {
-    if (error && showToast) {
-      toast.error(title, {
-        description: error
-      });
-    }
-  }, [error, showToast, title]);
-
-  if (!error) return null;
-
   return (
-    <Card className="border-destructive/50 bg-destructive/5 animate-fade-in">
-      <CardContent className="pt-6">
-        <div className="flex flex-col items-center text-center gap-2 mb-4">
-          <div className="bg-destructive/10 p-3 rounded-full">
-            <AlertCircle className="h-6 w-6 text-destructive" />
-          </div>
-          <h3 className="text-lg font-medium text-destructive">{title}</h3>
-          <p className="text-destructive/80 max-w-md">{error}</p>
+    <Alert variant="destructive" className="flex flex-col gap-4">
+      <div className="flex items-start">
+        <AlertCircle className="h-5 w-5 mr-2 mt-0.5" />
+        <div>
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error}
+          </AlertDescription>
         </div>
-      </CardContent>
+      </div>
+      
       {onRetry && (
-        <CardFooter className="flex justify-center pb-6 pt-0">
+        <div className="flex justify-end">
           <Button 
             variant="outline" 
-            onClick={onRetry}
-            className="border-destructive/30 text-destructive hover:bg-destructive/10"
+            size="sm" 
+            onClick={onRetry} 
+            className="border-destructive/30 hover:bg-destructive/10"
           >
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            Retry Operation
+            <RefreshCcw className="mr-2 h-3 w-3" />
+            Retry
           </Button>
-        </CardFooter>
+        </div>
       )}
-    </Card>
+    </Alert>
   );
 };
 

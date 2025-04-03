@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AgentTask } from '@/services/agentic-ai/AgenticService';
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from 'date-fns';
 import TaskStatusBadge, { formatTaskType } from './TaskStatusBadge';

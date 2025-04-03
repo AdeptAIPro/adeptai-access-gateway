@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
@@ -10,7 +9,7 @@ import IntegrationTabs from "@/components/integrations/IntegrationTabs";
 import IntegrationsGuide from "@/components/integrations/IntegrationsGuide";
 import { IntegrationItem } from "@/types/integration";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Grid, List, ArrowDownUp, ScrollText, Activity, KeyRound } from "lucide-react";
+import { Sparkles, Grid, List, ArrowDownUp, ScrollText, Activity, KeyRound, BarChart } from "lucide-react";
 import EnterpriseIntegrationStatus from "@/components/integrations/EnterpriseIntegrationStatus";
 import EnterpriseApiAuthManager from "@/components/integrations/EnterpriseApiAuthManager";
 import EnterpriseIntegrationMetrics from "@/components/integrations/EnterpriseIntegrationMetrics";
@@ -34,20 +33,16 @@ const EnterpriseIntegrations = () => {
   const [categoryCount, setCategoryCount] = useState<Record<string, number>>({});
   const [activeTab, setActiveTab] = useState<"marketplace" | "status" | "auth" | "metrics">("marketplace");
   
-  // Load integrations data
   useEffect(() => {
     const loadIntegrations = async () => {
       setIsLoading(true);
       try {
-        // In a real app, would fetch from API. Using mock data for now.
         const items = createIntegrationsList();
         
-        // Sort integrations based on current sortOrder
         const sortedItems = sortIntegrations(items, sortOrder);
         
         setIntegrationItems(sortedItems);
         
-        // Calculate counts per category
         const counts = calculateCategoryCounts(items);
         setCategoryCount(counts);
       } catch (error) {
@@ -61,13 +56,11 @@ const EnterpriseIntegrations = () => {
     loadIntegrations();
   }, []);
   
-  // Sort integrations when sort order changes
   useEffect(() => {
     const sortedItems = sortIntegrations(integrationItems, sortOrder);
     setIntegrationItems(sortedItems);
   }, [sortOrder]);
   
-  // Calculate category counts
   const calculateCategoryCounts = (items: IntegrationItem[]): Record<string, number> => {
     const counts: Record<string, number> = { "All": items.length };
     
@@ -81,13 +74,11 @@ const EnterpriseIntegrations = () => {
     return counts;
   };
   
-  // Sort integrations based on sort order
   const sortIntegrations = (items: IntegrationItem[], order: "a-z" | "recent"): IntegrationItem[] => {
     return [...items].sort((a, b) => {
       if (order === "a-z") {
         return a.name.localeCompare(b.name);
       } else {
-        // For "recent", prioritize connected integrations as a simple example
         if (a.connected && !b.connected) return -1;
         if (!a.connected && b.connected) return 1;
         return a.name.localeCompare(b.name);
@@ -95,7 +86,6 @@ const EnterpriseIntegrations = () => {
     });
   };
   
-  // Filter integrations based on search query and active category
   const filteredIntegrations = integrationItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                            item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -114,16 +104,13 @@ const EnterpriseIntegrations = () => {
     }
     
     try {
-      // If the integration is already connected, disconnect it
       if (integration.connected) {
-        // In a real app, call the API to disconnect
         const success = await disconnectIntegration(id);
         
         if (!success) {
           throw new Error("Failed to disconnect from integration");
         }
         
-        // Update the local state to reflect connection status change
         setIntegrationItems(prevItems => 
           prevItems.map(item => 
             item.id === id ? { ...item, connected: false } : item
@@ -132,9 +119,7 @@ const EnterpriseIntegrations = () => {
         
         toast.success(`Disconnected from ${integration.name}`);
       } else {
-        // In a real app, call the API to connect
         const success = await connectIntegration(id, {
-          // Sample connection credentials, would come from a form in real app
           api_key: "sample_key",
           api_url: "https://api.example.com"
         });
@@ -143,7 +128,6 @@ const EnterpriseIntegrations = () => {
           throw new Error("Failed to connect to integration");
         }
         
-        // Update the local state to reflect connection status change
         setIntegrationItems(prevItems => 
           prevItems.map(item => 
             item.id === id ? { ...item, connected: true } : item
@@ -167,7 +151,6 @@ const EnterpriseIntegrations = () => {
   };
   
   const handleRefreshData = () => {
-    // In a real app, this would refresh data from backend
     toast.info("Refreshing integration data");
   };
 
@@ -229,7 +212,7 @@ const EnterpriseIntegrations = () => {
                   Authentication
                 </TabsTrigger>
                 <TabsTrigger value="metrics" className="flex items-center">
-                  <BarChart2 className="h-4 w-4 mr-2" />
+                  <BarChart className="h-4 w-4 mr-2" />
                   Metrics
                 </TabsTrigger>
               </TabsList>
