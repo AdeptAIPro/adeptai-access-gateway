@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -72,14 +71,12 @@ const Checkout = () => {
   const { user } = useAuth();
   
   useEffect(() => {
-    // Redirect if not logged in
     if (!user) {
       toast.error("Please log in to continue");
       navigate("/login", { state: { from: location } });
       return;
     }
     
-    // Get plan and billing period from URL
     const params = new URLSearchParams(location.search);
     const paramPlanId = params.get("plan");
     const paramBilling = params.get("billing") as "monthly" | "yearly" | null;
@@ -92,7 +89,6 @@ const Checkout = () => {
       setPlanId(paramPlanId);
       setPlan(plans[paramPlanId]);
     } else {
-      // Default to pro plan if none specified
       setPlanId("pro");
       setPlan(plans.pro);
     }
@@ -117,11 +113,9 @@ const Checkout = () => {
       } else if (planId === "api_pay_as_you_go") {
         result = await createApiPayAsYouGoCheckout();
       } else if (planId === "free_trial") {
-        // Free trial doesn't need payment processing
         navigate("/dashboard");
         return;
       } else if (planId === "enterprise") {
-        // Enterprise plan requires contacting sales
         navigate("/contact");
         return;
       } else {
@@ -189,7 +183,6 @@ const Checkout = () => {
     );
   };
 
-  // Get plan-specific features
   const getPlanFeatures = () => {
     switch(planId) {
       case 'free_trial':
