@@ -1,9 +1,22 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import IntegrationCard from "@/components/integrations/IntegrationCard";
+import IntegrationListItem from "@/components/integrations/IntegrationListItem";
 import { IntegrationItem } from "@/types/integration";
-import IntegrationCard from "./IntegrationCard";
-import IntegrationListItem from "./IntegrationListItem";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
+import { checkSubscription } from "@/services/payment/StripeService";
+import { toast } from "sonner";
 
 interface IntegrationTabsProps {
   activeCategory: string;
@@ -11,7 +24,7 @@ interface IntegrationTabsProps {
   categories: string[];
   filteredIntegrations: IntegrationItem[];
   onToggleConnection: (id: string) => void;
-  viewMode?: "grid" | "list";
+  viewMode: "grid" | "list";
 }
 
 const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
@@ -20,58 +33,139 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
   categories,
   filteredIntegrations,
   onToggleConnection,
-  viewMode = "grid"
+  viewMode,
 }) => {
-  return (
-    <Tabs defaultValue="All" value={activeCategory} onValueChange={setActiveCategory}>
-      <TabsList className="bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm mb-6 overflow-auto flex flex-nowrap max-w-full p-1 rounded-lg">
-        {categories.map(category => (
-          <TabsTrigger 
-            key={category} 
-            value={category} 
-            className="whitespace-nowrap px-4 py-2 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700"
-          >
-            {category}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+  const { user } = useAuth();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = React.useState(false);
+  const [isSubscriptionDialogOpen, setIsSubscriptionDialogOpen] = React.useState(false);
+  const [selectedIntegrationId, setSelectedIntegrationId] = React.useState<string | null>(null);
+  const [isChecking, setIsChecking] = React.useState(false);
+
+  const handleIntegrationConnect = async (id: string) => {
+    // If user is not authenticated, show auth dialog
+    if (!user) {
+      setSelectedIntegrationId(id);
+      setIsAuthDialogOpen(true);
+      return;
+    }
+
+    // If user is authenticated, check subscription
+    setIsChecking(true);
+    try {
+      const subscriptionResult = await checkSubscription();
+      setIsChecking(false);
       
-      <TabsContent value={activeCategory} className="mt-0">
-        {filteredIntegrations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+      if ('error' in subscriptionResult) {
+        toast.error("Failed to check subscription status");
+        return;
+      }
+
+      // Skip subscription check for free integrations (you might want to define which ones are free)
+      const integration = filteredIntegrations.find(item => item.id === id);
+      const isFreeIntegration = integration?.category === "Free Job Posting";
+
+      if (subscriptionResult.subscribed || isFreeIntegration) {
+        // User has an active subscription or is connecting a free integration
+        onToggleConnection(id);
+      } else {
+        // User doesn't have an active subscription
+        setSelectedIntegrationId(id);
+        setIsSubscriptionDialogOpen(true);
+      }
+    } catch (error) {
+      setIsChecking(false);
+      console.error("Error checking subscription:", error);
+      toast.error("Failed to check subscription status");
+    }
+  };
+
+  return (
+    <>
+      <Tabs defaultValue={activeCategory} onValueChange={setActiveCategory} className="w-full">
+        <TabsList className="mb-6 flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <TabsTrigger
+              key={category}
+              value={category}
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            >
+              {category}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <TabsContent value={activeCategory} className="mt-0">
+          {filteredIntegrations.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-dashed">
+              <p className="text-muted-foreground">No integrations found in this category.</p>
             </div>
-            <h3 className="text-xl font-medium mb-2">No integrations found</h3>
-            <p className="text-gray-500 max-w-md">
-              Try adjusting your search or category filters to find what you're looking for.
-            </p>
-          </div>
-        ) : viewMode === "grid" ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredIntegrations.map((integration) => (
-              <IntegrationCard
-                key={integration.id}
-                integration={integration}
-                onToggleConnection={onToggleConnection}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {filteredIntegrations.map((integration) => (
-              <IntegrationListItem
-                key={integration.id}
-                integration={integration}
-                onToggleConnection={onToggleConnection}
-              />
-            ))}
-          </div>
-        )}
-      </TabsContent>
-    </Tabs>
+          ) : viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredIntegrations.map((integration) => (
+                <IntegrationCard
+                  key={integration.id}
+                  integration={integration}
+                  onToggleConnection={handleIntegrationConnect}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredIntegrations.map((integration) => (
+                <IntegrationListItem
+                  key={integration.id}
+                  integration={integration}
+                  onToggleConnection={handleIntegrationConnect}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Authentication Dialog */}
+      <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Authentication Required</DialogTitle>
+            <DialogDescription>
+              You need to sign in to connect with this integration.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAuthDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Link to={`/login?redirect=${encodeURIComponent('/integrations')}`}>
+              <Button>Sign In</Button>
+            </Link>
+            <Link to={`/signup?redirect=${encodeURIComponent('/integrations')}`}>
+              <Button variant="default">Sign Up</Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Subscription Dialog */}
+      <Dialog open={isSubscriptionDialogOpen} onOpenChange={setIsSubscriptionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Subscription Required</DialogTitle>
+            <DialogDescription>
+              This integration requires an active subscription. Please upgrade your plan to continue.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSubscriptionDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Link to="/pricing">
+              <Button>View Plans</Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
@@ -11,22 +11,25 @@ import IntegrationsGuide from "@/components/integrations/IntegrationsGuide";
 import { IntegrationItem } from "@/types/integration";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Filter, Layout, ArrowDownUp } from "lucide-react";
+import { toast } from "sonner";
 
 const Integrations = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [integrationItems, setIntegrationItems] = useState<IntegrationItem[]>(createIntegrationsList());
   const [showGuide, setShowGuide] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortOrder, setSortOrder] = useState<"a-z" | "recent">("a-z");
+  const [isConnecting, setIsConnecting] = useState(false);
   
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  // No forced navigation so users can explore integrations before signing up
+  // if (!user) {
+  //   navigate("/login");
+  //   return null;
+  // }
 
   const filteredIntegrations = integrationItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -35,20 +38,56 @@ const Integrations = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const toggleConnection = (id: string) => {
-    // Update the local state to reflect connection status change
-    setIntegrationItems(prevItems => 
-      prevItems.map(item => 
-        item.id === id ? { ...item, connected: !item.connected } : item
-      )
-    );
+  const toggleConnection = async (id: string) => {
+    setIsConnecting(true);
     
-    toast({
-      title: "Integration Status Changed",
-      description: "Your integration settings have been updated.",
-      variant: "default",
-    });
-    console.log(`Toggling connection for ${id}`);
+    try {
+      // Find the integration that is being toggled
+      const integration = integrationItems.find(item => item.id === id);
+      
+      if (!integration) {
+        toast.error("Integration not found");
+        setIsConnecting(false);
+        return;
+      }
+
+      // If the integration is already connected, disconnect it
+      if (integration.connected) {
+        // Update the local state to reflect connection status change
+        setIntegrationItems(prevItems => 
+          prevItems.map(item => 
+            item.id === id ? { ...item, connected: false } : item
+          )
+        );
+        
+        toast.success(`Disconnected from ${integration.name}`);
+      } else {
+        // Here you would typically make an API call to connect the integration
+        // Simulating API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Update the local state to reflect connection status change
+        setIntegrationItems(prevItems => 
+          prevItems.map(item => 
+            item.id === id ? { ...item, connected: true } : item
+          )
+        );
+        
+        toast.success(`Connected to ${integration.name} successfully!`);
+        
+        // Optional: Navigate to the dashboard after successful connection
+        if (user) {
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 1500);
+        }
+      }
+    } catch (error) {
+      console.error(`Error toggling connection for ${id}:`, error);
+      toast.error("Failed to update integration status");
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   return (

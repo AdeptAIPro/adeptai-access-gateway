@@ -1,10 +1,13 @@
 
 import React from "react";
-import { Link as LinkIcon, X as XIcon } from "lucide-react";
+import { Link as LinkIcon, X as XIcon, Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IntegrationItem } from "@/types/integration";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
+import { isIntegrationAvailableForPlan } from "@/services/integrations/IntegrationValidationService";
 
 interface IntegrationCardProps {
   integration: IntegrationItem;
@@ -12,6 +15,22 @@ interface IntegrationCardProps {
 }
 
 const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration, onToggleConnection }) => {
+  const { user } = useAuth();
+  const userPlan = user?.plan as "free_trial" | "pro" | "business" | "enterprise" | null;
+  const isAvailable = isIntegrationAvailableForPlan(integration, userPlan);
+
+  const getPlanRequirement = () => {
+    if (integration.category === "Free Job Posting") {
+      return "Free";
+    } else if (integration.category === "Productivity") {
+      return "Free Trial+";
+    } else if (["Social", "CRM & HRMS"].includes(integration.category)) {
+      return "Pro+";
+    } else {
+      return "Business+";
+    }
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all border-gray-200 dark:border-gray-700">
       <CardHeader className="flex flex-row items-center gap-4 pb-2 bg-gray-50/50 dark:bg-gray-800/50">
@@ -27,26 +46,53 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration, onToggle
               </Badge>
             }
           </CardTitle>
-          <CardDescription className="text-xs">{integration.category}</CardDescription>
+          <CardDescription className="text-xs flex items-center gap-2">
+            {integration.category}
+            {!isAvailable && (
+              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
+                {getPlanRequirement()}
+              </Badge>
+            )}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="pt-4">
         <p className="text-sm text-muted-foreground mb-4 min-h-[60px]">{integration.description}</p>
-        <Button 
-          variant={integration.connected ? "destructive" : "default"}
-          className="w-full"
-          onClick={() => onToggleConnection(integration.id)}
-        >
-          {integration.connected ? (
-            <>
-              <XIcon className="mr-2 h-4 w-4" /> Disconnect
-            </>
-          ) : (
-            <>
-              <LinkIcon className="mr-2 h-4 w-4" /> Connect
-            </>
-          )}
-        </Button>
+        
+        {isAvailable ? (
+          <Button 
+            variant={integration.connected ? "destructive" : "default"}
+            className="w-full"
+            onClick={() => onToggleConnection(integration.id)}
+          >
+            {integration.connected ? (
+              <>
+                <XIcon className="mr-2 h-4 w-4" /> Disconnect
+              </>
+            ) : (
+              <>
+                <LinkIcon className="mr-2 h-4 w-4" /> Connect
+              </>
+            )}
+          </Button>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full opacity-80"
+                  onClick={() => onToggleConnection(integration.id)}
+                >
+                  <Lock className="mr-2 h-4 w-4" /> Upgrade to Connect
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>This integration requires a {getPlanRequirement()} plan or higher</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </CardContent>
     </Card>
   );
