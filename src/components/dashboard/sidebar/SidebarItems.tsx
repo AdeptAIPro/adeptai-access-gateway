@@ -23,7 +23,7 @@ const SidebarItems = () => {
     { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations", requiredPermission: "viewDashboard" },
     { 
       title: "Workflow Management", 
-      icon: FileFlowChart, 
+      icon: FileText, 
       href: "/dashboard/workflows",
       badge: "New",
       badgeVariant: "default", 
@@ -132,7 +132,7 @@ import {
   Search,
   DollarSign,
   Bot,
-  FileFlowChart
+  FileText
 } from "lucide-react";
 
 export default SidebarItems;

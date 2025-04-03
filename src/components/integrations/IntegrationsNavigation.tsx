@@ -10,7 +10,7 @@ import {
   BarChart2,
   Sparkles,
   GanttChart,
-  FileFlowChart
+  FileText
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -57,7 +57,7 @@ const IntegrationsNavigation: React.FC = () => {
             className="w-full justify-between"
           >
             <div className="flex items-center">
-              <FileFlowChart className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               Workflow Management
             </div>
             <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
