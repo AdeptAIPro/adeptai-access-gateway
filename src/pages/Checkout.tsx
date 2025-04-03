@@ -270,8 +270,8 @@ const Checkout = () => {
                     planId === "enterprise" 
                       ? "bg-indigo-600 hover:bg-indigo-700" 
                       : planId === "api_pay_as_you_go"
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-adept hover:bg-adept-dark"
+                        ? "bg-blue-600 hover:bg-blue-700"
+                        : "bg-adept hover:bg-adept-dark"
                   } text-white`}
                   disabled={isLoading}
                   size="lg"
@@ -285,8 +285,8 @@ const Checkout = () => {
                     planId === "free_trial" 
                       ? "Start Free Trial" 
                       : planId === "enterprise"
-                      ? "Contact Sales"
-                      : `Proceed to ${planId === "pay_per_use" || planId === "api_pay_as_you_go" ? "Payment" : "Checkout"}`
+                        ? "Contact Sales"
+                        : `Proceed to ${planId === "pay_per_use" || planId === "api_pay_as_you_go" ? "Payment" : "Checkout"}`
                   )}
                 </Button>
                 
