@@ -70,37 +70,55 @@ const Checkout = () => {
   const [processingStep, setProcessingStep] = useState<
     "initializing" | "creating_session" | "redirecting" | null
   >(null);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getPrice, getPlanFeatures, isPlanWithBilling } = useCheckoutHelpers(plan, planId, billingPeriod);
+  const { getPrice, getPlanFeatures, isPlanWithBilling, validateCheckout } = useCheckoutHelpers(plan, planId, billingPeriod);
   
   useEffect(() => {
-    if (!user) {
-      toast.error("Please log in to continue");
-      navigate("/login", { state: { from: location } });
-      return;
-    }
+    const checkUserAndLoadPlan = async () => {
+      if (!user) {
+        toast.error("Please log in to continue");
+        navigate("/login", { state: { from: location } });
+        return;
+      }
+      
+      try {
+        const params = new URLSearchParams(location.search);
+        const paramPlanId = params.get("plan");
+        const paramBilling = params.get("billing") as "monthly" | "yearly" | null;
+        
+        if (paramBilling && (paramBilling === "monthly" || paramBilling === "yearly")) {
+          setBillingPeriod(paramBilling);
+        }
+        
+        if (paramPlanId && plans[paramPlanId]) {
+          setPlanId(paramPlanId);
+          setPlan(plans[paramPlanId]);
+        } else {
+          setPlanId("pro");
+          setPlan(plans.pro);
+        }
+      } catch (error) {
+        toast.error("Failed to load plan details");
+        console.error("Error loading plan:", error);
+      } finally {
+        // Short delay to allow for a smooth transition
+        setTimeout(() => setIsPageLoading(false), 500);
+      }
+    };
     
-    const params = new URLSearchParams(location.search);
-    const paramPlanId = params.get("plan");
-    const paramBilling = params.get("billing") as "monthly" | "yearly" | null;
-    
-    if (paramBilling && (paramBilling === "monthly" || paramBilling === "yearly")) {
-      setBillingPeriod(paramBilling);
-    }
-    
-    if (paramPlanId && plans[paramPlanId]) {
-      setPlanId(paramPlanId);
-      setPlan(plans[paramPlanId]);
-    } else {
-      setPlanId("pro");
-      setPlan(plans.pro);
-    }
+    checkUserAndLoadPlan();
   }, [location, navigate, user]);
   
   const handleCheckout = async () => {
+    // Validate checkout before proceeding
+    if (!validateCheckout()) {
+      return;
+    }
+    
     if (!planId || !plan) {
       toast.error("Invalid plan selected");
       return;
@@ -110,6 +128,8 @@ const Checkout = () => {
     setProcessingStep("initializing");
     
     try {
+      // Small delay for initializing step to be visible
+      await new Promise(resolve => setTimeout(resolve, 800));
       setProcessingStep("creating_session");
       
       let result;
@@ -119,9 +139,11 @@ const Checkout = () => {
       } else if (planId === "api_pay_as_you_go") {
         result = await createApiPayAsYouGoCheckout();
       } else if (planId === "free_trial") {
+        toast.success("Your free trial has started");
         navigate("/dashboard");
         return;
       } else if (planId === "enterprise") {
+        toast.success("Redirecting to sales contact page");
         navigate("/contact");
         return;
       } else {
@@ -137,6 +159,8 @@ const Checkout = () => {
       
       if ('url' in result && result.url) {
         setProcessingStep("redirecting");
+        // Small delay for redirecting step to be visible
+        await new Promise(resolve => setTimeout(resolve, 800));
         window.location.href = result.url;
       } else {
         throw new Error("No checkout URL returned");
@@ -150,7 +174,7 @@ const Checkout = () => {
     }
   };
   
-  if (!plan) {
+  if (isPageLoading || !plan) {
     return <LoadingState />;
   }
 

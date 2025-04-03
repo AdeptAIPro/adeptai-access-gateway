@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface PlanDetails {
   id: string;
@@ -10,6 +11,8 @@ interface PlanDetails {
 }
 
 export const useCheckoutHelpers = (plan: PlanDetails | null, planId: string | null, billingPeriod: "monthly" | "yearly") => {
+  const [checkoutErrors, setCheckoutErrors] = useState<string[]>([]);
+  
   // Helper functions for checkout page
   const getPrice = () => {
     if (!plan) return "";
@@ -45,10 +48,35 @@ export const useCheckoutHelpers = (plan: PlanDetails | null, planId: string | nu
   const isPlanWithBilling = () => {
     return !(planId === "free_trial" || planId === "pay_per_use" || planId === "api_pay_as_you_go" || planId === "enterprise");
   };
+  
+  const validateCheckout = () => {
+    const errors = [];
+    
+    // Validate plan selection
+    if (!planId || !plan) {
+      errors.push("Please select a valid plan");
+    }
+    
+    // For plans with billing periods, validate the period
+    if (isPlanWithBilling() && !["monthly", "yearly"].includes(billingPeriod)) {
+      errors.push("Please select a valid billing period");
+    }
+    
+    setCheckoutErrors(errors);
+    
+    if (errors.length > 0) {
+      errors.forEach(error => toast.error(error));
+      return false;
+    }
+    
+    return true;
+  };
 
   return {
     getPrice,
     getPlanFeatures,
     isPlanWithBilling,
+    validateCheckout,
+    checkoutErrors
   };
 };
