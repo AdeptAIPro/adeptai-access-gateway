@@ -52,7 +52,7 @@ const Pricing = () => {
       features: [
         { text: "50 AI workflows/month", included: true },
         { text: "5,000 API calls/month", included: true },
-        { text: "Standard integrations", included: true },
+        { text: "Standard integrations (Zapier, Slack, Notion)", included: true },
         { text: "Email support", included: true },
         { text: "Advanced analytics", included: true },
         { text: "Team collaboration", included: false },
@@ -242,9 +242,11 @@ const Pricing = () => {
               </ul>
             </div>
             <div className="md:w-1/3 flex justify-center md:justify-end">
-              <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-6 h-auto text-lg">
-                Schedule a Demo
-              </Button>
+              <Link to="/contact">
+                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-6 h-auto text-lg">
+                  Schedule a Demo
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
