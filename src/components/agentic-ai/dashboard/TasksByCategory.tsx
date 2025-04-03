@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { AgentTask } from '@/services/agentic-ai/AgenticService';
-import TaskCard, { formatTaskType } from './TaskCard';
+import TaskCard from './TaskCard';
 import { Card, CardContent } from "@/components/ui/card";
 import { Bot } from 'lucide-react';
+import { formatTaskType } from './TaskStatusBadge';
 
 interface TasksByCategoryProps {
   tasksByType: Record<string, AgentTask[]>;
