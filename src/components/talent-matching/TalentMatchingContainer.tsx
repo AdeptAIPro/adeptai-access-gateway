@@ -10,6 +10,9 @@ import MatchingWorkflow from "./MatchingWorkflow";
 import AdvancedOptionsToggle from "./AdvancedOptionsToggle";
 import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
 import { MatchingModel } from "./types";
+import StateHandler from "@/components/shared/StateHandler";
+import TaskErrorDisplay from "@/components/agentic-ai/dashboard/TaskErrorDisplay";
+import EnhancedNotification from "@/components/shared/EnhancedNotification";
 
 const TalentMatchingContainer: React.FC = () => {
   const { user } = useAuth();
@@ -28,6 +31,8 @@ const TalentMatchingContainer: React.FC = () => {
   const [useCrossSourceIntelligence, setUseCrossSourceIntelligence] = useState(false);
   const [tab, setTab] = useState<string>("paste");
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoadingModels, setIsLoadingModels] = useState(true);
 
   // Construct matching options object
   const matchingOptions: MatchingOptions = {
@@ -58,19 +63,25 @@ const TalentMatchingContainer: React.FC = () => {
 
   useEffect(() => {
     const loadModels = async () => {
+      setIsLoadingModels(true);
+      setError(null);
+      
       try {
         const models = await getAvailableMatchingModels();
         setAvailableModels(models);
         if (models.length > 0) {
           setSelectedModelId(models[0].id);
         }
-      } catch (error) {
-        console.error("Error loading models:", error);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to load matching models";
+        setError(errorMessage);
         toast({
           title: "Error",
-          description: "Failed to load matching models",
+          description: errorMessage,
           variant: "destructive",
         });
+      } finally {
+        setIsLoadingModels(false);
       }
     };
 
@@ -86,6 +97,7 @@ const TalentMatchingContainer: React.FC = () => {
       return;
     }
     
+    setError(null);
     startMatching(jobDescription);
     setShowResults(true);
   };
@@ -95,61 +107,118 @@ const TalentMatchingContainer: React.FC = () => {
     setShowResults(false);
   };
 
+  const handleRetry = () => {
+    setError(null);
+    setIsLoadingModels(true);
+    
+    getAvailableMatchingModels()
+      .then(models => {
+        setAvailableModels(models);
+        if (models.length > 0) {
+          setSelectedModelId(models[0].id);
+        }
+      })
+      .catch(err => {
+        const errorMessage = err instanceof Error ? err.message : "Failed to load matching models";
+        setError(errorMessage);
+      })
+      .finally(() => {
+        setIsLoadingModels(false);
+      });
+  };
+
   return (
     <div className="space-y-6">
+      {error && (
+        <TaskErrorDisplay 
+          error={error} 
+          showToast={false}
+          title="Failed to load matching models"
+        />
+      )}
+      
       {!showResults ? (
-        <>
-          <JobDescriptionInput 
-            jobDescription={jobDescription} 
-            setJobDescription={setJobDescription}
-            tab={tab}
-            setTab={setTab}
-            fileUploaded={fileUploaded}
-            setFileUploaded={setFileUploaded}
-          />
-          
-          <AdvancedOptionsToggle
-            showAdvancedOptions={showAdvancedOptions}
-            matchingOptions={matchingOptions}
-            setMatchingOptions={(options: MatchingOptions) => {
-              setMinMatchScore(options.minMatchScore);
-              setUseComplianceVerification(options.useComplianceVerification);
-              setPrioritizeCulturalFit(options.prioritizeCulturalFit);
-              setUseSemanticMatching(options.useSemanticMatching || false);
-              setUseRAG(options.useRAG || false);
-              setUseSkillBasedFiltering(options.useSkillBasedFiltering || true);
-              if (options.matchingModel) {
-                setSelectedModelId(options.matchingModel);
-              }
-            }}
-            matchingModels={availableModels}
-            useCrossSourceIntelligence={useCrossSourceIntelligence}
-            setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
-          />
-          
-          <MatchingWorkflow
-            isStarted={false}
-            isProcessing={isLoading}
-            isComplete={matchResult !== null}
-            currentStep={matchResult !== null ? 3 : isLoading ? 2 : 1}
-            progress={matchingProgress}
-            progressText={`${matchingProgress}% - Analyzing candidates`}
-            showAdvancedOptions={showAdvancedOptions}
-            setShowAdvancedOptions={setShowAdvancedOptions}
-            onStartMatching={handleStartMatching}
-            onCancel={() => {}}
-            isReadyToStart={jobDescription.length > 50}
-          />
-        </>
+        <StateHandler
+          isLoading={isLoadingModels}
+          isError={!!error}
+          onRetry={handleRetry}
+          loadingText="Loading AI matching models..."
+        >
+          <>
+            <JobDescriptionInput 
+              jobDescription={jobDescription} 
+              setJobDescription={setJobDescription}
+              tab={tab}
+              setTab={setTab}
+              fileUploaded={fileUploaded}
+              setFileUploaded={setFileUploaded}
+            />
+            
+            <AdvancedOptionsToggle
+              showAdvancedOptions={showAdvancedOptions}
+              matchingOptions={matchingOptions}
+              setMatchingOptions={(options: MatchingOptions) => {
+                setMinMatchScore(options.minMatchScore);
+                setUseComplianceVerification(options.useComplianceVerification);
+                setPrioritizeCulturalFit(options.prioritizeCulturalFit);
+                setUseSemanticMatching(options.useSemanticMatching || false);
+                setUseRAG(options.useRAG || false);
+                setUseSkillBasedFiltering(options.useSkillBasedFiltering || true);
+                if (options.matchingModel) {
+                  setSelectedModelId(options.matchingModel);
+                }
+              }}
+              matchingModels={availableModels}
+              useCrossSourceIntelligence={useCrossSourceIntelligence}
+              setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
+            />
+            
+            <MatchingWorkflow
+              isStarted={false}
+              isProcessing={isLoading}
+              isComplete={matchResult !== null}
+              currentStep={matchResult !== null ? 3 : isLoading ? 2 : 1}
+              progress={matchingProgress}
+              progressText={`${matchingProgress}% - Analyzing candidates`}
+              showAdvancedOptions={showAdvancedOptions}
+              setShowAdvancedOptions={setShowAdvancedOptions}
+              onStartMatching={handleStartMatching}
+              onCancel={() => {}}
+              isReadyToStart={jobDescription.length > 50}
+            />
+          </>
+        </StateHandler>
       ) : (
-        matchResult && (
-          <ResultsSection
-            matchResult={matchResult}
-            onStartNewMatch={handleStartNewMatch}
-            saveCandidate={saveCandidate}
-            contactCandidate={contactCandidate}
-          />
-        )
+        <StateHandler
+          isLoading={isLoading}
+          isError={!matchResult && !isLoading}
+          error="Failed to process matching request"
+          onRetry={() => {
+            setShowResults(false);
+          }}
+          loadingText="Processing AI talent matching..."
+        >
+          {matchResult && (
+            <ResultsSection
+              matchResult={matchResult}
+              onStartNewMatch={handleStartNewMatch}
+              saveCandidate={saveCandidate}
+              contactCandidate={contactCandidate}
+            />
+          )}
+        </StateHandler>
+      )}
+      
+      {/* Show notification for successful match */}
+      {matchResult && !isLoading && (
+        <EnhancedNotification
+          variant="success"
+          title="AI Matching Complete"
+          description={`Found ${matchResult.candidates.length} matching candidates based on your job description.`}
+          actionLabel="View Results"
+          autoDismiss={true}
+          onDismiss={() => {}}
+        />
       )}
     </div>
   );
