@@ -18,7 +18,7 @@ const Integrations = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [integrationItems] = useState<IntegrationItem[]>(createIntegrationsList());
+  const [integrationItems, setIntegrationItems] = useState<IntegrationItem[]>(createIntegrationsList());
   const [showGuide, setShowGuide] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortOrder, setSortOrder] = useState<"a-z" | "recent">("a-z");
@@ -36,6 +36,13 @@ const Integrations = () => {
   });
 
   const toggleConnection = (id: string) => {
+    // Update the local state to reflect connection status change
+    setIntegrationItems(prevItems => 
+      prevItems.map(item => 
+        item.id === id ? { ...item, connected: !item.connected } : item
+      )
+    );
+    
     toast({
       title: "Integration Status Changed",
       description: "Your integration settings have been updated.",
