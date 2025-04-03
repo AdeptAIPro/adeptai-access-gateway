@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,14 @@ const SidebarItems = () => {
   const sidebarItems: SidebarItem[] = [
     { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard", requiredPermission: "viewDashboard" },
     { title: "Integrations", icon: Puzzle, href: "/dashboard/integrations", requiredPermission: "viewDashboard" },
+    { 
+      title: "Workflow Management", 
+      icon: FileFlowChart, 
+      href: "/dashboard/workflows",
+      badge: "New",
+      badgeVariant: "default", 
+      requiredPermission: "viewDashboard"
+    },
     { title: "Talent Search", icon: Search, href: "/dashboard/talent-search", requiredPermission: "viewDashboard" },
     { 
       title: "Talent Matchmaking", 
@@ -122,7 +131,8 @@ import {
   Settings,
   Search,
   DollarSign,
-  Bot
+  Bot,
+  FileFlowChart
 } from "lucide-react";
 
 export default SidebarItems;
