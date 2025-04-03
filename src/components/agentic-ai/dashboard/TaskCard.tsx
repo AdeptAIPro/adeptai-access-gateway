@@ -1,154 +1,223 @@
 
 import React, { useState } from 'react';
 import { AgentTask } from '@/services/agentic-ai/AgenticService';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Play, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
-import TaskResultDisplay from '../task-result/TaskResultDisplay';
+import { PlayCircle, RefreshCcw, AlertCircle, CheckCircle, Clock, MoreHorizontal } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TaskCardProps {
   task: AgentTask;
   onProcess: () => void;
   isProcessing: boolean;
+  onRetry?: () => void;
+  onDelete?: () => void;
+  onSave?: () => void;
 }
 
-const TaskCard = ({ task, onProcess, isProcessing }: TaskCardProps) => {
-  const [showResults, setShowResults] = useState<boolean>(false);
+const TaskCard: React.FC<TaskCardProps> = ({ 
+  task, 
+  onProcess, 
+  isProcessing,
+  onRetry,
+  onDelete,
+  onSave
+}) => {
+  const [showFullGoal, setShowFullGoal] = useState(false);
+  const [showError, setShowError] = useState(false);
   
-  const statusColors = {
-    'pending': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    'processing': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    'in-progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    'completed': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    'failed': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+  const handleRetry = () => {
+    if (onRetry) {
+      toast.info("Retrying task", {
+        description: "The task is being reprocessed"
+      });
+      onRetry();
+    } else {
+      onProcess();
+    }
   };
   
-  const priorityColors = {
-    'low': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300',
-    'medium': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    'high': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+  const getStatusColor = () => {
+    switch (task.status) {
+      case 'completed':
+        return 'success';
+      case 'failed':
+        return 'destructive';
+      case 'processing':
+        return 'default';
+      case 'queued':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
   };
   
+  const getStatusIcon = () => {
+    switch (task.status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 mr-1" />;
+      case 'failed':
+        return <AlertCircle className="h-4 w-4 mr-1" />;
+      case 'processing':
+        return <span className="animate-spin mr-1">◌</span>;
+      case 'queued':
+        return <Clock className="h-4 w-4 mr-1" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader className="pb-2">
+    <Card className={`
+      border
+      ${task.status === 'failed' ? 'border-destructive/40 bg-destructive/5' : ''}
+      ${isProcessing ? 'shadow-md border-primary/30' : ''}
+      transition-all hover:shadow-sm
+    `}>
+      <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{formatTaskType(task.taskType)}</CardTitle>
-            <CardDescription className="mt-1">{task.goal}</CardDescription>
+          <CardTitle className="text-base">{task.title || "AI Task"}</CardTitle>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Task Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {task.status === 'failed' && onRetry && (
+                <DropdownMenuItem onClick={handleRetry}>
+                  <RefreshCcw className="mr-2 h-4 w-4" />
+                  Retry Task
+                </DropdownMenuItem>
+              )}
+              {onSave && (
+                <DropdownMenuItem onClick={onSave}>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Save Results
+                </DropdownMenuItem>
+              )}
+              {onDelete && (
+                <DropdownMenuItem onClick={onDelete}>
+                  <AlertCircle className="mr-2 h-4 w-4" className="text-destructive" />
+                  Delete Task
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="flex items-center justify-between text-sm text-muted-foreground pt-1">
+          <div className="flex items-center">
+            <Badge variant={getStatusColor()} className="mr-2 flex items-center">
+              {getStatusIcon()}
+              {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
+            </Badge>
+            {task.agent && (
+              <span className="text-xs">Agent: {task.agent}</span>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <Badge className={priorityColors[task.priority]}>{task.priority}</Badge>
-            <Badge className={statusColors[task.status]}>{task.status}</Badge>
-          </div>
+          {task.createdAt && (
+            <span className="text-xs">
+              {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
+            </span>
+          )}
         </div>
       </CardHeader>
-      <CardContent className="pb-2">
-        {(task.status === 'in-progress' || task.status === 'processing') && (
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium">Processing</span>
-              <span className="text-sm text-muted-foreground">Working...</span>
-            </div>
-            <Progress value={45} className="h-2" />
-          </div>
-        )}
-        
-        {task.result && !showResults && (
-          <div className="border rounded-md p-2 bg-muted/30 text-sm">
-            <div className="flex justify-between items-center">
-              <span><strong>Result Summary:</strong> {Object.keys(task.result).length} items processed</span>
-              <Button variant="ghost" size="sm" onClick={() => setShowResults(true)}>
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-        
-        {task.result && showResults && (
+      
+      <CardContent className="pb-3 pt-0">
+        <div className="space-y-2">
           <div>
-            <div className="flex justify-end mb-2">
-              <Button variant="ghost" size="sm" onClick={() => setShowResults(false)}>
-                <ChevronUp className="h-4 w-4" />
+            <div className="text-sm text-muted-foreground font-medium">Goal</div>
+            <p className={`text-sm ${!showFullGoal && "line-clamp-2"}`}>
+              {task.goal}
+            </p>
+            {task.goal && task.goal.length > 100 && (
+              <Button 
+                variant="link" 
+                size="sm" 
+                onClick={() => setShowFullGoal(!showFullGoal)}
+                className="p-0 h-auto text-xs"
+              >
+                {showFullGoal ? "Show less" : "Show more"}
               </Button>
+            )}
+          </div>
+          
+          {task.error && (
+            <div className="mt-2">
+              <div className="text-sm text-destructive font-medium flex items-center">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                Error
+              </div>
+              {showError ? (
+                <div className="text-sm text-destructive/80 bg-destructive/5 p-2 rounded border border-destructive/20 mt-1">
+                  {task.error}
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    onClick={() => setShowError(false)} 
+                    className="p-0 h-auto text-xs block mt-1"
+                  >
+                    Hide error details
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  variant="link" 
+                  size="sm" 
+                  onClick={() => setShowError(true)} 
+                  className="p-0 h-auto text-xs text-destructive"
+                >
+                  Show error details
+                </Button>
+              )}
             </div>
-            <TaskResultDisplay task={task} />
-          </div>
-        )}
-        
-        {task.error && (
-          <div className="border border-red-200 rounded-md p-2 bg-red-50 text-sm text-red-800 dark:bg-red-900/30 dark:text-red-300 dark:border-red-900">
-            <div><strong>Error:</strong> {task.error}</div>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex items-center justify-between pt-2">
-        <div className="text-xs text-muted-foreground">
-          Created {new Date(task.createdAt).toLocaleString()}
+          )}
         </div>
-        
-        {task.status === 'pending' && (
+      </CardContent>
+      
+      <CardFooter>
+        {task.status === 'failed' ? (
           <Button 
-            size="sm" 
-            onClick={onProcess}
+            variant="outline" 
+            className="w-full border-destructive/30 text-destructive hover:bg-destructive/10" 
+            onClick={handleRetry}
+          >
+            <RefreshCcw className="mr-2 h-4 w-4" />
+            Retry Task
+          </Button>
+        ) : task.status === 'completed' ? (
+          <Button variant="outline" className="w-full" onClick={onProcess}>
+            <CheckCircle className="mr-2 h-4 w-4" />
+            View Results
+          </Button>
+        ) : (
+          <Button 
+            onClick={onProcess} 
+            className="w-full"
             disabled={isProcessing}
           >
             {isProcessing ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Processing
-              </>
+              <><span className="animate-spin mr-2">◌</span> Processing</>
             ) : (
-              <>
-                <Play className="h-4 w-4 mr-2" />
-                Run Now
-              </>
+              <><PlayCircle className="mr-2 h-4 w-4" /> Process Task</>
             )}
           </Button>
-        )}
-        
-        {task.status === 'completed' && !showResults && (
-          <Button size="sm" variant="outline" onClick={() => setShowResults(true)}>View Results</Button>
-        )}
-        
-        {task.status === 'completed' && showResults && (
-          <Button size="sm" variant="outline" onClick={() => setShowResults(false)}>Hide Results</Button>
-        )}
-        
-        {task.status === 'failed' && (
-          <Button size="sm" variant="outline" onClick={onProcess}>Retry</Button>
         )}
       </CardFooter>
     </Card>
   );
-};
-
-// Helper to format task type for display
-export const formatTaskType = (taskType: string): string => {
-  switch (taskType) {
-    case 'talent-search':
-      return 'Talent Search';
-    case 'talent-matching':
-      return 'Talent Matching';
-    case 'payroll-processing':
-      return 'Payroll Processing';
-    case 'integration-setup':
-      return 'Integration Setup';
-    case 'skills-recommendation':
-      return 'Skills Recommendation';
-    case 'analytics-insight':
-      return 'Analytics Insight';
-    case 'compliance-check':
-      return 'Compliance Check';
-    case 'onboarding-customization':
-      return 'Onboarding Customization';
-    case 'cross-source-talent-intelligence':
-      return 'Cross-Source Talent Intelligence';
-    default:
-      return taskType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  }
 };
 
 export default TaskCard;

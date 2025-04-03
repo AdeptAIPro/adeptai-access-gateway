@@ -1,62 +1,158 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bot, BrainCircuit, FileText, CheckCircle, ArrowRight, RefreshCw } from "lucide-react";
+import TaskList from "@/components/agentic-ai/dashboard/TaskList";
+import EnhancedTaskResultDisplay from "@/components/agentic-ai/task-result/EnhancedTaskResultDisplay";
+import AgenticErrorHandler from "@/components/agentic-ai/AgenticErrorHandler";
+import usePersistedState from "@/hooks/use-persisted-state";
+import { toast } from "sonner";
+import { AgentTask } from "@/services/agentic-ai/AgenticService";
 
-const AgenticProcessFlow: React.FC = () => {
-  return (
-    <Card className="my-6">
-      <CardContent className="pt-6">
-        <h3 className="text-lg font-semibold mb-4">Agentic AI Platform Workflow</h3>
+interface AgenticProcessFlowProps {
+  tasks: AgentTask[];
+  onDeleteTask?: (taskId: string) => void;
+  onRetryTask?: (taskId: string) => void;
+  onSaveResult?: (taskId: string) => void;
+  onExportResult?: (taskId: string) => void;
+}
+
+const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
+  tasks,
+  onDeleteTask,
+  onRetryTask,
+  onSaveResult,
+  onExportResult
+}) => {
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedTasks, setSavedTasks] = usePersistedState<string[]>("saved-agentic-tasks", []);
+  
+  // Get current active task
+  const activeTask = activeTaskId ? tasks.find(t => t.id === activeTaskId) : null;
+  
+  // Process a task
+  const processTask = async (taskId: string) => {
+    setActiveTaskId(taskId);
+    
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) {
+      setError("Task not found");
+      return;
+    }
+    
+    try {
+      if (task.status === 'queued') {
+        setIsProcessing(true);
+        // In a real implementation, you would call an API to process the task
+        // For demo purposes, we're simulating processing with a timeout
         
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          {steps.map((step, index) => (
-            <React.Fragment key={index}>
-              <div className="flex flex-col items-center text-center max-w-[150px] p-2">
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-3">
-                  <step.icon className="h-6 w-6 text-purple-600" />
-                </div>
-                <h4 className="font-medium text-sm mb-1">{step.title}</h4>
-                <p className="text-xs text-gray-500">{step.description}</p>
-              </div>
-              
-              {index < steps.length - 1 && (
-                <ArrowRight className="text-gray-300 mx-2 hidden md:block" />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+        // This is just a placeholder for the actual task processing logic
+        // which would typically be handled by your backend
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred while processing the task");
+      setIsProcessing(false);
+    }
+  };
+  
+  // Retry a task
+  const handleRetryTask = async (taskId: string) => {
+    if (onRetryTask) {
+      try {
+        setIsProcessing(true);
+        await onRetryTask(taskId);
+        toast.success("Task restarted successfully");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to restart task");
+        toast.error("Failed to restart task");
+      } finally {
+        setIsProcessing(false);
+      }
+    }
+  };
+  
+  // Save a task result
+  const handleSaveTask = (taskId: string) => {
+    if (!savedTasks.includes(taskId)) {
+      setSavedTasks([...savedTasks, taskId]);
+    }
+    
+    if (onSaveResult) {
+      onSaveResult(taskId);
+    }
+  };
+  
+  // Delete a task
+  const handleDeleteTask = (taskId: string) => {
+    if (onDeleteTask) {
+      onDeleteTask(taskId);
+      
+      // If this was the active task, clear it
+      if (activeTaskId === taskId) {
+        setActiveTaskId(null);
+      }
+      
+      // Remove from saved tasks if present
+      if (savedTasks.includes(taskId)) {
+        setSavedTasks(savedTasks.filter(id => id !== taskId));
+      }
+      
+      toast.success("Task deleted successfully");
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Task List Section */}
+      <div>
+        <h3 className="text-lg font-medium mb-4">AI Tasks</h3>
+        
+        {error && (
+          <div className="mb-4">
+            <AgenticErrorHandler 
+              error={error} 
+              onRetry={() => setError(null)} 
+            />
+          </div>
+        )}
+        
+        <TaskList 
+          tasks={tasks} 
+          activeTaskId={activeTaskId}
+          processTask={processTask}
+          emptyMessage="No AI Tasks Created Yet"
+        />
+      </div>
+      
+      {/* Results Section */}
+      <div>
+        <h3 className="text-lg font-medium mb-4">Task Results</h3>
+        
+        {activeTask ? (
+          <EnhancedTaskResultDisplay 
+            task={activeTask} 
+            isLoading={isProcessing}
+            onRetry={() => handleRetryTask(activeTask.id)}
+            onSave={() => handleSaveTask(activeTask.id)}
+            onExport={() => onExportResult && onExportResult(activeTask.id)}
+          />
+        ) : (
+          <Card className="border-dashed">
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
+              <p className="text-muted-foreground mb-2">Select a task to view results</p>
+              <p className="text-sm text-muted-foreground">
+                No task selected. Click on a task from the list to view its results.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
   );
 };
-
-const steps = [
-  {
-    title: "Define Task Goal",
-    description: "Specify what you want the AI agent to accomplish for you",
-    icon: FileText
-  },
-  {
-    title: "Select AI Agent",
-    description: "Choose the most appropriate AI agent for your specific task type",
-    icon: Bot
-  },
-  {
-    title: "Configure Parameters",
-    description: "Provide any additional details or requirements for your task",
-    icon: BrainCircuit
-  },
-  {
-    title: "Process Task",
-    description: "The AI agent processes your task using its specialized capabilities",
-    icon: RefreshCw
-  },
-  {
-    title: "Review Results",
-    description: "Evaluate and utilize the output produced by your AI agent",
-    icon: CheckCircle
-  }
-];
 
 export default AgenticProcessFlow;
