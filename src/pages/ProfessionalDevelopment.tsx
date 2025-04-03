@@ -79,66 +79,66 @@ const ProfessionalDevelopment = () => {
     },
   });
 
+  // Updated course lists without college names
   const bachelorsCoursesIndia = [
-    "B.Tech Computer Science - IIT Delhi",
-    "B.Tech Information Technology - IIT Bombay",
-    "B.Tech Electronics & Communication - IIT Madras",
-    "BBA Business Administration - IIM Ahmedabad",
-    "B.Com Commerce - Delhi University",
-    "BSc Computer Science - BITS Pilani",
-    "BSc Data Science - ISI Kolkata",
-    "BSc Artificial Intelligence - IIT Hyderabad",
-    "BA Economics - St. Xavier's College Mumbai",
-    "BCA Software Development - Manipal Institute of Technology",
-    "B.Tech Biotechnology - VIT Vellore",
-    "BSc Cyber Security - IIIT Bangalore",
+    "Computer Science Engineering",
+    "Information Technology",
+    "Electronics & Communication Engineering",
+    "Business Administration",
+    "Commerce",
+    "Data Science",
+    "Artificial Intelligence",
+    "Economics",
+    "Software Development",
+    "Biotechnology",
+    "Cyber Security",
   ];
 
   const mastersCoursesIndia = [
-    "M.Tech Computer Science - IIT Kanpur",
-    "M.Tech Artificial Intelligence - IISc Bangalore",
-    "M.Tech Data Science - IIT Kharagpur",
-    "MBA Business Administration - IIM Bangalore",
-    "MSc Computer Science - IIT Roorkee",
-    "MSc Data Analytics - ISB Hyderabad",
-    "MSc Artificial Intelligence - IIIT Hyderabad",
-    "MA Economics - Delhi School of Economics",
-    "MTech Machine Learning - IIT Delhi",
-    "MBA Technology Management - NITIE Mumbai",
-    "MSc Quantum Computing - IISc Bangalore",
-    "MTech Robotics - IIT Bombay",
-    "MBA Digital Transformation - IIM Calcutta",
+    "Computer Science Engineering",
+    "Artificial Intelligence",
+    "Data Science",
+    "Business Administration (MBA)",
+    "Computer Science",
+    "Data Analytics",
+    "Artificial Intelligence & Machine Learning",
+    "Economics",
+    "Machine Learning",
+    "Technology Management",
+    "Quantum Computing",
+    "Robotics",
+    "Digital Transformation",
   ];
 
   const bachelorsCoursesUS = [
-    "BS Computer Science - Stanford University",
-    "BS Information Technology - MIT",
-    "BS Electrical Engineering - Caltech",
-    "BS Computer Engineering - Carnegie Mellon",
-    "BBA Business Administration - Harvard Business School",
-    "BS Data Science - UC Berkeley",
-    "BS Information Systems - University of Michigan",
-    "BA Economics - Princeton University",
-    "BS Artificial Intelligence - Georgia Tech",
-    "BS Cybersecurity - Purdue University",
-    "BS Software Engineering - University of Washington",
-    "BS Cognitive Science - UCLA",
+    "Computer Science",
+    "Information Technology",
+    "Electrical Engineering",
+    "Computer Engineering",
+    "Business Administration",
+    "Data Science",
+    "Information Systems",
+    "Economics",
+    "Artificial Intelligence",
+    "Cybersecurity",
+    "Software Engineering",
+    "Cognitive Science",
   ];
 
   const mastersCoursesUS = [
-    "MS Computer Science - Stanford University",
-    "MS Software Engineering - MIT",
-    "MS Data Science - Columbia University",
-    "MS Artificial Intelligence - Carnegie Mellon",
-    "MS Cybersecurity - Georgia Tech",
-    "MBA Business Administration - Harvard Business School",
-    "MS Information Technology - UC Berkeley",
-    "MS Machine Learning - University of Washington",
-    "MS Cloud Computing - University of Illinois",
-    "MBA Technology Management - Kellogg School of Management",
-    "MS Human-Computer Interaction - Cornell University",
-    "MS Robotics - University of Pennsylvania",
-    "MS Blockchain Technology - UC San Diego",
+    "Computer Science",
+    "Software Engineering",
+    "Data Science",
+    "Artificial Intelligence",
+    "Cybersecurity",
+    "Business Administration (MBA)",
+    "Information Technology",
+    "Machine Learning",
+    "Cloud Computing",
+    "Technology Management",
+    "Human-Computer Interaction",
+    "Robotics",
+    "Blockchain Technology",
   ];
 
   const [selectedCountry, setSelectedCountry] = useState("India");
@@ -180,35 +180,35 @@ const ProfessionalDevelopment = () => {
     {
       name: "Priya Sharma",
       role: "Software Engineer at Google",
-      course: "M.Tech in Computer Science, IIT Delhi",
+      course: "M.Tech in Computer Science",
       quote: "The guidance I received through AdeptAI helped me secure admission at my dream institute. Their counselors provided personalized assistance throughout the application process."
     },
     {
       name: "James Wilson",
       role: "Data Scientist at Amazon",
-      course: "MS in Data Science, Stanford University",
+      course: "MS in Data Science",
       quote: "AdeptAI's professional development program was instrumental in my career transition from finance to data science. Their course recommendations and application assistance were top-notch."
     },
     {
       name: "Ananya Patel",
       role: "Product Manager at Microsoft",
-      course: "MBA from IIM Bangalore",
+      course: "MBA",
       quote: "I was confused about which program would align with my career goals. AdeptAI's counselors helped me identify the perfect course and guided me through each step of the admission process."
     }
   ];
   
   const upcomingEvents = [
     {
-      title: "Virtual Open House: IIT Programs",
+      title: "Virtual Open House: Top Engineering Programs",
       date: "June 15, 2023",
       time: "10:00 AM IST",
-      description: "Join our virtual session to learn more about various engineering programs at IITs."
+      description: "Join our virtual session to learn more about various engineering programs at top universities."
     },
     {
-      title: "Stanford University Application Workshop",
+      title: "US Universities Application Workshop",
       date: "June 22, 2023",
       time: "7:00 PM IST",
-      description: "Learn tips and strategies for applying to Stanford University programs."
+      description: "Learn tips and strategies for applying to US university programs."
     },
     {
       title: "Career Pathways in Data Science",
@@ -583,6 +583,9 @@ const ProfessionalDevelopment = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-medium">Course of Interest</FormLabel>
+                          <FormDescription>
+                            Our counselors will recommend suitable colleges based on your course selection.
+                          </FormDescription>
                           <Select 
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -618,13 +621,13 @@ const ProfessionalDevelopment = () => {
                           <FormLabel className="font-medium">Your Educational Goals</FormLabel>
                           <FormControl>
                             <Textarea 
-                              placeholder="Please share your educational and career goals, and any specific queries you have..." 
+                              placeholder="Please share your educational and career goals, preferred study mode (remote, hybrid, or full-time), and any specific queries you have..." 
                               className="min-h-[100px] bg-white/80"
                               {...field} 
                             />
                           </FormControl>
                           <FormDescription>
-                            Share your aspirations, timeline, and any specific requirements
+                            Share your aspirations, timeline, study mode preference, and any specific requirements
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -678,8 +681,8 @@ const ProfessionalDevelopment = () => {
                         <Sparkles className="h-4 w-4 text-adept" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">Cross-Skill Guidance</p>
-                        <p className="text-xs text-muted-foreground">Identify complementary skills to enhance your primary expertise</p>
+                        <p className="text-sm font-medium">College Recommendations</p>
+                        <p className="text-xs text-muted-foreground">Expert recommendations for top institutes offering your preferred courses</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
@@ -822,15 +825,15 @@ const ProfessionalDevelopment = () => {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center">
                         <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Computer Science - IISc Bangalore
+                        Computer Science
                       </li>
                       <li className="flex items-center">
                         <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in AI and Machine Learning - IIT Delhi
+                        AI and Machine Learning
                       </li>
                       <li className="flex items-center">
                         <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Data Science - ISI Kolkata
+                        Data Science
                       </li>
                       <li className="text-adept text-xs mt-2 font-medium">+ 8 more programs</li>
                     </ul>
@@ -848,15 +851,15 @@ const ProfessionalDevelopment = () => {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center">
                         <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Computer Science - Stanford University
+                        Computer Science
                       </li>
                       <li className="flex items-center">
                         <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Robotics - MIT
+                        Robotics
                       </li>
                       <li className="flex items-center">
                         <span className="w-2 h-2 bg-adept rounded-full mr-2"></span>
-                        PhD in Quantum Computing - Caltech
+                        Quantum Computing
                       </li>
                       <li className="text-adept text-xs mt-2 font-medium">+ 10 more programs</li>
                     </ul>
