@@ -1,76 +1,98 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckIcon, CircleDollarSign, Package, PackageCheck, PackagePlus } from "lucide-react";
+import { CheckIcon, Package, PackageCheck, PackagePlus, ServerCog, Buildings } from "lucide-react";
 import PricingCard from "@/components/pricing/PricingCard";
 import PricingFaq from "@/components/pricing/PricingFaq";
 import ComparisonTable from "@/components/pricing/ComparisonTable";
-import PayPerUseCard from "@/components/pricing/PayPerUseCard";
+import ApiPricing from "@/components/pricing/ApiPricing";
 
 const Pricing = () => {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
 
   const pricingPlans = [
     {
-      name: "Free Trial",
-      price: billingPeriod === "monthly" ? "$0" : "$0",
-      description: "Try all features with limited usage",
+      name: "Free Tier",
+      price: "$0",
+      description: "Best for individuals exploring AI automation",
       features: [
-        { text: "All AI features included", included: true },
-        { text: "1 use per feature per day", included: true },
-        { text: "Basic support", included: true },
-        { text: "Limited analytics", included: true },
+        { text: "Limited AI workflows & automations", included: true },
+        { text: "Access to basic Agentic AI models", included: true },
+        { text: "Community support", included: true },
+        { text: "Basic documentation", included: true },
         { text: "No team collaboration", included: false },
         { text: "No custom integrations", included: false },
         { text: "No priority access", included: false },
       ],
       highlight: false,
-      cta: "Start Free Trial",
+      cta: "Start Free",
       planId: "free_trial",
       popular: false,
-      usageLimit: "1/day"
+      usageLimit: "Limited",
+      apiCalls: "100/month"
     },
     {
-      name: "Basic",
-      price: billingPeriod === "monthly" ? "$299" : "$2,990",
-      description: "For growing businesses and teams",
+      name: "Pro Plan",
+      price: billingPeriod === "monthly" ? "$49" : "$490",
+      description: "Best for startups & small businesses",
       features: [
-        { text: "All AI features included", included: true },
-        { text: "50 uses per feature per month", included: true },
-        { text: "Email & chat support", included: true },
-        { text: "Full analytics dashboard", included: true },
-        { text: "Team collaboration", included: true },
-        { text: "Basic integrations", included: true },
-        { text: "No priority access", included: false },
+        { text: "50 AI workflows/month", included: true },
+        { text: "5,000 API calls/month", included: true },
+        { text: "Standard integrations", included: true },
+        { text: "Email support", included: true },
+        { text: "Advanced analytics", included: true },
+        { text: "Team collaboration", included: false },
+        { text: "API access for custom integrations", included: false },
       ],
       highlight: false,
       cta: "Get Started",
-      planId: "basic",
+      planId: "pro",
       popular: false,
-      usageLimit: "50/month"
+      usageLimit: "50 workflows/month",
+      apiCalls: "5,000/month"
     },
     {
-      name: "Professional",
-      price: billingPeriod === "monthly" ? "$999" : "$9,990",
-      description: "For enterprises with advanced needs",
+      name: "Business Plan",
+      price: billingPeriod === "monthly" ? "$199" : "$1,990",
+      description: "Best for growing teams & mid-sized companies",
       features: [
-        { text: "All AI features included", included: true },
-        { text: "Unlimited usage", included: true },
-        { text: "Priority 24/7 support", included: true },
-        { text: "Advanced analytics & reporting", included: true },
-        { text: "Enterprise team management", included: true },
-        { text: "Custom integrations", included: true },
-        { text: "Priority feature access", included: true },
+        { text: "Unlimited AI workflows", included: true },
+        { text: "50,000 API calls/month", included: true },
+        { text: "Advanced automation & analytics", included: true },
+        { text: "Priority support", included: true },
+        { text: "Team collaboration", included: true },
+        { text: "API access for custom integrations", included: true },
+        { text: "Dedicated onboarding", included: true },
       ],
       highlight: true,
-      cta: "Contact Sales",
-      planId: "professional",
+      cta: "Choose Business",
+      planId: "business",
       popular: true,
-      usageLimit: "Unlimited"
+      usageLimit: "Unlimited",
+      apiCalls: "50,000/month"
+    },
+    {
+      name: "Enterprise",
+      price: "Custom",
+      description: "Best for large organizations with high-scale AI needs",
+      features: [
+        { text: "Fully customizable AI solutions", included: true },
+        { text: "Unlimited API calls & workflows", included: true },
+        { text: "Dedicated account manager & SLAs", included: true },
+        { text: "On-premise or private cloud deployment", included: true },
+        { text: "White-label options", included: true },
+        { text: "AI customization options", included: true },
+        { text: "Custom integrations", included: true },
+      ],
+      highlight: false,
+      cta: "Contact Sales",
+      planId: "enterprise",
+      popular: false,
+      usageLimit: "Unlimited",
+      apiCalls: "Unlimited"
     }
   ];
 
@@ -86,15 +108,15 @@ const Pricing = () => {
       <section className="py-20 px-6 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <Badge variant="outline" className="px-3 py-1 bg-white/50 dark:bg-gray-800/50 text-sm font-medium mb-2 animate-fade-in-up">
-            Transparent Pricing
+            Simple & Transparent Pricing
           </Badge>
           
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight animate-fade-in-up">
-            Choose the plan that's right for you
+            Choose the plan that fits your business
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            Access powerful AI features with flexible pricing options designed for businesses of all sizes
+            Powerful AI automation with flexible pricing options for businesses of all sizes
           </p>
           
           <div className="flex justify-center pt-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
@@ -116,23 +138,30 @@ const Pricing = () => {
         </div>
       </section>
       
-      {/* Pricing cards */}
+      {/* Main pricing cards */}
       <section className="pb-16 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {pricingPlans.map((plan, index) => (
             <div key={plan.planId} className="animate-fade-in-up" style={{ animationDelay: `${0.2 + index * 0.1}s` }}>
               <PricingCard 
                 {...plan} 
                 billingPeriod={billingPeriod}
-                savings={billingPeriod === "yearly" ? calculateSavings(plan.price) : undefined}
+                savings={billingPeriod === "yearly" && plan.price !== "$0" && plan.price !== "Custom" ? calculateSavings(plan.price) : undefined}
+                customButton={plan.planId === "enterprise" ? (
+                  <Link to="/contact" className="w-full">
+                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                      Contact Sales
+                    </Button>
+                  </Link>
+                ) : undefined}
               />
             </div>
           ))}
         </div>
         
-        {/* Pay-per-use option */}
+        {/* API Pay-As-You-Go option */}
         <div className="max-w-6xl mx-auto mt-12 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
-          <PayPerUseCard />
+          <ApiPricing />
         </div>
       </section>
       
@@ -154,30 +183,31 @@ const Pricing = () => {
       
       {/* Enterprise section */}
       <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-8 md:p-12 rounded-2xl shadow-sm animate-fade-in-up">
+        <div className="max-w-4xl mx-auto bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30 p-8 md:p-12 rounded-2xl shadow-sm animate-fade-in-up">
           <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-12">
             <div className="md:w-2/3 space-y-4">
-              <h2 className="text-2xl md:text-3xl font-bold">Need a custom solution?</h2>
+              <h2 className="text-2xl md:text-3xl font-bold">Need a custom enterprise solution?</h2>
               <p className="text-muted-foreground">
-                Our enterprise plan offers tailored solutions, dedicated support, and advanced features to meet your specific requirements.
+                Our enterprise plan offers tailored AI solutions, dedicated support, and advanced features to meet your specific requirements.
               </p>
               <ul className="space-y-2 pt-2">
                 {[
                   "Custom model training",
+                  "On-premise deployment options",
                   "Dedicated account manager",
                   "Service-level agreement (SLA)",
                   "Custom security requirements"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-2">
-                    <CheckIcon className="h-5 w-5 text-adept" />
+                    <CheckIcon className="h-5 w-5 text-indigo-600" />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="md:w-1/3 flex justify-center md:justify-end">
-              <Button size="lg" className="bg-adept hover:bg-adept-dark text-white px-6 py-6 h-auto text-lg">
-                Contact Sales
+              <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-6 h-auto text-lg">
+                Schedule a Demo
               </Button>
             </div>
           </div>
@@ -190,13 +220,16 @@ const Pricing = () => {
       {/* Final CTA section */}
       <section className="py-16 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-6 animate-fade-in-up">
-          <h2 className="text-3xl font-bold">Ready to transform your business?</h2>
+          <h2 className="text-3xl font-bold">Ready to transform your business with AI?</h2>
           <p className="text-xl text-muted-foreground">
-            Start with a free trial today. No credit card required.
+            Start with our free tier today. No credit card required.
           </p>
-          <div className="pt-4">
+          <div className="pt-4 flex flex-wrap justify-center gap-4">
             <Button size="lg" className="bg-adept hover:bg-adept-dark text-white px-8">
               Get Started For Free
+            </Button>
+            <Button size="lg" variant="outline">
+              Schedule a Demo
             </Button>
           </div>
         </div>

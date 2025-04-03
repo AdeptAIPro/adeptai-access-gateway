@@ -1,6 +1,6 @@
 
 import React from "react";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,10 @@ interface PricingCardProps {
   planId: string;
   popular?: boolean;
   usageLimit: string;
-  billingPeriod: "monthly" | "yearly";
+  apiCalls?: string;
+  billingPeriod?: "monthly" | "yearly";
   savings?: number;
+  customButton?: React.ReactNode;
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
@@ -35,8 +37,10 @@ const PricingCard: React.FC<PricingCardProps> = ({
   planId,
   popular = false,
   usageLimit,
-  billingPeriod,
-  savings
+  apiCalls,
+  billingPeriod = "monthly",
+  savings,
+  customButton
 }) => {
   return (
     <Card className={`w-full h-full transition-all duration-300 ${
@@ -54,7 +58,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         <div>
           <div className="flex items-end">
             <span className="text-3xl font-bold">{price}</span>
-            {price !== "$0" && (
+            {price !== "$0" && price !== "Custom" && (
               <span className="text-muted-foreground ml-1.5 text-sm">
                 /{billingPeriod === "monthly" ? "mo" : "yr"}
               </span>
@@ -69,17 +73,28 @@ const PricingCard: React.FC<PricingCardProps> = ({
         <CardDescription className="pt-1">{description}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <div className="bg-muted/50 p-3 rounded-lg text-center">
-          <span className="text-sm font-medium">
-            Usage Limit: <span className="text-adept">{usageLimit}</span>
-          </span>
-        </div>
+        {usageLimit && (
+          <div className="bg-muted/50 p-3 rounded-lg text-center">
+            <span className="text-sm font-medium">
+              Usage Limit: <span className="text-adept">{usageLimit}</span>
+            </span>
+          </div>
+        )}
+        {apiCalls && (
+          <div className="bg-muted/50 p-3 rounded-lg text-center mt-1">
+            <span className="text-sm font-medium">
+              API Calls: <span className="text-adept">{apiCalls}</span>
+            </span>
+          </div>
+        )}
         <ul className="space-y-2 text-sm">
           {features.map((feature, i) => (
             <li key={i} className="flex items-center gap-2">
-              <CheckIcon className={`h-4 w-4 flex-shrink-0 ${
-                feature.included ? "text-adept" : "text-muted-foreground/40"
-              }`} />
+              {feature.included ? (
+                <CheckIcon className="h-4 w-4 flex-shrink-0 text-adept" />
+              ) : (
+                <XIcon className="h-4 w-4 flex-shrink-0 text-muted-foreground/40" />
+              )}
               <span className={!feature.included ? "text-muted-foreground/70" : ""}>
                 {feature.text}
               </span>
@@ -88,20 +103,24 @@ const PricingCard: React.FC<PricingCardProps> = ({
         </ul>
       </CardContent>
       <CardFooter className="pt-4">
-        <Link to={planId === "free_trial" ? "/signup" : `/checkout?plan=${planId}&billing=${billingPeriod}`} className="w-full">
-          <Button 
-            className={`w-full ${
-              highlight 
-                ? "bg-adept hover:bg-adept-dark text-white" 
-                : planId === "free_trial" 
-                  ? "bg-white border-2 border-adept text-adept hover:bg-adept/5"
-                  : "bg-primary/90 hover:bg-primary"
-            }`}
-            variant={planId === "free_trial" ? "outline" : "default"}
-          >
-            {cta}
-          </Button>
-        </Link>
+        {customButton || (
+          <Link to={planId === "free_trial" ? "/signup" : `/checkout?plan=${planId}&billing=${billingPeriod}`} className="w-full">
+            <Button 
+              className={`w-full ${
+                highlight 
+                  ? "bg-adept hover:bg-adept-dark text-white" 
+                  : planId === "free_trial" 
+                    ? "bg-white border-2 border-adept text-adept hover:bg-adept/5"
+                    : planId === "enterprise"
+                    ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    : "bg-primary/90 hover:bg-primary"
+              }`}
+              variant={planId === "free_trial" ? "outline" : "default"}
+            >
+              {cta}
+            </Button>
+          </Link>
+        )}
       </CardFooter>
     </Card>
   );

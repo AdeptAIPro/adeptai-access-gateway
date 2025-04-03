@@ -40,25 +40,23 @@ const AppRoutes = () => {
       <Route path="/unauthorized" element={<Unauthorized />} />
       
       {/* Protected Routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-canceled" element={<PaymentCancelled />} />
-        <Route path="/talent" element={<Talent />} />
-        <Route path="/talent-matching" element={<TalentMatching />} />
-        <Route path="/talent-search" element={<TalentSearch />} />
-        <Route path="/agentic-ai" element={<AgenticAI />} />
-        <Route path="/integrations" element={<Integrations />} />
-        <Route path="/crm" element={<CRM />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/payroll" element={<Payroll />} />
-        <Route path="/professional-development" element={<ProfessionalDevelopment />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route path="/settings/*" element={<Settings />} />
-        <Route path="/compliance" element={<Compliance />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-      </Route>
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+      <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+      <Route path="/payment-canceled" element={<ProtectedRoute><PaymentCancelled /></ProtectedRoute>} />
+      <Route path="/talent" element={<ProtectedRoute><Talent /></ProtectedRoute>} />
+      <Route path="/talent-matching" element={<ProtectedRoute><TalentMatching /></ProtectedRoute>} />
+      <Route path="/talent-search" element={<ProtectedRoute><TalentSearch /></ProtectedRoute>} />
+      <Route path="/agentic-ai" element={<ProtectedRoute><AgenticAI /></ProtectedRoute>} />
+      <Route path="/integrations" element={<ProtectedRoute><Integrations /></ProtectedRoute>} />
+      <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+      <Route path="/payroll" element={<ProtectedRoute><Payroll /></ProtectedRoute>} />
+      <Route path="/professional-development" element={<ProtectedRoute><ProfessionalDevelopment /></ProtectedRoute>} />
+      <Route path="/skills" element={<ProtectedRoute><Skills /></ProtectedRoute>} />
+      <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/compliance" element={<ProtectedRoute><Compliance /></ProtectedRoute>} />
+      <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
       
       {/* Catch all route */}
       <Route path="*" element={<NotFound />} />

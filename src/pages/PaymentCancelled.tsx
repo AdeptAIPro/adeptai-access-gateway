@@ -30,8 +30,8 @@ const PaymentCancelled = () => {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Email:</span>
-              <a href="mailto:support@adeptaipro.com" className="text-sm text-adept hover:underline">
-                support@adeptaipro.com
+              <a href="mailto:payments@adeptaipro.com" className="text-sm text-adept hover:underline">
+                payments@adeptaipro.com
               </a>
             </div>
             

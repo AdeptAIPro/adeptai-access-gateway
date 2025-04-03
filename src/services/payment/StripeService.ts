@@ -17,7 +17,7 @@ export const createCheckoutSession = async (options: CheckoutOptions): Promise<{
         planId,
         billingPeriod,
         successUrl: successUrl || window.location.origin + '/payment-success',
-        cancelUrl: cancelUrl || window.location.origin + '/pricing'
+        cancelUrl: cancelUrl || window.location.origin + '/payment-canceled'
       }
     });
 
@@ -38,7 +38,7 @@ export const createPayPerUseCheckout = async (): Promise<{ url: string } | { err
     const { data, error } = await supabase.functions.invoke('create-pay-per-use', {
       body: {
         successUrl: window.location.origin + '/payment-success',
-        cancelUrl: window.location.origin + '/pricing'
+        cancelUrl: window.location.origin + '/payment-canceled'
       }
     });
 
@@ -50,6 +50,27 @@ export const createPayPerUseCheckout = async (): Promise<{ url: string } | { err
     return { url: data.url };
   } catch (error: any) {
     console.error("Pay-per-use service error:", error);
+    return { error: error.message || "An unexpected error occurred" };
+  }
+};
+
+export const createApiPayAsYouGoCheckout = async (): Promise<{ url: string } | { error: string }> => {
+  try {
+    const { data, error } = await supabase.functions.invoke('create-api-pay-as-you-go', {
+      body: {
+        successUrl: window.location.origin + '/payment-success',
+        cancelUrl: window.location.origin + '/payment-canceled'
+      }
+    });
+
+    if (error) {
+      console.error("API pay-as-you-go checkout error:", error);
+      return { error: error.message || "Failed to create API pay-as-you-go checkout" };
+    }
+
+    return { url: data.url };
+  } catch (error: any) {
+    console.error("API pay-as-you-go service error:", error);
     return { error: error.message || "An unexpected error occurred" };
   }
 };

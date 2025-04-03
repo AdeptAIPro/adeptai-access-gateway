@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2, CreditCard, Check } from "lucide-react";
-import { createCheckoutSession, createPayPerUseCheckout } from "@/services/payment/StripeService";
+import { createCheckoutSession, createPayPerUseCheckout, createApiPayAsYouGoCheckout } from "@/services/payment/StripeService";
 
 interface PlanDetails {
   id: string;
@@ -20,29 +20,41 @@ interface PlanDetails {
 const plans: Record<string, PlanDetails> = {
   free_trial: {
     id: "free_trial",
-    name: "Free Trial",
+    name: "Free Tier",
     price: 0,
     description: "All features with limited usage"
   },
-  basic: {
-    id: "basic",
-    name: "Basic Plan",
-    price: 299,
-    priceYearly: 2990,
-    description: "For growing businesses and teams"
+  pro: {
+    id: "pro",
+    name: "Pro Plan",
+    price: 49,
+    priceYearly: 490,
+    description: "Best for startups & small businesses"
   },
-  professional: {
-    id: "professional",
-    name: "Professional Plan",
-    price: 999,
-    priceYearly: 9990,
-    description: "For enterprises with advanced needs"
+  business: {
+    id: "business",
+    name: "Business Plan",
+    price: 199,
+    priceYearly: 1990,
+    description: "Best for growing teams & mid-sized companies"
+  },
+  enterprise: {
+    id: "enterprise",
+    name: "Enterprise Plan",
+    price: 0, // Custom pricing
+    description: "Custom solution for large organizations"
   },
   pay_per_use: {
     id: "pay_per_use",
     name: "Pay Per Use",
     price: 9,
     description: "Pay only for what you use"
+  },
+  api_pay_as_you_go: {
+    id: "api_pay_as_you_go",
+    name: "API Pay-As-You-Go",
+    price: 0.01,
+    description: "Pay only for API calls you make"
   }
 };
 
@@ -80,9 +92,9 @@ const Checkout = () => {
       setPlanId(paramPlanId);
       setPlan(plans[paramPlanId]);
     } else {
-      // Default to basic plan if none specified
-      setPlanId("basic");
-      setPlan(plans.basic);
+      // Default to pro plan if none specified
+      setPlanId("pro");
+      setPlan(plans.pro);
     }
   }, [location, navigate, user]);
   
@@ -102,9 +114,15 @@ const Checkout = () => {
       
       if (planId === "pay_per_use") {
         result = await createPayPerUseCheckout();
+      } else if (planId === "api_pay_as_you_go") {
+        result = await createApiPayAsYouGoCheckout();
       } else if (planId === "free_trial") {
         // Free trial doesn't need payment processing
         navigate("/dashboard");
+        return;
+      } else if (planId === "enterprise") {
+        // Enterprise plan requires contacting sales
+        navigate("/contact");
         return;
       } else {
         result = await createCheckoutSession({
@@ -145,7 +163,9 @@ const Checkout = () => {
 
   const getPrice = () => {
     if (planId === "free_trial") return "$0";
+    if (planId === "enterprise") return "Custom pricing";
     if (planId === "pay_per_use") return `$${plan.price} per use`;
+    if (planId === "api_pay_as_you_go") return `$0.01 per API call`;
     
     return billingPeriod === "monthly" 
       ? `$${plan.price}/month` 
@@ -169,6 +189,26 @@ const Checkout = () => {
     );
   };
 
+  // Get plan-specific features
+  const getPlanFeatures = () => {
+    switch(planId) {
+      case 'free_trial':
+        return ["Limited AI workflows & automations", "Access to basic Agentic AI models", "Community support", "Basic documentation"];
+      case 'pro':
+        return ["50 AI workflows per month", "5,000 API calls per month", "Standard integrations (Zapier, Slack, Notion)", "Email support", "Standard analytics"];
+      case 'business':
+        return ["Unlimited AI workflows", "50,000 API calls per month", "Advanced automation & analytics", "Priority support", "API access for custom integrations", "Advanced team collaboration tools"];
+      case 'enterprise':
+        return ["Fully customizable AI solutions", "Unlimited API calls & workflows", "Dedicated account manager & SLAs", "On-premise deployment options", "White-label options", "Custom security requirements"];
+      case 'pay_per_use':
+        return ["Pay only for the AI features you use", "No monthly commitment", "Access to all AI features", "Standard support", "$9 per transaction"];
+      case 'api_pay_as_you_go':
+        return ["Pay only for API calls you make", "Volume discounts available", "No monthly subscription", "Complete API documentation", "Usage-based billing"];
+      default:
+        return ["Access to AI automation features", "Standard support", "Regular updates"];
+    }
+  };
+
   return (
     <div className="min-h-screen bg-muted/30 py-12 px-6">
       <div className="max-w-4xl mx-auto">
@@ -188,7 +228,7 @@ const Checkout = () => {
                   Secure Checkout
                 </CardTitle>
                 <CardDescription>
-                  You'll be redirected to our secure payment processor
+                  {planId === 'enterprise' ? 'Contact our sales team to customize your solution' : 'You'll be redirected to our secure payment processor'}
                 </CardDescription>
               </CardHeader>
               
@@ -198,7 +238,7 @@ const Checkout = () => {
                     <span className="font-medium">Selected Plan</span>
                     <span className="text-adept font-medium">{plan.name}</span>
                   </div>
-                  {planId !== "free_trial" && planId !== "pay_per_use" && (
+                  {planId !== "free_trial" && planId !== "pay_per_use" && planId !== "api_pay_as_you_go" && planId !== "enterprise" && (
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">Billing Period</span>
                       <span className="capitalize">{billingPeriod}</span>
@@ -213,20 +253,7 @@ const Checkout = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">What's included:</h3>
                   <ul className="space-y-2">
-                    {[
-                      planId === "free_trial" 
-                        ? "All features with 1 use per day" 
-                        : planId === "pay_per_use"
-                        ? "Pay $9 for each use of any AI feature"
-                        : planId === "basic"
-                        ? "50 uses per feature per month"
-                        : "Unlimited usage of all features",
-                      "Secure data processing",
-                      "Regular updates and new features",
-                      planId === "professional" ? "Priority customer support" : "Standard customer support",
-                      planId === "professional" ? "Advanced team collaboration tools" : null,
-                      planId === "professional" ? "Custom integrations" : null
-                    ].filter(Boolean).map((feature, index) => (
+                    {getPlanFeatures().map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                         <span>{feature}</span>
@@ -239,7 +266,13 @@ const Checkout = () => {
               <CardFooter className="flex-col space-y-4">
                 <Button 
                   onClick={handleCheckout}
-                  className="w-full bg-adept hover:bg-adept-dark text-white" 
+                  className={`w-full ${
+                    planId === "enterprise" 
+                      ? "bg-indigo-600 hover:bg-indigo-700" 
+                      : planId === "api_pay_as_you_go"
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-adept hover:bg-adept-dark"
+                  } text-white`}
                   disabled={isLoading}
                   size="lg"
                 >
@@ -251,7 +284,9 @@ const Checkout = () => {
                   ) : (
                     planId === "free_trial" 
                       ? "Start Free Trial" 
-                      : `Proceed to ${planId === "pay_per_use" ? "Payment" : "Checkout"}`
+                      : planId === "enterprise"
+                      ? "Contact Sales"
+                      : `Proceed to ${planId === "pay_per_use" || planId === "api_pay_as_you_go" ? "Payment" : "Checkout"}`
                   )}
                 </Button>
                 
@@ -282,7 +317,7 @@ const Checkout = () => {
                   <span>{getPrice()}</span>
                 </div>
                 
-                {planId !== "free_trial" && planId !== "pay_per_use" && (
+                {planId !== "free_trial" && planId !== "pay_per_use" && planId !== "api_pay_as_you_go" && planId !== "enterprise" && (
                   <div className="text-xs text-muted-foreground">
                     Billed {billingPeriod === "monthly" ? "monthly" : "annually"}
                   </div>
@@ -296,11 +331,11 @@ const Checkout = () => {
                 </div>
                 
                 <div className="text-xs text-muted-foreground space-y-2 pt-2">
-                  {planId !== "free_trial" && planId !== "pay_per_use" && (
+                  {planId !== "free_trial" && planId !== "pay_per_use" && planId !== "api_pay_as_you_go" && planId !== "enterprise" && (
                     <p>Your subscription will renew automatically.</p>
                   )}
                   <p>You can cancel anytime from your account settings.</p>
-                  <p>Need help? Contact <a href="mailto:support@adeptaipro.com" className="text-adept hover:underline">support@adeptaipro.com</a></p>
+                  <p>Need help? Contact <a href="mailto:payments@adeptaipro.com" className="text-adept hover:underline">payments@adeptaipro.com</a></p>
                 </div>
               </CardContent>
             </Card>
