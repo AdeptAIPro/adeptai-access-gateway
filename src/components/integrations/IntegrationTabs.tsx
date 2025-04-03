@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { checkSubscription } from "@/services/payment/StripeService";
 import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 interface IntegrationTabsProps {
   activeCategory: string;
@@ -25,6 +26,8 @@ interface IntegrationTabsProps {
   filteredIntegrations: IntegrationItem[];
   onToggleConnection: (id: string) => void;
   viewMode: "grid" | "list";
+  isConnecting: boolean;
+  categoryCounts: Record<string, number>;
 }
 
 const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
@@ -34,21 +37,29 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
   filteredIntegrations,
   onToggleConnection,
   viewMode,
+  isConnecting,
+  categoryCounts,
 }) => {
   const { user } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = React.useState(false);
   const [isSubscriptionDialogOpen, setIsSubscriptionDialogOpen] = React.useState(false);
   const [selectedIntegrationId, setSelectedIntegrationId] = React.useState<string | null>(null);
   const [isChecking, setIsChecking] = React.useState(false);
+  const [apiError, setApiError] = React.useState<string | null>(null);
+  const [selectedIntegration, setSelectedIntegration] = React.useState<IntegrationItem | null>(null);
 
   const handleIntegrationConnect = async (id: string) => {
+    setSelectedIntegrationId(id);
+    
     // If user is not authenticated, show auth dialog
     if (!user) {
-      setSelectedIntegrationId(id);
       setIsAuthDialogOpen(true);
       return;
     }
 
+    // Clear any previous errors
+    setApiError(null);
+    
     // If user is authenticated, check subscription
     setIsChecking(true);
     try {
@@ -56,11 +67,12 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
       setIsChecking(false);
       
       if ('error' in subscriptionResult) {
+        setApiError("Failed to verify subscription status. Please try again.");
         toast.error("Failed to check subscription status");
         return;
       }
 
-      // Skip subscription check for free integrations (you might want to define which ones are free)
+      // Skip subscription check for free integrations
       const integration = filteredIntegrations.find(item => item.id === id);
       const isFreeIntegration = integration?.category === "Free Job Posting";
 
@@ -69,27 +81,52 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
         onToggleConnection(id);
       } else {
         // User doesn't have an active subscription
-        setSelectedIntegrationId(id);
         setIsSubscriptionDialogOpen(true);
       }
     } catch (error) {
       setIsChecking(false);
       console.error("Error checking subscription:", error);
+      setApiError("An unexpected error occurred. Please try again later.");
       toast.error("Failed to check subscription status");
     }
+  };
+  
+  const handleViewDetails = (integration: IntegrationItem) => {
+    setSelectedIntegration(integration);
+    // You can handle this directly here or pass up through props if needed
   };
 
   return (
     <>
+      {apiError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md mb-4 flex items-center">
+          <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+          {apiError}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="ml-auto text-red-700" 
+            onClick={() => setApiError(null)}
+          >
+            Dismiss
+          </Button>
+        </div>
+      )}
+
       <Tabs defaultValue={activeCategory} onValueChange={setActiveCategory} className="w-full">
-        <TabsList className="mb-6 flex flex-wrap gap-2">
+        <TabsList className="mb-6 flex flex-wrap gap-2 h-auto py-2">
           {categories.map((category) => (
             <TabsTrigger
               key={category}
               value={category}
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white relative group"
             >
               {category}
+              {categoryCounts[category] > 0 && (
+                <span className="ml-2 px-1.5 py-0.5 text-xs bg-gray-100 group-data-[state=active]:bg-blue-500 group-data-[state=active]:text-white rounded-full">
+                  {categoryCounts[category] || 0}
+                </span>
+              )}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -106,6 +143,8 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
                   key={integration.id}
                   integration={integration}
                   onToggleConnection={handleIntegrationConnect}
+                  isConnecting={isConnecting && selectedIntegrationId === integration.id}
+                  onViewDetails={handleViewDetails}
                 />
               ))}
             </div>
@@ -116,6 +155,8 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
                   key={integration.id}
                   integration={integration}
                   onToggleConnection={handleIntegrationConnect}
+                  isConnecting={isConnecting && selectedIntegrationId === integration.id}
+                  onViewDetails={handleViewDetails}
                 />
               ))}
             </div>
@@ -163,6 +204,21 @@ const IntegrationTabs: React.FC<IntegrationTabsProps> = ({
               <Button>View Plans</Button>
             </Link>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Loading Dialog */}
+      <Dialog open={isChecking}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Checking subscription status</DialogTitle>
+            <DialogDescription>
+              Please wait while we verify your account permissions...
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center p-6">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

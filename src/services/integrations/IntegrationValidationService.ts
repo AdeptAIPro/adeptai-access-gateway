@@ -1,5 +1,6 @@
 
 import { IntegrationItem } from "@/types/integration";
+import { PricingPlan } from "@/types/pricing";
 
 type PlanType = "free_trial" | "pro" | "business" | "enterprise" | null;
 
@@ -84,4 +85,56 @@ export const getRestrictedCategories = (userPlan: PlanType): string[] => {
   
   // Business and enterprise have access to everything
   return [];
+};
+
+/**
+ * Get the most suitable plan for an integration
+ * Returns the plan name and whether it's included with that plan
+ */
+export const getRequiredPlanForIntegration = (integration: IntegrationItem): { 
+  planName: string; 
+  isIncluded: boolean;
+} => {
+  switch (integration.category) {
+    case "Free Job Posting":
+      return { planName: "Free", isIncluded: true };
+    case "Productivity":
+      return { planName: "Free Trial", isIncluded: true };
+    case "Social":
+    case "CRM & HRMS":
+      return { planName: "Pro", isIncluded: true };
+    case "Compliance Boards":
+    case "Background Boards":  
+    case "Onboarding Boards":
+      return { planName: "Enterprise", isIncluded: true };
+    default:
+      return { planName: "Business", isIncluded: true };
+  }
+};
+
+/**
+ * Determine if the integration needs an external authentication/authorization
+ */
+export const needsExternalAuth = (integration: IntegrationItem): boolean => {
+  // This would be based on the actual integration implementation
+  // For example, OAuth-based integrations would return true
+  const oAuthBasedIntegrations = ["LinkedIn", "Twitter", "Google", "Microsoft"];
+  
+  return oAuthBasedIntegrations.some(name => 
+    integration.name.toLowerCase().includes(name.toLowerCase())
+  );
+};
+
+/**
+ * Verify if an integration is configured correctly
+ * In a real app, this would check if the integration has all
+ * necessary configuration parameters
+ */
+export const isIntegrationConfiguredCorrectly = (
+  integration: IntegrationItem
+): boolean => {
+  // This is just a placeholder implementation
+  // In a real app, you would check if the integration has all
+  // necessary API keys, endpoints, etc.
+  return integration.connected;
 };
