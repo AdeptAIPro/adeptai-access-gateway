@@ -1,13 +1,18 @@
 
-import React from "react";
-import { Link as LinkIcon, X as XIcon, Lock, Info } from "lucide-react";
+import React, { useState } from "react";
+import { Link as LinkIcon, X as XIcon, Lock, Info, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IntegrationItem } from "@/types/integration";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { isIntegrationAvailableForPlan } from "@/services/integrations/IntegrationValidationService";
+import { 
+  isIntegrationAvailableForPlan, 
+  getPlanRequirementDisplay,
+  getIntegrationConfigurationError
+} from "@/services/integrations/IntegrationValidationService";
+import { toast } from "sonner";
 
 interface IntegrationCardProps {
   integration: IntegrationItem;
@@ -25,18 +30,27 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
   const { user } = useAuth();
   const userPlan = user?.plan as "free_trial" | "pro" | "business" | "enterprise" | null;
   const isAvailable = isIntegrationAvailableForPlan(integration, userPlan);
+  const [hasError, setHasError] = useState(false);
+  
+  // Handle connection error
+  const handleConnectionError = () => {
+    setHasError(true);
+    toast.error("Failed to connect to integration");
+    setTimeout(() => setHasError(false), 5000); // Reset error state after 5 seconds
+  };
 
-  const getPlanRequirement = () => {
-    if (integration.category === "Free Job Posting") {
-      return "Free";
-    } else if (integration.category === "Productivity") {
-      return "Free Trial+";
-    } else if (["Social", "CRM & HRMS"].includes(integration.category)) {
-      return "Pro+";
-    } else {
-      return "Business+";
+  // Safe wrapper for connection toggle
+  const safeToggleConnection = () => {
+    try {
+      onToggleConnection(integration.id);
+    } catch (error) {
+      console.error("Error toggling connection:", error);
+      handleConnectionError();
     }
   };
+
+  // Get configuration error if any
+  const configError = integration.connected ? getIntegrationConfigurationError(integration) : null;
 
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all border-gray-200 dark:border-gray-700">
@@ -47,11 +61,25 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
         <div className="flex-1">
           <CardTitle className="text-lg flex items-center gap-2">
             {integration.name}
-            {integration.connected && 
+            {integration.connected && !configError && 
               <Badge variant="success" className="text-xs ml-2">
                 Connected
               </Badge>
             }
+            {integration.connected && configError && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="destructive" className="text-xs ml-2 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> Error
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{configError}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </CardTitle>
           <CardDescription className="text-xs flex items-center gap-2">
             <Badge variant="outline" className="text-xs">
@@ -59,7 +87,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
             </Badge>
             {!isAvailable && !integration.connected && (
               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                {getPlanRequirement()}
+                {getPlanRequirementDisplay(integration)}
               </Badge>
             )}
           </CardDescription>
@@ -80,12 +108,21 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
             </Button>
           )}
           
-          {/* Connection button logic based on availability and connection status */}
-          {integration.connected ? (
+          {/* Connection button logic enhanced with error handling */}
+          {hasError ? (
+            <Button 
+              variant="destructive" 
+              size="sm"
+              className="flex-grow animate-pulse"
+              disabled
+            >
+              <AlertCircle className="mr-2 h-4 w-4" /> Connection Error
+            </Button>
+          ) : integration.connected ? (
             <Button 
               variant="destructive"
               className="flex-grow"
-              onClick={() => onToggleConnection(integration.id)}
+              onClick={safeToggleConnection}
               disabled={isConnecting}
             >
               {isConnecting ? (
@@ -98,7 +135,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
             <Button 
               variant="default"
               className="flex-grow"
-              onClick={() => onToggleConnection(integration.id)}
+              onClick={safeToggleConnection}
               disabled={isConnecting}
             >
               {isConnecting ? (
@@ -114,7 +151,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                   <Button 
                     variant="outline" 
                     className="flex-grow opacity-80"
-                    onClick={() => onToggleConnection(integration.id)}
+                    onClick={safeToggleConnection}
                     disabled={isConnecting}
                   >
                     {isConnecting ? (
@@ -125,7 +162,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>This integration requires a {getPlanRequirement()} plan or higher</p>
+                  <p>This integration requires a {getPlanRequirementDisplay(integration)} plan</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

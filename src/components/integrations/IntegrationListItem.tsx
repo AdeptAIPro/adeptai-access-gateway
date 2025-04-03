@@ -1,12 +1,16 @@
 
-import React from "react";
-import { Link as LinkIcon, X as XIcon, Lock, Info } from "lucide-react";
+import React, { useState } from "react";
+import { Link as LinkIcon, X as XIcon, Lock, Info, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IntegrationItem } from "@/types/integration";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { isIntegrationAvailableForPlan } from "@/services/integrations/IntegrationValidationService";
+import { 
+  isIntegrationAvailableForPlan, 
+  getPlanRequirementDisplay,
+  getIntegrationConfigurationError
+} from "@/services/integrations/IntegrationValidationService";
 
 interface IntegrationListItemProps {
   integration: IntegrationItem;
@@ -24,18 +28,26 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
   const { user } = useAuth();
   const userPlan = user?.plan as "free_trial" | "pro" | "business" | "enterprise" | null;
   const isAvailable = isIntegrationAvailableForPlan(integration, userPlan);
+  const [hasError, setHasError] = useState(false);
+  
+  // Handle connection error
+  const handleConnectionError = () => {
+    setHasError(true);
+    setTimeout(() => setHasError(false), 5000); // Reset error state after 5 seconds
+  };
 
-  const getPlanRequirement = () => {
-    if (integration.category === "Free Job Posting") {
-      return "Free";
-    } else if (integration.category === "Productivity") {
-      return "Free Trial+";
-    } else if (["Social", "CRM & HRMS"].includes(integration.category)) {
-      return "Pro+";
-    } else {
-      return "Business+";
+  // Safe wrapper for connection toggle
+  const safeToggleConnection = () => {
+    try {
+      onToggleConnection(integration.id);
+    } catch (error) {
+      console.error("Error toggling connection:", error);
+      handleConnectionError();
     }
   };
+
+  // Get configuration error if any
+  const configError = integration.connected ? getIntegrationConfigurationError(integration) : null;
 
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-all bg-white dark:bg-gray-800">
@@ -46,10 +58,24 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-medium text-base">{integration.name}</h3>
-            {integration.connected && (
+            {integration.connected && !configError && (
               <Badge variant="success" className="text-xs">
                 Connected
               </Badge>
+            )}
+            {integration.connected && configError && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="destructive" className="text-xs flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> Configuration Error
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{configError}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
           <p className="text-sm text-muted-foreground line-clamp-1 max-w-md">{integration.description}</p>
@@ -63,7 +89,7 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
           
           {!isAvailable && !integration.connected && (
             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-              {getPlanRequirement()}
+              {getPlanRequirementDisplay(integration)}
             </Badge>
           )}
         </div>
@@ -80,11 +106,21 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
             </Button>
           )}
           
-          {integration.connected ? (
+          {/* Connection button logic with enhanced error handling */}
+          {hasError ? (
             <Button 
               variant="destructive" 
               size="sm"
-              onClick={() => onToggleConnection(integration.id)}
+              className="min-w-[120px] animate-pulse"
+              disabled
+            >
+              <AlertCircle className="mr-2 h-4 w-4" /> Connection Error
+            </Button>
+          ) : integration.connected ? (
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={safeToggleConnection}
               className="min-w-[120px]"
               disabled={isConnecting}
             >
@@ -98,7 +134,7 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
             <Button 
               variant="default"
               size="sm"
-              onClick={() => onToggleConnection(integration.id)}
+              onClick={safeToggleConnection}
               className="min-w-[120px]"
               disabled={isConnecting}
             >
@@ -116,7 +152,7 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
                     variant="outline" 
                     size="sm"
                     className="min-w-[120px] opacity-80"
-                    onClick={() => onToggleConnection(integration.id)}
+                    onClick={safeToggleConnection}
                     disabled={isConnecting}
                   >
                     {isConnecting ? (
@@ -127,7 +163,7 @@ const IntegrationListItem: React.FC<IntegrationListItemProps> = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>This integration requires a {getPlanRequirement()} plan or higher</p>
+                  <p>This integration requires a {getPlanRequirementDisplay(integration)} plan</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
