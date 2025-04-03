@@ -48,7 +48,7 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration, onToggle
           </CardTitle>
           <CardDescription className="text-xs flex items-center gap-2">
             {integration.category}
-            {!isAvailable && (
+            {!isAvailable && !integration.connected && (
               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
                 {getPlanRequirement()}
               </Badge>
@@ -59,21 +59,22 @@ const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration, onToggle
       <CardContent className="pt-4">
         <p className="text-sm text-muted-foreground mb-4 min-h-[60px]">{integration.description}</p>
         
-        {isAvailable ? (
+        {/* Only show connection button logic based on both availability and connection status */}
+        {integration.connected ? (
           <Button 
-            variant={integration.connected ? "destructive" : "default"}
+            variant="destructive"
             className="w-full"
             onClick={() => onToggleConnection(integration.id)}
           >
-            {integration.connected ? (
-              <>
-                <XIcon className="mr-2 h-4 w-4" /> Disconnect
-              </>
-            ) : (
-              <>
-                <LinkIcon className="mr-2 h-4 w-4" /> Connect
-              </>
-            )}
+            <XIcon className="mr-2 h-4 w-4" /> Disconnect
+          </Button>
+        ) : isAvailable ? (
+          <Button 
+            variant="default"
+            className="w-full"
+            onClick={() => onToggleConnection(integration.id)}
+          >
+            <LinkIcon className="mr-2 h-4 w-4" /> Connect
           </Button>
         ) : (
           <TooltipProvider>
