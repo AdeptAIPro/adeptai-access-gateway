@@ -11,7 +11,7 @@ interface IntegrationCardProps {
   onToggleConnection: (id: string) => void;
 }
 
-const IntegrationCardProps: React.FC<IntegrationCardProps> = ({ integration, onToggleConnection }) => {
+const IntegrationCard: React.FC<IntegrationCardProps> = ({ integration, onToggleConnection }) => {
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all border-gray-200 dark:border-gray-700">
       <CardHeader className="flex flex-row items-center gap-4 pb-2 bg-gray-50/50 dark:bg-gray-800/50">
@@ -52,4 +52,4 @@ const IntegrationCardProps: React.FC<IntegrationCardProps> = ({ integration, onT
   );
 };
 
-export default IntegrationCardProps;
+export default IntegrationCard;
