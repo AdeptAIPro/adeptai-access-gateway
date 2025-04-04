@@ -28,6 +28,7 @@ import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Payroll from "./pages/Payroll";
 import AgenticAI from "./pages/AgenticAI";
+import AffiliateMarketplace from "./pages/AffiliateMarketplace";
 
 function App() {
   // Create a stable QueryClient instance using useState
@@ -45,6 +46,9 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
+              {/* Add Marketplace routes */}
+              <Route path="/marketplace" element={<AffiliateMarketplace />} />
+              <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute requiredPermission="viewDashboard">
                   <Dashboard />

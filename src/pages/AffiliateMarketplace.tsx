@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { ExternalLink, Search, Tag, ArrowRight, ThumbsUp } from "lucide-react";
@@ -10,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Types for affiliate products
+// Types for marketplace products
 interface AffiliateProduct {
   id: string;
   name: string;
@@ -257,7 +256,7 @@ const AffiliateMarketplace: React.FC = () => {
         </Tabs>
       </div>
       
-      {/* Become an Affiliate Section */}
+      {/* Become a Partner Section */}
       <div className="bg-purple-50 py-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Want to List Your Product Here?</h2>
