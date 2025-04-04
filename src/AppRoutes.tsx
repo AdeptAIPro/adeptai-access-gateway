@@ -27,6 +27,7 @@ import Unauthorized from "@/pages/Unauthorized";
 import Integrations from "@/pages/Integrations";
 import Onboarding from "@/pages/Onboarding";
 import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
+import AffiliateMarketplace from "@/pages/AffiliateMarketplace";
 
 // Components
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -39,6 +40,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={<ProtectedRoute requiredPermission="viewDashboard"><Dashboard /></ProtectedRoute>} />
