@@ -112,7 +112,7 @@ const AffiliateMarketplace: React.FC = () => {
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            AdeptAI Affiliate Marketplace
+            AdeptAI Marketplace
           </h1>
           <p className="text-xl max-w-3xl mx-auto mb-8">
             Discover premium AI and SaaS tools that boost your productivity and transform your workflow.
@@ -262,7 +262,7 @@ const AffiliateMarketplace: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Want to List Your Product Here?</h2>
           <p className="text-xl max-w-3xl mx-auto mb-8">
-            If you have a SaaS or AI product that would be valuable to our audience, get in touch to discuss affiliate partnership opportunities.
+            If you have a SaaS or AI product that would be valuable to our audience, get in touch to discuss partnership opportunities.
           </p>
           <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
             <Link to="/contact" className="flex items-center">

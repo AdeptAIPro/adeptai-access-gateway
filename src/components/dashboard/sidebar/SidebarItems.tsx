@@ -154,7 +154,6 @@ const SidebarItems = () => {
         )}
       </NavLink>
       
-      {/* Renamed from "Affiliate Marketplace" to "Marketplace" */}
       <NavLink to="/marketplace">
         {({ isActive }) => (
           <Button
