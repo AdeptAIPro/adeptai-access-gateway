@@ -154,15 +154,15 @@ const SidebarItems = () => {
         )}
       </NavLink>
       
-      {/* New link to Affiliate Marketplace */}
-      <NavLink to="/affiliate-marketplace">
+      {/* Renamed from "Affiliate Marketplace" to "Marketplace" */}
+      <NavLink to="/marketplace">
         {({ isActive }) => (
           <Button
             variant={isActive ? "default" : "ghost"}
             className="w-full justify-start"
           >
             <Store className="mr-2 h-4 w-4" />
-            Affiliate Marketplace
+            Marketplace
           </Button>
         )}
       </NavLink>

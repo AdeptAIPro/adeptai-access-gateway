@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
@@ -40,6 +39,11 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      
+      {/* Updated route path to /marketplace */}
+      <Route path="/marketplace" element={<AffiliateMarketplace />} />
+      
+      {/* Keep the old route temporarily for backwards compatibility */}
       <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
       
       {/* Protected Routes */}
