@@ -52,9 +52,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, featured }) => {
             </Badge>
           ))}
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-green-600 font-semibold text-sm">{product.commission} Commission</span>
-        </div>
         <a 
           href={product.affiliateUrl} 
           target="_blank" 

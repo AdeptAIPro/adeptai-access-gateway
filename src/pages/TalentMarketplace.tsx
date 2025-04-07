@@ -6,9 +6,11 @@ import TalentMarketplaceHero from "@/components/talent-marketplace/TalentMarketp
 import JobListings from "@/components/talent-marketplace/JobListings";
 import ResumeUpload from "@/components/talent-marketplace/ResumeUpload";
 import TalentMarketplaceTabs from "@/components/talent-marketplace/TalentMarketplaceTabs";
+import MarketInsights from "@/components/talent-marketplace/MarketInsights";
+import SavedJobs from "@/components/talent-marketplace/SavedJobs";
 
 const TalentMarketplace: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"jobs" | "upload">("jobs");
+  const [activeTab, setActiveTab] = useState<"jobs" | "upload" | "insights" | "saved">("jobs");
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
 
@@ -28,10 +30,20 @@ const TalentMarketplace: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-12 flex-1">
         <TalentMarketplaceTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         
-        {activeTab === "jobs" ? (
+        {activeTab === "jobs" && (
           <JobListings searchQuery={searchQuery} location={location} />
-        ) : (
+        )}
+        
+        {activeTab === "upload" && (
           <ResumeUpload />
+        )}
+        
+        {activeTab === "insights" && (
+          <MarketInsights />
+        )}
+        
+        {activeTab === "saved" && (
+          <SavedJobs />
         )}
       </div>
       
