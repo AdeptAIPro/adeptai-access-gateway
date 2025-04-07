@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
@@ -27,7 +26,11 @@ import Unauthorized from "@/pages/Unauthorized";
 import Integrations from "@/pages/Integrations";
 import Onboarding from "@/pages/Onboarding";
 import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
-import AffiliateMarketplace from "@/pages/AffiliateMarketplace";
+
+// Marketplace Pages
+import Marketplace from "@/pages/Marketplace";
+import TalentMarketplace from "@/pages/TalentMarketplace";
+import SoftwareMarketplace from "@/pages/SoftwareMarketplace";
 
 // Components
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -41,11 +44,13 @@ const AppRoutes = () => {
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
       
-      {/* Primary marketplace route */}
-      <Route path="/marketplace" element={<AffiliateMarketplace />} />
+      {/* Marketplace Routes */}
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/marketplace/talent" element={<TalentMarketplace />} />
+      <Route path="/marketplace/software" element={<SoftwareMarketplace />} />
       
       {/* Keep the old route temporarily for backwards compatibility */}
-      <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
+      <Route path="/affiliate-marketplace" element={<SoftwareMarketplace />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={<ProtectedRoute requiredPermission="viewDashboard"><Dashboard /></ProtectedRoute>} />
