@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   title: string;
@@ -9,6 +8,7 @@ export interface Job {
   postedDate: string;
   salaryRange?: string;
   tags?: string[];
+  experience?: number | string;
 }
 
 export const mockJobs: Job[] = [
@@ -21,7 +21,8 @@ export const mockJobs: Job[] = [
     jobType: "Full-time",
     postedDate: "2 days ago",
     salaryRange: "$120,000 - $150,000",
-    tags: ["React", "TypeScript", "Frontend", "JavaScript", "UI/UX"]
+    tags: ["React", "TypeScript", "Frontend", "JavaScript", "UI/UX"],
+    experience: 5
   },
   {
     id: "job-2",
@@ -32,7 +33,8 @@ export const mockJobs: Job[] = [
     jobType: "Full-time",
     postedDate: "1 week ago",
     salaryRange: "$130,000 - $160,000",
-    tags: ["AWS", "Kubernetes", "CI/CD", "Infrastructure", "Docker"]
+    tags: ["AWS", "Kubernetes", "CI/CD", "Infrastructure", "Docker"],
+    experience: 3
   },
   {
     id: "job-3",
