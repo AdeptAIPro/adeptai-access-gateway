@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +28,9 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Payroll from "./pages/Payroll";
 import AgenticAI from "./pages/AgenticAI";
 import AffiliateMarketplace from "./pages/AffiliateMarketplace";
+import Marketplace from "./pages/Marketplace";
+import TalentMarketplace from "./pages/TalentMarketplace";
+import SoftwareMarketplace from "./pages/SoftwareMarketplace";
 
 function App() {
   // Create a stable QueryClient instance using useState
@@ -46,14 +48,19 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
-              {/* Add Marketplace routes */}
-              <Route path="/marketplace" element={<AffiliateMarketplace />} />
+              
+              {/* Marketplace routes */}
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/marketplace/talent" element={<TalentMarketplace />} />
+              <Route path="/marketplace/software" element={<SoftwareMarketplace />} />
               <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
+              
               <Route path="/dashboard" element={
                 <ProtectedRoute requiredPermission="viewDashboard">
                   <Dashboard />
                 </ProtectedRoute>
               } />
+              
               <Route path="/dashboard/integrations" element={
                 <ProtectedRoute requiredPermission="viewDashboard">
                   <Integrations />
@@ -117,7 +124,7 @@ function App() {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/professional-development" element={<ProfessionalDevelopment />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
