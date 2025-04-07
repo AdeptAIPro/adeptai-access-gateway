@@ -31,6 +31,7 @@ import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
 import Marketplace from "@/pages/Marketplace";
 import TalentMarketplace from "@/pages/TalentMarketplace";
 import SoftwareMarketplace from "@/pages/SoftwareMarketplace";
+import AffiliateMarketplace from "@/pages/AffiliateMarketplace";
 
 // Components
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -50,7 +51,7 @@ const AppRoutes = () => {
       <Route path="/marketplace/software" element={<SoftwareMarketplace />} />
       
       {/* Keep the old route temporarily for backwards compatibility */}
-      <Route path="/affiliate-marketplace" element={<SoftwareMarketplace />} />
+      <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={<ProtectedRoute requiredPermission="viewDashboard"><Dashboard /></ProtectedRoute>} />
