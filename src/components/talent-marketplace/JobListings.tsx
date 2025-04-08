@@ -33,7 +33,7 @@ const JobListings: React.FC<JobListingsProps> = ({ searchQuery, location }) => {
       jobType === "all" || 
       job.jobType.toLowerCase() === jobType.toLowerCase();
     
-    // Handle both number and string experience values
+    // Handle both number and string experience values, or undefined
     let matchesExperience = true;
     if (job.experience !== undefined) {
       const jobExp = typeof job.experience === 'number' ? job.experience : 0;
