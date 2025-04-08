@@ -16,7 +16,8 @@ import {
   GraduationCap,
   Layers,
   FileCheck,
-  Store
+  Store,
+  Search
 } from "lucide-react";
 
 const SidebarItems = () => {
@@ -42,6 +43,30 @@ const SidebarItems = () => {
           >
             <Users className="mr-2 h-4 w-4" />
             Talent
+          </Button>
+        )}
+      </NavLink>
+      
+      <NavLink to="/talent-search">
+        {({ isActive }) => (
+          <Button
+            variant={isActive ? "default" : "ghost"}
+            className="w-full justify-start"
+          >
+            <Search className="mr-2 h-4 w-4" />
+            Talent Search
+          </Button>
+        )}
+      </NavLink>
+      
+      <NavLink to="/talent-matching">
+        {({ isActive }) => (
+          <Button
+            variant={isActive ? "default" : "ghost"}
+            className="w-full justify-start"
+          >
+            <Layers className="mr-2 h-4 w-4" />
+            Talent Matchmaking-AI
           </Button>
         )}
       </NavLink>
@@ -90,18 +115,6 @@ const SidebarItems = () => {
           >
             <BrainCircuit className="mr-2 h-4 w-4" />
             Agentic AI
-          </Button>
-        )}
-      </NavLink>
-      
-      <NavLink to="/professional-development">
-        {({ isActive }) => (
-          <Button
-            variant={isActive ? "default" : "ghost"}
-            className="w-full justify-start"
-          >
-            <GraduationCap className="mr-2 h-4 w-4" />
-            Professional Development
           </Button>
         )}
       </NavLink>
