@@ -13,7 +13,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Briefcase, Store } from "lucide-react";
+import { Briefcase, Store, BookOpen } from "lucide-react";
 
 const Header = () => {
   const { user } = useAuth();
@@ -89,6 +89,11 @@ const Header = () => {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
+            
+            <Link to="/resources" className="text-muted-foreground hover:text-foreground transition-colors flex items-center">
+              <BookOpen className="h-4 w-4 mr-1" />
+              Resources
+            </Link>
             
             <Link to="/professional-development" className="text-muted-foreground hover:text-foreground transition-colors">
               Professional Development

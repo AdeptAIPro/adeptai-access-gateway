@@ -3,6 +3,7 @@ import React from "react";
 import Header from "@/components/layout/Header";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
+import ContentMarketing from "@/components/home/ContentMarketing";
 import CTA from "@/components/home/CTA";
 import Footer from "@/components/layout/Footer";
 import Chatbot from "@/components/chatbot/Chatbot";
@@ -14,6 +15,7 @@ const Index = () => {
       <Header />
       <Hero />
       <Features />
+      <ContentMarketing />
       <CTA />
       <Footer />
       

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
@@ -26,6 +27,7 @@ import Unauthorized from "@/pages/Unauthorized";
 import Integrations from "@/pages/Integrations";
 import Onboarding from "@/pages/Onboarding";
 import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
+import Resources from "@/pages/Resources";
 
 // Marketplace Pages
 import Marketplace from "@/pages/Marketplace";
@@ -44,6 +46,11 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      
+      {/* Resources Routes */}
+      <Route path="/resources" element={<Resources />} />
+      <Route path="/resources/:category" element={<Resources />} />
+      <Route path="/resources/:category/:slug" element={<Resources />} />
       
       {/* Marketplace Routes */}
       <Route path="/marketplace" element={<Marketplace />} />
