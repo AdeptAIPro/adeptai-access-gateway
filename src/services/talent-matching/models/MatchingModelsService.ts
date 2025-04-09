@@ -2,100 +2,61 @@
 import { MatchingModel } from "@/components/talent-matching/types";
 import { supabase } from "@/lib/supabase";
 
-// Function to get available matching models from the database
 export async function getAvailableMatchingModelsFromDatabase(): Promise<MatchingModel[]> {
   try {
-    const { data, error } = await supabase.from('matching_models').select('*');
+    const { data, error } = await supabase
+      .from('matching_models')
+      .select('*');
     
     if (error) {
-      console.error('Error fetching matching models:', error);
-      return [];
+      console.error("Error fetching matching models from database:", error);
+      throw error;
     }
     
-    return data.map((model: any) => ({
-      id: model.id,
-      name: model.name,
-      description: model.description,
-      complexity: model.complexity || 'standard',
-      performance: model.performance || 80,
-      accuracyScore: model.accuracy_score || 75,
-      type: model.type || 'ai'
-    }));
+    return data as MatchingModel[];
   } catch (error) {
-    console.error('Error in getAvailableMatchingModelsFromDatabase:', error);
+    console.error("Failed to fetch matching models:", error);
     return [];
   }
 }
 
-// Function to get matching model by id
-export async function getMatchingModelById(id: string): Promise<MatchingModel | null> {
-  try {
-    // First check the database
-    const { data, error } = await supabase
-      .from('matching_models')
-      .select('*')
-      .eq('id', id)
-      .single();
-    
-    if (error) {
-      // If not found in database, check default models
-      const defaultModels = getDefaultMatchingModels();
-      return defaultModels.find(model => model.id === id) || null;
-    }
-    
-    return {
-      id: data.id,
-      name: data.name,
-      description: data.description,
-      complexity: data.complexity || 'standard',
-      performance: data.performance || 80,
-      accuracyScore: data.accuracy_score || 75,
-      type: data.type || 'ai'
-    };
-  } catch (error) {
-    console.error('Error in getMatchingModelById:', error);
-    return null;
-  }
-}
-
-// Default matching models
 export function getDefaultMatchingModels(): MatchingModel[] {
   return [
     {
-      id: "openai-ada-002",
-      name: "OpenAI Ada 002",
-      description: "Embeddings model for semantic search",
-      complexity: "advanced",
-      performance: 90,
-      accuracyScore: 85,
-      type: "openai"
+      id: "semantic-match-1",
+      name: "Semantic Matching",
+      description: "Uses NLP to match based on meaning rather than keywords",
+      complexity: "Advanced",
+      performance: 85,
+      accuracyScore: 0.79,
+      type: "semantic"
     },
     {
-      id: "tensorflow-bert",
-      name: "TensorFlow BERT",
-      description: "BERT model for technical role matching",
-      complexity: "advanced",
-      performance: 88,
-      accuracyScore: 84,
-      type: "tensorflow"
-    },
-    {
-      id: "pytorch-roberta",
-      name: "PyTorch RoBERTa",
-      description: "Fine-tuned model for technical skills",
-      complexity: "advanced",
+      id: "skill-match-1",
+      name: "Skill-Based Matching",
+      description: "Matches candidates based on skills alignment",
+      complexity: "Basic",
       performance: 92,
-      accuracyScore: 86,
-      type: "pytorch"
+      accuracyScore: 0.82,
+      type: "skill"
     },
     {
-      id: "hybrid-rag",
-      name: "Hybrid RAG System",
-      description: "Advanced retrieval augmented generation",
-      complexity: "advanced",
-      performance: 94,
-      accuracyScore: 89,
+      id: "hybrid-match-1",
+      name: "Hybrid Matching",
+      description: "Combined skill and semantic matching approach",
+      complexity: "Advanced",
+      performance: 91,
+      accuracyScore: 0.88,
       type: "hybrid"
+    },
+    {
+      id: "rag-enhanced-1",
+      name: "RAG-Enhanced Matching",
+      description: "Retrieval Augmented Generation for candidate matching",
+      complexity: "Experimental",
+      performance: 81,
+      accuracyScore: 0.91,
+      type: "rag"
     }
   ];
 }

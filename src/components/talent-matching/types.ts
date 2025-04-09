@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 
 export interface MatchingOptions {
@@ -42,7 +43,7 @@ export interface Candidate {
   experienceMatchScore?: number;
   educationMatchScore?: number;
   contactInfo?: ContactInfo;
-  education?: string; // Made optional to fix type error
+  education?: string; // Keep this optional to fix the type error
   crossSourceVerified?: boolean;
   crossSourceOccurrences?: number;
   crossSourceSources?: string[];
