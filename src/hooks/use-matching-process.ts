@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { matchCandidatesWithJobDescription } from "@/services/talent-matching/MatchingService";
 import { MatchingOptions, MatchingResult, Candidate } from "@/components/talent-matching/types";
@@ -46,11 +45,12 @@ const useMatchingProcess = (
         // Extract skills from job description (simplified version)
         const extractedSkills = extractSkillsFromJobDescription(descriptionToUse);
         
-        // Use the agentic intelligence service
+        // Use the agentic intelligence service with target sources
         result = await searchTalentsWithAgenticIntelligence(
           {
             skills: extractedSkills,
             limit: 20,
+            sources: matchingOptions.targetSources || [], // Use selected target sources
           },
           descriptionToUse,
           extractedSkills.slice(0, 5), // Required skills (first 5)
@@ -68,7 +68,7 @@ const useMatchingProcess = (
           matchTime: 4.5
         };
       } else {
-        // Use the standard matching service
+        // Use the standard matching service with target sources
         result = await matchCandidatesWithJobDescription(descriptionToUse, matchingOptions);
       }
       
@@ -80,9 +80,7 @@ const useMatchingProcess = (
       
       toast({
         title: "Matching Complete",
-        description: `Found ${result.candidates.length} matching candidates${
-          useCrossSourceIntelligence ? " with cross-source intelligence" : ""
-        }`,
+        description: `Found ${result.candidates.length} matching candidates from ${matchingOptions.targetSources?.length || 0} sources`,
       });
       
       if (descriptionToUse) {

@@ -8,6 +8,7 @@ import JobDescriptionInput from "./JobDescriptionInput";
 import ResultsSection from "./ResultsSection";
 import MatchingWorkflow from "./MatchingWorkflow";
 import AdvancedOptionsToggle from "./AdvancedOptionsToggle";
+import TargetSourceSelection from "./TargetSourceSelection";
 import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
 import { MatchingModel } from "./types";
 import StateHandler from "@/components/shared/StateHandler";
@@ -33,6 +34,10 @@ const TalentMatchingContainer: React.FC = () => {
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingModels, setIsLoadingModels] = useState(true);
+  const [selectedTargetSources, setSelectedTargetSources] = useState<string[]>([]);
+
+  // Determine if the Start AI Matchmaking button should be enabled
+  const isReadyToStart = jobDescription.length > 50 && selectedTargetSources.length > 0;
 
   // Construct matching options object
   const matchingOptions: MatchingOptions = {
@@ -44,6 +49,7 @@ const TalentMatchingContainer: React.FC = () => {
     useRAG,
     useSkillBasedFiltering,
     matchingModel: selectedModelId,
+    targetSources: selectedTargetSources,
   };
 
   const {
@@ -93,6 +99,14 @@ const TalentMatchingContainer: React.FC = () => {
       toast({
         title: "Missing Job Description",
         description: "Please enter a job description to start matching",
+      });
+      return;
+    }
+    
+    if (selectedTargetSources.length === 0) {
+      toast({
+        title: "No Target Sources Selected",
+        description: "Please select at least one candidate source",
       });
       return;
     }
@@ -154,6 +168,11 @@ const TalentMatchingContainer: React.FC = () => {
               setFileUploaded={setFileUploaded}
             />
             
+            <TargetSourceSelection
+              selectedSources={selectedTargetSources}
+              setSelectedSources={setSelectedTargetSources}
+            />
+            
             <AdvancedOptionsToggle
               showAdvancedOptions={showAdvancedOptions}
               matchingOptions={matchingOptions}
@@ -167,6 +186,7 @@ const TalentMatchingContainer: React.FC = () => {
                 if (options.matchingModel) {
                   setSelectedModelId(options.matchingModel);
                 }
+                // Don't override target sources from advanced options
               }}
               matchingModels={availableModels}
               useCrossSourceIntelligence={useCrossSourceIntelligence}
@@ -184,7 +204,7 @@ const TalentMatchingContainer: React.FC = () => {
               setShowAdvancedOptions={setShowAdvancedOptions}
               onStartMatching={handleStartMatching}
               onCancel={() => {}}
-              isReadyToStart={jobDescription.length > 50}
+              isReadyToStart={isReadyToStart}
             />
           </>
         </StateHandler>

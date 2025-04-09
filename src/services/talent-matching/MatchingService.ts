@@ -138,37 +138,49 @@ export async function matchCandidatesWithJobDescription(
   // Extract job details
   const jobDetails = await processJobDescription(jobDescription);
   
-  // Generate mock candidates for demo purposes
-  const candidates = Array.from({ length: 12 }, (_, i) => {
-    const matchScore = Math.floor(Math.random() * 25) + 75; // 75-99
-    const skillMatchScore = Math.floor(Math.random() * 30) + 70; // 70-99
-    const experienceMatchScore = Math.floor(Math.random() * 40) + 60; // 60-99
+  // Get target sources from options, or use defaults
+  const targetSources = matchingOptions.targetSources || ["Internal Database"];
+  
+  // Generate mock candidates for demo purposes, slightly modified to reflect the target sources
+  const candidatesPerSource = 3; // Number of candidates to generate per source
+  const candidates = [];
+  
+  // Create candidates from each selected source
+  for (const source of targetSources) {
+    const sourceCandidates = Array.from({ length: candidatesPerSource }, (_, i) => {
+      const matchScore = Math.floor(Math.random() * 25) + 75; // 75-99
+      const skillMatchScore = Math.floor(Math.random() * 30) + 70; // 70-99
+      const experienceMatchScore = Math.floor(Math.random() * 40) + 60; // 60-99
+      const candidateIndex = candidates.length + 1;
+      
+      return {
+        id: `candidate-${source.toLowerCase().replace(/\s+/g, '-')}-${i + 1}`,
+        name: `Candidate ${candidateIndex}`,
+        title: `Senior ${jobDetails.extractedSkills?.[i % (jobDetails.extractedSkills?.length || 1)] || 'Developer'}`,
+        location: ['Remote', 'New York', 'San Francisco', 'Austin', 'London'][i % 5],
+        experience: jobDetails.suggestedExperience + Math.floor(Math.random() * 5) - 2, // +/- 2 years from suggested
+        skills: [
+          ...(jobDetails.extractedSkills || []).slice(0, Math.floor(Math.random() * 4) + 3), // 3-6 matching skills
+          'Communication',
+          'Teamwork',
+          i % 3 === 0 ? 'Leadership' : 'Problem Solving'
+        ],
+        salary: (90000 + candidateIndex * 10000 + Math.floor(Math.random() * 20000)),
+        availability: ['Immediate', '2 weeks', '1 month', 'Negotiable'][i % 4],
+        source: source,
+        matchScore,
+        skillMatchScore,
+        experienceMatchScore,
+        educationMatchScore: Math.floor(Math.random() * 40) + 60,
+        contactInfo: {
+          email: `candidate${candidateIndex}@example.com`,
+          phone: `(555) ${100 + candidateIndex}-${1000 + candidateIndex}`
+        }
+      };
+    });
     
-    return {
-      id: `candidate-${i + 1}`,
-      name: `Candidate ${i + 1}`,
-      title: `Senior ${jobDetails.extractedSkills?.[i % jobDetails.extractedSkills.length] || 'Developer'}`,
-      location: ['Remote', 'New York', 'San Francisco', 'Austin', 'London'][i % 5],
-      experience: jobDetails.suggestedExperience + Math.floor(Math.random() * 5) - 2, // +/- 2 years from suggested
-      skills: [
-        ...(jobDetails.extractedSkills || []).slice(0, Math.floor(Math.random() * 4) + 3), // 3-6 matching skills
-        'Communication',
-        'Teamwork',
-        i % 3 === 0 ? 'Leadership' : 'Problem Solving'
-      ],
-      salary: (90000 + i * 10000 + Math.floor(Math.random() * 20000)),
-      availability: ['Immediate', '2 weeks', '1 month', 'Negotiable'][i % 4],
-      source: ['LinkedIn', 'Indeed', 'Internal Database', 'GitHub', 'Referral'][i % 5],
-      matchScore,
-      skillMatchScore,
-      experienceMatchScore,
-      educationMatchScore: Math.floor(Math.random() * 40) + 60,
-      contactInfo: {
-        email: `candidate${i + 1}@example.com`,
-        phone: `(555) ${100 + i}-${1000 + i}`
-      }
-    };
-  });
+    candidates.push(...sourceCandidates);
+  }
   
   // Sort candidates by match score
   const sortedCandidates = [...candidates].sort((a, b) => b.matchScore - a.matchScore);
@@ -180,7 +192,13 @@ export async function matchCandidatesWithJobDescription(
     suggestedExperience: jobDetails.suggestedExperience,
     keyResponsibilities: jobDetails.keyResponsibilities,
     matchingModelUsed: matchingOptions.matchingModel,
-    totalCandidatesScanned: 200 + Math.floor(Math.random() * 300),
-    matchTime: 2.5 + Math.random() * 1.5
+    totalCandidatesScanned: 150 + (targetSources.length * 50) + Math.floor(Math.random() * 300),
+    matchTime: 2.5 + Math.random() * 1.5,
+    // Add source information for the results
+    sourcesUsed: targetSources,
+    candidatesPerSource: targetSources.reduce((acc, source) => {
+      acc[source] = candidates.filter(c => c.source === source).length;
+      return acc;
+    }, {} as Record<string, number>)
   };
 }

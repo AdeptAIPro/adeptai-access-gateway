@@ -1,3 +1,4 @@
+
 import { TalentSearchParams, TalentSearchResponse, Talent } from './types';
 import { searchTalentsFromSupabase } from './SupabaseTalentService';
 import { searchTalentsFromExternalSource } from './ExternalTalentService';
@@ -66,7 +67,9 @@ export const searchTalentsWithAgenticIntelligence = async (
         preferredSkills,
         experienceLevel: params.experience || 2,
         locations: params.location ? [params.location] : ['Remote'],
-        sources: params.source ? [params.source] : await getAllAvailableSources(),
+        sources: params.sources && params.sources.length > 0 
+          ? params.sources 
+          : await getAllAvailableSources(),
         culturalFitPriority: 7, // High priority on cultural fit (0-10 scale)
         minMatchScore: 70
       }
