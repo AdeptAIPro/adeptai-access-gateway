@@ -47,6 +47,7 @@ export interface Candidate {
   crossSourceVerified?: boolean;
   crossSourceOccurrences?: number;
   crossSourceSources?: string[];
+  avatar?: string;
 }
 
 export interface CrossSourceValidation {
@@ -55,6 +56,32 @@ export interface CrossSourceValidation {
   verifiedCandidates: number;
   verificationRate: number;
   averageCrossSourceScore: number;
+}
+
+export interface MatchingInsightsData {
+  talentPoolQuality: string;
+  crossSourceStatistics: {
+    totalCandidates: number;
+    verifiedCandidates: number;
+    verifiedPercentage: number;
+    averageCrossSourceScore: number;
+  };
+  recommendedSourcingStrategy: {
+    mostEffectiveSources: string[];
+    recommendedSources: string[];
+    suggestedOutreachOrder: string[];
+    untappedSources: string[];
+  };
+  competitivePositioning: {
+    talentAvailability: string;
+    competitiveness: string;
+    salaryRange: {
+      min: number;
+      max: number;
+      median: number;
+    };
+    timeToHire: string;
+  };
 }
 
 export interface MatchingResult {
@@ -67,6 +94,9 @@ export interface MatchingResult {
   totalCandidatesScanned: number;
   matchTime: number;
   crossSourceValidation?: CrossSourceValidation;
+  insights?: MatchingInsightsData;
+  sourcesUsed?: string[];
+  candidatesPerSource?: Record<string, number>;
 }
 
 export interface TabContent {

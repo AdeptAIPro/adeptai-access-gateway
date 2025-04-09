@@ -14,14 +14,27 @@ export const searchTalents = async (
     // First, get results from Supabase
     const supabaseResults = await searchTalentsFromSupabase(params);
     
-    // If a specific external source is requested, fetch from there too
+    // If specific external sources are requested, fetch from there too
     let externalResults: Talent[] = [];
+    
+    // Handle single source parameter
     if (params.source && params.source !== 'internal') {
       externalResults = await searchTalentsFromExternalSource(params.source, params);
+    } 
+    // Handle multiple sources parameter
+    else if (params.sources && params.sources.length > 0) {
+      // Filter out internal database which is handled by Supabase
+      const externalSources = params.sources.filter(s => s !== 'internal' && s !== 'Internal Database');
       
-      // If we have external results, combine them with Supabase results
-      // Note: In a real application, you'd need to handle pagination differently
-      // when combining results from multiple sources
+      // Fetch from each external source
+      for (const source of externalSources) {
+        const sourceResults = await searchTalentsFromExternalSource(source, params);
+        externalResults = [...externalResults, ...sourceResults];
+      }
+    }
+    
+    // Combine results
+    if (externalResults.length > 0) {
       return {
         ...supabaseResults,
         candidates: [...supabaseResults.candidates, ...externalResults],
@@ -67,6 +80,7 @@ export const searchTalentsWithAgenticIntelligence = async (
         preferredSkills,
         experienceLevel: params.experience || 2,
         locations: params.location ? [params.location] : ['Remote'],
+        // Use either sources array or fallback to getting all sources
         sources: params.sources && params.sources.length > 0 
           ? params.sources 
           : await getAllAvailableSources(),

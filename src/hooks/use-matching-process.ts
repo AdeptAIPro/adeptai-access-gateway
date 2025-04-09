@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { matchCandidatesWithJobDescription } from "@/services/talent-matching/MatchingService";
 import { MatchingOptions, MatchingResult, Candidate } from "@/components/talent-matching/types";
@@ -50,7 +51,8 @@ const useMatchingProcess = (
           {
             skills: extractedSkills,
             limit: 20,
-            sources: matchingOptions.targetSources || [], // Use selected target sources
+            // Use the correct property name based on the updated type
+            sources: matchingOptions.targetSources || [], 
           },
           descriptionToUse,
           extractedSkills.slice(0, 5), // Required skills (first 5)
@@ -65,7 +67,9 @@ const useMatchingProcess = (
           suggestedExperience: 3,
           matchingModelUsed: "cross-source-intelligence",
           totalCandidatesScanned: result.crossSourceValidation?.candidatesFound || 0,
-          matchTime: 4.5
+          matchTime: 4.5,
+          // Add insights property for the matching results
+          insights: generateDummyInsights(matchingOptions.targetSources || [])
         };
       } else {
         // Use the standard matching service with target sources
@@ -103,6 +107,35 @@ const useMatchingProcess = (
         variant: "destructive",
       });
     }
+  };
+
+  // Generate dummy insights for the matching results
+  const generateDummyInsights = (sources: string[]) => {
+    return {
+      talentPoolQuality: "Good",
+      crossSourceStatistics: {
+        totalCandidates: 150 + sources.length * 30,
+        verifiedCandidates: 50 + sources.length * 10,
+        verifiedPercentage: Math.round((50 + sources.length * 10) / (150 + sources.length * 30) * 100),
+        averageCrossSourceScore: 0.78
+      },
+      recommendedSourcingStrategy: {
+        mostEffectiveSources: sources.slice(0, 2),
+        recommendedSources: [...sources, "GitHub", "AngelList"],
+        suggestedOutreachOrder: ["Internal Database", "LinkedIn", "Indeed"],
+        untappedSources: ["Stack Overflow", "Hired"]
+      },
+      competitivePositioning: {
+        talentAvailability: "Medium",
+        competitiveness: "High",
+        salaryRange: {
+          min: 80000,
+          max: 140000,
+          median: 110000
+        },
+        timeToHire: "2-4 weeks"
+      }
+    };
   };
 
   // Simple function to extract skills from job description

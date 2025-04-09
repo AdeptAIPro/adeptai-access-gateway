@@ -1,13 +1,4 @@
 
-export interface TalentSearchParams {
-  skills?: string[];
-  location?: string;
-  experience?: number;
-  source?: string;
-  page?: number;
-  limit?: number;
-}
-
 export interface Talent {
   id: string;
   name: string;
@@ -23,6 +14,16 @@ export interface Talent {
   availability?: string;
   rate?: string;
   bio?: string;
+}
+
+export interface TalentSearchParams {
+  skills?: string[];
+  location?: string;
+  experience?: number;
+  source?: string;
+  sources?: string[]; // Added sources array for multiple source selection
+  page?: number;
+  limit?: number;
 }
 
 export interface TalentSearchResponse {

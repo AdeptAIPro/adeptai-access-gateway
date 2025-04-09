@@ -1,70 +1,101 @@
 
-import { MatchingModel } from "../../../components/talent-matching/types";
-import { Brain, Cpu, Network, LineChart } from "lucide-react";
+import { MatchingModel } from "@/components/talent-matching/types";
+import { supabase } from "@/lib/supabase";
 
-// Define matching models with their characteristics
-export const getAvailableMatchingModels = (): MatchingModel[] => {
-  return [
-    {
-      id: "basic-skill-match",
-      name: "Basic Skill Matching",
-      description: "Simple keyword-based matching for skills and experience",
-      complexity: "basic",
-      performance: 70,
-      accuracyScore: 65,
-      icon: Brain,
-      type: "keyword"
-    },
-    {
-      id: "advanced-semantic",
-      name: "Advanced Semantic Matching",
-      description: "Uses NLP to understand job requirements and candidate profiles semantically",
-      complexity: "advanced",
-      performance: 92,
-      accuracyScore: 88,
-      icon: Network,
-      type: "semantic"
-    },
-    {
-      id: "hybrid-match",
-      name: "Hybrid Matching Engine",
-      description: "Combines keyword matching with semantic understanding",
-      complexity: "intermediate",
-      performance: 85,
-      accuracyScore: 82,
-      icon: Cpu,
-      type: "hybrid"
-    },
-    {
-      id: "ml-prediction",
-      name: "ML Prediction Model",
-      description: "Uses machine learning to predict candidate success based on historical data",
-      complexity: "advanced",
-      performance: 95,
-      accuracyScore: 89,
-      icon: LineChart,
-      type: "ml"
-    }
-  ];
-};
-
-// Add the function that was being imported but was missing
-export const getAvailableMatchingModelsFromDatabase = async (): Promise<MatchingModel[]> => {
+// Function to get available matching models from the database
+export async function getAvailableMatchingModelsFromDatabase(): Promise<MatchingModel[]> {
   try {
-    // In a real implementation, this would fetch from a database
-    // For now, just return the static models after a small delay to simulate async behavior
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return getAvailableMatchingModels();
+    const { data, error } = await supabase.from('matching_models').select('*');
+    
+    if (error) {
+      console.error('Error fetching matching models:', error);
+      return [];
+    }
+    
+    return data.map((model: any) => ({
+      id: model.id,
+      name: model.name,
+      description: model.description,
+      complexity: model.complexity || 'standard',
+      performance: model.performance || 80,
+      accuracyScore: model.accuracy_score || 75,
+      type: model.type || 'ai'
+    }));
   } catch (error) {
-    console.error("Error fetching matching models from database:", error);
+    console.error('Error in getAvailableMatchingModelsFromDatabase:', error);
     return [];
   }
-};
+}
 
-export const getDefaultMatchingModel = (): MatchingModel => {
-  return getAvailableMatchingModels()[0];
-};
+// Function to get matching model by id
+export async function getMatchingModelById(id: string): Promise<MatchingModel | null> {
+  try {
+    // First check the database
+    const { data, error } = await supabase
+      .from('matching_models')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      // If not found in database, check default models
+      const defaultModels = getDefaultMatchingModels();
+      return defaultModels.find(model => model.id === id) || null;
+    }
+    
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      complexity: data.complexity || 'standard',
+      performance: data.performance || 80,
+      accuracyScore: data.accuracy_score || 75,
+      type: data.type || 'ai'
+    };
+  } catch (error) {
+    console.error('Error in getMatchingModelById:', error);
+    return null;
+  }
+}
 
-export const getMatchingModelById = (id: string): MatchingModel | undefined => {
-  return getAvailableMatchingModels().find(model => model.id === id);
-};
+// Default matching models
+export function getDefaultMatchingModels(): MatchingModel[] {
+  return [
+    {
+      id: "openai-ada-002",
+      name: "OpenAI Ada 002",
+      description: "Embeddings model for semantic search",
+      complexity: "advanced",
+      performance: 90,
+      accuracyScore: 85,
+      type: "openai"
+    },
+    {
+      id: "tensorflow-bert",
+      name: "TensorFlow BERT",
+      description: "BERT model for technical role matching",
+      complexity: "advanced",
+      performance: 88,
+      accuracyScore: 84,
+      type: "tensorflow"
+    },
+    {
+      id: "pytorch-roberta",
+      name: "PyTorch RoBERTa",
+      description: "Fine-tuned model for technical skills",
+      complexity: "advanced",
+      performance: 92,
+      accuracyScore: 86,
+      type: "pytorch"
+    },
+    {
+      id: "hybrid-rag",
+      name: "Hybrid RAG System",
+      description: "Advanced retrieval augmented generation",
+      complexity: "advanced",
+      performance: 94,
+      accuracyScore: 89,
+      type: "hybrid"
+    }
+  ];
+}
