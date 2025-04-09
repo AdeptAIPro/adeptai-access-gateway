@@ -43,11 +43,17 @@ export interface Candidate {
   experienceMatchScore?: number;
   educationMatchScore?: number;
   contactInfo?: ContactInfo;
-  education?: string; // Keep this optional to fix the type error
+  education?: string;
   crossSourceVerified?: boolean;
   crossSourceOccurrences?: number;
   crossSourceSources?: string[];
   avatar?: string;
+  culturalFitScore?: number;
+  complianceVerified?: boolean;
+  certifications?: string[];
+  implicitCompetencies?: string[];
+  embeddings?: number[];
+  historicalSuccessRate?: number;
 }
 
 export interface CrossSourceValidation {
