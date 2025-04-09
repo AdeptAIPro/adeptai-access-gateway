@@ -43,7 +43,7 @@ export interface Candidate {
   experienceMatchScore?: number;
   educationMatchScore?: number;
   contactInfo?: ContactInfo;
-  education?: string;
+  education?: string; // Changed from required to optional to match usage
   crossSourceVerified?: boolean;
   crossSourceOccurrences?: number;
   crossSourceSources?: string[];

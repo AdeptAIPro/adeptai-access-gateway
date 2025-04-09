@@ -2,8 +2,13 @@
 import { useState } from "react";
 import { matchCandidatesWithJobDescription } from "@/services/talent-matching/MatchingService";
 import { MatchingOptions, MatchingResult, Candidate } from "@/components/talent-matching/types";
-import { supabase } from "@/lib/supabase";
 import { searchTalentsWithAgenticIntelligence } from "@/services/talent/TalentSearchService";
+import { 
+  extractSkillsFromJobDescription, 
+  generateDummyInsights, 
+  saveRecentSearch 
+} from "./talent-matching/matching-utils";
+import { saveCandidate as saveCandidateAction, contactCandidate as contactCandidateAction } from "./talent-matching/candidate-actions";
 
 type ToastFunction = {
   (props: {
@@ -43,7 +48,7 @@ const useMatchingProcess = (
       let result: any;
       
       if (useCrossSourceIntelligence) {
-        // Extract skills from job description (simplified version)
+        // Extract skills from job description
         const extractedSkills = extractSkillsFromJobDescription(descriptionToUse);
         
         // Use the agentic intelligence service with target sources
@@ -51,7 +56,6 @@ const useMatchingProcess = (
           {
             skills: extractedSkills,
             limit: 20,
-            // Use the correct property name based on the updated type
             sources: matchingOptions.targetSources || [], 
           },
           descriptionToUse,
@@ -109,158 +113,13 @@ const useMatchingProcess = (
     }
   };
 
-  // Generate dummy insights for the matching results
-  const generateDummyInsights = (sources: string[]) => {
-    return {
-      talentPoolQuality: "Good",
-      crossSourceStatistics: {
-        totalCandidates: 150 + sources.length * 30,
-        verifiedCandidates: 50 + sources.length * 10,
-        verifiedPercentage: Math.round((50 + sources.length * 10) / (150 + sources.length * 30) * 100),
-        averageCrossSourceScore: 0.78
-      },
-      recommendedSourcingStrategy: {
-        mostEffectiveSources: sources.slice(0, 2),
-        recommendedSources: [...sources, "GitHub", "AngelList"],
-        suggestedOutreachOrder: ["Internal Database", "LinkedIn", "Indeed"],
-        untappedSources: ["Stack Overflow", "Hired"]
-      },
-      competitivePositioning: {
-        talentAvailability: "Medium",
-        competitiveness: "High",
-        salaryRange: {
-          min: 80000,
-          max: 140000,
-          median: 110000
-        },
-        timeToHire: "2-4 weeks"
-      }
-    };
-  };
-
-  // Simple function to extract skills from job description
-  const extractSkillsFromJobDescription = (text: string): string[] => {
-    const commonSkills = [
-      "JavaScript", "TypeScript", "React", "Angular", "Vue", "Node.js",
-      "Python", "Java", "C#", "Ruby", "PHP", "Go", "Rust", "Swift",
-      "SQL", "MongoDB", "PostgreSQL", "MySQL", "AWS", "Azure", "GCP",
-      "Docker", "Kubernetes", "CI/CD", "DevOps", "Machine Learning",
-      "Data Science", "AI", "Project Management", "Agile", "Scrum"
-    ];
-    
-    // Return skills that are mentioned in the text
-    return commonSkills.filter(skill => 
-      text.toLowerCase().includes(skill.toLowerCase())
-    ).slice(0, 10); // Limit to 10 skills
-  };
-
-  const saveRecentSearch = async (user: any, searchText: string) => {
-    if (!user) return;
-    
-    try {
-      await supabase
-        .from('recent_searches')
-        .insert([
-          { 
-            user_id: user.id, 
-            search_text: searchText.substring(0, 500),
-            search_type: 'job_description' 
-          }
-        ]);
-    } catch (err) {
-      console.error('Failed to save recent search:', err);
-    }
-  };
-
+  // Wrapper functions for candidate actions
   const saveCandidate = async (id: string) => {
-    if (!user) return;
-    
-    try {
-      // Check for placeholder credentials
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      if (!supabaseUrl || !supabaseAnonKey ||
-          supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
-          supabaseAnonKey === 'placeholder-anon-key') {
-        // Simulate success for demo purposes
-        toast({
-          title: "Candidate Saved",
-          description: "Candidate has been saved to your favorites (demo mode)",
-        });
-        return;
-      }
-      
-      const { data, error } = await supabase
-        .from('saved_candidates')
-        .insert([
-          { 
-            user_id: user.id, 
-            candidate_id: id,
-            saved_date: new Date().toISOString()
-          }
-        ]);
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Candidate Saved",
-        description: "Candidate has been saved to your favorites",
-      });
-    } catch (err) {
-      console.error('Failed to save candidate:', err);
-      toast({
-        title: "Error",
-        description: "Failed to save candidate",
-        variant: "destructive",
-      });
-    }
+    await saveCandidateAction(id, user, toast);
   };
 
   const contactCandidate = async (id: string) => {
-    if (!user) return;
-    
-    try {
-      // Check for placeholder credentials
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      if (!supabaseUrl || !supabaseAnonKey ||
-          supabaseUrl === 'https://placeholder-supabase-url.supabase.co' || 
-          supabaseAnonKey === 'placeholder-anon-key') {
-        // Simulate success for demo purposes
-        toast({
-          title: "Contact Request Sent",
-          description: "We've sent a connection request to the candidate (demo mode)",
-        });
-        return;
-      }
-      
-      const { data, error } = await supabase
-        .from('candidate_contacts')
-        .insert([
-          { 
-            user_id: user.id, 
-            candidate_id: id,
-            contact_date: new Date().toISOString(),
-            status: 'pending'
-          }
-        ]);
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Contact Request Sent",
-        description: "We've sent a connection request to the candidate",
-      });
-    } catch (err) {
-      console.error('Failed to contact candidate:', err);
-      toast({
-        title: "Error",
-        description: "Failed to send contact request",
-        variant: "destructive",
-      });
-    }
+    await contactCandidateAction(id, user, toast);
   };
 
   return {
