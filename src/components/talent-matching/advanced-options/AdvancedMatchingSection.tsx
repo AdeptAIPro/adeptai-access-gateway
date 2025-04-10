@@ -4,6 +4,8 @@ import { MatchingModel, MatchingOptions } from "../types";
 import AdvancedOptionsToggle from "../AdvancedOptionsToggle";
 import { getAvailableMatchingModels } from "@/services/talent-matching/MatchingService";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 interface AdvancedMatchingSectionProps {
   showAdvancedOptions: boolean;
@@ -66,6 +68,15 @@ const AdvancedMatchingSection: React.FC<AdvancedMatchingSectionProps> = ({
             performance: 85,
             accuracyScore: 0.82,
             type: "semantic"
+          },
+          { 
+            id: "ai-cross-source", 
+            name: "Cross-Source Intelligence", 
+            description: "AI-powered verification across multiple sources",
+            complexity: "Advanced+",
+            performance: 92,
+            accuracyScore: 0.94,
+            type: "ai-enhanced"
           }
         ];
         setAvailableModels(defaultModels);
@@ -88,14 +99,26 @@ const AdvancedMatchingSection: React.FC<AdvancedMatchingSectionProps> = ({
   }, [toast, matchingOptions, setMatchingOptions]);
 
   return (
-    <AdvancedOptionsToggle
-      showAdvancedOptions={showAdvancedOptions}
-      matchingOptions={matchingOptions}
-      setMatchingOptions={setMatchingOptions}
-      matchingModels={availableModels}
-      useCrossSourceIntelligence={useCrossSourceIntelligence}
-      setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
-    />
+    <>
+      {useCrossSourceIntelligence && (
+        <Alert className="mb-4 bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-700" />
+          <AlertTitle className="text-blue-800">Cross-Source Intelligence Enabled</AlertTitle>
+          <AlertDescription className="text-blue-700">
+            Your search will be verified across multiple sources including social media, job boards, and internal databases to ensure the highest quality of candidates.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      <AdvancedOptionsToggle
+        showAdvancedOptions={showAdvancedOptions}
+        matchingOptions={matchingOptions}
+        setMatchingOptions={setMatchingOptions}
+        matchingModels={availableModels}
+        useCrossSourceIntelligence={useCrossSourceIntelligence}
+        setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
+      />
+    </>
   );
 };
 
