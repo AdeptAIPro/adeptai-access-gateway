@@ -47,10 +47,26 @@ const AdvancedMatchingSection: React.FC<AdvancedMatchingSectionProps> = ({
         console.error("Error fetching matching models:", err);
         const errorMessage = err instanceof Error ? err.message : "Failed to load matching models";
         setError(errorMessage);
-        // Use default models if API fails
-        const defaultModels = [
-          { id: "basic", name: "Standard Matching", description: "Basic matching algorithm" },
-          { id: "advanced", name: "Advanced Matching", description: "Enhanced semantic matching" }
+        // Use default models if API fails - ensure they have ALL required properties
+        const defaultModels: MatchingModel[] = [
+          { 
+            id: "basic", 
+            name: "Standard Matching", 
+            description: "Basic matching algorithm",
+            complexity: "Basic",
+            performance: 75,
+            accuracyScore: 0.7,
+            type: "standard"
+          },
+          { 
+            id: "advanced", 
+            name: "Advanced Matching", 
+            description: "Enhanced semantic matching",
+            complexity: "Advanced",
+            performance: 85,
+            accuracyScore: 0.82,
+            type: "semantic"
+          }
         ];
         setAvailableModels(defaultModels);
         setMatchingOptions({
