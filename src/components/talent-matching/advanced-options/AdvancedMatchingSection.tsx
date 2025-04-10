@@ -33,7 +33,9 @@ const AdvancedMatchingSection: React.FC<AdvancedMatchingSectionProps> = ({
       setError(null);
       
       try {
+        console.log("Fetching matching models...");
         const models = await getAvailableMatchingModels();
+        console.log("Fetched models:", models);
         setAvailableModels(models);
         if (models.length > 0) {
           setMatchingOptions({
@@ -42,12 +44,24 @@ const AdvancedMatchingSection: React.FC<AdvancedMatchingSectionProps> = ({
           });
         }
       } catch (err) {
+        console.error("Error fetching matching models:", err);
         const errorMessage = err instanceof Error ? err.message : "Failed to load matching models";
         setError(errorMessage);
+        // Use default models if API fails
+        const defaultModels = [
+          { id: "basic", name: "Standard Matching", description: "Basic matching algorithm" },
+          { id: "advanced", name: "Advanced Matching", description: "Enhanced semantic matching" }
+        ];
+        setAvailableModels(defaultModels);
+        setMatchingOptions({
+          ...matchingOptions,
+          matchingModel: defaultModels[0].id
+        });
+        
         toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
+          title: "Using default models",
+          description: "Couldn't connect to server, using default matching models",
+          variant: "default",
         });
       } finally {
         setIsLoadingModels(false);

@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import useMatchingProcess from "@/hooks/use-matching-process";
 import { MatchingOptions } from "@/components/talent-matching/types";
 
 export const useTalentMatching = () => {
+  console.log("Initializing useTalentMatching hook");
   const { user } = useAuth();
   const { toast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
@@ -23,6 +24,13 @@ export const useTalentMatching = () => {
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTargetSources, setSelectedTargetSources] = useState<string[]>([]);
+
+  // Add default target source if none selected
+  useEffect(() => {
+    if (selectedTargetSources.length === 0) {
+      setSelectedTargetSources(["Internal Database"]);
+    }
+  }, [selectedTargetSources]);
 
   // Determine if the Start AI Matchmaking button should be enabled
   const isReadyToStart = jobDescription.length > 50 && selectedTargetSources.length > 0;
@@ -68,7 +76,17 @@ export const useTalentMatching = () => {
     useCrossSourceIntelligence
   );
 
+  console.log("Current matching state:", { 
+    isLoading, 
+    matchingProgress, 
+    showResults, 
+    matchResult,
+    isReadyToStart,
+    selectedTargetSources
+  });
+
   const handleStartMatching = () => {
+    console.log("Starting matching process...");
     if (!jobDescription) {
       toast({
         title: "Missing Job Description",

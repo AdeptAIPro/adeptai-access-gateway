@@ -1,127 +1,128 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Network, Database, Users } from "lucide-react";
-import { getTalentSources } from "@/services/talent/TalentSourcesService";
+import { Label } from "@/components/ui/label";
+import { getTalentSources } from "@/services/talent/TalentSearchService";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Globe, Building, Database, Users } from "lucide-react";
 
 interface TargetSourceSelectionProps {
   selectedSources: string[];
   setSelectedSources: (sources: string[]) => void;
 }
 
+const DEFAULT_SOURCES = [
+  "Internal Database",
+  "LinkedIn",
+  "Indeed",
+  "GitHub",
+  "AngelList"
+];
+
 const TargetSourceSelection: React.FC<TargetSourceSelectionProps> = ({
   selectedSources,
-  setSelectedSources,
+  setSelectedSources
 }) => {
-  const [availableSources, setAvailableSources] = React.useState<string[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [sources, setSources] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadSources = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const sources = await getTalentSources();
-        setAvailableSources(sources);
-        // Pre-select Internal Database by default
-        if (selectedSources.length === 0 && sources.includes("Internal Database")) {
-          setSelectedSources(["Internal Database"]);
+        const fetchedSources = await getTalentSources();
+        if (fetchedSources && fetchedSources.length > 0) {
+          setSources(fetchedSources);
+        } else {
+          // Use default sources if API returns empty
+          setSources(DEFAULT_SOURCES);
         }
       } catch (error) {
         console.error("Error loading talent sources:", error);
-        // Fallback to default sources if there's an error
-        setAvailableSources([
-          "LinkedIn",
-          "Indeed",
-          "Glassdoor",
-          "ZipRecruiter",
-          "Internal Database",
-          "JobDiva",
-          "Ceipal"
-        ]);
+        // Use default sources if API fails
+        setSources(DEFAULT_SOURCES);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadSources();
-  }, [setSelectedSources, selectedSources.length]);
+  }, []);
 
-  const handleSourceToggle = (source: string) => {
-    if (selectedSources.includes(source)) {
-      setSelectedSources(selectedSources.filter(s => s !== source));
-    } else {
+  // Ensure at least one source is selected by default
+  useEffect(() => {
+    if (sources.length > 0 && selectedSources.length === 0) {
+      setSelectedSources([sources[0]]);
+    }
+  }, [sources, selectedSources, setSelectedSources]);
+
+  const handleSourceChange = (source: string, checked: boolean) => {
+    if (checked) {
       setSelectedSources([...selectedSources, source]);
+    } else {
+      // Don't allow deselecting the last source
+      if (selectedSources.length > 1) {
+        setSelectedSources(selectedSources.filter(s => s !== source));
+      }
+    }
+  };
+
+  const getSourceIcon = (source: string) => {
+    switch (source.toLowerCase()) {
+      case 'linkedin':
+        return <Users className="h-4 w-4 text-blue-500" />;
+      case 'github':
+        return <Globe className="h-4 w-4 text-purple-500" />;
+      case 'internal database':
+        return <Database className="h-4 w-4 text-green-500" />;
+      default:
+        return <Building className="h-4 w-4 text-gray-500" />;
     }
   };
 
   return (
-    <Card className="mb-6 border-adept/20 shadow-sm">
-      <CardHeader className="pb-3">
+    <Card className="mt-6 border-adept/20 shadow-sm">
+      <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center">
-          <Network className="h-5 w-5 text-adept mr-2" />
-          Target Candidate Sources
+          <Globe className="h-5 w-5 mr-2 text-adept" />
+          Candidate Sources
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-500 mb-4">
-          Select where to search for matching candidates. Multiple sources can be selected.
-        </p>
+        <div className="text-sm text-muted-foreground mb-4">
+          Select talent pools to search for matching candidates
+        </div>
         
         {isLoading ? (
-          <div className="flex justify-center py-4">
-            <div className="animate-spin h-6 w-6 border-2 border-adept border-opacity-50 border-t-adept rounded-full"></div>
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-full" />
           </div>
         ) : (
-          <ScrollArea className="h-[180px] pr-4">
-            <div className="space-y-4">
-              {availableSources.map((source) => (
-                <div key={source} className="flex items-start space-x-2">
-                  <Checkbox
-                    id={`source-${source}`}
-                    checked={selectedSources.includes(source)}
-                    onCheckedChange={() => handleSourceToggle(source)}
-                  />
-                  <div className="grid gap-1.5 leading-none">
-                    <Label
-                      htmlFor={`source-${source}`}
-                      className="text-sm font-medium cursor-pointer"
-                    >
-                      {source}
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      {source === "Internal Database" 
-                        ? "Your organization's candidate database" 
-                        : `Candidate profiles from ${source}`}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {sources.map((source) => (
+              <div key={source} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`source-${source}`}
+                  checked={selectedSources.includes(source)}
+                  onCheckedChange={(checked) => 
+                    handleSourceChange(source, checked as boolean)
+                  }
+                  className="data-[state=checked]:bg-adept data-[state=checked]:border-adept"
+                />
+                <Label
+                  htmlFor={`source-${source}`}
+                  className="flex items-center text-sm font-medium cursor-pointer"
+                >
+                  {getSourceIcon(source)}
+                  <span className="ml-2">{source}</span>
+                </Label>
+              </div>
+            ))}
+          </div>
         )}
-
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center text-sm">
-            <Database className="h-4 w-4 mr-1 text-adept" />
-            <span>Selected: </span>
-            <span className="font-medium ml-1">
-              {selectedSources.length} {selectedSources.length === 1 ? "source" : "sources"}
-            </span>
-          </div>
-          
-          <div className="flex items-center text-sm">
-            <Users className="h-4 w-4 mr-1 text-adept" />
-            <span>Est. Reach: </span>
-            <span className="font-medium ml-1">
-              {selectedSources.length > 0 
-                ? `${(selectedSources.length * 1000).toLocaleString()}+ candidates`
-                : "No sources selected"}
-            </span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

@@ -20,6 +20,9 @@ const MatchingResultsContainer: React.FC<MatchingResultsContainerProps> = ({
   saveCandidate,
   contactCandidate
 }) => {
+  // Add console logs to help debug
+  console.log("Rendering MatchingResultsContainer", { isLoading, matchResult });
+  
   return (
     <>
       <StateHandler
