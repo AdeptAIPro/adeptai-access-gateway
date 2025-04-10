@@ -5,24 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Bookmark, Phone, Star, Check, ShieldCheck } from "lucide-react";
-
-interface Candidate {
-  id: string;
-  name: string;
-  title: string;
-  location: string;
-  education: string;
-  experience: number;
-  skills: string[];
-  matchScore: number;
-  source: string;
-  avatar: string;
-  culturalFitScore?: number;
-  complianceVerified?: boolean;
-  crossSourceVerified?: boolean;
-  crossSourceOccurrences?: number;
-  crossSourceSources?: string[];
-}
+import { Candidate } from "./types";
 
 interface CandidateCardProps {
   candidate: Candidate;
@@ -105,7 +88,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
               </div>
               <div>
                 <span className="text-sm font-medium">Education:</span>{" "}
-                <span className="text-sm">{candidate.education}</span>
+                <span className="text-sm">{candidate.education || 'Not specified'}</span>
               </div>
             </div>
 
