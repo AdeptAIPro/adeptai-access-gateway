@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -35,17 +36,17 @@ const CRM = () => {
     email: 'crm@adeptaipro.com'
   });
   
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
-  
   useEffect(() => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    
     const status = getHubSpotStatus();
     setHubspotStatus(status);
     
     fetchLeads();
-  }, [filter]);
+  }, [filter, user, navigate]);
   
   const fetchLeads = async () => {
     setLoading(true);
@@ -202,6 +203,10 @@ const CRM = () => {
       });
     }, 2000);
   };
+  
+  if (!user) {
+    return null;
+  }
   
   return (
     <DashboardLayout title="Sales CRM">

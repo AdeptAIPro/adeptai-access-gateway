@@ -10,16 +10,23 @@ import AppRoutes from "./AppRoutes";
 
 function App() {
   // Create a stable QueryClient instance using useState
-  const [queryClient] = React.useState(() => new QueryClient());
+  const [queryClient] = React.useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  }));
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
           <BrowserRouter>
             <AppRoutes />
+            <Toaster />
+            <Sonner />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
