@@ -3,21 +3,14 @@
  * Service for AI-powered data enrichment of leads and talent profiles
  */
 
-import { Lead } from "./types";
-import { saveLead } from "./LeadService";
-import { 
-  enrichLeadWithAI, 
-  batchEnrichLeads 
-} from "./ai-enrichment/leadEnrichment";
-import { 
-  enrichTalentWithAI, 
-  batchEnrichTalents 
-} from "./ai-enrichment/talentEnrichment";
-
-// Re-export the functions for backward compatibility
+// Re-export the functions from their respective modules
 export {
   enrichLeadWithAI,
+  batchEnrichLeads
+} from "./ai-enrichment/leadEnrichment";
+
+export {
   enrichTalentWithAI,
-  batchEnrichLeads,
   batchEnrichTalents
-};
+} from "./ai-enrichment/talentEnrichment";
+
