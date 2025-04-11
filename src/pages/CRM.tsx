@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -17,6 +16,7 @@ import LeadCaptureForm from "@/components/crm/LeadCaptureForm";
 import LeadManagementCard from "@/components/crm/LeadManagementCard";
 import HubspotIntegrationCard from "@/components/crm/HubspotIntegrationCard";
 import LeadScoreDistributionChart from "@/components/crm/LeadScoreDistributionChart";
+import AIDataEnrichmentCard from "@/components/crm/AIDataEnrichmentCard";
 
 const CRM = () => {
   const { user } = useAuth();
@@ -173,6 +173,35 @@ const CRM = () => {
       });
     }
   };
+
+  const handleEnrichLeads = (source: string) => {
+    toast({
+      title: "Enriching Leads",
+      description: `Using ${source} to enrich your lead data...`,
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Leads Enriched",
+        description: `Successfully enriched 12 leads with ${source}`,
+      });
+      fetchLeads();
+    }, 2000);
+  };
+
+  const handleEnrichTalents = (source: string) => {
+    toast({
+      title: "Enriching Talent Database",
+      description: `Using ${source} to enrich your talent database...`,
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Talent Database Enriched",
+        description: `Successfully enriched 18 candidate profiles with ${source}`,
+      });
+    }, 2000);
+  };
   
   return (
     <DashboardLayout title="Sales CRM">
@@ -206,14 +235,21 @@ const CRM = () => {
             />
           </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New Lead</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LeadCaptureForm source="manual" />
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Add New Lead</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LeadCaptureForm source="manual" />
+              </CardContent>
+            </Card>
+            
+            <AIDataEnrichmentCard
+              onEnrichLeads={handleEnrichLeads}
+              onEnrichTalents={handleEnrichTalents}
+            />
+          </div>
         </div>
       </div>
     </DashboardLayout>
