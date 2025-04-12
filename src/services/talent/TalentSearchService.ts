@@ -32,7 +32,7 @@ export const searchTalents = async (
     // Check cache first
     const cacheKey = getCacheKey(params);
     if (searchCache.has(cacheKey)) {
-      const cached = searchCache.get(cacheKey);
+      const cached = searchCache.get(cacheKey)!;
       const cacheAge = Date.now() - (cached.timestamp || 0);
       
       // Return cached results if not expired
@@ -122,7 +122,7 @@ export const searchTalentsWithAgenticIntelligence = async (
     const agenticCacheKey = `agentic-${getCacheKey(params)}-${jobDescription.slice(0, 50)}-${requiredSkills.join(',')}-${preferredSkills.join(',')}`;
     
     if (searchCache.has(agenticCacheKey)) {
-      const cached = searchCache.get(agenticCacheKey);
+      const cached = searchCache.get(agenticCacheKey)!;
       const cacheAge = Date.now() - (cached.timestamp || 0);
       
       // Return cached results if not expired
