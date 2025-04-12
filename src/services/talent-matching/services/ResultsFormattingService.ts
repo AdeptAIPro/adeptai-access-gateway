@@ -3,6 +3,9 @@ import { MatchingResult, Candidate } from "@/components/talent-matching/types";
 import { generateDummyInsights } from "@/hooks/talent-matching/matching-utils";
 import { ProcessedJobDescription } from "./JobProcessingService";
 
+// Cache for insights to prevent redundant calculations
+const insightsCache = new Map<string, any>();
+
 /**
  * Creates the final matching result object from candidates and job details
  */
@@ -15,14 +18,34 @@ export const formatMatchingResults = (
   // Sort candidates by match score
   const sortedCandidates = [...candidates].sort((a, b) => b.matchScore - a.matchScore);
   
-  // Generate insights
-  const insights = generateDummyInsights(targetSources);
+  // Generate or retrieve insights from cache
+  const cacheKey = targetSources.sort().join('-');
+  let insights;
   
-  // Calculate candidates per source
-  const candidatesPerSource = targetSources.reduce((acc, source) => {
-    acc[source] = candidates.filter(c => c.source === source).length;
-    return acc;
-  }, {} as Record<string, number>);
+  if (insightsCache.has(cacheKey)) {
+    insights = insightsCache.get(cacheKey);
+  } else {
+    insights = generateDummyInsights(targetSources);
+    insightsCache.set(cacheKey, insights);
+    
+    // Limit cache size
+    if (insightsCache.size > 20) {
+      const firstKey = insightsCache.keys().next().value;
+      insightsCache.delete(firstKey);
+    }
+  }
+  
+  // Calculate candidates per source (pre-compute for better performance)
+  const candidatesPerSource = {};
+  for (const source of targetSources) {
+    candidatesPerSource[source] = 0;
+  }
+  
+  for (const candidate of candidates) {
+    if (candidatesPerSource[candidate.source] !== undefined) {
+      candidatesPerSource[candidate.source]++;
+    }
+  }
   
   return {
     candidates: sortedCandidates,

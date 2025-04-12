@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { mockJobs } from "@/data/mockJobs";
 import JobHeader from "./JobHeader";
@@ -19,72 +19,82 @@ const JobListings: React.FC<JobListingsProps> = ({ searchQuery, location }) => {
   const [salary, setSalary] = useState<[number, number]>([0, 200]);
   const [sortBy, setSortBy] = useState<string>("relevance");
   
-  const filteredJobs = mockJobs.filter(job => {
-    const matchesSearch = 
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesLocation = 
-      !location || 
-      job.location.toLowerCase().includes(location.toLowerCase());
-    
-    const matchesJobType = 
-      jobType === "all" || 
-      job.jobType.toLowerCase() === jobType.toLowerCase();
-    
-    // Handle both number and string experience values, or undefined
-    let matchesExperience = true;
-    if (job.experience !== undefined) {
-      const jobExp = typeof job.experience === 'number' ? job.experience : 0;
-      matchesExperience = jobExp >= experience[0] && jobExp <= experience[1];
-    }
-    
-    let matchesSalary = true;
-    if (job.salaryRange) {
-      const salaryText = job.salaryRange.replace(/[^0-9-]/g, '');
-      const [minSal, maxSal] = salaryText.split('-').map(s => parseInt(s, 10));
-      if (!isNaN(minSal) && !isNaN(maxSal)) {
-        matchesSalary = (minSal >= salary[0] * 1000) && (maxSal <= salary[1] * 1000);
+  // Memoize filtered jobs to prevent unnecessary recalculations
+  const filteredJobs = useMemo(() => {
+    return mockJobs.filter(job => {
+      const matchesSearch = 
+        !searchQuery ||
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesLocation = 
+        !location || 
+        job.location.toLowerCase().includes(location.toLowerCase());
+      
+      const matchesJobType = 
+        jobType === "all" || 
+        job.jobType.toLowerCase() === jobType.toLowerCase();
+      
+      // Handle both number and string experience values, or undefined
+      let matchesExperience = true;
+      if (job.experience !== undefined) {
+        const jobExp = typeof job.experience === 'number' ? job.experience : 0;
+        matchesExperience = jobExp >= experience[0] && jobExp <= experience[1];
       }
-    }
-    
-    return matchesSearch && matchesLocation && matchesJobType && matchesExperience && matchesSalary;
-  });
+      
+      let matchesSalary = true;
+      if (job.salaryRange) {
+        const salaryText = job.salaryRange.replace(/[^0-9-]/g, '');
+        const [minSal, maxSal] = salaryText.split('-').map(s => parseInt(s, 10));
+        if (!isNaN(minSal) && !isNaN(maxSal)) {
+          matchesSalary = (minSal >= salary[0] * 1000) && (maxSal <= salary[1] * 1000);
+        }
+      }
+      
+      return matchesSearch && matchesLocation && matchesJobType && matchesExperience && matchesSalary;
+    });
+  }, [searchQuery, location, jobType, experience, salary]);
   
-  const sortedJobs = [...filteredJobs].sort((a, b) => {
-    if (sortBy === "newest") {
-      return new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime();
-    } else if (sortBy === "salary-high") {
-      return (b.salaryRange?.length || 0) - (a.salaryRange?.length || 0);
-    } else if (sortBy === "salary-low") {
-      return (a.salaryRange?.length || 0) - (b.salaryRange?.length || 0);
-    }
-    return 0;
-  });
+  // Memoize sorted jobs to prevent unnecessary recalculations
+  const sortedJobs = useMemo(() => {
+    return [...filteredJobs].sort((a, b) => {
+      if (sortBy === "newest") {
+        return new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime();
+      } else if (sortBy === "salary-high") {
+        return (b.salaryRange?.length || 0) - (a.salaryRange?.length || 0);
+      } else if (sortBy === "salary-low") {
+        return (a.salaryRange?.length || 0) - (b.salaryRange?.length || 0);
+      }
+      return 0;
+    });
+  }, [filteredJobs, sortBy]);
 
-  const toggleFilters = () => setShowFilters(!showFilters);
+  // Memoize job statistics
+  const jobStats = useMemo(() => {
+    return {
+      total: filteredJobs.length,
+      byJobType: {
+        fullTime: filteredJobs.filter(job => job.jobType === "Full-time").length,
+        partTime: filteredJobs.filter(job => job.jobType === "Part-time").length,
+        contract: filteredJobs.filter(job => job.jobType === "Contract").length,
+        remote: filteredJobs.filter(job => job.location.toLowerCase().includes("remote")).length,
+      }
+    };
+  }, [filteredJobs]);
+
+  const toggleFilters = useCallback(() => setShowFilters(!showFilters), [showFilters]);
   
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setJobType("all");
     setExperience([0, 10]);
     setSalary([0, 200]);
-  };
+  }, []);
   
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     // This function is left empty as the filtering is reactive
     // Could be used for analytics tracking or other side effects
-  };
-
-  const jobStats = {
-    total: filteredJobs.length,
-    byJobType: {
-      fullTime: filteredJobs.filter(job => job.jobType === "Full-time").length,
-      partTime: filteredJobs.filter(job => job.jobType === "Part-time").length,
-      contract: filteredJobs.filter(job => job.jobType === "Contract").length,
-      remote: filteredJobs.filter(job => job.location.toLowerCase().includes("remote")).length,
-    }
-  };
+  }, []);
 
   return (
     <div>
