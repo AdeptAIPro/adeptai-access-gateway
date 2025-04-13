@@ -6,6 +6,7 @@ import HeroSection from '@/components/it-consulting/HeroSection';
 import ServicesSection from '@/components/it-consulting/ServicesSection';
 import TechPartnersSection from '@/components/it-consulting/TechPartnersSection';
 import CybersecurityNewsSection from '@/components/it-consulting/CybersecurityNewsSection';
+import CaseStudiesSection from '@/components/it-consulting/CaseStudiesSection';
 import CallToAction from '@/components/it-consulting/CallToAction';
 
 export default function ITConsulting() {
@@ -19,6 +20,7 @@ export default function ITConsulting() {
         <section className="py-16 px-6">
           <div className="container mx-auto">
             <ServicesSection />
+            <CaseStudiesSection />
             <TechPartnersSection />
             <CybersecurityNewsSection />
             <CallToAction />
