@@ -7,6 +7,7 @@ import ServicesSection from '@/components/it-consulting/ServicesSection';
 import TechPartnersSection from '@/components/it-consulting/TechPartnersSection';
 import CybersecurityNewsSection from '@/components/it-consulting/CybersecurityNewsSection';
 import CaseStudiesSection from '@/components/it-consulting/CaseStudiesSection';
+import TestimonialsSection from '@/components/it-consulting/TestimonialsSection';
 import CallToAction from '@/components/it-consulting/CallToAction';
 
 export default function ITConsulting() {
@@ -21,6 +22,7 @@ export default function ITConsulting() {
           <div className="container mx-auto">
             <ServicesSection />
             <CaseStudiesSection />
+            <TestimonialsSection />
             <TechPartnersSection />
             <CybersecurityNewsSection />
             <CallToAction />
