@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Server, Shield, Code, Network, Eye, ShieldAlert } from 'lucide-react';
+import { CheckCircle, Server, Shield, Code, Network, Eye, ShieldAlert, Award, CloudCog } from 'lucide-react';
 import { SectionCard, SectionHeader } from '@/components/ui/section-card';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -74,6 +74,31 @@ const services = [
   }
 ];
 
+const techPartners = [
+  { name: 'Microsoft Azure', url: 'https://azure.microsoft.com', icon: <CloudCog className="w-8 h-8 text-blue-500" /> },
+  { name: 'Amazon Web Services', url: 'https://aws.amazon.com', icon: <Server className="w-8 h-8 text-orange-500" /> },
+  { name: 'Google Cloud', url: 'https://cloud.google.com', icon: <CloudCog className="w-8 h-8 text-green-500" /> },
+  { name: 'IBM Cloud', url: 'https://www.ibm.com/cloud', icon: <Server className="w-8 h-8 text-blue-700" /> },
+  { name: 'Oracle Cloud', url: 'https://www.oracle.com/cloud', icon: <CloudCog className="w-8 h-8 text-red-600" /> },
+  { name: 'Cisco', url: 'https://www.cisco.com', icon: <Network className="w-8 h-8 text-blue-600" /> },
+  { name: 'Fortinet', url: 'https://www.fortinet.com', icon: <Shield className="w-8 h-8 text-purple-600" /> },
+  { name: 'Palo Alto Networks', url: 'https://www.paloaltonetworks.com', icon: <ShieldAlert className="w-8 h-8 text-green-700" /> },
+  { name: 'CrowdStrike', url: 'https://www.crowdstrike.com', icon: <Shield className="w-8 h-8 text-red-500" /> },
+  { name: 'VMware', url: 'https://www.vmware.com', icon: <Server className="w-8 h-8 text-blue-400" /> },
+  { name: 'Salesforce', url: 'https://www.salesforce.com', icon: <CloudCog className="w-8 h-8 text-blue-500" /> },
+  { name: 'ServiceNow', url: 'https://www.servicenow.com', icon: <Code className="w-8 h-8 text-green-500" /> }
+];
+
+const certifications = [
+  'ISO 27001 Certified',
+  'SOC 2 Type II Compliant',
+  'HIPAA Compliant',
+  'PCI DSS Certified',
+  'GDPR Compliant',
+  'CMMC Level 3 Ready',
+  'FedRAMP Authorized'
+];
+
 export default function ITConsulting() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -120,6 +145,48 @@ export default function ITConsulting() {
                       </ul>
                     </CardContent>
                   </Card>
+                ))}
+              </div>
+            </SectionCard>
+
+            {/* Technology Partners Section */}
+            <SectionCard>
+              <SectionHeader title="Our Technology Partners" icon={<Award className="w-6 h-6 text-adept" />} />
+              <p className="text-center text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
+                We collaborate with industry-leading technology providers to deliver best-in-class solutions
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mt-8">
+                {techPartners.map((partner, index) => (
+                  <a 
+                    key={index} 
+                    href={partner.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center justify-center p-4 rounded-lg border border-gray-200 hover:border-adept hover:shadow-md transition-all duration-300"
+                    aria-label={`Visit ${partner.name} website`}
+                  >
+                    <div className="mb-3">
+                      {partner.icon}
+                    </div>
+                    <span className="text-center text-sm font-medium">{partner.name}</span>
+                  </a>
+                ))}
+              </div>
+            </SectionCard>
+
+            {/* Certifications Section */}
+            <SectionCard>
+              <SectionHeader title="Industry Certifications" icon={<Award className="w-6 h-6 text-adept" />} />
+              <div className="flex flex-wrap justify-center gap-4 mt-6">
+                {certifications.map((cert, index) => (
+                  <div 
+                    key={index}
+                    className="bg-gray-100 px-4 py-2 rounded-full flex items-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium">{cert}</span>
+                  </div>
                 ))}
               </div>
             </SectionCard>
