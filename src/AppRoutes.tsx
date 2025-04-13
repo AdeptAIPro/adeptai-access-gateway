@@ -28,6 +28,7 @@ import Integrations from "@/pages/Integrations";
 import Onboarding from "@/pages/Onboarding";
 import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
 import Resources from "@/pages/Resources";
+import ITConsulting from "@/pages/ITConsulting";
 
 // Marketplace Pages
 import Marketplace from "@/pages/Marketplace";
@@ -46,6 +47,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/services/it-consulting" element={<ITConsulting />} />
       
       {/* Resources Routes */}
       <Route path="/resources" element={<Resources />} />

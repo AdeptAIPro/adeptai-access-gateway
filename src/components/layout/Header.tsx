@@ -13,7 +13,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Briefcase, Store, BookOpen } from "lucide-react";
+import { Briefcase, Store, BookOpen, Server, Shield } from 'lucide-react';
 
 const Header = () => {
   const { user } = useAuth();
@@ -33,6 +33,62 @@ const Header = () => {
             
             <NavigationMenu>
               <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors bg-transparent">Services</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px]">
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/services/it-consulting"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <Server className="h-4 w-4" />
+                              <div className="text-sm font-medium leading-none">IT Consulting</div>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Enterprise cybersecurity and IT infrastructure solutions
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/talent-matching"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <Briefcase className="h-4 w-4" />
+                              <div className="text-sm font-medium leading-none">Talent Solutions</div>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              AI-powered hiring and workforce management
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/compliance"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <Shield className="h-4 w-4" />
+                              <div className="text-sm font-medium leading-none">Compliance</div>
+                            </div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Security and regulatory compliance services
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors bg-transparent">Marketplace</NavigationMenuTrigger>
                   <NavigationMenuContent>
