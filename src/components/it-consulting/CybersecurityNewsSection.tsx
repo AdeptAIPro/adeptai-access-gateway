@@ -3,6 +3,7 @@ import React from 'react';
 import { SectionCard, SectionHeader } from '@/components/ui/section-card';
 import { Newspaper, ExternalLink, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Cybersecurity News data
 const cybersecurityNews = [
@@ -37,34 +38,36 @@ const cybersecurityNews = [
 ];
 
 const CybersecurityNewsSection: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <SectionCard>
       <SectionHeader title="Latest in Cybersecurity" icon={<Newspaper className="w-6 h-6 text-adept" />} />
-      <p className="text-center text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
+      <p className="text-center text-lg text-muted-foreground mb-8 md:mb-12 max-w-3xl mx-auto px-4 md:px-0">
         Stay informed about the evolving cybersecurity landscape with our curated news feed
       </p>
 
-      <div className="space-y-6 mt-8">
+      <div className="space-y-4 md:space-y-6 mt-6 md:mt-8 px-2 md:px-0">
         {cybersecurityNews.map((news, index) => (
           <a 
             key={index}
             href={news.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block p-6 rounded-lg border border-gray-200 hover:border-adept hover:shadow-md transition-all duration-300"
+            className="block p-4 md:p-6 rounded-lg border border-gray-200 hover:border-adept hover:shadow-md transition-all duration-300"
           >
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-medium text-gray-900">{news.title}</h3>
-              <div className="flex items-center text-gray-500 text-sm">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-2">
+              <h3 className="text-base md:text-lg font-medium text-gray-900 mb-1 md:mb-0">{news.title}</h3>
+              <div className="flex items-center text-gray-500 text-xs md:text-sm whitespace-nowrap">
                 <Clock className="w-3 h-3 mr-1" />
                 {news.date}
               </div>
             </div>
-            <p className="text-muted-foreground mb-3">{news.summary}</p>
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-500">Source: {news.source}</span>
+            <p className="text-sm md:text-base text-muted-foreground mb-3">{news.summary}</p>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+              <span className="text-xs md:text-sm font-medium text-gray-500 mb-2 md:mb-0">Source: {news.source}</span>
               <div className="text-adept flex items-center">
-                <span className="text-sm mr-1">Read more</span>
+                <span className="text-xs md:text-sm mr-1">Read more</span>
                 <ExternalLink className="w-3 h-3" />
               </div>
             </div>
@@ -72,7 +75,7 @@ const CybersecurityNewsSection: React.FC = () => {
         ))}
       </div>
       
-      <div className="text-center mt-8">
+      <div className="text-center mt-6 md:mt-8">
         <Button variant="outline" className="border-adept text-adept hover:bg-adept hover:text-white">
           <a href="/resources/cybersecurity" className="flex items-center gap-2">
             View All Cybersecurity Resources

@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Server, Shield, Code, Network, Eye, ShieldAlert } from 'lucide-react';
 import { SectionCard, SectionHeader } from '@/components/ui/section-card';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const services = [
   {
@@ -14,7 +15,7 @@ const services = [
       'Staffing Automation',
       'HR Dashboard'
     ],
-    icon: <CheckCircle className="w-6 h-6 text-adept" />
+    icon: <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-adept" />
   },
   {
     title: 'Global Load Testing (Maelstrom)',
@@ -25,7 +26,7 @@ const services = [
       'AI-driven port vulnerability scans',
       'Real-time performance reporting'
     ],
-    icon: <Server className="w-6 h-6 text-adept" />
+    icon: <Server className="w-5 h-5 md:w-6 md:h-6 text-adept" />
   },
   {
     title: 'Automated Penetration Testing (Vortex)',
@@ -36,7 +37,7 @@ const services = [
       'Compliance readiness (GDPR, HIPAA, SOC 2, etc.)',
       'Automated remediation suggestions'
     ],
-    icon: <Code className="w-6 h-6 text-adept" />
+    icon: <Code className="w-5 h-5 md:w-6 md:h-6 text-adept" />
   },
   {
     title: 'Network Threat Monitoring & Honeypot (Echo)',
@@ -47,7 +48,7 @@ const services = [
       'Zero disruption to operations',
       'Detailed reporting with remediation guidance'
     ],
-    icon: <Network className="w-6 h-6 text-adept" />
+    icon: <Network className="w-5 h-5 md:w-6 md:h-6 text-adept" />
   },
   {
     title: 'Virtual AI CISO for Strategic Cybersecurity',
@@ -58,7 +59,7 @@ const services = [
       'Actionable threat intelligence',
       'Tailored reports and alerts for decision-makers'
     ],
-    icon: <ShieldAlert className="w-6 h-6 text-adept" />
+    icon: <ShieldAlert className="w-5 h-5 md:w-6 md:h-6 text-adept" />
   },
   {
     title: 'Security Compliance Services',
@@ -67,31 +68,33 @@ const services = [
       'SOC 2, ISO 27001, PCI DSS',
       'HIPAA, GDPR, CMMC, FedRAMP'
     ],
-    icon: <Shield className="w-6 h-6 text-adept" />
+    icon: <Shield className="w-5 h-5 md:w-6 md:h-6 text-adept" />
   }
 ];
 
 const ServicesSection: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <SectionCard>
       <SectionHeader title="Our IT Consulting Services" icon={<Eye className="w-6 h-6 text-adept" />} />
-      <p className="text-center text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
+      <p className="text-center text-base md:text-lg text-muted-foreground mb-8 md:mb-12 max-w-3xl mx-auto px-4 md:px-0">
         Empowering Your Business with Advanced Technology Solutions and Enterprise-Grade Security
       </p>
 
-      <div className="grid gap-8 md:grid-cols-2 mt-8">
+      <div className="grid gap-4 md:gap-8 grid-cols-1 md:grid-cols-2 mt-6 md:mt-8 px-2 md:px-0">
         {services.map((service, index) => (
           <Card key={index} className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
                 {service.icon}
-                <h2 className="text-xl font-semibold">{service.title}</h2>
+                <h2 className="text-lg md:text-xl font-semibold">{service.title}</h2>
               </div>
-              <p className="text-muted-foreground mb-4">{service.description}</p>
-              <ul className="space-y-2">
+              <p className="text-sm md:text-base text-muted-foreground mb-3 md:mb-4">{service.description}</p>
+              <ul className="space-y-1 md:space-y-2">
                 {service.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-adept" />
+                  <li key={idx} className="flex items-center gap-2 text-sm md:text-base">
+                    <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-adept flex-shrink-0" />
                     <span>{feature}</span>
                   </li>
                 ))}
