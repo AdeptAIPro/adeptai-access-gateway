@@ -10,25 +10,34 @@ import MatchingInsights from "./MatchingInsights";
 
 export interface ResultsSectionProps {
   matchResult: MatchingResult;
-  onStartNewMatch: () => void;
+  isLoading?: boolean;
+  matchingProgress?: number;
+  onStartNewMatch?: () => void;
+  handleStartNewMatch?: () => void;
   saveCandidate?: (id: string) => void;
   contactCandidate?: (id: string) => void;
 }
 
 const ResultsSection: React.FC<ResultsSectionProps> = ({
   matchResult,
+  isLoading,
+  matchingProgress,
   onStartNewMatch,
+  handleStartNewMatch,
   saveCandidate,
   contactCandidate
 }) => {
   const [activeTab, setActiveTab] = useState("candidates");
+  
+  // Use handleStartNewMatch if provided, otherwise use onStartNewMatch
+  const handleNewMatch = handleStartNewMatch || onStartNewMatch || (() => {});
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Button variant="outline" size="sm" onClick={onStartNewMatch}>
+            <Button variant="outline" size="sm" onClick={handleNewMatch}>
               <ArrowLeft className="mr-1 h-4 w-4" />
               New Match
             </Button>

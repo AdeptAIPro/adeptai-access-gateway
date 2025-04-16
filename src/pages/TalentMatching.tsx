@@ -74,6 +74,8 @@ const TalentMatching = () => {
                   setSelectedTargetSources={talentMatching.setSelectedTargetSources}
                   useCrossSourceIntelligence={talentMatching.useCrossSourceIntelligence}
                   setUseCrossSourceIntelligence={talentMatching.setUseCrossSourceIntelligence}
+                  isProcessing={talentMatching.isLoading}
+                  progress={talentMatching.matchingProgress}
                 />
               ) : (
                 <ResultsSection 

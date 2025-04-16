@@ -6,7 +6,11 @@ import MatchingInputForm from "./input/MatchingInputForm";
 import MatchingResultsContainer from "./results/MatchingResultsContainer";
 import { useTalentMatching } from "@/hooks/use-talent-matching";
 
-const TalentMatchingContainer: React.FC = () => {
+interface TalentMatchingContainerProps {
+  children?: React.ReactNode;
+}
+
+const TalentMatchingContainer: React.FC<TalentMatchingContainerProps> = ({ children }) => {
   const {
     jobDescription,
     setJobDescription,
@@ -89,6 +93,8 @@ const TalentMatchingContainer: React.FC = () => {
           contactCandidate={contactCandidate}
         />
       )}
+      
+      {children}
     </div>
   );
 };

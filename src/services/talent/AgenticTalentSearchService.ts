@@ -6,6 +6,7 @@ import {
 } from './types';
 import { processCrossSourceTalentIntelligenceTask } from '../agentic-ai/talent/CrossSourceTalentIntelligenceService';
 import { supabase } from '@/lib/supabase';
+import { AgentTask } from '../agentic-ai/types/AgenticTypes';
 
 /**
  * Service for searching talents using AI-powered cross-source intelligence
@@ -20,9 +21,9 @@ export const searchTalentsWithAgenticIntelligence = async (
   
   try {
     // Create a task for the agentic AI system
-    const task = {
+    const task: AgentTask = {
       id: `task-${Date.now()}`,
-      taskType: "talent-intelligence",
+      taskType: "cross-source-talent-intelligence",
       status: "pending",
       goal: "Find candidates matching job requirements across multiple sources",
       createdAt: new Date().toISOString(),

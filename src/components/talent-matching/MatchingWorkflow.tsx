@@ -5,19 +5,35 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ChevronDown, ChevronUp, Cog, Loader2, Sparkles, Info, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MatchingOptions } from "./types";
 
-interface MatchingWorkflowProps {
+export interface MatchingWorkflowProps {
+  jobDescription?: string;
+  setJobDescription?: (desc: string) => void;
+  tab?: string;
+  setTab?: (tab: string) => void;
+  matchingOptions?: MatchingOptions;
+  setMatchingOptions?: (options: MatchingOptions) => void;
+  fileUploaded?: File | null;
+  setFileUploaded?: (file: File | null) => void;
+  error?: string | null;
+  setError?: (error: string | null) => void;
+  handleStartMatching?: () => void;
+  isReadyToStart?: boolean;
+  showAdvancedOptions?: boolean;
+  setShowAdvancedOptions?: (show: boolean) => void;
+  selectedTargetSources?: string[];
+  setSelectedTargetSources?: (sources: string[]) => void;
+  useCrossSourceIntelligence?: boolean;
+  setUseCrossSourceIntelligence?: (use: boolean) => void;
   isStarted?: boolean;
   isProcessing?: boolean;
   isComplete?: boolean;
   currentStep?: number;
   progress?: number;
   progressText?: string;
-  showAdvancedOptions?: boolean;
-  setShowAdvancedOptions?: (show: boolean) => void;
   onStartMatching?: () => void;
   onCancel?: () => void;
-  isReadyToStart?: boolean;
 }
 
 const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
@@ -32,7 +48,11 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
   onStartMatching = () => {},
   onCancel = () => {},
   isReadyToStart = false,
+  handleStartMatching,
 }) => {
+  // Use handleStartMatching if provided, otherwise use onStartMatching
+  const handleStart = handleStartMatching || onStartMatching;
+
   return (
     <Card className="p-6 border-adept/20 shadow-lg hover:shadow-xl transition-shadow bg-gradient-to-r from-slate-50 to-white">
       <div className={cn("flex flex-col md:flex-row md:justify-between md:items-center gap-4", isProcessing && "mb-4")}>
@@ -59,7 +79,7 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
           ) : (
             <Button
               size="lg"
-              onClick={onStartMatching}
+              onClick={handleStart}
               disabled={!isReadyToStart}
               className={cn(
                 "bg-adept hover:bg-adept/90 text-white transition-all px-8 py-6 text-lg",
