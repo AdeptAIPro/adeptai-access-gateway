@@ -25,13 +25,24 @@ export type CandidateRecord = {
   skills: string[];
   match_score?: number;
   source: string;
-  avatar_url: string;
+  source_url?: string;
+  platform?: string;
+  avatar_url?: string;
   cultural_fit_score?: number;
   compliance_verified?: boolean;
   certifications?: string[];
   implicit_competencies?: string[];
   historical_success_rate?: number;
+  resume_text?: string;
   created_at?: string;
+  updated_at?: string;
+  contact_info?: {
+    email?: string;
+    phone?: string;
+  };
+  profile_status?: 'active' | 'inactive' | 'pending';
+  enrichment_status?: 'pending' | 'completed' | 'failed';
+  last_enriched?: string;
 };
 
 export type JobRecord = {
@@ -57,5 +68,31 @@ export type IntegrationRecord = {
   connected: boolean;
   api_key?: string;
   api_url?: string;
+  created_at?: string;
+};
+
+export type DataSourceRecord = {
+  id: string;
+  name: string;
+  type: string;
+  url?: string;
+  status: string;
+  last_scraped?: string;
+  candidates_count: number;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type ImportStatsRecord = {
+  id: string;
+  total_processed: number;
+  successful_imports: number;
+  failed_imports: number;
+  duplicates_found: number;
+  enrichment_performed: number;
+  start_time: string;
+  end_time: string;
+  sources: string[];
   created_at?: string;
 };

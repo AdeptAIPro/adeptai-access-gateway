@@ -1,60 +1,115 @@
 
-import React, { useState, useEffect } from "react";
-import PageContainer from "@/components/talent-matching/layout/PageContainer";
-import TalentMatchingHero from "@/components/talent-matching/TalentMatchingHero";
-import AlertNotification from "@/components/talent-matching/AlertNotification";
-import MatchingToolSection from "@/components/talent-matching/MatchingToolSection";
-import UserGuide from "@/components/talent-matching/guide/UserGuide";
-import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import React, { useState } from 'react';
+import { useTalentMatching } from '@/hooks/use-talent-matching';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import TalentMatchingHero from '@/components/talent-matching/TalentMatchingHero';
+import TalentMatchingContainer from '@/components/talent-matching/TalentMatchingContainer';
+import MatchingWorkflow from '@/components/talent-matching/MatchingWorkflow';
+import ResultsSection from '@/components/talent-matching/ResultsSection';
+import TalentDataDashboard from '@/components/talent-matching/data-acquisition/TalentDataDashboard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/hooks/use-auth';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Search, 
+  BarChart2, 
+  Database,
+  Users
+} from 'lucide-react';
 
-const TalentMatching: React.FC = () => {
-  const { toast } = useToast();
-  const [featureStatus, setFeatureStatus] = useState<'active' | 'limited' | 'disabled'>('active');
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  
-  // Mock checking feature access
-  useEffect(() => {
-    // In a real app, this would check user subscription/permissions
-    // For demo purposes, we're just using active status
-    setFeatureStatus('active');
-    
-    // Example status message - normally this would be set based on actual status
-    if (featureStatus === 'limited') {
-      setStatusMessage("You're using the basic version of AI Talent Matching. Upgrade for advanced features.");
+const TalentMatching = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('matching');
+  const talentMatching = useTalentMatching();
+
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/login');
     }
-  }, [featureStatus]);
+  }, [user, navigate]);
 
   return (
-    <PageContainer title="AI Talent Matchmaking">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header />
       <TalentMatchingHero />
-      
-      {featureStatus === 'limited' && statusMessage && (
-        <Alert variant="warning" className="mt-4 mb-2">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Limited Access</AlertTitle>
-          <AlertDescription>{statusMessage}</AlertDescription>
-        </Alert>
-      )}
-      
-      {featureStatus === 'disabled' && (
-        <Alert variant="destructive" className="mt-4 mb-2">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Feature Unavailable</AlertTitle>
-          <AlertDescription>
-            AI Talent Matching is not available on your current plan.
-            Please upgrade to access this feature.
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      <AlertNotification />
-      <MatchingToolSection />
-      <Separator className="my-12" />
-      <UserGuide />
-    </PageContainer>
+
+      <div className="container mx-auto px-4 py-8 flex-1">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full md:w-auto bg-card border shadow-sm mb-6">
+            <TabsTrigger value="matching" className="flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              <span>AI Matching</span>
+            </TabsTrigger>
+            <TabsTrigger value="database" className="flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              <span>Talent Database</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart2 className="h-4 w-4" />
+              <span>Analytics</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="matching" className="p-0">
+            <TalentMatchingContainer>
+              {!talentMatching.showResults ? (
+                <MatchingWorkflow 
+                  jobDescription={talentMatching.jobDescription}
+                  setJobDescription={talentMatching.setJobDescription}
+                  tab={talentMatching.tab}
+                  setTab={talentMatching.setTab}
+                  matchingOptions={talentMatching.matchingOptions}
+                  setMatchingOptions={talentMatching.setMatchingOptions}
+                  fileUploaded={talentMatching.fileUploaded}
+                  setFileUploaded={talentMatching.setFileUploaded}
+                  error={talentMatching.error}
+                  setError={talentMatching.setError}
+                  handleStartMatching={talentMatching.handleStartMatching}
+                  isReadyToStart={talentMatching.isReadyToStart}
+                  showAdvancedOptions={talentMatching.showAdvancedOptions}
+                  setShowAdvancedOptions={talentMatching.setShowAdvancedOptions}
+                  selectedTargetSources={talentMatching.selectedTargetSources}
+                  setSelectedTargetSources={talentMatching.setSelectedTargetSources}
+                  useCrossSourceIntelligence={talentMatching.useCrossSourceIntelligence}
+                  setUseCrossSourceIntelligence={talentMatching.setUseCrossSourceIntelligence}
+                />
+              ) : (
+                <ResultsSection 
+                  isLoading={talentMatching.isLoading}
+                  matchingProgress={talentMatching.matchingProgress}
+                  matchResult={talentMatching.matchResult}
+                  handleStartNewMatch={talentMatching.handleStartNewMatch}
+                  saveCandidate={talentMatching.saveCandidate}
+                  contactCandidate={talentMatching.contactCandidate}
+                />
+              )}
+            </TalentMatchingContainer>
+          </TabsContent>
+
+          <TabsContent value="database" className="p-0">
+            <TalentDataDashboard />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="p-0">
+            <div className="bg-white p-8 rounded-lg border shadow-sm">
+              <div className="flex items-center justify-center p-12 border-2 border-dashed rounded-md">
+                <div className="text-center">
+                  <BarChart2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <h3 className="text-lg font-medium">Talent Pool Analytics</h3>
+                  <p className="text-muted-foreground mt-2 max-w-md">
+                    Analytics for your internal talent pool will be available here. This includes candidate source metrics, talent gap analysis, and market insights.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <Footer />
+    </div>
   );
 };
 
