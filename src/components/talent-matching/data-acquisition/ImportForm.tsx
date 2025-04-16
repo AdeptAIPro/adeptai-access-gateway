@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -36,6 +35,7 @@ import {
   batchImportCandidates 
 } from "@/services/talent/TalentDataAcquisitionService";
 import { Upload, FileText, AlertCircle, Loader2 } from "lucide-react";
+import UploadDocumentTab from "../job-description/UploadDocumentTab";
 
 // Define form schema with Zod
 const importFormSchema = z.object({
@@ -60,12 +60,14 @@ interface ImportFormProps {
   dataSources: DataSource[];
   onImportComplete: (stats: ImportStats) => void;
   selectedSource: DataSource | null;
+  onBulkUpload?: (files: File[]) => Promise<void>;
 }
 
 const ImportForm: React.FC<ImportFormProps> = ({ 
   dataSources, 
   onImportComplete,
-  selectedSource 
+  selectedSource,
+  onBulkUpload
 }) => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -116,6 +118,42 @@ const ImportForm: React.FC<ImportFormProps> = ({
       toast({
         title: "Error",
         description: "Failed to parse resume text",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleBulkUpload = async (files: File[]) => {
+    setIsProcessing(true);
+    setParsedResults([]);
+    setPreviewMode(false);
+    
+    try {
+      const sourceName = form.getValues("sourceName");
+      
+      // Process each file
+      for (const file of files) {
+        const reader = new FileReader();
+        
+        reader.onload = async (e) => {
+          const text = e.target?.result as string;
+          if (text) {
+            const result = await parseResumeText(text, sourceName);
+            setParsedResults(prev => [...prev, result]);
+          }
+        };
+        
+        reader.readAsText(file);
+      }
+      
+      setPreviewMode(true);
+    } catch (error) {
+      console.error("Error processing files:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process uploaded files",
         variant: "destructive",
       });
     } finally {
@@ -232,27 +270,45 @@ const ImportForm: React.FC<ImportFormProps> = ({
                   )}
                 />
                 
-                <FormField
-                  control={form.control}
-                  name="resumeText"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Resume Text</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Paste resume text here" 
-                          className="min-h-[200px]"
-                          {...field}
-                          disabled={isProcessing}
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Upload Method</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Single Resume</h4>
+                        <FormField
+                          control={form.control}
+                          name="resumeText"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Textarea 
+                                  placeholder="Paste resume text here" 
+                                  className="min-h-[200px]"
+                                  {...field}
+                                  disabled={isProcessing}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                Paste the text content of a resume or profile to parse
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </FormControl>
-                      <FormDescription>
-                        Paste the text content of a resume or profile to parse
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Bulk Upload</h4>
+                        <UploadDocumentTab
+                          fileUploaded={null}
+                          setFileUploaded={() => {}}
+                          onBulkUpload={handleBulkUpload}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 
                 <div className="flex justify-end space-x-2">
                   <Button 
