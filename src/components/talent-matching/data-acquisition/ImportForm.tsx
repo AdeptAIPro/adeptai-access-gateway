@@ -1,56 +1,54 @@
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
-import { ImportFormValues, importFormSchema } from "./import/types";
-import { DataSource, ImportStats, ResumeParsingResult } from "@/components/talent-matching/types";
-import { parseResumeText } from "@/services/talent/TalentDataAcquisitionService";
+import { useImportForm } from "@/hooks/talent-matching/use-import-form";
+import { useFileUpload } from "@/hooks/talent-matching/use-file-upload";
+import { useResumeParser } from "@/hooks/talent-matching/use-resume-parser";
+import { DataSource, ImportStats } from "@/components/talent-matching/types";
 import ImportFormHeader from "./import/ImportFormHeader";
 import ImportSourceFields from "./import/ImportSourceFields";
 import ImportUrlField from "./import/ImportUrlField";
 import ImportPreview from "./import/ImportPreview";
 import UploadDocumentTab from "../job-description/UploadDocumentTab";
+import { Form } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ImportFormProps {
   dataSources: DataSource[];
   onImportComplete: (stats: ImportStats) => void;
   selectedSource: DataSource | null;
-  onBulkUpload?: (files: File[]) => Promise<void>;
 }
 
 const ImportForm: React.FC<ImportFormProps> = ({ 
   dataSources, 
   onImportComplete,
   selectedSource,
-  onBulkUpload
 }) => {
-  const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [parsedResults, setParsedResults] = useState<ResumeParsingResult[]>([]);
-  const [previewMode, setPreviewMode] = useState(false);
-  
-  const form = useForm<ImportFormValues>({
-    resolver: zodResolver(importFormSchema),
-    defaultValues: {
-      sourceType: selectedSource?.type || "",
-      sourceName: selectedSource?.name || "",
-      resumeText: "",
-      sourceUrl: selectedSource?.url || "",
-    },
+  const {
+    form,
+    isProcessing,
+    setIsProcessing,
+    previewMode,
+    setPreviewMode,
+    toast
+  } = useImportForm(selectedSource, onImportComplete);
+
+  const {
+    bulkFiles,
+    setBulkFiles,
+    isUploading,
+    handleFileUpload
+  } = useFileUpload((results) => {
+    setParsedResults(results);
+    setPreviewMode(true);
   });
-  
-  React.useEffect(() => {
-    if (selectedSource) {
-      form.setValue("sourceType", selectedSource.type);
-      form.setValue("sourceName", selectedSource.name);
-      form.setValue("sourceUrl", selectedSource.url || "");
-    }
-  }, [selectedSource, form]);
+
+  const {
+    parsedResults,
+    setParsedResults,
+    parseResumes,
+    parseBulkResumes
+  } = useResumeParser();
 
   const onSubmit = async (data: ImportFormValues) => {
     setIsProcessing(true);
@@ -59,9 +57,10 @@ const ImportForm: React.FC<ImportFormProps> = ({
     
     try {
       if (data.resumeText) {
-        const result = await parseResumeText(data.resumeText, data.sourceName, data.sourceUrl);
-        setParsedResults([result]);
-        setPreviewMode(true);
+        const result = await parseResumes(data.resumeText, data.sourceName, data.sourceUrl);
+        if (result) {
+          setPreviewMode(true);
+        }
       } else {
         toast({
           title: "No Data",
@@ -69,13 +68,6 @@ const ImportForm: React.FC<ImportFormProps> = ({
           variant: "destructive",
         });
       }
-    } catch (error) {
-      console.error("Error parsing resume:", error);
-      toast({
-        title: "Error",
-        description: "Failed to parse resume text",
-        variant: "destructive",
-      });
     } finally {
       setIsProcessing(false);
     }
@@ -88,21 +80,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
     
     try {
       const sourceName = form.getValues("sourceName");
-      
-      for (const file of files) {
-        const reader = new FileReader();
-        
-        reader.onload = async (e) => {
-          const text = e.target?.result as string;
-          if (text) {
-            const result = await parseResumeText(text, sourceName);
-            setParsedResults(prev => [...prev, result]);
-          }
-        };
-        
-        reader.readAsText(file);
-      }
-      
+      await parseBulkResumes(files, sourceName);
       setPreviewMode(true);
     } catch (error) {
       console.error("Error processing files:", error);
@@ -140,13 +118,6 @@ const ImportForm: React.FC<ImportFormProps> = ({
       toast({
         title: "Import Complete",
         description: `Successfully imported ${parsedResults.length} resumes`,
-      });
-    } catch (error) {
-      console.error("Error importing candidates:", error);
-      toast({
-        title: "Import Failed",
-        description: "Failed to import candidates",
-        variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
