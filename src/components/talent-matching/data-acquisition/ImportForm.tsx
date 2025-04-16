@@ -1,6 +1,5 @@
-
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useImportForm } from "@/hooks/talent-matching/use-import-form";
 import { useFileUpload } from "@/hooks/talent-matching/use-file-upload";
 import { useResumeParser } from "@/hooks/talent-matching/use-resume-parser";
@@ -9,9 +8,10 @@ import ImportFormHeader from "./import/ImportFormHeader";
 import ImportSourceFields from "./import/ImportSourceFields";
 import ImportUrlField from "./import/ImportUrlField";
 import ImportPreview from "./import/ImportPreview";
-import UploadDocumentTab from "../job-description/UploadDocumentTab";
+import BulkUpload from "./import/BulkUpload";
 import { Form } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { FormField } from "@/components/ui/form";
 
 interface ImportFormProps {
   dataSources: DataSource[];
@@ -36,7 +36,12 @@ const ImportForm: React.FC<ImportFormProps> = ({
   const {
     bulkFiles,
     setBulkFiles,
+    uploadProgress,
+    setUploadProgress,
     isUploading,
+    setIsUploading,
+    error,
+    setError,
     handleFileUpload
   } = useFileUpload((results) => {
     setParsedResults(results);
@@ -129,46 +134,66 @@ const ImportForm: React.FC<ImportFormProps> = ({
       {!previewMode ? (
         <Card>
           <ImportFormHeader />
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <ImportSourceFields form={form} isProcessing={isProcessing} />
-                <ImportUrlField form={form} isProcessing={isProcessing} />
-                
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Upload Method</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="text-sm font-medium mb-2">Single Resume</h4>
-                        <FormField
-                          control={form.control}
-                          name="resumeText"
-                          render={({ field }) => (
-                            <Textarea 
-                              placeholder="Paste resume text here" 
-                              className="min-h-[200px]"
-                              {...field}
-                              disabled={isProcessing}
-                            />
-                          )}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <ImportSourceFields form={form} isProcessing={isProcessing} />
+              <ImportUrlField form={form} isProcessing={isProcessing} />
+              
+              <div className="grid grid-cols-1 gap-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Upload Method</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Single Resume</h4>
+                      <FormField
+                        control={form.control}
+                        name="resumeText"
+                        render={({ field }) => (
+                          <Textarea 
+                            placeholder="Paste resume text here" 
+                            className="min-h-[200px]"
+                            {...field}
+                            disabled={isProcessing}
+                          />
+                        )}
+                      />
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Bulk Upload</h4>
+                      {bulkFiles.length > 0 ? (
+                        <BulkUpload
+                          files={bulkFiles}
+                          uploadProgress={uploadProgress}
+                          isUploading={isUploading}
+                          error={error}
+                          onUpload={handleBulkUpload}
+                          onCancel={() => setBulkFiles([])}
                         />
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-sm font-medium mb-2">Bulk Upload</h4>
-                        <UploadDocumentTab
-                          fileUploaded={null}
-                          setFileUploaded={() => {}}
-                          onBulkUpload={handleBulkUpload}
-                        />
-                      </div>
+                      ) : (
+                        <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                          <input
+                            type="file"
+                            id="file-upload"
+                            className="hidden"
+                            accept=".pdf,.docx,.txt"
+                            multiple
+                            onChange={(e) => handleFileUpload(Array.from(e.target.files || []))}
+                          />
+                          <label
+                            htmlFor="file-upload"
+                            className="cursor-pointer text-sm text-gray-600"
+                          >
+                            Drop files here or click to browse
+                          </label>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </form>
-            </Form>
-          </CardContent>
+              </div>
+            </form>
+          </Form>
         </Card>
       ) : (
         <ImportPreview 

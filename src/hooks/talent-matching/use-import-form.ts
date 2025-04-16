@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ImportFormValues, importFormSchema } from '@/components/talent-matching/data-acquisition/import/types';
 import { useToast } from '@/hooks/use-toast';
-import { DataSource } from '@/components/talent-matching/types';
+import { DataSource, ImportStats } from '@/components/talent-matching/types';
+import React from 'react';
 
 export const useImportForm = (
   selectedSource: DataSource | null,
