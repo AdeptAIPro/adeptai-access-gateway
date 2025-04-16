@@ -1,22 +1,28 @@
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useTalentMatching } from '@/hooks/use-talent-matching';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import TalentMatchingHero from '@/components/talent-matching/TalentMatchingHero';
-import TalentMatchingContainer from '@/components/talent-matching/TalentMatchingContainer';
-import MatchingWorkflow from '@/components/talent-matching/MatchingWorkflow';
-import ResultsSection from '@/components/talent-matching/ResultsSection';
-import TalentDataDashboard from '@/components/talent-matching/data-acquisition/TalentDataDashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  BarChart2, 
-  Database,
-  Users
-} from 'lucide-react';
+import { Search, BarChart2, Database } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+
+// Lazy loaded components
+const TalentMatchingHero = React.lazy(() => import('@/components/talent-matching/TalentMatchingHero'));
+const TalentMatchingContainer = React.lazy(() => import('@/components/talent-matching/TalentMatchingContainer'));
+const MatchingWorkflow = React.lazy(() => import('@/components/talent-matching/MatchingWorkflow'));
+const ResultsSection = React.lazy(() => import('@/components/talent-matching/ResultsSection'));
+const TalentDataDashboard = React.lazy(() => import('@/components/talent-matching/data-acquisition/TalentDataDashboard'));
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center p-8">
+    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+  </div>
+);
 
 const TalentMatching = () => {
   const navigate = useNavigate();
@@ -33,7 +39,9 @@ const TalentMatching = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <TalentMatchingHero />
+      <Suspense fallback={<LoadingFallback />}>
+        <TalentMatchingHero />
+      </Suspense>
 
       <div className="container mx-auto px-4 py-8 flex-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -53,49 +61,41 @@ const TalentMatching = () => {
           </TabsList>
 
           <TabsContent value="matching" className="p-0">
-            <TalentMatchingContainer>
-              {!talentMatching.showResults ? (
-                <MatchingWorkflow 
-                  jobDescription={talentMatching.jobDescription}
-                  setJobDescription={talentMatching.setJobDescription}
-                  tab={talentMatching.tab}
-                  setTab={talentMatching.setTab}
-                  matchingOptions={talentMatching.matchingOptions}
-                  setMatchingOptions={talentMatching.setMatchingOptions}
-                  fileUploaded={talentMatching.fileUploaded}
-                  setFileUploaded={talentMatching.setFileUploaded}
-                  error={talentMatching.error}
-                  setError={talentMatching.setError}
-                  handleStartMatching={talentMatching.handleStartMatching}
-                  isReadyToStart={talentMatching.isReadyToStart}
-                  showAdvancedOptions={talentMatching.showAdvancedOptions}
-                  setShowAdvancedOptions={talentMatching.setShowAdvancedOptions}
-                  selectedTargetSources={talentMatching.selectedTargetSources}
-                  setSelectedTargetSources={talentMatching.setSelectedTargetSources}
-                  useCrossSourceIntelligence={talentMatching.useCrossSourceIntelligence}
-                  setUseCrossSourceIntelligence={talentMatching.setUseCrossSourceIntelligence}
-                  isProcessing={talentMatching.isLoading}
-                  progress={talentMatching.matchingProgress}
-                />
-              ) : (
-                <ResultsSection 
-                  isLoading={talentMatching.isLoading}
-                  matchingProgress={talentMatching.matchingProgress}
-                  matchResult={talentMatching.matchResult}
-                  handleStartNewMatch={talentMatching.handleStartNewMatch}
-                  saveCandidate={talentMatching.saveCandidate}
-                  contactCandidate={talentMatching.contactCandidate}
-                />
-              )}
-            </TalentMatchingContainer>
+            <Suspense fallback={<LoadingFallback />}>
+              <TalentMatchingContainer>
+                {!talentMatching.showResults ? (
+                  <Suspense fallback={<LoadingFallback />}>
+                    <MatchingWorkflow 
+                      isProcessing={talentMatching.isLoading}
+                      progress={talentMatching.matchingProgress}
+                      showAdvancedOptions={talentMatching.showAdvancedOptions}
+                      setShowAdvancedOptions={talentMatching.setShowAdvancedOptions}
+                      isReadyToStart={talentMatching.isReadyToStart}
+                      handleStartMatching={talentMatching.handleStartMatching}
+                    />
+                  </Suspense>
+                ) : (
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ResultsSection 
+                      matchResult={talentMatching.matchResult}
+                      handleStartNewMatch={talentMatching.handleStartNewMatch}
+                      saveCandidate={talentMatching.saveCandidate}
+                      contactCandidate={talentMatching.contactCandidate}
+                    />
+                  </Suspense>
+                )}
+              </TalentMatchingContainer>
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="database" className="p-0">
-            <TalentDataDashboard />
+            <Suspense fallback={<LoadingFallback />}>
+              <TalentDataDashboard />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="analytics" className="p-0">
-            <div className="bg-white p-8 rounded-lg border shadow-sm">
+            <Card className="bg-white p-8 rounded-lg border shadow-sm">
               <div className="flex items-center justify-center p-12 border-2 border-dashed rounded-md">
                 <div className="text-center">
                   <BarChart2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
@@ -105,7 +105,7 @@ const TalentMatching = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
