@@ -5,14 +5,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { getTalentSources } from "@/services/talent/TalentSearchService";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Globe, Building, Database, Users, FileSpreadsheet, Stethoscope, Code } from "lucide-react";
+import { Globe, Building, Database, Users, FileSpreadsheet, Stethoscope, Code, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import UploadDocumentTab from "@/components/talent-matching/job-description/UploadDocumentTab";
+import { Button } from "@/components/ui/button";
 
 interface TargetSourceSelectionProps {
   selectedSources: string[];
   setSelectedSources: (sources: string[]) => void;
+  onShowBulkUpload?: () => void;
+  bulkUploaded?: boolean;
 }
 
 // Enhanced source lists with industry-specific options
@@ -45,7 +49,9 @@ const IT_SOURCES = [
 
 const TargetSourceSelection: React.FC<TargetSourceSelectionProps> = ({
   selectedSources,
-  setSelectedSources
+  setSelectedSources,
+  onShowBulkUpload,
+  bulkUploaded = false
 }) => {
   const [sources, setSources] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -131,6 +137,7 @@ const TargetSourceSelection: React.FC<TargetSourceSelectionProps> = ({
     if (sourceLC.includes('health') || sourceLC.includes('nurs') || sourceLC.includes('med')) return <Stethoscope className="h-4 w-4 text-red-500" />;
     if (sourceLC.includes('stack') || sourceLC.includes('hack')) return <Code className="h-4 w-4 text-orange-500" />;
     if (sourceLC.includes('spreadsheet') || sourceLC.includes('excel')) return <FileSpreadsheet className="h-4 w-4 text-green-700" />;
+    if (sourceLC.includes('uploaded') || sourceLC.includes('resume')) return <Upload className="h-4 w-4 text-blue-600" />;
     
     return <Building className="h-4 w-4 text-gray-500" />;
   };
@@ -188,27 +195,62 @@ const TargetSourceSelection: React.FC<TargetSourceSelectionProps> = ({
             <Skeleton className="h-6 w-full" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {sources.map((source) => (
-              <div key={source} className="flex items-center space-x-2">
+          <>
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-3">
                 <Checkbox
-                  id={`source-${source}`}
-                  checked={selectedSources.includes(source)}
+                  id="source-uploaded-resumes"
+                  checked={selectedSources.includes("Uploaded Resumes")}
                   onCheckedChange={(checked) => 
-                    handleSourceChange(source, checked as boolean)
+                    handleSourceChange("Uploaded Resumes", checked as boolean)
                   }
                   className="data-[state=checked]:bg-adept data-[state=checked]:border-adept"
                 />
                 <Label
-                  htmlFor={`source-${source}`}
+                  htmlFor="source-uploaded-resumes"
                   className="flex items-center text-sm font-medium cursor-pointer"
                 >
-                  {getSourceIcon(source)}
-                  <span className="ml-2">{source}</span>
+                  <Upload className="h-4 w-4 text-blue-600 mr-2" />
+                  <span>Uploaded Resumes</span>
+                  {bulkUploaded && <Badge variant="outline" className="ml-2 bg-green-50 text-green-800">Resumes Added</Badge>}
                 </Label>
               </div>
-            ))}
-          </div>
+              
+              {onShowBulkUpload && selectedSources.includes("Uploaded Resumes") && !bulkUploaded && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="ml-6 mb-3"
+                  onClick={onShowBulkUpload}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Resumes
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {sources.map((source) => (
+                <div key={source} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`source-${source}`}
+                    checked={selectedSources.includes(source)}
+                    onCheckedChange={(checked) => 
+                      handleSourceChange(source, checked as boolean)
+                    }
+                    className="data-[state=checked]:bg-adept data-[state=checked]:border-adept"
+                  />
+                  <Label
+                    htmlFor={`source-${source}`}
+                    className="flex items-center text-sm font-medium cursor-pointer"
+                  >
+                    {getSourceIcon(source)}
+                    <span className="ml-2">{source}</span>
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

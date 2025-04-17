@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router-dom';
-import { Search, BarChart2, Database } from 'lucide-react';
+import { Search, BarChart2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 
@@ -50,10 +50,6 @@ const TalentMatching = () => {
               <Search className="h-4 w-4" />
               <span>AI Matching</span>
             </TabsTrigger>
-            <TabsTrigger value="database" className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              <span>Talent Database</span>
-            </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart2 className="h-4 w-4" />
               <span>Analytics</span>
@@ -85,12 +81,6 @@ const TalentMatching = () => {
                   </Suspense>
                 )}
               </TalentMatchingContainer>
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="database" className="p-0">
-            <Suspense fallback={<LoadingFallback />}>
-              <TalentDataDashboard />
             </Suspense>
           </TabsContent>
 

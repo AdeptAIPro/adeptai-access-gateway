@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useState } from "react";
 import JobDescriptionInput from "../JobDescriptionInput";
 import TargetSourceSelection from "../TargetSourceSelection";
 import AdvancedMatchingSection from "../advanced-options/AdvancedMatchingSection";
 import MatchingWorkflow from "../MatchingWorkflow";
 import { MatchingOptions } from "../types";
+import BulkResumeUpload from "../BulkResumeUpload";
 
 interface MatchingInputFormProps {
   jobDescription: string;
@@ -47,6 +48,17 @@ const MatchingInputForm: React.FC<MatchingInputFormProps> = ({
   onStartMatching,
   isReadyToStart
 }) => {
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [bulkUploaded, setBulkUploaded] = useState(false);
+
+  const handleShowBulkUpload = () => {
+    setShowBulkUpload(true);
+  };
+
+  const handleBulkUploadComplete = () => {
+    setBulkUploaded(true);
+  };
+
   return (
     <>
       <JobDescriptionInput 
@@ -61,6 +73,8 @@ const MatchingInputForm: React.FC<MatchingInputFormProps> = ({
       <TargetSourceSelection
         selectedSources={selectedTargetSources}
         setSelectedSources={setSelectedTargetSources}
+        onShowBulkUpload={handleShowBulkUpload}
+        bulkUploaded={bulkUploaded}
       />
       
       <AdvancedMatchingSection
@@ -84,6 +98,12 @@ const MatchingInputForm: React.FC<MatchingInputFormProps> = ({
         onStartMatching={onStartMatching}
         onCancel={() => {}}
         isReadyToStart={isReadyToStart}
+      />
+
+      <BulkResumeUpload 
+        isOpen={showBulkUpload}
+        onClose={() => setShowBulkUpload(false)}
+        onUploadComplete={handleBulkUploadComplete}
       />
     </>
   );

@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 
 export interface MatchingOptions {
@@ -11,6 +10,13 @@ export interface MatchingOptions {
   useSkillBasedFiltering?: boolean;
   matchingModel?: string;
   targetSources?: string[];
+}
+
+export interface ImportFormValues {
+  sourceType: string;
+  sourceName: string;
+  resumeText: string;
+  sourceUrl: string;
 }
 
 export interface MatchingModel {
@@ -116,7 +122,6 @@ export interface TabContent {
   content: ReactNode;
 }
 
-// Talent Data Acquisition Types
 export interface DataSource {
   id: string;
   name: string;

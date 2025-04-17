@@ -1,9 +1,10 @@
+
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { useImportForm } from "@/hooks/talent-matching/use-import-form";
 import { useFileUpload } from "@/hooks/talent-matching/use-file-upload";
 import { useResumeParser } from "@/hooks/talent-matching/use-resume-parser";
-import { DataSource, ImportStats } from "@/components/talent-matching/types";
+import { DataSource, ImportStats, ImportFormValues } from "@/components/talent-matching/types";
 import ImportFormHeader from "./import/ImportFormHeader";
 import ImportSourceFields from "./import/ImportSourceFields";
 import ImportUrlField from "./import/ImportUrlField";
@@ -78,14 +79,14 @@ const ImportForm: React.FC<ImportFormProps> = ({
     }
   };
 
-  const handleBulkUpload = async (files: File[]) => {
+  const handleBulkUpload = async () => {
     setIsProcessing(true);
     setParsedResults([]);
     setPreviewMode(false);
     
     try {
       const sourceName = form.getValues("sourceName");
-      await parseBulkResumes(files, sourceName);
+      await parseBulkResumes(bulkFiles, sourceName);
       setPreviewMode(true);
     } catch (error) {
       console.error("Error processing files:", error);
