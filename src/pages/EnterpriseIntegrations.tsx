@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { categories, createIntegrationsList } from "@/utils/integrationUtils";
+import { categories, createIntegrationsList } from "@/utils/integrations";
 import IntegrationSearch from "@/components/integrations/IntegrationSearch";
 import IntegrationTabs from "@/components/integrations/IntegrationTabs";
 import IntegrationsGuide from "@/components/integrations/IntegrationsGuide";

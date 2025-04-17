@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
-import { categories, createIntegrationsList } from "@/utils/integrationUtils";
+import { categories, createIntegrationsList } from "@/utils/integrations";
 import IntegrationSearch from "@/components/integrations/IntegrationSearch";
 import IntegrationTabs from "@/components/integrations/IntegrationTabs";
 import IntegrationsGuide from "@/components/integrations/IntegrationsGuide";
