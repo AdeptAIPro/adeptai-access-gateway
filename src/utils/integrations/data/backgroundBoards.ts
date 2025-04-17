@@ -2,14 +2,14 @@
 import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
-export const createProductivityList = (): IntegrationItem[] => {
-  return ["Google Calendar", "Microsoft Teams", "Slack", "Trello", "Asana", "Zoom", "Microsoft Office"]
+export const createBackgroundBoardsList = (): IntegrationItem[] => {
+  return ["Sterling", "HireRight", "Checkr", "VerifIPass", "GoodHire", "Accurate Background"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
-      description: `Integrate with ${name}`,
+      description: `Background checks with ${name}`,
       icon: getIconForIntegration(name),
-      category: "Productivity",
+      category: "Background Boards",
       connected: Math.random() > 0.8,
     }));
 };
