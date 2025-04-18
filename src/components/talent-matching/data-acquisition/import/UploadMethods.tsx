@@ -14,7 +14,7 @@ interface UploadMethodsProps {
   error: string | null;
   onUpload: () => Promise<void>;
   onCancel: () => void;
-  onFileSelect: (files: File[]) => void;
+  onFileSelect: (files: FileList) => void;
 }
 
 const UploadMethods: React.FC<UploadMethodsProps> = ({
@@ -28,20 +28,36 @@ const UploadMethods: React.FC<UploadMethodsProps> = ({
   onCancel,
   onFileSelect
 }) => {
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      onFileSelect(Array.from(e.target.files));
-    }
-  };
-
+  const [activeTab, setActiveTab] = React.useState<'text' | 'file'>('text');
+  
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Upload Method</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SingleResumeUpload form={form} isProcessing={isProcessing} />
-        
-        <div>
-          <h4 className="text-sm font-medium mb-2">Bulk Upload</h4>
+      <div className="flex items-center space-x-4 border-b pb-4">
+        <button
+          type="button"
+          className={`pb-2 font-medium text-sm ${activeTab === 'text' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'}`}
+          onClick={() => setActiveTab('text')}
+        >
+          Paste Resume Text
+        </button>
+        <button
+          type="button"
+          className={`pb-2 font-medium text-sm ${activeTab === 'file' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'}`}
+          onClick={() => setActiveTab('file')}
+        >
+          Upload Resume File(s)
+        </button>
+      </div>
+      
+      {activeTab === 'text' ? (
+        <div className="space-y-4">
+          <SingleResumeUpload 
+            form={form} 
+            isProcessing={isProcessing} 
+          />
+        </div>
+      ) : (
+        <div className="space-y-4">
           {bulkFiles.length > 0 ? (
             <BulkUpload
               files={bulkFiles}
@@ -52,25 +68,28 @@ const UploadMethods: React.FC<UploadMethodsProps> = ({
               onCancel={onCancel}
             />
           ) : (
-            <div className="border-2 border-dashed rounded-lg p-6 text-center">
+            <div 
+              className="border-2 border-dashed rounded-md p-8 flex flex-col items-center cursor-pointer hover:bg-muted/50 transition-colors"
+              onClick={() => document.getElementById('resume-upload')?.click()}
+            >
               <input
+                id="resume-upload"
                 type="file"
-                id="file-upload"
-                className="hidden"
-                accept=".pdf,.docx,.txt"
                 multiple
-                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx,.txt,.rtf"
+                className="hidden"
+                onChange={(e) => e.target.files && onFileSelect(e.target.files)}
               />
-              <label
-                htmlFor="file-upload"
-                className="cursor-pointer text-sm text-gray-600"
-              >
-                Drop files here or click to browse
-              </label>
+              <div className="text-center">
+                <p className="text-sm font-medium">Drag & drop resume files, or click to browse</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Supports PDF, Word, TXT, and RTF formats
+                </p>
+              </div>
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
