@@ -9,7 +9,7 @@ export const createSocialList = (): IntegrationItem[] => {
       name,
       description: `Connect to ${name}`,
       icon: getIconForIntegration(name),
-      category: "Social Platforms",
+      category: "Social",
       connected: Math.random() > 0.8,
     }));
 };

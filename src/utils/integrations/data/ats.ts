@@ -9,7 +9,7 @@ export const createAtsList = (): IntegrationItem[] => {
       name,
       description: `Connect to ${name} ATS`,
       icon: getIconForIntegration(name),
-      category: "Applicant Tracking Systems",
+      category: "ATS",
       connected: Math.random() > 0.8,
     }));
 };
