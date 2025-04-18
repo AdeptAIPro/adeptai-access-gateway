@@ -3,11 +3,11 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createProductivityList = (): IntegrationItem[] => {
-  return ["Google Calendar", "Microsoft Teams", "Slack", "Trello", "Asana", "Zoom", "Microsoft Office"]
+  return ["Slack", "Microsoft Teams", "Google Workspace", "Asana", "Trello", "Monday.com", "ClickUp"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
-      description: `Integrate with ${name}`,
+      description: `Connect to ${name} for team productivity`,
       icon: getIconForIntegration(name),
       category: "Productivity",
       connected: Math.random() > 0.8,
