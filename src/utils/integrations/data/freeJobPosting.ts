@@ -1,15 +1,29 @@
 
-import { IntegrationItem } from "@/types/integration";
-import { getIconForIntegration } from "../icons";
+import { Integration } from './categories';
 
-export const createFreeJobPostingList = (): IntegrationItem[] => {
-  return ["Google for Jobs", "Facebook Jobs", "Craigslist", "Jooble", "Adzuna", "JobRapido", "Trovit"]
-    .map(name => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      description: `Post jobs to ${name} for free`,
-      icon: getIconForIntegration(name),
-      category: "Free Job Posting",
-      connected: Math.random() > 0.8,
-    }));
-};
+export function createFreeJobPostingList(): Integration[] {
+  return [
+    {
+      id: 'google-jobs',
+      name: 'Google Jobs',
+      description: 'Post jobs to Google Jobs',
+      status: 'active',
+      popular: true,
+      logoUrl: '/img/integrations/google.svg'
+    },
+    {
+      id: 'glassdoor',
+      name: 'Glassdoor',
+      description: 'Post jobs to Glassdoor',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/glassdoor.svg'
+    },
+    {
+      id: 'careerjunction',
+      name: 'CareerJunction',
+      description: 'Post jobs to CareerJunction',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/careerjunction.svg'
+    }
+  ];
+}

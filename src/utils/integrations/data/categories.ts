@@ -1,14 +1,18 @@
 
-export const categories = [
-  "All",
-  "VMS Systems",
-  "ATS",
-  "Paid Job Boards",
-  "Free Job Posting",
-  "Social",
-  "Productivity",
-  "Compliance Boards",
-  "Background Boards",
-  "Onboarding Boards",
-  "CRM & HRMS"
-];
+export interface Integration {
+  id: string;
+  name: string;
+  description: string;
+  icon?: string;
+  status: 'active' | 'coming_soon' | 'beta';
+  url?: string;
+  popular?: boolean;
+  logoUrl?: string;
+}
+
+export interface IntegrationCategory {
+  id: string;
+  name: string;
+  description: string;
+  list: Integration[];
+}

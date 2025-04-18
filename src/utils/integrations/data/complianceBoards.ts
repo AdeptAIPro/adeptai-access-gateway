@@ -1,15 +1,28 @@
 
-import { IntegrationItem } from "@/types/integration";
-import { getIconForIntegration } from "../icons";
+import { Integration } from './categories';
 
-export const createComplianceBoardsList = (): IntegrationItem[] => {
-  return ["Nursys", "OIG Exclusions", "SAM.gov", "NPDB", "E-Verify", "I-9 Compliance", "Joint Commission"]
-    .map(name => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      description: `${name} compliance verification`,
-      icon: getIconForIntegration(name),
-      category: "Compliance Boards",
-      connected: Math.random() > 0.8,
-    }));
-};
+export function createComplianceBoardsList(): Integration[] {
+  return [
+    {
+      id: 'verified-credentials',
+      name: 'Verified Credentials',
+      description: 'Verify candidate credentials',
+      status: 'active',
+      logoUrl: '/img/integrations/verified.svg'
+    },
+    {
+      id: 'checkr',
+      name: 'Checkr',
+      description: 'Background checks',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/checkr.svg'
+    },
+    {
+      id: 'nursys',
+      name: 'Nursys',
+      description: 'Nurse verification system',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/nursys.svg'
+    }
+  ];
+}

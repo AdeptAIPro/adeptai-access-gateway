@@ -37,7 +37,9 @@ export const useResumeParser = () => {
         education: ["Bachelor's in Computer Science"],
         location: "San Francisco, CA",
         inferredExperience: 5,
-        originalText: resumeText
+        originalText: resumeText,
+        source: sourceName,
+        sourceUrl: sourceUrl
       };
       
       setParsedResults([result]);
@@ -82,7 +84,8 @@ export const useResumeParser = () => {
         education: ["Bachelor's in Computer Science"],
         location: index % 2 === 0 ? "San Francisco, CA" : "New York, NY",
         inferredExperience: 3 + index,
-        originalText: `Sample resume text for ${file.name}`
+        originalText: `Sample resume text for ${file.name}`,
+        source: sourceName
       }));
       
       setParsedResults(results);

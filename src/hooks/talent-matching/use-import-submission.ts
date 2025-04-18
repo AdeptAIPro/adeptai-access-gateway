@@ -1,8 +1,7 @@
 
 import { useState } from 'react';
-import { ImportFormValues } from '@/components/talent-matching/types';
+import { ImportFormValues, ImportStats, ResumeParsingResult } from '@/components/talent-matching/types';
 import { useToast } from '@/hooks/use-toast';
-import { ImportStats } from '@/components/talent-matching/types';
 import { useResumeParser } from '@/hooks/talent-matching/use-resume-parser';
 
 export const useImportSubmission = (

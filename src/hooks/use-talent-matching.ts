@@ -37,15 +37,20 @@ export const useTalentMatching = () => {
 
   // Construct matching options object
   const matchingOptions: MatchingOptions = {
-    model: "basic", // Default model
+    matchingModel: selectedModelId,
+    weightSkills: 0.5,
+    weightExperience: 0.3,
+    weightEducation: 0.2,
+    threshold: 60,
+    includePartialMatches: true,
     minMatchScore,
     useComplianceVerification,
     prioritizeCulturalFit,
     useSemanticMatching,
     useRAG,
     useSkillBasedFiltering,
-    matchingModel: selectedModelId,
     targetSources: selectedTargetSources,
+    model: "basic", // Default model
   };
 
   // Set matching options handler

@@ -1,15 +1,29 @@
 
-import { IntegrationItem } from "@/types/integration";
-import { getIconForIntegration } from "../icons";
+import { Integration } from './categories';
 
-export const createBackgroundBoardsList = (): IntegrationItem[] => {
-  return ["HireRight", "Sterling", "Checkr", "GoodHire", "Accurate", "Certn", "Cisive"]
-    .map(name => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      description: `${name} background verification`,
-      icon: getIconForIntegration(name),
-      category: "Background Boards",
-      connected: Math.random() > 0.8,
-    }));
-};
+export function createBackgroundBoardsList(): Integration[] {
+  return [
+    {
+      id: 'hireright',
+      name: 'HireRight',
+      description: 'Comprehensive background checks',
+      status: 'active',
+      popular: true,
+      logoUrl: '/img/integrations/hireright.svg'
+    },
+    {
+      id: 'sterling',
+      name: 'Sterling',
+      description: 'Background screening services',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/sterling.svg'
+    },
+    {
+      id: 'first-advantage',
+      name: 'First Advantage',
+      description: 'Background screening solutions',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/firstadvantage.svg'
+    }
+  ];
+}

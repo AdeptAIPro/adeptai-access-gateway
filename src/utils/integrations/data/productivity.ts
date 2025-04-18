@@ -1,15 +1,29 @@
 
-import { IntegrationItem } from "@/types/integration";
-import { getIconForIntegration } from "../icons";
+import { Integration } from './categories';
 
-export const createProductivityList = (): IntegrationItem[] => {
-  return ["Slack", "Microsoft Teams", "Google Workspace", "Asana", "Trello", "Monday.com", "ClickUp"]
-    .map(name => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      description: `Connect to ${name} for team productivity`,
-      icon: getIconForIntegration(name),
-      category: "Productivity",
-      connected: Math.random() > 0.8,
-    }));
-};
+export function createProductivityList(): Integration[] {
+  return [
+    {
+      id: 'slack',
+      name: 'Slack',
+      description: 'Connect with Slack',
+      status: 'active',
+      popular: true,
+      logoUrl: '/img/integrations/slack.svg'
+    },
+    {
+      id: 'microsoft-teams',
+      name: 'Microsoft Teams',
+      description: 'Connect with Microsoft Teams',
+      status: 'active',
+      logoUrl: '/img/integrations/teams.svg'
+    },
+    {
+      id: 'google-calendar',
+      name: 'Google Calendar',
+      description: 'Connect with Google Calendar',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/gcal.svg'
+    }
+  ];
+}

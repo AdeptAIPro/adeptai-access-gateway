@@ -1,15 +1,29 @@
 
-import { IntegrationItem } from "@/types/integration";
-import { getIconForIntegration } from "../icons";
+import { Integration } from './categories';
 
-export const createOnboardingBoardsList = (): IntegrationItem[] => {
-  return ["BambooHR", "Zenefits", "Rippling", "WorkDay", "TriNet", "GoCo", "Deel"]
-    .map(name => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      description: `Onboard employees with ${name}`,
-      icon: getIconForIntegration(name),
-      category: "Onboarding Boards",
-      connected: Math.random() > 0.8,
-    }));
-};
+export function createOnboardingBoardsList(): Integration[] {
+  return [
+    {
+      id: 'bamboohr',
+      name: 'BambooHR',
+      description: 'HR software for small and medium businesses',
+      status: 'active',
+      popular: true,
+      logoUrl: '/img/integrations/bamboohr.svg'
+    },
+    {
+      id: 'workday-onboarding',
+      name: 'Workday Onboarding',
+      description: 'Enterprise onboarding solutions',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/workday.svg'
+    },
+    {
+      id: 'clickboarding',
+      name: 'Click Boarding',
+      description: 'Modern onboarding platform',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/clickboarding.svg'
+    }
+  ];
+}

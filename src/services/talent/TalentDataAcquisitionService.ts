@@ -63,6 +63,9 @@ export const parseResumeText = async (text: string, source: string, sourceUrl?: 
     }
     
     return {
+      id: `resume-${Date.now()}`,
+      filename: `parsed-resume.txt`,
+      parsed: true,
       originalText: text.substring(0, 5000), // Limit text size
       name,
       email,
@@ -77,10 +80,12 @@ export const parseResumeText = async (text: string, source: string, sourceUrl?: 
   } catch (error) {
     console.error("Error parsing resume text:", error);
     return {
+      id: `error-${Date.now()}`,
+      filename: `error-resume.txt`,
+      parsed: false,
       originalText: text.substring(0, 100) + "...", // Only store beginning in case of error
       extractedSkills: [],
       source,
-      confidence: 0,
       error: "Failed to parse resume"
     };
   }
@@ -106,7 +111,7 @@ export const storeCandidateFromParsedResume = async (
       id: candidateId,
       name: parsedResume.name || "Unnamed Candidate",
       skills: parsedResume.extractedSkills,
-      source: parsedResume.source,
+      source: parsedResume.source || "",
       sourceUrl: parsedResume.sourceUrl,
       resumeText: parsedResume.originalText,
       experience: parsedResume.inferredExperience || 0,
@@ -115,16 +120,12 @@ export const storeCandidateFromParsedResume = async (
       title: "Unknown Position", // Will need to be inferred
       profileStatus: 'active',
       enrichmentStatus: 'pending',
-      lastUpdated: new Date().toISOString()
-    };
-    
-    // If we have contact info, add it
-    if (parsedResume.email || parsedResume.phone) {
-      candidate.contactInfo = {
+      // Add required fields
+      contactInfo: {
         email: parsedResume.email || "",
         phone: parsedResume.phone || ""
-      };
-    }
+      }
+    };
     
     // Check if we have valid Supabase connection
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -204,6 +205,7 @@ export const getDataSources = async (): Promise<DataSource[]> => {
       type: "github",
       url: "https://github.com",
       status: "active",
+      lastUpdated: new Date().toISOString(),
       lastScraped: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
       candidatesCount: 1250,
       description: "Developer profiles from GitHub with public repositories"
@@ -214,6 +216,7 @@ export const getDataSources = async (): Promise<DataSource[]> => {
       type: "linkedin",
       url: "https://www.linkedin.com",
       status: "active",
+      lastUpdated: new Date().toISOString(),
       lastScraped: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
       candidatesCount: 3750,
       description: "Public profiles from LinkedIn search results"
@@ -224,6 +227,7 @@ export const getDataSources = async (): Promise<DataSource[]> => {
       type: "indeed",
       url: "https://www.indeed.com",
       status: "inactive",
+      lastUpdated: new Date().toISOString(),
       candidatesCount: 850,
       description: "Resumes from Indeed's public resume database"
     },
@@ -233,6 +237,7 @@ export const getDataSources = async (): Promise<DataSource[]> => {
       type: "dataset",
       url: "https://www.kaggle.com/datasets/resume-dataset",
       status: "active",
+      lastUpdated: new Date().toISOString(),
       lastScraped: new Date(Date.now() - 604800000).toISOString(), // 1 week ago
       candidatesCount: 5000,
       description: "Open-source dataset of anonymized resumes"

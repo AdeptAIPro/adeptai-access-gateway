@@ -71,6 +71,12 @@ const ImportForm: React.FC<ImportFormProps> = ({
     setParsedResults([]);
     setPreviewMode(false);
   };
+  
+  // Helper function to convert FileList to File[]
+  const handleFileSelect = (fileList: FileList) => {
+    const filesArray = Array.from(fileList);
+    handleFileUpload(filesArray);
+  };
 
   return (
     <div className="space-y-6">
@@ -92,7 +98,7 @@ const ImportForm: React.FC<ImportFormProps> = ({
                   error={error}
                   onUpload={onBulkUpload}
                   onCancel={() => setBulkFiles([])}
-                  onFileSelect={handleFileUpload}
+                  onFileSelect={handleFileSelect}
                 />
               </div>
             </form>

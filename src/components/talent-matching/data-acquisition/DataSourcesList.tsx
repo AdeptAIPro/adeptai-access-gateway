@@ -55,6 +55,8 @@ const DataSourcesList: React.FC<DataSourcesListProps> = ({
         return <Badge variant="outline" className="text-gray-500">Inactive</Badge>;
       case 'pending':
         return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pending</Badge>;
+      case 'error':
+        return <Badge variant="destructive">Error</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }

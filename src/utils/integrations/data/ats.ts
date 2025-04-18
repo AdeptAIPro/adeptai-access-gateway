@@ -1,15 +1,36 @@
 
-import { IntegrationItem } from "@/types/integration";
-import { getIconForIntegration } from "../icons";
+import { Integration } from './categories';
 
-export const createAtsList = (): IntegrationItem[] => {
-  return ["Greenhouse", "Workday", "BambooHR", "Lever", "JazzHR", "Recruitee", "Workable"]
-    .map(name => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      description: `Connect to ${name} ATS`,
-      icon: getIconForIntegration(name),
-      category: "ATS",
-      connected: Math.random() > 0.8,
-    }));
-};
+export function createAtsList(): Integration[] {
+  return [
+    {
+      id: 'greenhouse',
+      name: 'Greenhouse',
+      description: 'Connect with Greenhouse ATS',
+      status: 'active',
+      popular: true,
+      logoUrl: '/img/integrations/greenhouse.svg'
+    },
+    {
+      id: 'lever',
+      name: 'Lever',
+      description: 'Connect with Lever ATS',
+      status: 'active',
+      logoUrl: '/img/integrations/lever.svg'
+    },
+    {
+      id: 'workday',
+      name: 'Workday',
+      description: 'Connect with Workday ATS',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/workday.svg'
+    },
+    {
+      id: 'jobvite',
+      name: 'Jobvite',
+      description: 'Connect with Jobvite ATS',
+      status: 'coming_soon',
+      logoUrl: '/img/integrations/jobvite.svg'
+    }
+  ];
+}

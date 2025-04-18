@@ -83,11 +83,11 @@ const ImportPreview: React.FC<ImportPreviewProps> = ({
                           </div>
                           <div className="flex items-center text-sm">
                             <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                            <span>{result.email || result.contact?.email || "Not provided"}</span>
+                            <span>{result.email || (result.contact && result.contact.email) || "Not provided"}</span>
                           </div>
                           <div className="flex items-center text-sm">
                             <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                            <span>{result.phone || result.contact?.phone || "Not provided"}</span>
+                            <span>{result.phone || (result.contact && result.contact.phone) || "Not provided"}</span>
                           </div>
                           <div className="flex items-center text-sm">
                             <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />

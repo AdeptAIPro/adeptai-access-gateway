@@ -5,8 +5,8 @@ export interface ResumeParsingResult {
   id: string;
   filename: string;
   parsed: boolean;
-  candidateName?: string;
   name?: string;
+  candidateName?: string;
   skills?: string[];
   experience?: string[];
   education?: string[];
@@ -21,6 +21,9 @@ export interface ResumeParsingResult {
   location?: string;
   originalText?: string;
   error?: string;
+  source?: string;
+  sourceUrl?: string;
+  confidence?: number;
 }
 
 export interface MatchingOptions {
@@ -99,6 +102,7 @@ export interface Candidate {
   education?: string;
   matchScore: number;
   source: string;
+  sourceUrl?: string;
   avatar?: string;
   crossSourceVerified?: boolean;
   crossSourceOccurrences?: number;
@@ -109,6 +113,14 @@ export interface Candidate {
   certifications?: string[];
   implicitCompetencies?: string[];
   historicalSuccessRate?: number;
+  contactInfo?: {
+    email: string;
+    phone: string;
+  };
+  resumeText?: string;
+  profileStatus?: string;
+  enrichmentStatus?: string;
+  embeddings?: any;
 }
 
 export interface MatchingInsightsData {
@@ -127,6 +139,7 @@ export interface MatchingInsightsData {
     mostEffectiveSources: string[];
     suggestedOutreachOrder: string[];
     untappedSources: string[];
+    recommendedSources?: string[];
   };
 }
 
@@ -147,6 +160,7 @@ export interface MatchingResult {
     verificationRate: number;
     averageCrossSourceScore: number;
   };
+  sourcesUsed?: string[];
 }
 
 export interface DataSource {
@@ -156,7 +170,8 @@ export interface DataSource {
   url?: string;
   candidatesCount: number;
   lastUpdated: string;
-  status: 'active' | 'inactive' | 'error';
+  lastScraped?: string;
+  status: 'active' | 'inactive' | 'pending' | 'error';
   icon?: React.ElementType;
   description?: string;
 }
