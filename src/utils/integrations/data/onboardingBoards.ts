@@ -6,24 +6,23 @@ export function createOnboardingBoardsList(): Integration[] {
     {
       id: 'bamboohr',
       name: 'BambooHR',
-      description: 'HR software for small and medium businesses',
+      description: 'HR and onboarding platform',
       status: 'active',
-      popular: true,
       logoUrl: '/img/integrations/bamboohr.svg'
     },
     {
       id: 'workday-onboarding',
       name: 'Workday Onboarding',
-      description: 'Enterprise onboarding solutions',
+      description: 'Enterprise onboarding',
       status: 'coming_soon',
       logoUrl: '/img/integrations/workday.svg'
     },
     {
-      id: 'clickboarding',
-      name: 'Click Boarding',
-      description: 'Modern onboarding platform',
+      id: 'zenefits',
+      name: 'Zenefits',
+      description: 'HR and onboarding',
       status: 'coming_soon',
-      logoUrl: '/img/integrations/clickboarding.svg'
+      logoUrl: '/img/integrations/zenefits.svg'
     }
   ];
 }

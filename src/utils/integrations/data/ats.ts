@@ -19,13 +19,6 @@ export function createAtsList(): Integration[] {
       logoUrl: '/img/integrations/lever.svg'
     },
     {
-      id: 'workday',
-      name: 'Workday',
-      description: 'Connect with Workday ATS',
-      status: 'coming_soon',
-      logoUrl: '/img/integrations/workday.svg'
-    },
-    {
       id: 'jobvite',
       name: 'Jobvite',
       description: 'Connect with Jobvite ATS',

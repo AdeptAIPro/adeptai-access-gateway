@@ -6,24 +6,23 @@ export function createBackgroundBoardsList(): Integration[] {
     {
       id: 'hireright',
       name: 'HireRight',
-      description: 'Comprehensive background checks',
+      description: 'Background screening',
       status: 'active',
-      popular: true,
       logoUrl: '/img/integrations/hireright.svg'
     },
     {
       id: 'sterling',
       name: 'Sterling',
-      description: 'Background screening services',
+      description: 'Background verification',
       status: 'coming_soon',
       logoUrl: '/img/integrations/sterling.svg'
     },
     {
-      id: 'first-advantage',
-      name: 'First Advantage',
-      description: 'Background screening solutions',
+      id: 'goodhire',
+      name: 'GoodHire',
+      description: 'Background checks',
       status: 'coming_soon',
-      logoUrl: '/img/integrations/firstadvantage.svg'
+      logoUrl: '/img/integrations/goodhire.svg'
     }
   ];
 }

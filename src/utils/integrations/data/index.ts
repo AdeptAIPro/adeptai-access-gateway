@@ -1,6 +1,4 @@
 
-import { Icon } from 'lucide-react';
-
 // Import the individual category creator functions
 import { createVmsSystemsList } from './vmsSystems';
 import { createAtsList } from './ats';
@@ -13,6 +11,20 @@ import { createBackgroundBoardsList } from './backgroundBoards';
 import { createOnboardingBoardsList } from './onboardingBoards';
 import { createCrmHrmsList } from './crmHrms';
 import { IntegrationCategory } from './categories';
+
+// Export all the creator functions
+export {
+  createVmsSystemsList,
+  createAtsList,
+  createPaidJobBoardsList,
+  createFreeJobPostingList,
+  createSocialList,
+  createProductivityList,
+  createComplianceBoardsList,
+  createBackgroundBoardsList,
+  createOnboardingBoardsList,
+  createCrmHrmsList
+};
 
 // Create lists for each integration category
 export const vmsSystems = createVmsSystemsList();
@@ -93,4 +105,31 @@ export const integrationCategories: IntegrationCategory[] = [
 // Function to get all integrations in a flat array
 export const getAllIntegrations = () => {
   return integrationCategories.flatMap(category => category.list);
+};
+
+// Create a combined list of all integrations
+export const createIntegrationsList = () => {
+  return getAllIntegrations().map(integration => ({
+    ...integration,
+    category: getIntegrationCategory(integration.id)?.name || 'Miscellaneous',
+    connected: Math.random() > 0.75, // Random connection status for demo
+    icon: getCategoryIconForIntegration(integration.id)
+  }));
+};
+
+// Helper function to determine the category name for an integration
+const getIntegrationCategory = (integrationId: string) => {
+  for (const category of integrationCategories) {
+    if (category.list.some(integration => integration.id === integrationId)) {
+      return category;
+    }
+  }
+  return null;
+};
+
+// Helper function to get icon for an integration based on its category
+const getCategoryIconForIntegration = (integrationId: string) => {
+  // This would normally map to actual icons
+  // For now, returning a placeholder function
+  return () => <div className="h-6 w-6 bg-blue-500 rounded-full"></div>;
 };

@@ -141,6 +141,11 @@ export interface MatchingInsightsData {
     untappedSources: string[];
     recommendedSources?: string[];
   };
+  crossSourceStatistics?: {
+    sourcesAnalyzed: number;
+    profilesMatched: number;
+    averageMatchConfidence: number;
+  };
 }
 
 export interface MatchingResult {
@@ -161,6 +166,7 @@ export interface MatchingResult {
     averageCrossSourceScore: number;
   };
   sourcesUsed?: string[];
+  candidatesPerSource?: Record<string, number>;
 }
 
 export interface DataSource {

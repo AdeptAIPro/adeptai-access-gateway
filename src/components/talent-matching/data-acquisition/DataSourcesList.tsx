@@ -1,138 +1,243 @@
 
-import React from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  MoreHorizontal,
+  ChevronDown,
+  Check,
+  Clock,
+  AlertCircle,
+  XCircle,
+  Trash,
+  Edit,
+  FileSpreadsheet,
+  RefreshCw,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { DataSource } from "@/components/talent-matching/types";
-import { Calendar, Play, Eye } from "lucide-react";
 
 interface DataSourcesListProps {
   dataSources: DataSource[];
-  onStartScraper: (sourceId: string) => void;
-  isLoading: boolean;
-  onSelectSource: (source: DataSource) => void;
+  onUpdateSource: (id: string) => void;
+  onDeleteSource: (id: string) => void;
+  onEditSource: (id: string) => void;
+  onExportSource: (id: string) => void;
 }
 
-const DataSourcesList: React.FC<DataSourcesListProps> = ({ 
-  dataSources, 
-  onStartScraper,
-  isLoading, 
-  onSelectSource
+const DataSourcesList: React.FC<DataSourcesListProps> = ({
+  dataSources,
+  onUpdateSource,
+  onDeleteSource,
+  onEditSource,
+  onExportSource,
 }) => {
-  const getSourceIcon = (type: DataSource['type']) => {
-    switch (type) {
-      case 'github':
-        return <span className="text-gray-700">GH</span>;
-      case 'linkedin':
-        return <span className="text-blue-600">LI</span>;
-      case 'indeed':
-        return <span className="text-blue-500">IN</span>;
-      case 'monster':
-        return <span className="text-purple-600">MO</span>;
-      case 'naukri':
-        return <span className="text-orange-500">NK</span>;
-      case 'portfolio':
-        return <span className="text-green-600">PF</span>;
-      case 'dataset':
-        return <span className="text-amber-600">DS</span>;
-      default:
-        return <span className="text-gray-500">?</span>;
+  const [sortColumn, setSortColumn] = useState<string>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
     }
   };
-  
-  const getStatusBadge = (status: DataSource['status']) => {
+
+  const sortedSources = [...dataSources].sort((a, b) => {
+    let comparison = 0;
+    
+    if (sortColumn === "name") {
+      comparison = a.name.localeCompare(b.name);
+    } else if (sortColumn === "type") {
+      comparison = a.type.localeCompare(b.type);
+    } else if (sortColumn === "count") {
+      comparison = a.candidatesCount - b.candidatesCount;
+    } else if (sortColumn === "lastUpdated") {
+      comparison = new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
+    } else if (sortColumn === "status") {
+      const statusOrder = { active: 0, pending: 1, inactive: 2, error: 3 };
+      comparison = statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder];
+    }
+
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
+
+  const renderStatus = (status: 'active' | 'inactive' | 'pending' | 'error') => {
     switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>;
-      case 'inactive':
-        return <Badge variant="outline" className="text-gray-500">Inactive</Badge>;
-      case 'pending':
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pending</Badge>;
-      case 'error':
-        return <Badge variant="destructive">Error</Badge>;
+      case "active":
+        return (
+          <Badge variant="success" className="font-normal">
+            <Check className="h-3 w-3 mr-1" />
+            Active
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge variant="outline" className="font-normal text-yellow-600 border-yellow-200 bg-yellow-50">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "inactive":
+        return (
+          <Badge variant="outline" className="font-normal">
+            <XCircle className="h-3 w-3 mr-1" />
+            Inactive
+          </Badge>
+        );
+      case "error":
+        return (
+          <Badge variant="destructive" className="font-normal">
+            <AlertCircle className="h-3 w-3 mr-1" />
+            Error
+          </Badge>
+        );
       default:
-        return <Badge variant="outline">Unknown</Badge>;
+        return null;
     }
   };
-  
+
   return (
-    <div className="border rounded-md">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">Type</TableHead>
-            <TableHead>Source Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Candidates</TableHead>
-            <TableHead className="w-24">Last Update</TableHead>
-            <TableHead className="text-right w-32">Actions</TableHead>
+            <TableHead 
+              className="cursor-pointer" 
+              onClick={() => handleSort("name")}
+            >
+              <div className="flex items-center">
+                Name
+                {sortColumn === "name" && (
+                  <ChevronDown 
+                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer" 
+              onClick={() => handleSort("type")}
+            >
+              <div className="flex items-center">
+                Type
+                {sortColumn === "type" && (
+                  <ChevronDown 
+                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer" 
+              onClick={() => handleSort("count")}
+            >
+              <div className="flex items-center">
+                Candidates
+                {sortColumn === "count" && (
+                  <ChevronDown 
+                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer" 
+              onClick={() => handleSort("lastUpdated")}
+            >
+              <div className="flex items-center">
+                Last Updated
+                {sortColumn === "lastUpdated" && (
+                  <ChevronDown 
+                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer" 
+              onClick={() => handleSort("status")}
+            >
+              <div className="flex items-center">
+                Status
+                {sortColumn === "status" && (
+                  <ChevronDown 
+                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[100px] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataSources.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                No data sources configured. Add your first data source to start collecting candidate data.
+          {sortedSources.map((source) => (
+            <TableRow key={source.id}>
+              <TableCell className="font-medium">{source.name}</TableCell>
+              <TableCell>{source.type}</TableCell>
+              <TableCell>{source.candidatesCount.toLocaleString()}</TableCell>
+              <TableCell>
+                {new Date(source.lastUpdated).toLocaleDateString()}
+                {source.lastScraped && (
+                  <div className="text-xs text-muted-foreground">
+                    Scraped: {new Date(source.lastScraped).toLocaleDateString()}
+                  </div>
+                )}
+              </TableCell>
+              <TableCell>{renderStatus(source.status)}</TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => onUpdateSource(source.id)}>
+                      <RefreshCw className="mr-2 h-4 w-4" /> Update
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onEditSource(source.id)}>
+                      <Edit className="mr-2 h-4 w-4" /> Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onExportSource(source.id)}>
+                      <FileSpreadsheet className="mr-2 h-4 w-4" /> Export
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={() => onDeleteSource(source.id)}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Trash className="mr-2 h-4 w-4" /> Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
-          ) : (
-            dataSources.map((source) => (
-              <TableRow key={source.id}>
-                <TableCell className="font-medium">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                    {getSourceIcon(source.type)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium">{source.name}</div>
-                  <div className="text-xs text-muted-foreground truncate max-w-xs">
-                    {source.description || source.url || "N/A"}
-                  </div>
-                </TableCell>
-                <TableCell>{getStatusBadge(source.status)}</TableCell>
-                <TableCell className="text-right font-medium">
-                  {source.candidatesCount.toLocaleString()}
-                </TableCell>
-                <TableCell>
-                  {source.lastScraped ? (
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {new Date(source.lastScraped).toLocaleDateString()}
-                    </div>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">Never</span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onSelectSource(source)}
-                      title="View Source Details"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      disabled={isLoading || source.status !== 'active'}
-                      onClick={() => onStartScraper(source.id)}
-                      title="Start Data Collection"
-                    >
-                      <Play className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
+          ))}
+          {sortedSources.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                No data sources available. Add a source to get started.
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </Table>

@@ -36,7 +36,7 @@ export const formatMatchingResults = (
   }
   
   // Calculate candidates per source (pre-compute for better performance)
-  const candidatesPerSource = {};
+  const candidatesPerSource: Record<string, number> = {};
   for (const source of targetSources) {
     candidatesPerSource[source] = 0;
   }

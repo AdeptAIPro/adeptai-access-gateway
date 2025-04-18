@@ -1,59 +1,87 @@
 
-import { useState } from 'react';
+import { faker } from '@faker-js/faker';
 import { MatchingInsightsData } from '@/components/talent-matching/types';
 
 // Extract skills from job description
-export const extractSkillsFromJobDescription = (jobDescription: string): string[] => {
-  // This is a simplified implementation for demo purposes
-  // In a real application, you would use NLP to extract skills
+export const extractSkillsFromJobDescription = (description: string): string[] => {
+  // Common tech skills to extract - this would be much more sophisticated in a real app
   const commonSkills = [
-    "JavaScript", "TypeScript", "React", "Angular", "Vue", "Node.js",
-    "Python", "Java", "C#", "SQL", "MongoDB", "AWS", "Docker",
-    "Project Management", "Agile", "Communication", "Leadership"
+    'JavaScript', 'TypeScript', 'React', 'Angular', 'Vue', 'Node.js', 
+    'Python', 'Java', 'C#', 'SQL', 'NoSQL', 'MongoDB', 'PostgreSQL',
+    'AWS', 'Azure', 'Docker', 'Kubernetes', 'CI/CD', 'Git',
+    'Agile', 'Scrum', 'Product Management', 'Project Management'
   ];
   
-  // Check which skills are mentioned in the job description
-  return commonSkills.filter(skill => 
-    jobDescription.toLowerCase().includes(skill.toLowerCase())
+  // Check which skills are mentioned in the description
+  const extractedSkills = commonSkills.filter(skill => 
+    description.toLowerCase().includes(skill.toLowerCase())
   );
+  
+  // If no skills found, return some default ones
+  if (extractedSkills.length === 0) {
+    return ['JavaScript', 'React', 'Node.js', 'Problem Solving', 'Communication'];
+  }
+  
+  return extractedSkills;
 };
 
-// Generate dummy insights for the matching results
-export const generateDummyInsights = (sources: string[]): MatchingInsightsData => {
+// Generate dummy insights data for demonstration
+export const generateDummyInsights = (sourcesUsed: string[] = []): MatchingInsightsData => {
   return {
-    talentPoolQuality: Math.random() > 0.5 ? "Excellent" : "Good",
+    talentPoolQuality: faker.helpers.arrayElement(['Excellent', 'Good', 'Average', 'Limited']),
     competitivePositioning: {
-      talentAvailability: Math.random() > 0.5 ? "High" : "Medium",
-      competitiveness: Math.random() > 0.5 ? "Highly Competitive" : "Moderately Competitive",
+      talentAvailability: faker.helpers.arrayElement(['High', 'Moderate', 'Low']),
+      competitiveness: faker.helpers.arrayElement(['High', 'Moderate', 'Low']),
       salaryRange: {
-        min: 80000,
-        max: 120000,
-        median: 95000
+        min: 70000 + (Math.floor(Math.random() * 20) * 1000),
+        max: 120000 + (Math.floor(Math.random() * 40) * 1000),
+        median: 95000 + (Math.floor(Math.random() * 30) * 1000),
       },
-      timeToHire: Math.random() > 0.5 ? "2-3 weeks" : "4-6 weeks"
+      timeToHire: faker.helpers.arrayElement(['2-3 weeks', '3-4 weeks', '4-6 weeks']),
     },
     recommendedSourcingStrategy: {
-      mostEffectiveSources: sources.slice(0, 2),
-      suggestedOutreachOrder: sources,
-      untappedSources: ["GitHub", "Stack Overflow", "Tech Meetups"],
-      recommendedSources: ["LinkedIn", "Indeed"]
+      mostEffectiveSources: sourcesUsed.length > 0 
+        ? faker.helpers.arrayElements(sourcesUsed, Math.min(3, sourcesUsed.length))
+        : ['LinkedIn', 'Internal Database', 'Employee Referrals'],
+      suggestedOutreachOrder: [
+        'Passive candidates with 80%+ match',
+        'Active job seekers with 70%+ match',
+        'Suggested job board postings'
+      ],
+      untappedSources: [
+        'Industry conferences',
+        'Professional associations',
+        'Alumni networks'
+      ],
+      recommendedSources: [
+        'LinkedIn Premium',
+        'GitHub',
+        'StackOverflow Jobs'
+      ]
+    },
+    crossSourceStatistics: {
+      sourcesAnalyzed: sourcesUsed.length || 5,
+      profilesMatched: 15 + Math.floor(Math.random() * 30),
+      averageMatchConfidence: 0.7 + (Math.random() * 0.2)
     }
   };
 };
 
-// Save recent search to user's history
-export const saveRecentSearch = async (user: any, jobDescription: string) => {
-  if (!user) return;
+// Function to save recent search
+export const saveRecentSearch = async (user: any, searchTerm: string) => {
+  if (!user || !searchTerm) return;
   
   try {
-    // This would typically be saved to a database
-    console.log(`Saving search for user ${user.id}: ${jobDescription.substring(0, 50)}...`);
+    // In a real app, this would save to a database
+    console.log(`Saving search for user ${user.id}: ${searchTerm}`);
     
-    // In a real application, you would make an API call here
-    const mockResponse = { success: true };
-    return mockResponse;
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // In a real app, this would verify the save was successful
+    return { success: true };
   } catch (error) {
-    console.error("Error saving recent search:", error);
-    return { success: false, error: "Failed to save search" };
+    console.error('Error saving recent search:', error);
+    return { success: false, error };
   }
 };

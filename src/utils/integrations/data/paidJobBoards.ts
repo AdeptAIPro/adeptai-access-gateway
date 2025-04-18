@@ -6,32 +6,24 @@ export function createPaidJobBoardsList(): Integration[] {
     {
       id: 'indeed',
       name: 'Indeed',
-      description: 'Post jobs to Indeed',
+      description: 'Post jobs on Indeed',
       status: 'active',
       popular: true,
       logoUrl: '/img/integrations/indeed.svg'
     },
     {
-      id: 'linkedin',
+      id: 'linkedin-jobs',
       name: 'LinkedIn Jobs',
-      description: 'Post jobs to LinkedIn',
+      description: 'Post to LinkedIn Jobs',
       status: 'active',
-      popular: true,
       logoUrl: '/img/integrations/linkedin.svg'
     },
     {
       id: 'ziprecruiter',
       name: 'ZipRecruiter',
-      description: 'Post jobs to ZipRecruiter',
+      description: 'Post to ZipRecruiter',
       status: 'coming_soon',
       logoUrl: '/img/integrations/ziprecruiter.svg'
-    },
-    {
-      id: 'monster',
-      name: 'Monster',
-      description: 'Post jobs to Monster',
-      status: 'coming_soon',
-      logoUrl: '/img/integrations/monster.svg'
     }
   ];
 }
