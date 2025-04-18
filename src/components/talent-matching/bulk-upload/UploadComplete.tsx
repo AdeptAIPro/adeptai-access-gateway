@@ -1,6 +1,6 @@
 
 import React from "react";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface UploadCompleteProps {
@@ -9,15 +9,17 @@ interface UploadCompleteProps {
 
 const UploadComplete: React.FC<UploadCompleteProps> = ({ onContinue }) => {
   return (
-    <div className="py-6 text-center space-y-4">
-      <CheckCircle2 className="h-16 w-16 mx-auto text-green-500" />
-      <h3 className="text-lg font-medium">Upload Complete!</h3>
-      <p className="text-muted-foreground">
-        Your resumes have been successfully processed and are ready for AI matching.
+    <div className="text-center py-6">
+      <div className="flex justify-center mb-4">
+        <div className="rounded-full bg-green-100 p-3">
+          <Check className="h-6 w-6 text-green-600" />
+        </div>
+      </div>
+      <h3 className="text-lg font-medium mb-2">Upload Complete</h3>
+      <p className="text-sm text-gray-500 mb-6">
+        Your resumes have been successfully uploaded and processed.
       </p>
-      <Button onClick={onContinue} className="mt-4">
-        Continue to Matching
-      </Button>
+      <Button onClick={onContinue}>Continue</Button>
     </div>
   );
 };

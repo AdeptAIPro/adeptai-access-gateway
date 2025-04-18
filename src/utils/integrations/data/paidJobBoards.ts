@@ -3,7 +3,7 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createPaidJobBoardsList = (): IntegrationItem[] => {
-  return ["LinkedIn Jobs", "Indeed (Paid)", "Monster", "ZipRecruiter", "CareerBuilder", "Dice", "SimplyHired"]
+  return ["Indeed", "LinkedIn", "ZipRecruiter", "Monster", "Glassdoor", "CareerBuilder", "Dice"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,

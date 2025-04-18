@@ -3,11 +3,11 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createBackgroundBoardsList = (): IntegrationItem[] => {
-  return ["Sterling", "HireRight", "Checkr", "GoodHire", "Accurate Background", "First Advantage", "IntelliCorp"]
+  return ["HireRight", "Sterling", "Checkr", "GoodHire", "Accurate", "Certn", "Cisive"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
-      description: `Background checks with ${name}`,
+      description: `${name} background verification`,
       icon: getIconForIntegration(name),
       category: "Background Boards",
       connected: Math.random() > 0.8,
