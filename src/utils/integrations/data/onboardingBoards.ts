@@ -3,13 +3,13 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createOnboardingBoardsList = (): IntegrationItem[] => {
-  return ["Onboarding Tool 1", "Onboarding Tool 2", "Onboarding Tool 3", "Onboarding Tool 4", "Onboarding Tool 5"]
+  return ["BambooHR Onboarding", "Click Boarding", "WorkBright", "ClearCompany", "Zenefits", "Gusto", "Sapling", "Talmundo"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
       description: `Onboard with ${name}`,
       icon: getIconForIntegration(name),
-      category: "Onboarding",
+      category: "Onboarding Boards",
       connected: Math.random() > 0.8,
     }));
 };

@@ -3,7 +3,7 @@
 export { createVmsSystemsList } from './vmsSystems';
 export { createAtsList } from './ats';
 export { createSocialList } from './social';
-export { createComplianceBoardsList } from './compliance';
+export { createComplianceBoardsList } from './complianceBoards';
 export { createPaidJobBoardsList } from './paidJobBoards';
 export { createFreeJobPostingList } from './freeJobPosting';
 export { createProductivityList } from './productivity';

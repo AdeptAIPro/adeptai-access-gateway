@@ -3,7 +3,7 @@ import React from "react";
 import { FormField } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { UseFormReturn } from "react-hook-form";
-import { ImportFormValues } from "@/components/talent-matching/types";
+import { ImportFormValues } from "./types";
 
 interface SingleResumeUploadProps {
   form: UseFormReturn<ImportFormValues>;

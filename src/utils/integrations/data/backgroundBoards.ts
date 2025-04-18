@@ -3,7 +3,7 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createBackgroundBoardsList = (): IntegrationItem[] => {
-  return ["Sterling", "HireRight", "Checkr", "VerifIPass", "GoodHire", "Accurate Background"]
+  return ["Sterling", "HireRight", "Checkr", "GoodHire", "Accurate Background", "First Advantage", "IntelliCorp"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
