@@ -3,13 +3,13 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createSocialList = (): IntegrationItem[] => {
-  return ["LinkedIn", "Facebook", "X", "Instagram", "TikTok", "YouTube", "Business Whatsapp"]
+  return ["LinkedIn", "Twitter", "Facebook", "Instagram", "GitHub", "Stack Overflow", "Medium"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
-      description: `Connect your ${name} account`,
+      description: `Connect to ${name}`,
       icon: getIconForIntegration(name),
-      category: "Social",
+      category: "Social Platforms",
       connected: Math.random() > 0.8,
     }));
 };

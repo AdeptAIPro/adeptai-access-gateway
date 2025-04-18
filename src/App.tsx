@@ -5,16 +5,28 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/hooks/use-auth";
-import React from "react";
-import AppRoutes from "./AppRoutes";
+import { Suspense, lazy, useState } from "react";
+import { Loader2 } from "lucide-react";
+
+// Lazy load AppRoutes
+const AppRoutes = lazy(() => import("./AppRoutes"));
+
+// Loading component
+const AppLoader = () => (
+  <div className="flex min-h-screen items-center justify-center">
+    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+  </div>
+);
 
 function App() {
   // Create a stable QueryClient instance using useState
-  const [queryClient] = React.useState(() => new QueryClient({
+  const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
         retry: 1,
         refetchOnWindowFocus: false,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        cacheTime: 10 * 60 * 1000, // 10 minutes
       },
     },
   }));
@@ -24,7 +36,9 @@ function App() {
       <AuthProvider>
         <TooltipProvider>
           <BrowserRouter>
-            <AppRoutes />
+            <Suspense fallback={<AppLoader />}>
+              <AppRoutes />
+            </Suspense>
             <Toaster />
             <Sonner />
           </BrowserRouter>

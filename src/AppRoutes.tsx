@@ -1,43 +1,51 @@
 
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
-// Pages
-import Dashboard from "@/pages/Dashboard";
-import Pricing from "@/pages/Pricing";
-import Checkout from "@/pages/Checkout";
-import PaymentSuccess from "@/pages/PaymentSuccess";
-import PaymentCancelled from "@/pages/PaymentCancelled";
-import Talent from "@/pages/Talent";
-import TalentMatching from "@/pages/TalentMatching";
-import TalentSearch from "@/pages/TalentSearch";
-import AgenticAI from "@/pages/AgenticAI";
-import CRM from "@/pages/CRM";
-import Analytics from "@/pages/Analytics";
-import Payroll from "@/pages/Payroll";
-import ProfessionalDevelopment from "@/pages/ProfessionalDevelopment";
-import Skills from "@/pages/Skills";
-import Settings from "@/pages/Settings";
-import Compliance from "@/pages/Compliance";
+// Auth Components - Not lazy loaded as they're essential
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import NotFound from "@/pages/NotFound";
-import Index from "@/pages/Index";
 import Unauthorized from "@/pages/Unauthorized";
-import Integrations from "@/pages/Integrations";
-import Onboarding from "@/pages/Onboarding";
-import EnterpriseIntegrations from "@/pages/EnterpriseIntegrations";
-import Resources from "@/pages/Resources";
-import ITConsulting from "@/pages/ITConsulting";
+import Index from "@/pages/Index";
+
+// Lazy loaded pages
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Pricing = lazy(() => import("@/pages/Pricing"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
+const PaymentSuccess = lazy(() => import("@/pages/PaymentSuccess"));
+const PaymentCancelled = lazy(() => import("@/pages/PaymentCancelled"));
+const Talent = lazy(() => import("@/pages/Talent"));
+const TalentMatching = lazy(() => import("@/pages/TalentMatching"));
+const TalentSearch = lazy(() => import("@/pages/TalentSearch"));
+const AgenticAI = lazy(() => import("@/pages/AgenticAI"));
+const CRM = lazy(() => import("@/pages/CRM"));
+const Analytics = lazy(() => import("@/pages/Analytics"));
+const Payroll = lazy(() => import("@/pages/Payroll"));
+const ProfessionalDevelopment = lazy(() => import("@/pages/ProfessionalDevelopment"));
+const Skills = lazy(() => import("@/pages/Skills"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Compliance = lazy(() => import("@/pages/Compliance"));
+const Integrations = lazy(() => import("@/pages/Integrations"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const EnterpriseIntegrations = lazy(() => import("@/pages/EnterpriseIntegrations"));
+const Resources = lazy(() => import("@/pages/Resources"));
+const ITConsulting = lazy(() => import("@/pages/ITConsulting"));
 
 // Marketplace Pages
-import Marketplace from "@/pages/Marketplace";
-import TalentMarketplace from "@/pages/TalentMarketplace";
-import SoftwareMarketplace from "@/pages/SoftwareMarketplace";
-import AffiliateMarketplace from "@/pages/AffiliateMarketplace";
+const Marketplace = lazy(() => import("@/pages/Marketplace"));
+const TalentMarketplace = lazy(() => import("@/pages/TalentMarketplace"));
+const SoftwareMarketplace = lazy(() => import("@/pages/SoftwareMarketplace"));
+const AffiliateMarketplace = lazy(() => import("@/pages/AffiliateMarketplace"));
 
-// Components
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+// Loading component
+const PageLoader = () => (
+  <div className="flex min-h-screen items-center justify-center">
+    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+  </div>
+);
 
 const AppRoutes = () => {
   return (
@@ -45,43 +53,119 @@ const AppRoutes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/pricing" element={<Pricing />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
-      <Route path="/services/it-consulting" element={<ITConsulting />} />
+      
+      {/* Lazy loaded routes */}
+      <Route path="/pricing" element={<Suspense fallback={<PageLoader />}><Pricing /></Suspense>} />
+      <Route path="/services/it-consulting" element={<Suspense fallback={<PageLoader />}><ITConsulting /></Suspense>} />
       
       {/* Resources Routes */}
-      <Route path="/resources" element={<Resources />} />
-      <Route path="/resources/:category" element={<Resources />} />
-      <Route path="/resources/:category/:slug" element={<Resources />} />
+      <Route path="/resources" element={<Suspense fallback={<PageLoader />}><Resources /></Suspense>} />
+      <Route path="/resources/:category" element={<Suspense fallback={<PageLoader />}><Resources /></Suspense>} />
+      <Route path="/resources/:category/:slug" element={<Suspense fallback={<PageLoader />}><Resources /></Suspense>} />
       
       {/* Marketplace Routes */}
-      <Route path="/marketplace" element={<Marketplace />} />
-      <Route path="/marketplace/talent" element={<TalentMarketplace />} />
-      <Route path="/marketplace/software" element={<SoftwareMarketplace />} />
-      
-      {/* Keep the old route temporarily for backwards compatibility */}
-      <Route path="/affiliate-marketplace" element={<AffiliateMarketplace />} />
+      <Route path="/marketplace" element={<Suspense fallback={<PageLoader />}><Marketplace /></Suspense>} />
+      <Route path="/marketplace/talent" element={<Suspense fallback={<PageLoader />}><TalentMarketplace /></Suspense>} />
+      <Route path="/marketplace/software" element={<Suspense fallback={<PageLoader />}><SoftwareMarketplace /></Suspense>} />
+      <Route path="/affiliate-marketplace" element={<Suspense fallback={<PageLoader />}><AffiliateMarketplace /></Suspense>} />
       
       {/* Protected Routes */}
-      <Route path="/dashboard" element={<ProtectedRoute requiredPermission="viewDashboard"><Dashboard /></ProtectedRoute>} />
-      <Route path="/checkout" element={<ProtectedRoute requiredPermission="viewDashboard"><Checkout /></ProtectedRoute>} />
-      <Route path="/payment-success" element={<ProtectedRoute requiredPermission="viewDashboard"><PaymentSuccess /></ProtectedRoute>} />
-      <Route path="/payment-canceled" element={<ProtectedRoute requiredPermission="viewDashboard"><PaymentCancelled /></ProtectedRoute>} />
-      <Route path="/talent" element={<ProtectedRoute requiredPermission="viewDashboard"><Talent /></ProtectedRoute>} />
-      <Route path="/talent-matching" element={<ProtectedRoute requiredPermission="viewDashboard"><TalentMatching /></ProtectedRoute>} />
-      <Route path="/talent-search" element={<ProtectedRoute requiredPermission="viewDashboard"><TalentSearch /></ProtectedRoute>} />
-      <Route path="/agentic-ai" element={<ProtectedRoute requiredPermission="viewDashboard"><AgenticAI /></ProtectedRoute>} />
-      <Route path="/integrations" element={<ProtectedRoute requiredPermission="viewDashboard"><Integrations /></ProtectedRoute>} />
-      <Route path="/dashboard/integrations" element={<ProtectedRoute requiredPermission="viewDashboard"><Integrations /></ProtectedRoute>} />
-      <Route path="/dashboard/integrations/enterprise" element={<ProtectedRoute requiredPermission="viewDashboard"><EnterpriseIntegrations /></ProtectedRoute>} />
-      <Route path="/crm" element={<ProtectedRoute requiredPermission="viewCRM"><CRM /></ProtectedRoute>} />
-      <Route path="/analytics" element={<ProtectedRoute requiredPermission="viewAnalytics"><Analytics /></ProtectedRoute>} />
-      <Route path="/payroll" element={<ProtectedRoute requiredPermission="viewDashboard"><Payroll /></ProtectedRoute>} />
-      <Route path="/professional-development" element={<ProtectedRoute requiredPermission="viewDashboard"><ProfessionalDevelopment /></ProtectedRoute>} />
-      <Route path="/skills" element={<ProtectedRoute requiredPermission="viewDashboard"><Skills /></ProtectedRoute>} />
-      <Route path="/settings/*" element={<ProtectedRoute requiredPermission="viewDashboard"><Settings /></ProtectedRoute>} />
-      <Route path="/compliance" element={<ProtectedRoute requiredPermission="viewDashboard"><Compliance /></ProtectedRoute>} />
-      <Route path="/onboarding" element={<ProtectedRoute requiredPermission="viewDashboard"><Onboarding /></ProtectedRoute>} />
+      <Route path="/dashboard" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Dashboard /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/checkout" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Checkout /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/payment-success" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><PaymentSuccess /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/payment-canceled" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><PaymentCancelled /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/talent" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Talent /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/talent-matching" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><TalentMatching /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/talent-search" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><TalentSearch /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/agentic-ai" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><AgenticAI /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/integrations" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Integrations /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/integrations" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Integrations /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/integrations/enterprise" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><EnterpriseIntegrations /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/crm" element={
+        <ProtectedRoute requiredPermission="viewCRM">
+          <Suspense fallback={<PageLoader />}><CRM /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/analytics" element={
+        <ProtectedRoute requiredPermission="viewAnalytics">
+          <Suspense fallback={<PageLoader />}><Analytics /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/payroll" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Payroll /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/professional-development" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><ProfessionalDevelopment /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/skills" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Skills /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/settings/*" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Settings /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/compliance" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Compliance /></Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/onboarding" element={
+        <ProtectedRoute requiredPermission="viewDashboard">
+          <Suspense fallback={<PageLoader />}><Onboarding /></Suspense>
+        </ProtectedRoute>
+      } />
       
       {/* Catch all route */}
       <Route path="*" element={<NotFound />} />

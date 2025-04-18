@@ -1,21 +1,20 @@
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { useTalentMatching } from '@/hooks/use-talent-matching';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router-dom';
-import { Search, BarChart2 } from 'lucide-react';
+import { Search, BarChart2, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
 
 // Lazy loaded components
-const TalentMatchingHero = React.lazy(() => import('@/components/talent-matching/TalentMatchingHero'));
-const TalentMatchingContainer = React.lazy(() => import('@/components/talent-matching/TalentMatchingContainer'));
-const MatchingWorkflow = React.lazy(() => import('@/components/talent-matching/MatchingWorkflow'));
-const ResultsSection = React.lazy(() => import('@/components/talent-matching/ResultsSection'));
-const TalentDataDashboard = React.lazy(() => import('@/components/talent-matching/data-acquisition/TalentDataDashboard'));
+const TalentMatchingHero = lazy(() => import('@/components/talent-matching/TalentMatchingHero'));
+const TalentMatchingContainer = lazy(() => import('@/components/talent-matching/TalentMatchingContainer'));
+const MatchingWorkflow = lazy(() => import('@/components/talent-matching/MatchingWorkflow'));
+const ResultsSection = lazy(() => import('@/components/talent-matching/ResultsSection'));
+const TalentDataDashboard = lazy(() => import('@/components/talent-matching/data-acquisition/TalentDataDashboard'));
 
 // Loading fallback component
 const LoadingFallback = () => (

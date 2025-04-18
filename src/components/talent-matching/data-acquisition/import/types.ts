@@ -14,7 +14,7 @@ export const importFormSchema = z.object({
   fileUpload: z.any().optional(),
   sourceUrl: z.string().url({
     message: "Please enter a valid URL",
-  }).optional(),
+  }).optional().or(z.literal('')),
 });
 
 export type ImportFormValues = z.infer<typeof importFormSchema>;

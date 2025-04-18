@@ -3,13 +3,13 @@ import { IntegrationItem } from "@/types/integration";
 import { getIconForIntegration } from "../icons";
 
 export const createAtsList = (): IntegrationItem[] => {
-  return ["Ceipal", "Workday", "Taleo", "ICIMS", "Lever", "Smart Recruiters", "Bullhorn ATS", "Pinpoint", "Jobvite", "JazzHR", "Zoho Recruit"]
+  return ["Greenhouse", "Workday", "BambooHR", "Lever", "JazzHR", "Recruitee", "Workable"]
     .map(name => ({
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
-      description: `Integrate with ${name} applicant tracking system`,
+      description: `Connect to ${name} ATS`,
       icon: getIconForIntegration(name),
-      category: "ATS",
+      category: "Applicant Tracking Systems",
       connected: Math.random() > 0.8,
     }));
 };
