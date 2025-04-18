@@ -1,7 +1,7 @@
 
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { ImportFormValues } from "@/components/talent-matching/types";
+import { ImportFormValues } from "./types";
 import SingleResumeUpload from "./SingleResumeUpload";
 import BulkUpload from "./BulkUpload";
 
