@@ -131,5 +131,5 @@ const getIntegrationCategory = (integrationId: string) => {
 const getCategoryIconForIntegration = (integrationId: string) => {
   // This would normally map to actual icons
   // For now, returning a placeholder function
-  return () => <div className="h-6 w-6 bg-blue-500 rounded-full"></div>;
+  return () => null; // Changed to return null instead of invalid JSX
 };
