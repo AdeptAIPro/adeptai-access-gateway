@@ -1,13 +1,14 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { SectionCard, SectionHeader } from "@/components/ui/section-card";
 import { Database, Upload, History } from "lucide-react";
 import { useTalentData } from "@/hooks/use-talent-data";
-import { DataSource, ImportStats } from "@/components/talent-matching/types";
+import { ImportStats } from "@/components/talent-matching/types";
 import StateHandler from "@/components/shared/StateHandler";
-import DataSourcesList from "./table/DataSourcesList";
+import DataSourcesList from "./DataSourcesList";
 import ImportForm from "./ImportForm";
 import ImportHistory from "./ImportHistory";
+import { useSourceActions } from "@/hooks/talent-matching/use-source-actions";
 
 const TalentDataDashboard: React.FC = () => {
   const {
@@ -21,35 +22,16 @@ const TalentDataDashboard: React.FC = () => {
     refreshDataSources
   } = useTalentData();
 
+  const {
+    handleUpdateSource,
+    handleDeleteSource,
+    handleEditSource,
+    handleExportSource
+  } = useSourceActions(dataSources, setSelectedSource, startScraper, refreshDataSources);
+
   const handleImportComplete = (stats: ImportStats) => {
     addImportStats(stats);
     refreshDataSources();
-  };
-
-  const handleStartScraper = async (sourceId: string) => {
-    await startScraper(sourceId);
-    refreshDataSources();
-  };
-
-  const handleUpdateSource = async (id: string) => {
-    await handleStartScraper(id);
-  };
-
-  const handleDeleteSource = async (id: string) => {
-    // TODO: Implement delete functionality
-    console.log("Delete source:", id);
-  };
-
-  const handleEditSource = (id: string) => {
-    const source = dataSources.find(s => s.id === id);
-    if (source) {
-      setSelectedSource(source);
-    }
-  };
-
-  const handleExportSource = (id: string) => {
-    // TODO: Implement export functionality
-    console.log("Export source:", id);
   };
 
   return (
