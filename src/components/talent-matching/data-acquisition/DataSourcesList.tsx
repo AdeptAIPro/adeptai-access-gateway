@@ -1,35 +1,9 @@
+
 import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  MoreHorizontal,
-  ChevronDown,
-  Check,
-  Clock,
-  AlertCircle,
-  XCircle,
-  Trash,
-  Edit,
-  FileSpreadsheet,
-  RefreshCw,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Table, TableBody } from "@/components/ui/table";
 import { DataSource } from "@/components/talent-matching/types";
+import DataSourceTableHeader from "./table/DataSourceTableHeader";
+import DataSourceRow from "./table/DataSourceRow";
 
 interface DataSourcesListProps {
   dataSources: DataSource[];
@@ -45,8 +19,6 @@ interface DataSourcesListProps {
 const DataSourcesList: React.FC<DataSourcesListProps> = ({
   dataSources,
   onStartScraper,
-  isLoading,
-  onSelectSource,
   onUpdateSource = (id) => onStartScraper(id),
   onDeleteSource = () => {},
   onEditSource = () => {},
@@ -83,166 +55,31 @@ const DataSourcesList: React.FC<DataSourcesListProps> = ({
     return sortDirection === "asc" ? comparison : -comparison;
   });
 
-  const renderStatus = (status: 'active' | 'inactive' | 'pending' | 'error') => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge variant="success" className="font-normal">
-            <Check className="h-3 w-3 mr-1" />
-            Active
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge variant="outline" className="font-normal text-yellow-600 border-yellow-200 bg-yellow-50">
-            <Clock className="h-3 w-3 mr-1" />
-            Pending
-          </Badge>
-        );
-      case "inactive":
-        return (
-          <Badge variant="outline" className="font-normal">
-            <XCircle className="h-3 w-3 mr-1" />
-            Inactive
-          </Badge>
-        );
-      case "error":
-        return (
-          <Badge variant="destructive" className="font-normal">
-            <AlertCircle className="h-3 w-3 mr-1" />
-            Error
-          </Badge>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="rounded-md border">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead 
-              className="cursor-pointer" 
-              onClick={() => handleSort("name")}
-            >
-              <div className="flex items-center">
-                Name
-                {sortColumn === "name" && (
-                  <ChevronDown 
-                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
-                  />
-                )}
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer" 
-              onClick={() => handleSort("type")}
-            >
-              <div className="flex items-center">
-                Type
-                {sortColumn === "type" && (
-                  <ChevronDown 
-                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
-                  />
-                )}
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer" 
-              onClick={() => handleSort("count")}
-            >
-              <div className="flex items-center">
-                Candidates
-                {sortColumn === "count" && (
-                  <ChevronDown 
-                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
-                  />
-                )}
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer" 
-              onClick={() => handleSort("lastUpdated")}
-            >
-              <div className="flex items-center">
-                Last Updated
-                {sortColumn === "lastUpdated" && (
-                  <ChevronDown 
-                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
-                  />
-                )}
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer" 
-              onClick={() => handleSort("status")}
-            >
-              <div className="flex items-center">
-                Status
-                {sortColumn === "status" && (
-                  <ChevronDown 
-                    className={`ml-1 h-4 w-4 ${sortDirection === "desc" ? "transform rotate-180" : ""}`} 
-                  />
-                )}
-              </div>
-            </TableHead>
-            <TableHead className="w-[100px] text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+        <DataSourceTableHeader
+          sortColumn={sortColumn}
+          sortDirection={sortDirection}
+          onSort={handleSort}
+        />
         <TableBody>
           {sortedSources.map((source) => (
-            <TableRow key={source.id}>
-              <TableCell className="font-medium">{source.name}</TableCell>
-              <TableCell>{source.type}</TableCell>
-              <TableCell>{source.candidatesCount.toLocaleString()}</TableCell>
-              <TableCell>
-                {new Date(source.lastUpdated).toLocaleDateString()}
-                {source.lastScraped && (
-                  <div className="text-xs text-muted-foreground">
-                    Scraped: {new Date(source.lastScraped).toLocaleDateString()}
-                  </div>
-                )}
-              </TableCell>
-              <TableCell>{renderStatus(source.status)}</TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => onUpdateSource(source.id)}>
-                      <RefreshCw className="mr-2 h-4 w-4" /> Update
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEditSource(source.id)}>
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onExportSource(source.id)}>
-                      <FileSpreadsheet className="mr-2 h-4 w-4" /> Export
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={() => onDeleteSource(source.id)}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash className="mr-2 h-4 w-4" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
+            <DataSourceRow
+              key={source.id}
+              source={source}
+              onUpdateSource={onUpdateSource}
+              onDeleteSource={onDeleteSource}
+              onEditSource={onEditSource}
+              onExportSource={onExportSource}
+            />
           ))}
           {sortedSources.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+            <tr>
+              <td colSpan={6} className="text-center py-8 text-muted-foreground">
                 No data sources available. Add a source to get started.
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           )}
         </TableBody>
       </Table>
