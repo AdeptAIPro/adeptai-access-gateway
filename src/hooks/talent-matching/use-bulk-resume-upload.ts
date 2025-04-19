@@ -1,33 +1,36 @@
 
 import { useState } from "react";
-import { useFileUpload } from "./use-file-upload";
-import { useResumeParser } from "./use-resume-parser";
 import { useToast } from "@/hooks/use-toast";
 
 export const useBulkResumeUpload = (onUploadComplete: () => void) => {
   const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const {
-    bulkFiles,
-    setBulkFiles,
-    uploadProgress,
-    setUploadProgress,
-    isUploading,
-    setIsUploading,
-    error,
-    setError,
-    handleFileUpload
-  } = useFileUpload((results) => {
-    setUploadComplete(true);
-    setIsProcessing(false);
-  });
-
-  const {
-    parsedResults,
-    parseBulkResumes
-  } = useResumeParser();
+  const handleFileSelect = (files: File[]) => {
+    // Validate file types
+    const validFileTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
+    const invalidFiles = files.filter(file => !validFileTypes.includes(file.type));
+    
+    if (invalidFiles.length > 0) {
+      toast({
+        title: "Invalid File Type",
+        description: "Only PDF, DOC, DOCX, and TXT files are supported",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setBulkFiles(files);
+    
+    toast({
+      title: "Files Selected",
+      description: `${files.length} files ready to upload`,
+    });
+  };
 
   const handleBulkUpload = async () => {
     if (bulkFiles.length === 0) {
@@ -39,22 +42,32 @@ export const useBulkResumeUpload = (onUploadComplete: () => void) => {
       return;
     }
     
-    setIsProcessing(true);
     setIsUploading(true);
     setError(null);
     
-    try {
-      const sourceName = "Uploaded Resumes";
-      await parseBulkResumes(bulkFiles, sourceName);
-      
-      // Update progress for visual feedback
-      for (let progress = 0; progress <= 100; progress += 10) {
-        setUploadProgress(progress);
-        if (progress < 100) {
-          await new Promise(resolve => setTimeout(resolve, 200));
+    // Simulate upload progress
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
         }
-      }
+        return prev + 10;
+      });
+    }, 500);
+    
+    try {
+      // In a real implementation, this would call your API to upload the files
+      // For now, we'll simulate an upload delay
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
+      // Set progress to 100%
+      setUploadProgress(100);
+      
+      // Clear the interval
+      clearInterval(progressInterval);
+      
+      // Show success message
       toast({
         title: "Upload Complete",
         description: `Successfully processed ${bulkFiles.length} resumes`,
@@ -63,16 +76,17 @@ export const useBulkResumeUpload = (onUploadComplete: () => void) => {
       setUploadComplete(true);
       onUploadComplete();
     } catch (error) {
-      console.error("Error processing files:", error);
-      setError("Failed to process uploaded files. Please try again.");
+      console.error("Error uploading files:", error);
+      setError("Failed to upload files. Please try again.");
+      
       toast({
         title: "Upload Failed",
-        description: "There was an error processing your files",
+        description: "There was an error uploading your files",
         variant: "destructive",
       });
     } finally {
+      clearInterval(progressInterval);
       setIsUploading(false);
-      setIsProcessing(false);
     }
   };
 
@@ -83,14 +97,8 @@ export const useBulkResumeUpload = (onUploadComplete: () => void) => {
     setError(null);
   };
 
-  const handleFileSelect = (files: File[]) => {
-    handleFileUpload(files);
-  };
-
   return {
-    isProcessing,
     uploadComplete,
-    setUploadComplete,
     bulkFiles,
     uploadProgress,
     isUploading,

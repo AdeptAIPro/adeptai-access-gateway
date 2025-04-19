@@ -5,7 +5,7 @@ import TargetSourceSelection from "../TargetSourceSelection";
 import AdvancedMatchingSection from "../advanced-options/AdvancedMatchingSection";
 import MatchingWorkflow from "../MatchingWorkflow";
 import { MatchingOptions } from "../types";
-import BulkResumeUpload from "../BulkResumeUpload";
+import BulkUploadModal from "../bulk-upload/BulkUploadModal";
 
 interface MatchingInputFormProps {
   jobDescription: string;
@@ -57,6 +57,10 @@ const MatchingInputForm: React.FC<MatchingInputFormProps> = ({
 
   const handleBulkUploadComplete = () => {
     setBulkUploaded(true);
+    // Add Uploaded Resumes to selected sources if not already selected
+    if (!selectedTargetSources.includes("Uploaded Resumes")) {
+      setSelectedTargetSources([...selectedTargetSources, "Uploaded Resumes"]);
+    }
   };
 
   return (
@@ -87,20 +91,16 @@ const MatchingInputForm: React.FC<MatchingInputFormProps> = ({
       />
       
       <MatchingWorkflow
-        isStarted={false}
         isProcessing={isLoading}
-        isComplete={false}
-        currentStep={isLoading ? 2 : 1}
         progress={matchingProgress}
-        progressText={`${matchingProgress}% - Analyzing candidates`}
         showAdvancedOptions={showAdvancedOptions}
         setShowAdvancedOptions={setShowAdvancedOptions}
         onStartMatching={onStartMatching}
-        onCancel={() => {}}
         isReadyToStart={isReadyToStart}
+        handleStartMatching={onStartMatching}
       />
 
-      <BulkResumeUpload 
+      <BulkUploadModal 
         isOpen={showBulkUpload}
         onClose={() => setShowBulkUpload(false)}
         onUploadComplete={handleBulkUploadComplete}
