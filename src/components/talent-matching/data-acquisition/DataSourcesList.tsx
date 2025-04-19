@@ -1,19 +1,20 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Table, TableBody } from "@/components/ui/table";
 import { DataSource } from "@/components/talent-matching/types";
 import DataSourceTableHeader from "./table/DataSourceTableHeader";
 import DataSourceRow from "./table/DataSourceRow";
+import { useDataSourceSorting } from "@/hooks/talent-matching/use-data-source-sorting";
 
 interface DataSourcesListProps {
   dataSources: DataSource[];
-  onStartScraper: (id: string) => void;
   isLoading: boolean;
   onSelectSource: (source: DataSource | null) => void;
-  onUpdateSource?: (id: string) => void;
-  onDeleteSource?: (id: string) => void;
-  onEditSource?: (id: string) => void;
-  onExportSource?: (id: string) => void;
+  onUpdateSource: (id: string) => void;
+  onDeleteSource: (id: string) => void;
+  onEditSource: (id: string) => void;
+  onExportSource: (id: string) => void;
+  onStartScraper: (id: string) => void;
 }
 
 const DataSourcesList: React.FC<DataSourcesListProps> = ({
@@ -24,36 +25,12 @@ const DataSourcesList: React.FC<DataSourcesListProps> = ({
   onEditSource = () => {},
   onExportSource = () => {},
 }) => {
-  const [sortColumn, setSortColumn] = useState<string>("name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
-    }
-  };
-
-  const sortedSources = [...dataSources].sort((a, b) => {
-    let comparison = 0;
-    
-    if (sortColumn === "name") {
-      comparison = a.name.localeCompare(b.name);
-    } else if (sortColumn === "type") {
-      comparison = a.type.localeCompare(b.type);
-    } else if (sortColumn === "count") {
-      comparison = a.candidatesCount - b.candidatesCount;
-    } else if (sortColumn === "lastUpdated") {
-      comparison = new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
-    } else if (sortColumn === "status") {
-      const statusOrder = { active: 0, pending: 1, inactive: 2, error: 3 };
-      comparison = statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder];
-    }
-
-    return sortDirection === "asc" ? comparison : -comparison;
-  });
+  const {
+    sortColumn,
+    sortDirection,
+    handleSort,
+    sortedSources
+  } = useDataSourceSorting(dataSources);
 
   return (
     <div className="rounded-md border">
