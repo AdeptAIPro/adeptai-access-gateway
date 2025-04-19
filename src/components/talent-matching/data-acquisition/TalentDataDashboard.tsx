@@ -61,6 +61,7 @@ const TalentDataDashboard: React.FC = () => {
             onDeleteSource={handleDeleteSource}
             onEditSource={handleEditSource}
             onExportSource={handleExportSource}
+            onStartScraper={startScraper}
           />
         </StateHandler>
       </SectionCard>

@@ -14,13 +14,13 @@ interface DataSourcesListProps {
   onDeleteSource: (id: string) => void;
   onEditSource: (id: string) => void;
   onExportSource: (id: string) => void;
-  onStartScraper: (id: string) => void;
+  onStartScraper?: (id: string) => void;  // Make this prop optional
 }
 
 const DataSourcesList: React.FC<DataSourcesListProps> = ({
   dataSources,
   onStartScraper,
-  onUpdateSource = (id) => onStartScraper(id),
+  onUpdateSource = (id) => onStartScraper?.(id), // Use optional chaining
   onDeleteSource = () => {},
   onEditSource = () => {},
   onExportSource = () => {},
