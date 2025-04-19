@@ -1,7 +1,7 @@
 
 import { AgentTask } from "../types/AgenticTypes";
 import { collectCandidatesFromAllSources, crossReferenceMultipleSourceCandidates, calculateAverageCrossSourceScore } from "./utils/CandidateCollector";
-import { getFallbackCandidates, getFallbackMatchingResult } from "../../talent-matching/fallbacks/MatchingFallbacks";
+import { generateFallbackCandidates, generateFallbackMatchingResult } from "../../talent-matching/fallbacks/MatchingFallbacks";
 
 /**
  * Process a cross-source talent intelligence task
@@ -44,7 +44,7 @@ export const processCrossSourceTalentIntelligenceTask = async (task: AgentTask):
     const sourcesSearched = Array.from(new Set(candidates.flatMap(c => c.crossSourceSources || [c.source]))); 
     
     // 4. Generate insights from fallback data
-    const fallbackResult = getFallbackMatchingResult();
+    const fallbackResult = generateFallbackMatchingResult("Software Developer", ["JavaScript", "React", "Node.js"]);
     
     // Combine with our cross-source validation data
     return {

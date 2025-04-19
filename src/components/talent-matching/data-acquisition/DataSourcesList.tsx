@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Table,
@@ -34,18 +33,24 @@ import { DataSource } from "@/components/talent-matching/types";
 
 interface DataSourcesListProps {
   dataSources: DataSource[];
-  onUpdateSource: (id: string) => void;
-  onDeleteSource: (id: string) => void;
-  onEditSource: (id: string) => void;
-  onExportSource: (id: string) => void;
+  onStartScraper: (id: string) => void;
+  isLoading: boolean;
+  onSelectSource: (source: DataSource | null) => void;
+  onUpdateSource?: (id: string) => void;
+  onDeleteSource?: (id: string) => void;
+  onEditSource?: (id: string) => void;
+  onExportSource?: (id: string) => void;
 }
 
 const DataSourcesList: React.FC<DataSourcesListProps> = ({
   dataSources,
-  onUpdateSource,
-  onDeleteSource,
-  onEditSource,
-  onExportSource,
+  onStartScraper,
+  isLoading,
+  onSelectSource,
+  onUpdateSource = (id) => onStartScraper(id),
+  onDeleteSource = () => {},
+  onEditSource = () => {},
+  onExportSource = () => {},
 }) => {
   const [sortColumn, setSortColumn] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
