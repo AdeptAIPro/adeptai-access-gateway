@@ -72,15 +72,12 @@ const UploadDocumentTab: React.FC<UploadDocumentTabProps> = ({
       <div className="flex flex-col items-center justify-center space-y-4">
         <Upload className="h-12 w-12 text-gray-400" />
         <div className="space-y-2">
-          <h3 className="text-lg font-medium">Upload Resumes</h3>
+          <h3 className="text-lg font-medium">Upload Job Description</h3>
           <p className="text-sm text-gray-500">
             Drag and drop your files here, or click to browse
           </p>
           <p className="text-xs text-gray-400">
             Supported formats: PDF, DOCX, TXT (Max 100MB per file)
-          </p>
-          <p className="text-xs text-gray-400">
-            For bulk uploads, you can select multiple files
           </p>
         </div>
         
@@ -89,7 +86,6 @@ const UploadDocumentTab: React.FC<UploadDocumentTabProps> = ({
           id="file-upload"
           className="hidden"
           accept=".pdf,.docx,.txt"
-          multiple
           onChange={handleFileUpload}
         />
         
@@ -131,7 +127,7 @@ const UploadDocumentTab: React.FC<UploadDocumentTabProps> = ({
               disabled={isUploading}
               className="w-full"
             >
-              {isUploading ? 'Uploading...' : 'Start Bulk Upload'}
+              {isUploading ? 'Uploading...' : 'Start Upload'}
             </Button>
           </div>
         )}
