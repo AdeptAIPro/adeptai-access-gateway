@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({
   toggleTheme 
 }) => {
   return (
-    <header className="flex h-16 items-center justify-between bg-card border-b border-border px-4 md:px-6 sticky top-0 z-20 shadow-sm">
+    <header className="flex h-16 items-center justify-between bg-card border-b border-border px-4 md:px-6 sticky top-0 z-20">
       <div className="flex items-center">
         <Button 
           variant="ghost" 
@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white truncate">{title}</h1>
+        <h1 className="text-xl font-semibold text-foreground truncate">{title}</h1>
       </div>
       
       <div className="flex items-center space-x-2 md:space-x-4">

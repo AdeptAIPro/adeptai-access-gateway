@@ -20,7 +20,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 }) => {
   const { user } = useAuth();
 
-  // Function to get user initials for avatar fallback
   const getUserInitials = () => {
     if (!user || !user.name) return "U";
     return user.name
@@ -42,7 +41,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <span className="font-bold text-lg text-adept">AdeptAI Pro</span>
+        <span className="font-semibold text-lg text-primary">AdeptAI Pro</span>
       </div>
       
       <div className="flex items-center space-x-2">
