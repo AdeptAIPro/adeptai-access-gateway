@@ -140,7 +140,7 @@ const Header = () => {
             <React.Fragment>
               <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Log in
-              </Button>
+              </Link>
               <Link to="/signup">
                 <Button className="bg-primary hover:bg-primary/90">
                   Sign up
