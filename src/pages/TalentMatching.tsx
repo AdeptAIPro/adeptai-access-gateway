@@ -6,15 +6,15 @@ import DashboardLayout from "@/components/DashboardLayout";
 import JobDescriptionInput from "@/components/talent-matching/JobDescriptionInput";
 import CandidateResults from "@/components/talent-matching/CandidateResults";
 import AdvancedMatchingOptions from "@/components/talent-matching/AdvancedMatchingOptions";
+import TargetSourceSelection from "@/components/talent-matching/TargetSourceSelection";
+import MatchingWorkflow from "@/components/talent-matching/MatchingWorkflow";
 import MatchingSavedResults from "@/components/talent-matching/MatchingSavedResults";
 import { useTalentMatching } from "@/hooks/use-talent-matching";
 import TalentMatchingHero from "@/components/talent-matching/TalentMatchingHero";
 import TalentMatchingCallToAction from "@/components/talent-matching/TalentMatchingCallToAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-
-// Mock data for MatchingSavedResults
-const mockSavedResults = [];
+import { MatchingSavedResultsProps } from "@/components/talent-matching/MatchingSavedResults";
 
 const TalentMatching = () => {
   const { user } = useAuth();
@@ -70,6 +70,15 @@ const TalentMatching = () => {
   const handleToggleFavorite = (id: string) => {
     console.log("Toggling favorite for:", id);
   };
+  
+  // Props for MatchingSavedResults
+  const matchingSavedResultsProps: MatchingSavedResultsProps = {
+    savedResults: [],
+    onLoad: handleLoadSavedResult,
+    onDelete: handleDeleteSavedResult,
+    onExport: handleExportSavedResult,
+    onToggleFavorite: handleToggleFavorite
+  };
 
   return (
     <DashboardLayout title="AI Talent Matching">
@@ -94,7 +103,24 @@ const TalentMatching = () => {
                     setTab={setTab}
                     fileUploaded={fileUploaded}
                     setFileUploaded={setFileUploaded}
-                    handleStartMatching={handleStartMatching}
+                  />
+
+                  {/* Add Target Source Selection - Candidate Sources */}
+                  <TargetSourceSelection
+                    selectedSources={selectedTargetSources}
+                    setSelectedSources={setSelectedTargetSources}
+                    onShowBulkUpload={() => {}}
+                    bulkUploaded={false}
+                  />
+                  
+                  {/* Add Matching Workflow - AI Matchmaking */}
+                  <MatchingWorkflow
+                    isReadyToStart={isReadyToStart}
+                    showAdvancedOptions={showAdvancedOptions}
+                    setShowAdvancedOptions={setShowAdvancedOptions}
+                    onStartMatching={handleStartMatching}
+                    isProcessing={isLoading}
+                    progress={matchingProgress}
                   />
 
                   {showAdvancedOptions && (
@@ -175,11 +201,7 @@ const TalentMatching = () => {
 
         <TabsContent value="saved">
           <MatchingSavedResults 
-            savedResults={mockSavedResults}
-            onLoad={handleLoadSavedResult}
-            onDelete={handleDeleteSavedResult}
-            onExport={handleExportSavedResult}
-            onToggleFavorite={handleToggleFavorite}
+            {...matchingSavedResultsProps}
           />
         </TabsContent>
 
