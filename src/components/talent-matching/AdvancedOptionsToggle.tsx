@@ -1,6 +1,6 @@
 
 import React from "react";
-import { MatchingOptions } from "./types";
+import { MatchingOptions, MatchingModel } from "./types";
 import AdvancedMatchingOptions from "./AdvancedMatchingOptions";
 
 interface AdvancedOptionsToggleProps {
@@ -14,13 +14,19 @@ interface AdvancedOptionsToggleProps {
     advancedFiltering?: boolean;
     [key: string]: boolean | undefined;
   };
+  matchingModels?: MatchingModel[];
+  useCrossSourceIntelligence?: boolean;
+  setUseCrossSourceIntelligence?: (value: boolean) => void;
 }
 
 const AdvancedOptionsToggle: React.FC<AdvancedOptionsToggleProps> = ({
   showAdvancedOptions,
   matchingOptions,
   setMatchingOptions,
-  isPremiumFeatures
+  isPremiumFeatures,
+  matchingModels,
+  useCrossSourceIntelligence,
+  setUseCrossSourceIntelligence
 }) => {
   if (!showAdvancedOptions) {
     return null;
