@@ -7,18 +7,20 @@ interface AdvancedOptionsToggleProps {
   showAdvancedOptions: boolean;
   matchingOptions: MatchingOptions;
   setMatchingOptions: (options: MatchingOptions) => void;
-  matchingModels: any[];
-  useCrossSourceIntelligence: boolean;
-  setUseCrossSourceIntelligence: (value: boolean) => void;
+  isPremiumFeatures?: {
+    semanticMatching?: boolean;
+    complianceVerification?: boolean;
+    culturalFitAnalysis?: boolean;
+    advancedFiltering?: boolean;
+    [key: string]: boolean | undefined;
+  };
 }
 
 const AdvancedOptionsToggle: React.FC<AdvancedOptionsToggleProps> = ({
   showAdvancedOptions,
   matchingOptions,
   setMatchingOptions,
-  matchingModels,
-  useCrossSourceIntelligence,
-  setUseCrossSourceIntelligence
+  isPremiumFeatures
 }) => {
   if (!showAdvancedOptions) {
     return null;
@@ -29,9 +31,7 @@ const AdvancedOptionsToggle: React.FC<AdvancedOptionsToggleProps> = ({
       <AdvancedMatchingOptions 
         matchingOptions={matchingOptions}
         setMatchingOptions={setMatchingOptions}
-        matchingModels={matchingModels}
-        useCrossSourceIntelligence={useCrossSourceIntelligence}
-        setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
+        isPremiumFeatures={isPremiumFeatures}
       />
     </div>
   );

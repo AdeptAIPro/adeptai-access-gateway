@@ -1,21 +1,45 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MatchingOptions, MatchingModel } from "../types";
-import { Gauge, Shield } from "lucide-react";
+import { MatchingOptions } from "../types";
+import { Shield } from "lucide-react";
 
 interface ModelsTabProps {
   matchingOptions: MatchingOptions;
   setMatchingOptions: (options: MatchingOptions) => void;
-  matchingModels: MatchingModel[];
 }
 
 const ModelsTab: React.FC<ModelsTabProps> = ({
   matchingOptions,
   setMatchingOptions,
-  matchingModels,
 }) => {
+  // Default matching models
+  const defaultModels = [
+    {
+      id: "openai-ada-002",
+      name: "OpenAI Ada 002",
+      description: "Fast embedding model for semantic search"
+    },
+    {
+      id: "tensorflow-bert",
+      name: "TensorFlow BERT",
+      description: "Industry-trained model for technical roles"
+    },
+    {
+      id: "pytorch-roberta",
+      name: "PyTorch RoBERTa",
+      description: "Specialized in technical skill extraction"
+    },
+    {
+      id: "hybrid-rag",
+      name: "Hybrid RAG System",
+      description: "Advanced retrieval-augmented generation"
+    }
+  ];
+  
+  const [matchingModels, setMatchingModels] = useState(defaultModels);
+  
   return (
     <div className="space-y-4">
       <div className="space-y-2">

@@ -13,6 +13,9 @@ import TalentMatchingCallToAction from "@/components/talent-matching/TalentMatch
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 
+// Mock data for MatchingSavedResults
+const mockSavedResults = [];
+
 const TalentMatching = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -51,6 +54,23 @@ const TalentMatching = () => {
     return null;
   }
 
+  // Mock handler functions for MatchingSavedResults
+  const handleLoadSavedResult = (id: string) => {
+    console.log("Loading saved result:", id);
+  };
+  
+  const handleDeleteSavedResult = (id: string) => {
+    console.log("Deleting saved result:", id);
+  };
+  
+  const handleExportSavedResult = (id: string) => {
+    console.log("Exporting saved result:", id);
+  };
+  
+  const handleToggleFavorite = (id: string) => {
+    console.log("Toggling favorite for:", id);
+  };
+
   return (
     <DashboardLayout title="AI Talent Matching">
       <Tabs defaultValue="match" className="w-full">
@@ -75,16 +95,6 @@ const TalentMatching = () => {
                     fileUploaded={fileUploaded}
                     setFileUploaded={setFileUploaded}
                     handleStartMatching={handleStartMatching}
-                    isReadyToStart={isReadyToStart}
-                    showAdvancedOptions={showAdvancedOptions}
-                    setShowAdvancedOptions={setShowAdvancedOptions}
-                    selectedTargetSources={selectedTargetSources}
-                    setSelectedTargetSources={setSelectedTargetSources}
-                    useCrossSourceIntelligence={useCrossSourceIntelligence}
-                    setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
-                    isPremiumFeature={premiumFeatures.crossSourceIntelligence}
-                    isProcessing={isLoading}
-                    progress={matchingProgress}
                   />
 
                   {showAdvancedOptions && (
@@ -164,7 +174,13 @@ const TalentMatching = () => {
         </TabsContent>
 
         <TabsContent value="saved">
-          <MatchingSavedResults />
+          <MatchingSavedResults 
+            savedResults={mockSavedResults}
+            onLoad={handleLoadSavedResult}
+            onDelete={handleDeleteSavedResult}
+            onExport={handleExportSavedResult}
+            onToggleFavorite={handleToggleFavorite}
+          />
         </TabsContent>
 
         <TabsContent value="analytics">

@@ -2,9 +2,9 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlgorithmsTab } from "./advanced-options/AlgorithmsTab";
-import { FiltersTab } from "./advanced-options/FiltersTab";
-import { ModelsTab } from "./advanced-options/ModelsTab";
+import AlgorithmsTab from "./advanced-options/AlgorithmsTab";
+import FiltersTab from "./advanced-options/FiltersTab";
+import ModelsTab from "./advanced-options/ModelsTab";
 import { MatchingOptions } from "./types";
 import { Lock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -26,6 +26,13 @@ const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
   setMatchingOptions,
   isPremiumFeatures = {}
 }) => {
+  const handleToggleChange = (option: keyof MatchingOptions) => {
+    setMatchingOptions({
+      ...matchingOptions,
+      [option]: !matchingOptions[option as keyof MatchingOptions]
+    });
+  };
+  
   return (
     <Card className="border-adept/20">
       <CardHeader className="pb-3">
@@ -56,8 +63,8 @@ const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
           <TabsContent value="algorithms">
             <AlgorithmsTab 
               matchingOptions={matchingOptions} 
+              handleToggleChange={handleToggleChange}
               setMatchingOptions={setMatchingOptions} 
-              isPremiumFeatures={isPremiumFeatures}
             />
           </TabsContent>
           
@@ -65,15 +72,14 @@ const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({
             <ModelsTab 
               matchingOptions={matchingOptions} 
               setMatchingOptions={setMatchingOptions} 
-              isPremiumFeatures={isPremiumFeatures}
             />
           </TabsContent>
           
           <TabsContent value="filters">
             <FiltersTab 
               matchingOptions={matchingOptions} 
+              handleToggleChange={handleToggleChange}
               setMatchingOptions={setMatchingOptions} 
-              isPremiumFeatures={isPremiumFeatures}
             />
           </TabsContent>
         </Tabs>

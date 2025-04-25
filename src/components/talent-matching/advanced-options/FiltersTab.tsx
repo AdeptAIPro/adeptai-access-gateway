@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { MatchingOptions } from "../types";
-import { Filter } from "lucide-react";
 
 interface FiltersTabProps {
   matchingOptions: MatchingOptions;

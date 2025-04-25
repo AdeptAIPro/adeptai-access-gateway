@@ -15,6 +15,7 @@ interface JobDescriptionInputProps {
   setTab: (tab: string) => void;
   fileUploaded: File | null;
   setFileUploaded: React.Dispatch<React.SetStateAction<File | null>>;
+  handleStartMatching?: () => void;
 }
 
 const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
@@ -23,7 +24,8 @@ const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
   tab,
   setTab,
   fileUploaded,
-  setFileUploaded
+  setFileUploaded,
+  handleStartMatching
 }) => {
   return (
     <Card>
