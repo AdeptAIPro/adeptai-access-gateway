@@ -2,8 +2,15 @@
 from typing import List, Optional, Dict
 from pydantic import BaseModel
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
+# Try to import scikit-learn, but provide fallback if not available
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    print("Warning: scikit-learn not available. Using fallback matching methods.")
 
 class MatchingOptions(BaseModel):
     matchingModel: str
@@ -20,6 +27,7 @@ class MatchingOptions(BaseModel):
     useSkillBasedFiltering: bool
     targetSources: Optional[List[str]]
     model: Optional[str]
+    topN: Optional[int] = 10  # Return top N results
 
 class Candidate(BaseModel):
     id: str
@@ -36,6 +44,14 @@ def calculate_skill_match(candidate_skills: List[str], required_skills: List[str
     if not candidate_skills or not required_skills:
         return 0.0
         
+    # Fallback if scikit-learn is not available
+    if not SKLEARN_AVAILABLE:
+        # Simple matching based on common skills
+        common_skills = set(candidate_skills).intersection(set(required_skills))
+        if not required_skills:
+            return 0.0
+        return len(common_skills) / len(required_skills)
+    
     # Convert skills lists to space-separated strings
     candidate_text = " ".join(candidate_skills)
     required_text = " ".join(required_skills)
@@ -47,16 +63,35 @@ def calculate_skill_match(candidate_skills: List[str], required_skills: List[str
         similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
         return float(similarity)
     except:
-        return 0.0
+        # Fallback to basic matching if vectorization fails
+        common_skills = set(candidate_skills).intersection(set(required_skills))
+        if not required_skills:
+            return 0.0
+        return len(common_skills) / len(required_skills)
 
 def semantic_matching(candidate_text: str, job_description: str) -> float:
     """Semantic matching using TF-IDF and cosine similarity"""
+    if not SKLEARN_AVAILABLE:
+        # Simple fallback if scikit-learn is not available
+        words_candidate = set(candidate_text.lower().split())
+        words_job = set(job_description.lower().split())
+        common_words = words_candidate.intersection(words_job)
+        if not words_job:
+            return 0.0
+        return len(common_words) / min(len(words_candidate), len(words_job))
+    
     vectorizer = TfidfVectorizer()
     try:
         tfidf_matrix = vectorizer.fit_transform([candidate_text, job_description])
         return float(cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0])
     except:
-        return 0.0
+        # Fallback to basic matching if vectorization fails
+        words_candidate = set(candidate_text.lower().split())
+        words_job = set(job_description.lower().split())
+        common_words = words_candidate.intersection(words_job)
+        if not words_job:
+            return 0.0
+        return len(common_words) / min(len(words_candidate), len(words_job))
 
 def match_candidates(
     candidates: List[Candidate],
@@ -104,5 +139,8 @@ def match_candidates(
     # Sort by match score
     matched_candidates.sort(key=lambda x: x.match_score or 0, reverse=True)
     
+    # Apply topN filter if specified
+    if options.topN and options.topN > 0 and len(matched_candidates) > options.topN:
+        matched_candidates = matched_candidates[:options.topN]
+    
     return matched_candidates
-
