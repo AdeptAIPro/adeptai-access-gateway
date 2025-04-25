@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Depends, HTTPException, Header, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -8,6 +7,7 @@ import httpx
 import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from services.matching import MatchingOptions, Candidate, match_candidates
 
 # Load environment variables
 load_dotenv()
@@ -319,6 +319,40 @@ async def verify_nurse_licenses(license_numbers: List[Dict[str, str]], api_key: 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error: {str(e)}"
+        )
+
+# Routes for matching candidates
+class MatchingRequest(BaseModel):
+    job_description: str
+    required_skills: List[str]
+    candidates: List[Candidate]
+    options: MatchingOptions
+
+@app.post("/api/v1/match-candidates")
+async def match_candidates_endpoint(
+    request: MatchingRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Match candidates based on job description and options"""
+    try:
+        matched_candidates = match_candidates(
+            request.candidates,
+            request.job_description,
+            request.required_skills,
+            request.options
+        )
+        
+        return {
+            "status": "success",
+            "candidates": matched_candidates,
+            "total_processed": len(request.candidates),
+            "matches_found": len(matched_candidates)
+        }
+    except Exception as e:
+        logger.error(f"Error in candidate matching: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error matching candidates: {str(e)}"
         )
 
 # Health check endpoint
