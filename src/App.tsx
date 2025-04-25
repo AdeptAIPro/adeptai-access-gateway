@@ -5,10 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/hooks/use-auth";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Loader2 } from "lucide-react";
-import AppRoutes from "./AppRoutes";
 import { CredentialsProvider } from "@/context/CredentialsContext";
+
+// Lazy load AppRoutes for better initial load performance
+const AppRoutes = lazy(() => import("./AppRoutes"));
 
 // Loading component
 const AppLoader = () => (
@@ -18,7 +20,7 @@ const AppLoader = () => (
 );
 
 function App() {
-  // Create a stable QueryClient instance
+  // Create a stable QueryClient instance with optimized settings
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
