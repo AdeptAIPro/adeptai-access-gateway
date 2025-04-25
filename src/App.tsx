@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import AppRoutes from "./AppRoutes";
+import { CredentialsProvider } from "@/context/CredentialsContext";
 
 // Loading component
 const AppLoader = () => (
@@ -32,15 +33,17 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <BrowserRouter>
-            <Suspense fallback={<AppLoader />}>
-              <AppRoutes />
-            </Suspense>
-            <Toaster />
-            <Sonner />
-          </BrowserRouter>
-        </TooltipProvider>
+        <CredentialsProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <Suspense fallback={<AppLoader />}>
+                <AppRoutes />
+              </Suspense>
+              <Toaster />
+              <Sonner />
+            </BrowserRouter>
+          </TooltipProvider>
+        </CredentialsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

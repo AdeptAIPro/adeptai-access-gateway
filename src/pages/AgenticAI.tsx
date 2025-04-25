@@ -2,37 +2,51 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
+import { useCredentials } from "@/context/CredentialsContext";
 import DashboardLayout from "@/components/DashboardLayout";
 import AgenticDashboard from "@/components/agentic-ai/AgenticDashboard";
 import AgenticProcessFlow from "@/components/agentic-ai/AgenticProcessFlow";
 import AgentTaskCreator from "@/components/agentic-ai/AgentTaskCreator";
 import HowItWorksCard from "@/components/agentic-ai/task-creator/HowItWorksCard";
+import AgenticCredentialsForm from "@/components/agentic-ai/setup/AgenticCredentialsForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Database, RefreshCw } from "lucide-react";
+import { AlertCircle, Database, RefreshCw, KeyRound, CheckCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AgentTask } from "@/services/agentic-ai/types/AgenticTypes";
+import { AgentTask } from "@/services/agentic-ai/AgenticService";
+import { toast } from "sonner";
 
 const AgenticAI = () => {
   const { user } = useAuth();
+  const { credentials, setCredentials, isBackendReady, checkBackendStatus } = useCredentials();
   const navigate = useNavigate();
   const [isSeeding, setIsSeeding] = useState<boolean>(false);
   const [needsSetup, setNeedsSetup] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [activeTab, setActiveTab] = useState<string>("setup");
   const [tasks, setTasks] = useState<AgentTask[]>([]); // Added tasks state
   const isMobile = useIsMobile();
   
   useEffect(() => {
+    // Automatically switch to dashboard tab if backend is ready
+    if (isBackendReady && activeTab === "setup") {
+      setActiveTab("dashboard");
+    }
+    
+    // Check if tables need setup
     const checkTables = async () => {
       const tablesExist = await ensureAgenticTables();
       setNeedsSetup(!tablesExist);
     };
     
-    checkTables();
-  }, []);
+    if (isBackendReady) {
+      checkTables();
+    } else {
+      setNeedsSetup(true);
+    }
+  }, [isBackendReady, activeTab]);
   
   if (!user) {
     navigate("/login");
@@ -43,8 +57,13 @@ const AgenticAI = () => {
     setIsSeeding(true);
     await seedAgenticAIData();
     setIsSeeding(false);
-    // Reload the page to refresh data
-    window.location.reload();
+    // Check backend status again
+    await checkBackendStatus();
+    toast.success("Sample data added successfully");
+  };
+  
+  const handleCredentialsSet = (newCredentials: any) => {
+    setCredentials(newCredentials);
   };
 
   return (
@@ -53,10 +72,12 @@ const AgenticAI = () => {
         {needsSetup && (
           <Alert variant="warning" className="mb-4 bg-yellow-50 border-yellow-200">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Database Setup Required</AlertTitle>
+            <AlertTitle>API Configuration Required</AlertTitle>
             <AlertDescription>
-              Your Supabase database needs to be configured with the appropriate tables for Agentic AI.
-              Please create the required tables or use the seed button below to see the required schema.
+              {!credentials 
+                ? "Please configure your OpenAI API key and AWS credentials to enable AI agent functionality." 
+                : "Your AWS DynamoDB tables need to be configured for Agentic AI. Use the seed button to create the required tables."
+              }
             </AlertDescription>
           </Alert>
         )}
@@ -68,19 +89,29 @@ const AgenticAI = () => {
               Your AI agents are ready to help with your tasks
             </p>
           </div>
-          <Button 
-            onClick={handleSeedData} 
-            disabled={isSeeding}
-            variant="outline"
-            className="gap-2"
-          >
-            {isSeeding ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
-            {isSeeding ? "Adding Sample Data..." : "Seed Database"}
-          </Button>
+          <div className="flex items-center gap-2">
+            {isBackendReady && (
+              <div className="flex items-center text-sm text-green-600 mr-2">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Backend Connected</span>
+              </div>
+            )}
+            <Button 
+              onClick={handleSeedData} 
+              disabled={isSeeding || !isBackendReady}
+              variant="outline"
+              className="gap-2"
+            >
+              {isSeeding ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+              {isSeeding ? "Adding Sample Data..." : "Seed Database"}
+            </Button>
+          </div>
         </div>
         
-        {/* Add the process flow component here */}
-        <AgenticProcessFlow tasks={tasks} />
+        {/* Show the process flow component when backend is ready */}
+        {isBackendReady && (
+          <AgenticProcessFlow tasks={tasks} />
+        )}
         
         {/* Redesigned tabs with better alignment and visual appearance */}
         <Tabs 
@@ -91,8 +122,18 @@ const AgenticAI = () => {
           <div className="flex justify-center mb-6">
             <TabsList className="flex w-full md:w-2/3 overflow-hidden rounded-lg border-0 shadow-md bg-card">
               <TabsTrigger 
+                value="setup" 
+                className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <KeyRound className="h-5 w-5" />
+                  API Setup
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
                 value="create" 
                 className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+                disabled={!isBackendReady}
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg
@@ -113,6 +154,7 @@ const AgenticAI = () => {
               <TabsTrigger 
                 value="dashboard"
                 className="flex-1 px-4 py-3 text-base font-medium data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+                disabled={!isBackendReady}
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg
@@ -135,6 +177,19 @@ const AgenticAI = () => {
               </TabsTrigger>
             </TabsList>
           </div>
+          
+          <TabsContent value="setup">
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* API Credentials Form */}
+              <AgenticCredentialsForm 
+                onCredentialsSet={handleCredentialsSet}
+                initialCredentials={credentials || undefined}
+              />
+              
+              {/* How it works card */}
+              <HowItWorksCard />
+            </div>
+          </TabsContent>
           
           <TabsContent value="create">
             <div className="grid gap-6 md:grid-cols-2">
