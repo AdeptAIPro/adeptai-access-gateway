@@ -2,12 +2,23 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Suspense, lazy } from "react";
-import { Loader2 } from "lucide-react";
 import { CredentialsProvider } from "@/context/CredentialsContext";
+
+// Create a client manually instead of importing QueryClient
+const queryClient = {
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+    },
+  },
+};
 
 // Lazy load AppRoutes for better initial load performance
 const AppRoutes = lazy(() => import("./AppRoutes"));
@@ -15,25 +26,13 @@ const AppRoutes = lazy(() => import("./AppRoutes"));
 // Loading component
 const AppLoader = () => (
   <div className="flex min-h-screen items-center justify-center">
-    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+    <div className="h-12 w-12 animate-spin text-primary">Loading...</div>
   </div>
 );
 
 function App() {
-  // Create a stable QueryClient instance with optimized settings
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: 1,
-        refetchOnWindowFocus: false,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      },
-    },
-  });
-
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient as any}>
       <AuthProvider>
         <CredentialsProvider>
           <TooltipProvider>

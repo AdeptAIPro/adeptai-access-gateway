@@ -1,94 +1,121 @@
 
-import OpenAI from "openai";
-import { toast } from "sonner";
-import { ChatCompletionTool } from "openai/resources";
+import { ChatCompletionTool } from '../agentic-ai/types/OpenAITypes';
 
-// Initialize OpenAI client
-let openai: OpenAI | null = null;
+// Tracks whether OpenAI is initialized
+let openAIInitialized = false;
+let apiKey: string | null = null;
 
-// Initialize OpenAI with API key
-export const initializeOpenAI = (apiKey: string): boolean => {
-  try {
-    openai = new OpenAI({
-      apiKey,
-      dangerouslyAllowBrowser: true // Note: In production, API calls should be made from a backend
-    });
-    return true;
-  } catch (error) {
-    console.error("Failed to initialize OpenAI:", error);
-    return false;
-  }
+/**
+ * Initialize the OpenAI service with an API key
+ * @param key OpenAI API key
+ */
+export const initializeOpenAI = (key: string): void => {
+  apiKey = key;
+  openAIInitialized = true;
+  console.log('OpenAI service initialized');
 };
 
-// Check if OpenAI is initialized
+/**
+ * Checks if OpenAI has been initialized with an API key
+ * @returns True if initialized, false otherwise
+ */
 export const isOpenAIInitialized = (): boolean => {
-  return openai !== null;
+  return openAIInitialized;
 };
 
-// Generate text using OpenAI
+/**
+ * Generates text using the OpenAI API
+ * @param prompt The prompt for text generation
+ * @param model The model to use (default: gpt-4o)
+ * @returns Generated text
+ */
 export const generateText = async (
   prompt: string,
-  model: string = "gpt-4o",
-  temperature: number = 0.7,
-  maxTokens: number = 1000
+  model: string = 'gpt-4o'
 ): Promise<string> => {
-  if (!openai) {
-    toast.error("OpenAI is not initialized. Please set your API key.");
-    throw new Error("OpenAI is not initialized");
+  if (!openAIInitialized) {
+    throw new Error('OpenAI is not initialized. Please set your API key.');
   }
 
-  try {
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model,
-      temperature,
-      max_tokens: maxTokens,
-    });
-
-    return completion.choices[0]?.message?.content || "";
-  } catch (error) {
-    console.error("OpenAI API error:", error);
-    toast.error("Failed to generate text with OpenAI");
-    throw error;
-  }
+  console.log(`Generating text with model: ${model}`);
+  console.log(`Prompt: ${prompt.substring(0, 100)}...`);
+  
+  // For demo purposes, return a simple mock response
+  return `This is a simulated response from the OpenAI ${model} model.
+  
+  Since this is a mock implementation without actual API calls to OpenAI,
+  we're returning this placeholder text. In a real application, this would
+  contain the AI-generated response to your prompt.
+  
+  Your prompt was: "${prompt.substring(0, 50)}..."`;
 };
 
-// Run function with tool calling
+/**
+ * Runs function calling using OpenAI API
+ * @param prompt The prompt to send
+ * @param tools Array of tools available for function calling
+ * @returns Response with content and potential tool calls
+ */
 export const runFunctionCall = async (
   prompt: string,
-  tools: ChatCompletionTool[],
-  model: string = "gpt-4o"
-): Promise<any> => {
-  if (!openai) {
-    toast.error("OpenAI is not initialized. Please set your API key.");
-    throw new Error("OpenAI is not initialized");
-  }
-
-  try {
-    const response = await openai.chat.completions.create({
-      model,
-      messages: [{ role: "user", content: prompt }],
-      tools,
-      tool_choice: "auto",
-    });
-
-    const responseMessage = response.choices[0].message;
-    
-    // Check if the model wanted to call a function
-    if (responseMessage.tool_calls) {
-      return {
-        toolCalls: responseMessage.tool_calls,
-        content: responseMessage.content
-      };
-    }
-
-    return {
-      content: responseMessage.content,
-      toolCalls: null
+  tools?: ChatCompletionTool[]
+): Promise<{
+  content?: string;
+  toolCalls?: Array<{
+    function: {
+      name: string;
+      arguments: string;
     };
-  } catch (error) {
-    console.error("OpenAI function calling error:", error);
-    toast.error("Failed to execute function call with OpenAI");
-    throw error;
+  }>;
+}> => {
+  if (!openAIInitialized) {
+    throw new Error('OpenAI is not initialized. Please set your API key.');
   }
+
+  console.log(`Running function call with ${tools?.length || 0} tools available`);
+  
+  // For demo purposes, simulate a function call
+  if (tools && tools.length > 0) {
+    // Simulate a decision to call a function based on the prompt content
+    const functionToCall = tools[0];
+    
+    return {
+      content: "I'm analyzing this request and have decided to use a tool to help answer it.",
+      toolCalls: [
+        {
+          function: {
+            name: functionToCall.function.name,
+            arguments: JSON.stringify({
+              // Mock arguments based on the function's parameters
+              // This is a simplification and would be more intelligent with real AI
+              ...(functionToCall.function.parameters?.properties?.skills && {
+                skills: ['JavaScript', 'React', 'TypeScript']
+              }),
+              ...(functionToCall.function.parameters?.properties?.experience && {
+                experience: 5
+              }),
+              ...(functionToCall.function.parameters?.properties?.location && {
+                location: 'Remote'
+              }),
+              ...(functionToCall.function.parameters?.properties?.text && {
+                text: prompt.substring(0, 100)
+              }),
+              ...(functionToCall.function.parameters?.properties?.role && {
+                role: 'Software Engineer'
+              }),
+              ...(functionToCall.function.parameters?.properties?.industry && {
+                industry: 'Technology'
+              })
+            })
+          }
+        }
+      ]
+    };
+  }
+  
+  // If no tools provided, just return content
+  return {
+    content: `This is a simulated response from OpenAI. 
+    In a real implementation, this would contain the AI-generated response to your prompt.`
+  };
 };

@@ -2,7 +2,7 @@
 import React from 'react';
 import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from '@/utils/date-polyfill';
 import TaskStatusBadge, { formatTaskType } from './TaskStatusBadge';
 import TaskGoalPreview from './TaskGoalPreview';
 import TaskErrorDisplay from './TaskErrorDisplay';
