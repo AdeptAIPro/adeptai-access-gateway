@@ -1,10 +1,12 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ChevronDown, ChevronUp, Cog, Loader2, Sparkles, Info, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Cog, Loader2, Sparkles, Info, CheckCircle2, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MatchingOptions } from "./types";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface MatchingWorkflowProps {
   jobDescription?: string;
@@ -33,6 +35,7 @@ export interface MatchingWorkflowProps {
   progressText?: string;
   onStartMatching?: () => void;
   onCancel?: () => void;
+  isPremiumFeature?: boolean;
 }
 
 const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
@@ -48,6 +51,7 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
   onCancel = () => {},
   isReadyToStart = false,
   handleStartMatching,
+  isPremiumFeature = false,
 }) => {
   // Use handleStartMatching if provided, otherwise use onStartMatching
   const handleStart = handleStartMatching || onStartMatching;
@@ -70,6 +74,22 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
               <ChevronDown className="h-4 w-4 ml-2" />
             )}
           </Button>
+          
+          {isPremiumFeature && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center text-amber-600 text-sm font-medium">
+                    <Lock className="h-4 w-4 mr-1" />
+                    Premium Feature
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs">Unlock advanced matching features with our Premium plan.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
 
         <Button
@@ -79,7 +99,8 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
           className={cn(
             "w-full bg-adept hover:bg-adept/90 text-white transition-all px-8 py-6 text-lg",
             isReadyToStart && "animate-pulse duration-700",
-            !isReadyToStart && "opacity-50 cursor-not-allowed"
+            !isReadyToStart && "opacity-50 cursor-not-allowed",
+            isPremiumFeature && "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
           )}
         >
           {isProcessing ? (
@@ -90,7 +111,7 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
           ) : (
             <>
               <Sparkles className="mr-2 h-6 w-6" />
-              Start AI Matching
+              {isPremiumFeature ? "Unlock AI Matching" : "Start AI Matching"}
             </>
           )}
         </Button>
@@ -116,6 +137,25 @@ const MatchingWorkflow: React.FC<MatchingWorkflowProps> = ({
           <div className="mt-4 text-sm text-green-600 flex items-center">
             <CheckCircle2 className="h-4 w-4 mr-2" />
             Job description ready for analysis! Click "Start AI Matching" to find candidates.
+          </div>
+        )}
+        
+        {isPremiumFeature && (
+          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+            <h4 className="font-medium text-amber-800 mb-1">Premium Feature Benefits:</h4>
+            <ul className="text-sm text-amber-700 space-y-1">
+              <li>• Cross-source intelligence for better matches</li>
+              <li>• Advanced AI algorithms with higher accuracy</li>
+              <li>• Unlimited candidate searches</li>
+              <li>• Priority processing and enhanced insights</li>
+            </ul>
+            <Button 
+              variant="link" 
+              className="text-amber-600 hover:text-amber-800 p-0 mt-2 h-auto"
+              onClick={() => window.location.href = '/pricing'}
+            >
+              View Pricing Plans →
+            </Button>
           </div>
         )}
       </div>

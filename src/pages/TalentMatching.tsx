@@ -1,106 +1,183 @@
 
-import React, { useState, Suspense, lazy } from 'react';
-import { useTalentMatching } from '@/hooks/use-talent-matching';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/hooks/use-auth';
-import { useNavigate } from 'react-router-dom';
-import { Search, BarChart2, Loader2 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-
-// Lazy loaded components
-const TalentMatchingHero = lazy(() => import('@/components/talent-matching/TalentMatchingHero'));
-const TalentMatchingContainer = lazy(() => import('@/components/talent-matching/TalentMatchingContainer'));
-const MatchingWorkflow = lazy(() => import('@/components/talent-matching/MatchingWorkflow'));
-const ResultsSection = lazy(() => import('@/components/talent-matching/ResultsSection'));
-const TalentDataDashboard = lazy(() => import('@/components/talent-matching/data-acquisition/TalentDataDashboard'));
-
-// Loading fallback component
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center p-8">
-    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-  </div>
-);
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
+import DashboardLayout from "@/components/DashboardLayout";
+import JobDescriptionInput from "@/components/talent-matching/JobDescriptionInput";
+import CandidateResults from "@/components/talent-matching/CandidateResults";
+import AdvancedMatchingOptions from "@/components/talent-matching/AdvancedMatchingOptions";
+import MatchingSavedResults from "@/components/talent-matching/MatchingSavedResults";
+import { useTalentMatching } from "@/hooks/use-talent-matching";
+import TalentMatchingHero from "@/components/talent-matching/TalentMatchingHero";
+import TalentMatchingCallToAction from "@/components/talent-matching/TalentMatchingCallToAction";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 
 const TalentMatching = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('matching');
-  const talentMatching = useTalentMatching();
+  const navigate = useNavigate();
+  const {
+    jobDescription,
+    setJobDescription,
+    showResults,
+    showAdvancedOptions,
+    setShowAdvancedOptions,
+    tab,
+    setTab,
+    fileUploaded,
+    setFileUploaded,
+    isLoading,
+    matchingProgress,
+    matchResult,
+    selectedTargetSources,
+    setSelectedTargetSources,
+    matchingOptions,
+    setMatchingOptions,
+    useCrossSourceIntelligence,
+    setUseCrossSourceIntelligence,
+    error,
+    isReadyToStart,
+    handleStartMatching,
+    handleStartNewMatch,
+    showPremiumFeaturePrompt,
+    dismissPremiumFeaturePrompt,
+    premiumFeatures,
+    saveCandidate,
+    contactCandidate,
+  } = useTalentMatching();
 
-  React.useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <Suspense fallback={<LoadingFallback />}>
-        <TalentMatchingHero />
-      </Suspense>
+    <DashboardLayout title="AI Talent Matching">
+      <Tabs defaultValue="match" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="match">Find Candidates</TabsTrigger>
+          <TabsTrigger value="saved">Saved Matches</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
-      <div className="container mx-auto px-4 py-8 flex-1">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full md:w-auto bg-card border shadow-sm mb-6">
-            <TabsTrigger value="matching" className="flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              <span>AI Matching</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart2 className="h-4 w-4" />
-              <span>Analytics</span>
-            </TabsTrigger>
-          </TabsList>
+        <TabsContent value="match" className="space-y-8">
+          {!showResults && (
+            <>
+              <TalentMatchingHero />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <JobDescriptionInput
+                    jobDescription={jobDescription}
+                    setJobDescription={setJobDescription}
+                    tab={tab}
+                    setTab={setTab}
+                    fileUploaded={fileUploaded}
+                    setFileUploaded={setFileUploaded}
+                    handleStartMatching={handleStartMatching}
+                    isReadyToStart={isReadyToStart}
+                    showAdvancedOptions={showAdvancedOptions}
+                    setShowAdvancedOptions={setShowAdvancedOptions}
+                    selectedTargetSources={selectedTargetSources}
+                    setSelectedTargetSources={setSelectedTargetSources}
+                    useCrossSourceIntelligence={useCrossSourceIntelligence}
+                    setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
+                    isPremiumFeature={premiumFeatures.crossSourceIntelligence}
+                    isProcessing={isLoading}
+                    progress={matchingProgress}
+                  />
 
-          <TabsContent value="matching" className="p-0">
-            <Suspense fallback={<LoadingFallback />}>
-              <TalentMatchingContainer>
-                {!talentMatching.showResults ? (
-                  <Suspense fallback={<LoadingFallback />}>
-                    <MatchingWorkflow 
-                      isProcessing={talentMatching.isLoading}
-                      progress={talentMatching.matchingProgress}
-                      showAdvancedOptions={talentMatching.showAdvancedOptions}
-                      setShowAdvancedOptions={talentMatching.setShowAdvancedOptions}
-                      isReadyToStart={talentMatching.isReadyToStart}
-                      handleStartMatching={talentMatching.handleStartMatching}
-                    />
-                  </Suspense>
-                ) : (
-                  <Suspense fallback={<LoadingFallback />}>
-                    <ResultsSection 
-                      matchResult={talentMatching.matchResult}
-                      handleStartNewMatch={talentMatching.handleStartNewMatch}
-                      saveCandidate={talentMatching.saveCandidate}
-                      contactCandidate={talentMatching.contactCandidate}
-                    />
-                  </Suspense>
-                )}
-              </TalentMatchingContainer>
-            </Suspense>
-          </TabsContent>
+                  {showAdvancedOptions && (
+                    <div className="mt-6">
+                      <AdvancedMatchingOptions
+                        matchingOptions={matchingOptions}
+                        setMatchingOptions={setMatchingOptions}
+                        isPremiumFeatures={premiumFeatures}
+                      />
+                    </div>
+                  )}
+                </div>
 
-          <TabsContent value="analytics" className="p-0">
-            <Card className="bg-white p-8 rounded-lg border shadow-sm">
-              <div className="flex items-center justify-center p-12 border-2 border-dashed rounded-md">
-                <div className="text-center">
-                  <BarChart2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-medium">Talent Pool Analytics</h3>
-                  <p className="text-muted-foreground mt-2 max-w-md">
-                    Analytics for your internal talent pool will be available here. This includes candidate source metrics, talent gap analysis, and market insights.
-                  </p>
+                <div className="lg:col-span-1">
+                  {showPremiumFeaturePrompt ? (
+                    <TalentMatchingCallToAction onDismiss={dismissPremiumFeaturePrompt} />
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="bg-slate-50 border rounded-lg p-6">
+                        <h3 className="text-xl font-semibold mb-4">Recent Talent Searches</h3>
+                        <div className="space-y-3">
+                          <div className="bg-white p-3 rounded border">
+                            <div className="text-sm font-medium">Senior Software Engineer</div>
+                            <div className="text-xs text-gray-500 mt-1">43 candidates • 3 days ago</div>
+                          </div>
+                          <div className="bg-white p-3 rounded border">
+                            <div className="text-sm font-medium">Product Manager</div>
+                            <div className="text-xs text-gray-500 mt-1">28 candidates • 5 days ago</div>
+                          </div>
+                          <div className="bg-white p-3 rounded border">
+                            <div className="text-sm font-medium">DevOps Engineer</div>
+                            <div className="text-xs text-gray-500 mt-1">16 candidates • 1 week ago</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator />
+                      
+                      <div className="bg-blue-50 border-blue-100 border rounded-lg p-6">
+                        <h3 className="text-lg font-semibold mb-3">AI Matching Tips</h3>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-start">
+                            <span className="text-blue-500 mr-2">•</span>
+                            Use detailed job descriptions for better matches
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-blue-500 mr-2">•</span>
+                            Include both required and preferred skills
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-blue-500 mr-2">•</span>
+                            Specify years of experience for more accurate results
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-blue-500 mr-2">•</span>
+                            Try different candidate sources for wider reach
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+            </>
+          )}
 
-      <Footer />
-    </div>
+          {showResults && (
+            <CandidateResults
+              isLoading={isLoading}
+              matchingProgress={matchingProgress}
+              matchResult={matchResult}
+              handleStartNewMatch={handleStartNewMatch}
+              saveCandidate={saveCandidate}
+              contactCandidate={contactCandidate}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="saved">
+          <MatchingSavedResults />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <div className="flex items-center justify-center bg-gray-50 border rounded-lg p-12">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-2">Analytics Dashboard</h3>
+              <p className="text-gray-500 mb-6">Get insights into your talent matching activities</p>
+              <TalentMatchingCallToAction />
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </DashboardLayout>
   );
 };
 

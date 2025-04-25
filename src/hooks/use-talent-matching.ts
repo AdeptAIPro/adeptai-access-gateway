@@ -24,6 +24,17 @@ export const useTalentMatching = () => {
   const [fileUploaded, setFileUploaded] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTargetSources, setSelectedTargetSources] = useState<string[]>([]);
+  const [showPremiumFeaturePrompt, setShowPremiumFeaturePrompt] = useState(false);
+  const [userPlan, setUserPlan] = useState<"free" | "basic" | "pro" | "enterprise">("free");
+  
+  // Check user plan on load
+  useEffect(() => {
+    if (user) {
+      // In a real implementation, this would check the user's subscription status
+      // For now, we'll default to "free" for demonstration
+      setUserPlan("free");
+    }
+  }, [user]);
 
   // Add default target source if none selected
   useEffect(() => {
@@ -34,6 +45,18 @@ export const useTalentMatching = () => {
 
   // Determine if the Start AI Matchmaking button should be enabled
   const isReadyToStart = jobDescription.length > 50 && selectedTargetSources.length > 0;
+
+  // Determine which features should be marked as premium based on user plan
+  const premiumFeatures = {
+    crossSourceIntelligence: userPlan === "free" || userPlan === "basic",
+    advancedFiltering: userPlan === "free",
+    semanticMatching: userPlan === "free" || userPlan === "basic",
+    complianceVerification: userPlan === "free" || userPlan === "basic",
+    culturalFitAnalysis: userPlan === "free" || userPlan === "basic",
+    bulkUpload: userPlan === "free" || userPlan === "basic",
+    unlimitedSources: userPlan === "free" || userPlan === "basic",
+    advancedInsights: userPlan === "free" || userPlan === "basic"
+  };
 
   // Construct matching options object
   const matchingOptions: MatchingOptions = {
@@ -92,6 +115,15 @@ export const useTalentMatching = () => {
 
   const handleStartMatching = () => {
     console.log("Starting matching process...");
+    
+    // Check if trying to use a premium feature
+    if ((useCrossSourceIntelligence && premiumFeatures.crossSourceIntelligence) || 
+        (useSemanticMatching && premiumFeatures.semanticMatching) ||
+        (selectedTargetSources.length > 3 && premiumFeatures.unlimitedSources)) {
+      setShowPremiumFeaturePrompt(true);
+      return;
+    }
+    
     if (!jobDescription) {
       toast({
         title: "Missing Job Description",
@@ -118,6 +150,10 @@ export const useTalentMatching = () => {
     setShowResults(false);
   };
 
+  const dismissPremiumFeaturePrompt = () => {
+    setShowPremiumFeaturePrompt(false);
+  };
+
   return {
     // State
     jobDescription,
@@ -141,6 +177,11 @@ export const useTalentMatching = () => {
     useCrossSourceIntelligence,
     setUseCrossSourceIntelligence,
     isReadyToStart,
+    showPremiumFeaturePrompt,
+    setShowPremiumFeaturePrompt,
+    dismissPremiumFeaturePrompt,
+    premiumFeatures,
+    userPlan,
     
     // Actions
     handleStartMatching,
