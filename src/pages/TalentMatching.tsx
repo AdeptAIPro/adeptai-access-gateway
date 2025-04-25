@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -14,7 +13,8 @@ import TalentMatchingHero from "@/components/talent-matching/TalentMatchingHero"
 import TalentMatchingCallToAction from "@/components/talent-matching/TalentMatchingCallToAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { MatchingSavedResultsProps } from "@/components/talent-matching/MatchingSavedResults";
+import type { MatchingSavedResultsProps } from "@/components/talent-matching/types/saved-results.types";
+import { Card } from "@/components/ui/card";
 
 const TalentMatching = () => {
   const { user } = useAuth();
@@ -54,7 +54,6 @@ const TalentMatching = () => {
     return null;
   }
 
-  // Mock handler functions for MatchingSavedResults
   const handleLoadSavedResult = (id: string) => {
     console.log("Loading saved result:", id);
   };
@@ -71,7 +70,6 @@ const TalentMatching = () => {
     console.log("Toggling favorite for:", id);
   };
   
-  // Props for MatchingSavedResults
   const matchingSavedResultsProps: MatchingSavedResultsProps = {
     savedResults: [],
     onLoad: handleLoadSavedResult,
@@ -89,12 +87,12 @@ const TalentMatching = () => {
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="match" className="space-y-8">
+        <TabsContent value="match" className="space-y-6">
           {!showResults && (
             <>
               <TalentMatchingHero />
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <JobDescriptionInput
                     jobDescription={jobDescription}
@@ -105,7 +103,6 @@ const TalentMatching = () => {
                     setFileUploaded={setFileUploaded}
                   />
 
-                  {/* Add Target Source Selection - Candidate Sources */}
                   <TargetSourceSelection
                     selectedSources={selectedTargetSources}
                     setSelectedSources={setSelectedTargetSources}
@@ -113,7 +110,6 @@ const TalentMatching = () => {
                     bulkUploaded={false}
                   />
                   
-                  {/* Add Matching Workflow - AI Matchmaking */}
                   <MatchingWorkflow
                     isReadyToStart={isReadyToStart}
                     showAdvancedOptions={showAdvancedOptions}
@@ -124,7 +120,7 @@ const TalentMatching = () => {
                   />
 
                   {showAdvancedOptions && (
-                    <div className="mt-6">
+                    <div className="mt-4">
                       <AdvancedMatchingOptions
                         matchingOptions={matchingOptions}
                         setMatchingOptions={setMatchingOptions}
@@ -139,47 +135,59 @@ const TalentMatching = () => {
                     <TalentMatchingCallToAction onDismiss={dismissPremiumFeaturePrompt} />
                   ) : (
                     <div className="space-y-6">
-                      <div className="bg-slate-50 border rounded-lg p-6">
-                        <h3 className="text-xl font-semibold mb-4">Recent Talent Searches</h3>
+                      <Card className="p-6 bg-indigo-900 text-white rounded-lg shadow-lg">
+                        <h2 className="text-xl font-bold mb-3">How AdeptAI Pro Transforms Hiring</h2>
+                        <ul className="space-y-2 text-sm">
+                          <li className="flex items-center">
+                            <span className="mr-2">•</span>
+                            Reduces time-to-hire by up to 70%
+                          </li>
+                          <li className="flex items-center">
+                            <span className="mr-2">•</span>
+                            Improves quality of hire with precise matching
+                          </li>
+                          <li className="flex items-center">
+                            <span className="mr-2">•</span>
+                            Eliminates bias with objective AI assessment
+                          </li>
+                          <li className="flex items-center">
+                            <span className="mr-2">•</span>
+                            Streamlines the onboarding process
+                          </li>
+                        </ul>
+                      </Card>
+
+                      <Card className="p-6">
+                        <h3 className="text-lg font-semibold mb-3">Recent Searches</h3>
                         <div className="space-y-3">
-                          <div className="bg-white p-3 rounded border">
+                          <div className="bg-gray-50 p-3 rounded">
                             <div className="text-sm font-medium">Senior Software Engineer</div>
                             <div className="text-xs text-gray-500 mt-1">43 candidates • 3 days ago</div>
                           </div>
-                          <div className="bg-white p-3 rounded border">
+                          <div className="bg-gray-50 p-3 rounded">
                             <div className="text-sm font-medium">Product Manager</div>
                             <div className="text-xs text-gray-500 mt-1">28 candidates • 5 days ago</div>
                           </div>
-                          <div className="bg-white p-3 rounded border">
-                            <div className="text-sm font-medium">DevOps Engineer</div>
-                            <div className="text-xs text-gray-500 mt-1">16 candidates • 1 week ago</div>
-                          </div>
                         </div>
-                      </div>
+                      </Card>
 
-                      <Separator />
-                      
-                      <div className="bg-blue-50 border-blue-100 border rounded-lg p-6">
+                      <Card className="bg-blue-50 border-blue-100 p-6">
                         <h3 className="text-lg font-semibold mb-3">AI Matching Tips</h3>
                         <ul className="space-y-2 text-sm">
                           <li className="flex items-start">
                             <span className="text-blue-500 mr-2">•</span>
-                            Use detailed job descriptions for better matches
+                            Use detailed job descriptions
                           </li>
                           <li className="flex items-start">
                             <span className="text-blue-500 mr-2">•</span>
-                            Include both required and preferred skills
+                            Include required and preferred skills
                           </li>
                           <li className="flex items-start">
                             <span className="text-blue-500 mr-2">•</span>
-                            Specify years of experience for more accurate results
-                          </li>
-                          <li className="flex items-start">
-                            <span className="text-blue-500 mr-2">•</span>
-                            Try different candidate sources for wider reach
+                            Specify years of experience
                           </li>
                         </ul>
-                      </div>
+                      </Card>
                     </div>
                   )}
                 </div>
@@ -200,9 +208,7 @@ const TalentMatching = () => {
         </TabsContent>
 
         <TabsContent value="saved">
-          <MatchingSavedResults 
-            {...matchingSavedResultsProps}
-          />
+          <MatchingSavedResults {...matchingSavedResultsProps} />
         </TabsContent>
 
         <TabsContent value="analytics">
