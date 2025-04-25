@@ -1,4 +1,6 @@
 
+import { Candidate } from './candidate-types';
+
 export interface MatchingOptions {
   matchingModel: string;
   weightSkills: number;

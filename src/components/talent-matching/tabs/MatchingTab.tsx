@@ -1,3 +1,4 @@
+
 import { TalentMatchingHero } from "@/components/talent-matching";
 import MatchingSidebar from "../sidebar/MatchingSidebar";
 import MatchingInputForm from "../input/MatchingInputForm";
@@ -28,6 +29,8 @@ interface MatchingTabProps {
   showPremiumFeaturePrompt: boolean;
   dismissPremiumFeaturePrompt: () => void;
   premiumFeatures: any;
+  useCrossSourceIntelligence: boolean;
+  setUseCrossSourceIntelligence: (value: boolean) => void;
 }
 
 const MatchingTab = ({
@@ -54,7 +57,9 @@ const MatchingTab = ({
   contactCandidate,
   showPremiumFeaturePrompt,
   dismissPremiumFeaturePrompt,
-  premiumFeatures
+  premiumFeatures,
+  useCrossSourceIntelligence,
+  setUseCrossSourceIntelligence
 }: MatchingTabProps) => {
   return (
     <>
@@ -77,6 +82,8 @@ const MatchingTab = ({
                 setMatchingOptions={setMatchingOptions}
                 selectedTargetSources={selectedTargetSources}
                 setSelectedTargetSources={setSelectedTargetSources}
+                useCrossSourceIntelligence={useCrossSourceIntelligence}
+                setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
                 isLoading={isLoading}
                 matchingProgress={matchingProgress}
                 onStartMatching={handleStartMatching}

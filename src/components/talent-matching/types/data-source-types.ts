@@ -30,3 +30,28 @@ export interface ImportFormValues {
   fileUpload?: any;
   sourceUrl?: string;
 }
+
+export interface ResumeParsingResult {
+  id: string;
+  filename: string;
+  parsed: boolean;
+  name?: string;
+  candidateName?: string;
+  email?: string;
+  phone?: string;
+  skills?: string[];
+  extractedSkills: string[];
+  experience?: string[];
+  education?: string | string[];
+  location?: string;
+  inferredExperience?: number;
+  originalText?: string;
+  source: string;
+  sourceUrl?: string;
+  confidence?: number;
+  error?: string;
+  contact?: {
+    email: string;
+    phone: string;
+  };
+}

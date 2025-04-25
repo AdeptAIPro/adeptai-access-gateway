@@ -9,7 +9,7 @@ import { MatchingOptions } from "./types";
 import { Lock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface AdvancedMatchingOptionsProps {
+export interface AdvancedMatchingOptionsProps {
   matchingOptions: MatchingOptions;
   setMatchingOptions: (options: MatchingOptions) => void;
   isPremiumFeatures?: {
@@ -19,12 +19,16 @@ interface AdvancedMatchingOptionsProps {
     advancedFiltering?: boolean;
     [key: string]: boolean | undefined;
   };
+  useCrossSourceIntelligence?: boolean;
+  setUseCrossSourceIntelligence?: (value: boolean) => void;
 }
 
 const AdvancedMatchingOptions: React.FC<AdvancedMatchingOptionsProps> = ({ 
   matchingOptions, 
   setMatchingOptions,
-  isPremiumFeatures = {}
+  isPremiumFeatures = {},
+  useCrossSourceIntelligence,
+  setUseCrossSourceIntelligence
 }) => {
   const handleToggleChange = (option: keyof MatchingOptions) => {
     setMatchingOptions({

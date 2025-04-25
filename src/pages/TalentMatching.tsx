@@ -107,6 +107,8 @@ const TalentMatching = () => {
             showPremiumFeaturePrompt={showPremiumFeaturePrompt}
             dismissPremiumFeaturePrompt={dismissPremiumFeaturePrompt}
             premiumFeatures={premiumFeatures}
+            useCrossSourceIntelligence={useCrossSourceIntelligence}
+            setUseCrossSourceIntelligence={setUseCrossSourceIntelligence}
           />
         </TabsContent>
 
