@@ -1,8 +1,9 @@
 
 import React from "react";
-import StateHandler from "@/components/shared/StateHandler";
+import LoadingResults from "./LoadingResults";
+import ErrorResults from "./ErrorResults";
+import SuccessNotification from "./SuccessNotification";
 import ResultsSection from "../ResultsSection";
-import EnhancedNotification from "@/components/shared/EnhancedNotification";
 import { MatchingResult } from "../types";
 
 interface MatchingResultsContainerProps {
@@ -23,36 +24,32 @@ const MatchingResultsContainer: React.FC<MatchingResultsContainerProps> = ({
   // Add console logs to help debug
   console.log("Rendering MatchingResultsContainer", { isLoading, matchResult });
   
+  if (isLoading) {
+    return <LoadingResults />;
+  }
+
+  if (!matchResult && !isLoading) {
+    return (
+      <ErrorResults 
+        error="Failed to process matching request"
+        onRetry={onStartNewMatch}
+      />
+    );
+  }
+
+  if (!matchResult) {
+    return null;
+  }
+
   return (
     <>
-      <StateHandler
-        isLoading={isLoading}
-        isError={!matchResult && !isLoading}
-        error="Failed to process matching request"
-        onRetry={() => onStartNewMatch()}
-        loadingText="Processing AI talent matching..."
-      >
-        {matchResult && (
-          <ResultsSection
-            matchResult={matchResult}
-            onStartNewMatch={onStartNewMatch}
-            saveCandidate={saveCandidate}
-            contactCandidate={contactCandidate}
-          />
-        )}
-      </StateHandler>
-      
-      {/* Show notification for successful match */}
-      {matchResult && !isLoading && (
-        <EnhancedNotification
-          variant="success"
-          title="AI Matching Complete"
-          description={`Found ${matchResult.candidates.length} matching candidates based on your job description.`}
-          actionLabel="View Results"
-          autoDismiss={true}
-          onDismiss={() => {}}
-        />
-      )}
+      <ResultsSection
+        matchResult={matchResult}
+        onStartNewMatch={onStartNewMatch}
+        saveCandidate={saveCandidate}
+        contactCandidate={contactCandidate}
+      />
+      <SuccessNotification candidatesCount={matchResult.candidates.length} />
     </>
   );
 };
