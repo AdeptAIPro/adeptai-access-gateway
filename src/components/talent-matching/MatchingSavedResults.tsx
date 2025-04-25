@@ -26,7 +26,8 @@ export interface SavedMatchResult {
   exported?: boolean;
 }
 
-interface MatchingSavedResultsProps {
+// Explicitly export the interface
+export interface MatchingSavedResultsProps {
   savedResults: SavedMatchResult[];
   onLoad: (id: string) => void;
   onDelete: (id: string) => void;
