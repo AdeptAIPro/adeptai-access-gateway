@@ -1,6 +1,7 @@
 
 import OpenAI from "openai";
 import { toast } from "sonner";
+import { ChatCompletionTool } from "openai/resources";
 
 // Initialize OpenAI client
 let openai: OpenAI | null = null;
@@ -55,7 +56,7 @@ export const generateText = async (
 // Run function with tool calling
 export const runFunctionCall = async (
   prompt: string,
-  tools: OpenAI.ChatCompletionTool[],
+  tools: ChatCompletionTool[],
   model: string = "gpt-4o"
 ): Promise<any> => {
   if (!openai) {

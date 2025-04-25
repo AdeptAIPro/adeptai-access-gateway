@@ -1,6 +1,6 @@
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
 
 // AWS Region
@@ -35,10 +35,10 @@ export const MODEL_ARTIFACTS_BUCKET = "agentic-model-artifacts";
 export const checkAwsCredentials = async (): Promise<boolean> => {
   try {
     // Try a simple operation to verify credentials
-    const command = {
+    const command = new ScanCommand({
       TableName: AGENTS_TABLE,
       Limit: 1,
-    };
+    });
     await docClient.send(command);
     return true;
   } catch (error) {

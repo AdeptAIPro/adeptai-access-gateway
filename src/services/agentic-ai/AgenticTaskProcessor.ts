@@ -1,4 +1,3 @@
-
 import { AgentTask } from './types/AgenticTypes';
 import { 
   generateText, 
@@ -15,9 +14,10 @@ import {
   downloadTaskData 
 } from '../aws/S3Service';
 import { toast } from 'sonner';
+import { ChatCompletionTool } from 'openai/resources';
 
 // Tool definitions for OpenAI function calling
-const tools = [
+const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
