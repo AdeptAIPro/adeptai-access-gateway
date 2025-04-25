@@ -1,6 +1,7 @@
-
-import { CandidateResults, JobDescriptionInput, TargetSourceSelection, MatchingWorkflow, AdvancedMatchingOptions, TalentMatchingHero } from "@/components/talent-matching";
+import { TalentMatchingHero } from "@/components/talent-matching";
 import MatchingSidebar from "../sidebar/MatchingSidebar";
+import MatchingInputForm from "../input/MatchingInputForm";
+import MatchingResultsContainer from "../results/MatchingResultsContainer";
 
 interface MatchingTabProps {
   showResults: boolean;
@@ -63,40 +64,24 @@ const MatchingTab = ({
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <JobDescriptionInput
+              <MatchingInputForm 
                 jobDescription={jobDescription}
                 setJobDescription={setJobDescription}
                 tab={tab}
                 setTab={setTab}
                 fileUploaded={fileUploaded}
                 setFileUploaded={setFileUploaded}
-              />
-
-              <TargetSourceSelection
-                selectedSources={selectedTargetSources}
-                setSelectedSources={setSelectedTargetSources}
-                onShowBulkUpload={() => {}}
-                bulkUploaded={false}
-              />
-              
-              <MatchingWorkflow
-                isReadyToStart={isReadyToStart}
                 showAdvancedOptions={showAdvancedOptions}
                 setShowAdvancedOptions={setShowAdvancedOptions}
+                matchingOptions={matchingOptions}
+                setMatchingOptions={setMatchingOptions}
+                selectedTargetSources={selectedTargetSources}
+                setSelectedTargetSources={setSelectedTargetSources}
+                isLoading={isLoading}
+                matchingProgress={matchingProgress}
                 onStartMatching={handleStartMatching}
-                isProcessing={isLoading}
-                progress={matchingProgress}
+                isReadyToStart={isReadyToStart}
               />
-
-              {showAdvancedOptions && (
-                <div className="mt-4">
-                  <AdvancedMatchingOptions
-                    matchingOptions={matchingOptions}
-                    setMatchingOptions={setMatchingOptions}
-                    isPremiumFeatures={premiumFeatures}
-                  />
-                </div>
-              )}
             </div>
 
             <div className="lg:col-span-1">
@@ -110,11 +95,10 @@ const MatchingTab = ({
       )}
 
       {showResults && (
-        <CandidateResults
+        <MatchingResultsContainer
           isLoading={isLoading}
-          matchingProgress={matchingProgress}
           matchResult={matchResult}
-          handleStartNewMatch={handleStartNewMatch}
+          onStartNewMatch={handleStartNewMatch}
           saveCandidate={saveCandidate}
           contactCandidate={contactCandidate}
         />

@@ -1,11 +1,8 @@
 
 import React, { useState } from "react";
-import JobDescriptionInput from "../JobDescriptionInput";
-import TargetSourceSelection from "../TargetSourceSelection";
-import AdvancedMatchingSection from "../advanced-options/AdvancedMatchingSection";
-import MatchingWorkflow from "../MatchingWorkflow";
-import { MatchingOptions } from "../types";
+import { JobDescriptionInput, TargetSourceSelection, AdvancedMatchingOptions, MatchingWorkflow } from "@/components/talent-matching";
 import BulkUploadModal from "../bulk-upload/BulkUploadModal";
+import { MatchingOptions } from "../types";
 
 interface MatchingInputFormProps {
   jobDescription: string;
@@ -81,9 +78,7 @@ const MatchingInputForm: React.FC<MatchingInputFormProps> = ({
         bulkUploaded={bulkUploaded}
       />
       
-      <AdvancedMatchingSection
-        showAdvancedOptions={showAdvancedOptions}
-        setShowAdvancedOptions={setShowAdvancedOptions}
+      <AdvancedMatchingOptions
         matchingOptions={matchingOptions}
         setMatchingOptions={setMatchingOptions}
         useCrossSourceIntelligence={useCrossSourceIntelligence}
