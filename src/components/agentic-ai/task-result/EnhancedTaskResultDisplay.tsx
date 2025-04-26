@@ -1,126 +1,136 @@
 
-import React from 'react';
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Check, AlertCircle, Clock } from '@/utils/icon-polyfill';
-import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
+import { Button } from "@/components/ui/button";
+import TaskResultDisplay from "./TaskResultDisplay";
+import { AgentTask } from "@/services/agentic-ai/types/AgenticTypes";
+import { Progress } from "@/components/ui/progress";
+import { RefreshCcw, Download, Save, Clock } from "@/utils/icon-polyfill";
 
-interface TaskResultDisplayProps {
+interface EnhancedTaskResultDisplayProps {
   task: AgentTask;
+  loading?: boolean;
+  onRetry?: () => void;
+  onSave?: () => void;
+  onExport?: () => void;
 }
 
-const EnhancedTaskResultDisplay: React.FC<TaskResultDisplayProps> = ({ task }) => {
-  if (!task) return null;
+const EnhancedTaskResultDisplay: React.FC<EnhancedTaskResultDisplayProps> = ({ 
+  task, 
+  loading = false, 
+  onRetry, 
+  onSave, 
+  onExport 
+}) => {
+  const [activeTab, setActiveTab] = useState('result');
   
-  const result = task.result || {};
-  const { summary, findings, recommendations } = result;
+  // Simplify multiple conditional checks
+  const isProcessing = task.status === 'processing' || task.status === 'pending' || loading;
+  const hasResult = task.status === 'completed' && task.result;
+  const hasError = task.status === 'failed' && task.error;
   
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'completed':
-        return 'text-green-600 bg-green-100';
-      case 'processing':
-      case 'in-progress':
-        return 'text-amber-600 bg-amber-100';
-      case 'failed':
-        return 'text-destructive bg-destructive/10';
-      default:
-        return 'text-muted-foreground bg-muted';
-    }
+  // For progress indicator
+  const getProgressValue = () => {
+    if (task.status === 'completed') return 100;
+    if (task.status === 'failed') return 100;
+    if (task.status === 'processing') return 60;
+    if (task.status === 'in-progress') return 40;
+    return 20; // pending
   };
-  
-  const getStatusIcon = (status: string) => {
-    switch(status) {
-      case 'completed':
-        return <Check className="h-4 w-4" />;
-      case 'processing':
-      case 'in-progress':
-        return <Clock className="h-4 w-4" />;
-      case 'failed':
-        return <AlertCircle className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-  
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex justify-between items-start mb-2">
-          <CardTitle>Task Result</CardTitle>
-          <Badge 
-            variant="outline" 
-            className={`flex items-center gap-1 ${getStatusColor(task.status)}`}
-          >
-            {getStatusIcon(task.status)}
-            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
-          </Badge>
+    <Card className={`border ${hasError ? 'border-destructive/40' : ''}`}>
+      <CardHeader className="pb-3">
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-base">{task.title || `${task.taskType.charAt(0).toUpperCase() + task.taskType.slice(1).replace(/-/g, " ")} Results`}</CardTitle>
+          
+          {onSave && hasResult && (
+            <Button variant="outline" size="sm" onClick={onSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Save
+            </Button>
+          )}
         </div>
         
-        {task.error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4 mr-2" />
-            <AlertDescription>
-              {task.error}
-            </AlertDescription>
-          </Alert>
+        {isProcessing && (
+          <div className="mt-2">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-muted-foreground">Processing task...</span>
+              <span className="text-xs font-medium">{getProgressValue()}%</span>
+            </div>
+            <Progress value={getProgressValue()} className="h-1" />
+          </div>
         )}
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Only show results if processing is completed */}
-        {(task.status === 'completed') && (
-          <>
-            {summary && (
-              <div>
-                <h3 className="font-medium text-lg mb-2">Summary</h3>
-                <p className="text-muted-foreground">{summary}</p>
-              </div>
+      
+      <CardContent>
+        {isProcessing ? (
+          <div className="flex flex-col items-center justify-center py-10 space-y-4">
+            <div className="rounded-full bg-muted p-4">
+              <Clock className="h-8 w-8 animate-pulse text-primary" />
+            </div>
+            <div className="text-center">
+              <h3 className="font-medium">Processing Your Task</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Our AI is analyzing your task. This may take a moment.
+              </p>
+            </div>
+          </div>
+        ) : hasError ? (
+          <div className="space-y-4">
+            <div className="bg-destructive/10 text-destructive p-4 rounded-md">
+              <h3 className="font-medium mb-1">Error Processing Task</h3>
+              <p className="text-sm">{task.error}</p>
+            </div>
+            
+            {onRetry && (
+              <Button variant="outline" size="sm" onClick={onRetry} className="border-destructive/30 text-destructive hover:bg-destructive/10">
+                <RefreshCcw className="mr-2 h-4 w-4" />
+                Retry Task
+              </Button>
+            )}
+          </div>
+        ) : hasResult ? (
+          <div className="space-y-4">
+            <div className="flex space-x-2 mb-4">
+              <Button
+                variant={activeTab === 'result' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('result')}
+              >
+                Results
+              </Button>
+              <Button
+                variant={activeTab === 'raw' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('raw')}
+              >
+                Raw Data
+              </Button>
+            </div>
+            
+            {activeTab === 'result' ? (
+              <TaskResultDisplay task={task} />
+            ) : (
+              <pre className="bg-muted p-4 rounded-md text-xs overflow-auto max-h-96">
+                {JSON.stringify(task.result, null, 2)}
+              </pre>
             )}
             
-            {findings && findings.length > 0 && (
-              <div>
-                <h3 className="font-medium text-lg mb-2">Key Findings</h3>
-                <ul className="space-y-2 list-disc pl-5">
-                  {findings.map((finding: string, index: number) => (
-                    <li key={index} className="text-muted-foreground">{finding}</li>
-                  ))}
-                </ul>
+            {onExport && (
+              <div className="flex justify-end">
+                <Button variant="outline" size="sm" onClick={onExport}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Results
+                </Button>
               </div>
             )}
-            
-            {recommendations && recommendations.length > 0 && (
-              <div>
-                <h3 className="font-medium text-lg mb-2">Recommendations</h3>
-                <ul className="space-y-2 list-disc pl-5">
-                  {recommendations.map((recommendation: string, index: number) => (
-                    <li key={index} className="text-muted-foreground">{recommendation}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {/* If there's custom structured data in the result */}
-            {result.context && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="font-medium text-lg mb-2">Additional Details</h3>
-                  <pre className="text-xs bg-muted p-4 rounded-md overflow-auto">
-                    {JSON.stringify(result.context, null, 2)}
-                  </pre>
-                </div>
-              </>
-            )}
-          </>
-        )}
-        
-        {/* Show a message if the task is still processing */}
-        {(task.status === 'processing' || task.status === 'in-progress') && (
-          <div className="text-center py-6">
-            <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
-            <p className="text-muted-foreground">The AI agent is currently working on this task...</p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-10">
+            <p className="text-sm text-muted-foreground text-center">
+              No results available yet. Start processing the task to see results.
+            </p>
           </div>
         )}
       </CardContent>

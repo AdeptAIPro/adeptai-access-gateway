@@ -1,115 +1,110 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import React from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, AlertCircle, Clock, Bot, Search } from '@/utils/icon-polyfill';
-import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
+import { Separator } from "@/components/ui/separator";
+import { AgentTask, TaskType } from "@/services/agentic-ai/types/AgenticTypes";
+import { CheckCircle, AlertCircle, FileCheck, BarChart2, UserCheck } from "@/utils/icon-polyfill";
 
-interface TaskResultDisplayProps {
+export interface TaskResultDisplayProps {
   task: AgentTask;
 }
 
 const TaskResultDisplay: React.FC<TaskResultDisplayProps> = ({ task }) => {
-  if (!task) return null;
-  
-  const getTaskIcon = (taskType: string) => {
-    switch(taskType) {
-      // Using string comparisons since we're updating types
-      case 'cv-analysis':
-      case 'job-match':
-      case 'talent-matching':
-        return <Search className="h-4 w-4" />;
-      case 'cross-source-talent-intelligence':
-        return <Search className="h-4 w-4" />;
-      case 'payroll-automation':
-      case 'payroll-processing':
-        return <Bot className="h-4 w-4" />;
-      default:
-        return <Bot className="h-4 w-4" />;
-    }
+  // Default empty state for result
+  const result = task.result || {
+    summary: "No summary available",
+    findings: [],
+    recommendations: []
   };
   
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'completed':
-        return 'text-green-600 bg-green-100';
-      case 'processing':
-        return 'text-amber-600 bg-amber-100';
-      case 'failed':
-        return 'text-destructive bg-destructive/10';
+  // Get the appropriate icon based on task type
+  const getTaskIcon = () => {
+    switch (task.taskType) {
+      case "cv-analysis":
+        return <FileCheck className="h-5 w-5 text-blue-500" />;
+      case "market-analysis":
+        return <BarChart2 className="h-5 w-5 text-green-500" />;
+      case "job-match":
+        return <UserCheck className="h-5 w-5 text-purple-500" />;
       default:
-        return 'text-muted-foreground bg-muted';
-    }
-  };
-  
-  const getStatusIcon = (status: string) => {
-    switch(status) {
-      case 'completed':
-        return <Check className="h-4 w-4" />;
-      case 'processing':
-        return <Clock className="h-4 w-4" />;
-      case 'failed':
-        return <AlertCircle className="h-4 w-4" />;
-      default:
-        return null;
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
     }
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex justify-between items-start mb-2">
-          <CardTitle className="flex items-center gap-2">
-            {getTaskIcon(task.taskType)}
-            Task Result
-          </CardTitle>
-          <Badge 
-            variant="outline" 
-            className={`flex items-center gap-1 ${getStatusColor(task.status)}`}
-          >
-            {getStatusIcon(task.status)}
-            {task.status.charAt(0).toUpperCase() + task.status.slice(1)}
-          </Badge>
+    <div className="space-y-6">
+      <div className="flex items-start gap-4">
+        <div className="bg-primary/10 p-2 rounded-full">
+          {getTaskIcon()}
         </div>
-        
-        {task.error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4 mr-2" />
-            <AlertDescription>
-              {task.error}
-            </AlertDescription>
-          </Alert>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Display task goal */}
         <div>
-          <h3 className="font-medium">Task Goal</h3>
-          <p className="text-muted-foreground">{task.goal}</p>
+          <h3 className="font-medium text-lg">{result.summary}</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Task completed {task.completedAt ? new Date(task.completedAt).toLocaleString() : "recently"}
+          </p>
         </div>
-        
-        {/* Only show results if processing is completed */}
-        {task.status === 'completed' && task.result && (
-          <div>
-            <h3 className="font-medium">Results</h3>
-            <pre className="text-xs bg-muted p-4 rounded-md overflow-auto">
-              {typeof task.result === 'string' 
-                ? task.result 
-                : JSON.stringify(task.result, null, 2)}
-            </pre>
-          </div>
-        )}
-        
-        {/* Show a message if the task is still processing */}
-        {task.status === 'processing' && (
-          <div className="text-center py-6">
-            <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
-            <p className="text-muted-foreground">Processing your request...</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+      
+      <Separator />
+      
+      {result.findings && result.findings.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Key Findings</CardTitle>
+            <CardDescription>Important insights discovered during analysis</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {result.findings.map((finding: string, index: number) => (
+                <li key={index} className="flex items-start gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 mt-0.5 text-green-500 shrink-0" />
+                  <span>{finding}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+      
+      {result.recommendations && result.recommendations.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Recommendations</CardTitle>
+            <CardDescription>Suggested actions based on analysis</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {result.recommendations.map((recommendation: string, index: number) => (
+                <li key={index} className="flex items-start gap-2 text-sm">
+                  <AlertCircle className="h-4 w-4 mt-0.5 text-blue-500 shrink-0" />
+                  <span>{recommendation}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Show context data if available */}
+      {result.context && Object.keys(result.context).length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Additional Data</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(result.context).map(([key, value]) => (
+                <div key={key} className="space-y-1">
+                  <p className="text-xs text-muted-foreground font-medium">{key}</p>
+                  <p className="text-sm">{String(value)}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
 

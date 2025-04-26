@@ -135,7 +135,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
         {activeTask ? (
           <EnhancedTaskResultDisplay 
             task={activeTask} 
-            isLoading={isProcessing}
+            loading={isProcessing}
             onRetry={() => handleRetryTask(activeTask.id)}
             onSave={() => handleSaveTask(activeTask.id)}
             onExport={() => onExportResult && onExportResult(activeTask.id)}

@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Suspense, lazy } from "react";
@@ -32,7 +32,7 @@ const AppLoader = () => (
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <div className="QueryClientProvider" data-client={queryClient}>
       <AuthProvider>
         <CredentialsProvider>
           <TooltipProvider>
@@ -46,7 +46,7 @@ function App() {
           </TooltipProvider>
         </CredentialsProvider>
       </AuthProvider>
-    </QueryClientProvider>
+    </div>
   );
 }
 

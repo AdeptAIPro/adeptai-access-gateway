@@ -18,9 +18,6 @@ export type TaskType =
   'cross-source-talent-intelligence' |
   'payroll-processing';
 
-// Alias for backward compatibility
-export type AgentTaskType = TaskType;
-
 export interface AgentTask {
   id: string;
   taskType: TaskType;
