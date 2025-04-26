@@ -1,15 +1,9 @@
 
-// Define OpenAI API related types
+// Type definitions for OpenAI API calls
 
 export interface ChatCompletionFunctionParameters {
   type: string;
-  properties: Record<string, {
-    type: string;
-    description?: string;
-    items?: {
-      type: string;
-    };
-  }>;
+  properties: Record<string, any>;
   required?: string[];
 }
 
@@ -22,43 +16,6 @@ export interface ChatCompletionFunction {
 export interface ChatCompletionTool {
   type: string;
   function: ChatCompletionFunction;
-}
-
-export interface ChatCompletionMessage {
-  role: 'system' | 'user' | 'assistant' | 'function';
-  content: string;
-  name?: string;
-  tool_calls?: Array<{
-    id: string;
-    type: string;
-    function: {
-      name: string;
-      arguments: string;
-    };
-  }>;
-  tool_call_id?: string;
-}
-
-export interface ChatCompletionRequest {
-  model: string;
-  messages: ChatCompletionMessage[];
-  tools?: ChatCompletionTool[];
-  tool_choice?: 'auto' | 'none' | {
-    type: string;
-    function: {
-      name: string;
-    };
-  };
-  temperature?: number;
-  top_p?: number;
-  max_tokens?: number;
-  stream?: boolean;
-  stop?: string | string[];
-}
-
-export interface FunctionCallResponse {
-  name: string;
-  arguments: string;
 }
 
 export interface ChatCompletionResponse {
@@ -74,7 +31,10 @@ export interface ChatCompletionResponse {
       tool_calls?: Array<{
         id: string;
         type: string;
-        function: FunctionCallResponse;
+        function: {
+          name: string;
+          arguments: string;
+        };
       }>;
     };
     finish_reason: string;

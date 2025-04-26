@@ -13,7 +13,9 @@ import {
   FileCheck,
   UserCheck,
   BarChart2,
-  RefreshCcw
+  RefreshCcw,
+  Check,
+  ClipboardList
 } from 'lucide-react';
 
 export {
@@ -29,7 +31,9 @@ export {
   FileCheck,
   UserCheck,
   BarChart2,
-  RefreshCcw
+  RefreshCcw,
+  Check,
+  ClipboardList
 };
 
 // Default export for compatibility
@@ -46,5 +50,7 @@ export default {
   FileCheck,
   UserCheck,
   BarChart2,
-  RefreshCcw
+  RefreshCcw,
+  Check,
+  ClipboardList
 };

@@ -38,6 +38,7 @@ export interface AgentTask {
   userId?: string;
   agentId?: string;
   priority?: 'low' | 'medium' | 'high';
+  deadline?: string;
 }
 
 export interface Agent {
@@ -48,7 +49,8 @@ export interface Agent {
   status: AgentStatus;
   createdAt: string;
   updatedAt?: string;
-  type?: string; // Added type property
+  type?: string;
+  parameters?: Record<string, any>;
 }
 
 export interface ExecutionPlan {

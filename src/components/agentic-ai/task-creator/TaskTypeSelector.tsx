@@ -1,85 +1,79 @@
 
 import React from 'react';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { TaskType } from '@/services/agentic-ai/types/AgenticTypes';
-import { Bot, Search, ShieldAlert, FileCheck } from '@/utils/icon-polyfill';
+import { UseFormReturn } from 'react-hook-form';
 
 interface TaskTypeSelectorProps {
-  form: any;
+  form: UseFormReturn<any>;
+  onChange?: (value: string) => void;
 }
 
-const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ form }) => {
-  const taskTypeOptions = [
-    { 
-      value: 'cv-analysis', 
-      label: 'Resume Analysis',
-      icon: <FileCheck className="h-4 w-4 mr-2" />,
-      description: 'Extract insights from candidate resumes'
-    },
-    { 
-      value: 'job-match', 
-      label: 'Job Matching',
-      icon: <Search className="h-4 w-4 mr-2" />,
-      description: 'Match candidates to job requirements'
-    },
-    { 
-      value: 'market-analysis', 
-      label: 'Market Analysis',
-      icon: <Search className="h-4 w-4 mr-2" />,
-      description: 'Analyze market trends for talent acquisition'
-    },
-    { 
-      value: 'compliance-check', 
-      label: 'Compliance Check',
-      icon: <ShieldAlert className="h-4 w-4 mr-2" />,
-      description: 'Verify compliance with regulations'
-    },
-    { 
-      value: 'learning-recommendation', 
-      label: 'Learning Recommendations',
-      icon: <Bot className="h-4 w-4 mr-2" />,
-      description: 'Get personalized learning paths'
+const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ form, onChange }) => {
+  const handleValueChange = (value: string) => {
+    if (onChange) {
+      onChange(value);
     }
-  ];
-  
+  };
+
   return (
     <FormField
       control={form.control}
       name="taskType"
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>Task Type</FormLabel>
+        <FormItem className="space-y-3">
+          <FormLabel className="text-base font-medium">Task Type</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a task type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {taskTypeOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      className="flex items-center gap-2"
-                    >
-                      <div className="flex items-center">
-                        {option.icon}
-                        <div>
-                          <span>{option.label}</span>
-                          <p className="text-xs text-muted-foreground">{option.description}</p>
-                        </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <RadioGroup
+              onValueChange={(value) => {
+                field.onChange(value);
+                handleValueChange(value);
+              }}
+              value={field.value}
+              className="grid grid-cols-1 md:grid-cols-2 gap-3"
+            >
+              <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="cv-analysis" id="cv-analysis" />
+                <Label htmlFor="cv-analysis" className="flex flex-col cursor-pointer">
+                  <span className="font-medium">CV Analysis</span>
+                  <span className="text-xs text-muted-foreground">Extract key details from resumes</span>
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="job-match" id="job-match" />
+                <Label htmlFor="job-match" className="flex flex-col cursor-pointer">
+                  <span className="font-medium">Job Matching</span>
+                  <span className="text-xs text-muted-foreground">Match candidates to requirements</span>
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="talent-matching" id="talent-matching" />
+                <Label htmlFor="talent-matching" className="flex flex-col cursor-pointer">
+                  <span className="font-medium">Talent Matching</span>
+                  <span className="text-xs text-muted-foreground">Find the best talent for roles</span>
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="cross-source-talent-intelligence" id="talent-intelligence" />
+                <Label htmlFor="talent-intelligence" className="flex flex-col cursor-pointer">
+                  <span className="font-medium">Talent Intelligence</span>
+                  <span className="text-xs text-muted-foreground">Cross-source talent analysis</span>
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2 rounded-md border p-3 cursor-pointer hover:bg-accent">
+                <RadioGroupItem value="payroll-processing" id="payroll-processing" />
+                <Label htmlFor="payroll-processing" className="flex flex-col cursor-pointer">
+                  <span className="font-medium">Payroll Processing</span>
+                  <span className="text-xs text-muted-foreground">Automate payroll tasks</span>
+                </Label>
+              </div>
+            </RadioGroup>
           </FormControl>
-          <FormDescription>
-            Select the type of task you want the AI to perform
-          </FormDescription>
           <FormMessage />
         </FormItem>
       )}

@@ -14,6 +14,7 @@ import TaskGoalField from './TaskGoalField';
 import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
 import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
+import { getAgents } from '@/services/aws/DynamoDBService';
 
 // Form schema
 const formSchema = z.object({
@@ -28,7 +29,7 @@ type FormValues = z.infer<typeof formSchema>;
 const TaskCreationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { createTask, getAgents } = useAgenticAI();
+  const { createTask } = useAgenticAI();
   const { user } = useAuth();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedTaskType, setSelectedTaskType] = useState("");
@@ -51,16 +52,14 @@ const TaskCreationForm = () => {
         const agentsList = await getAgents();
         setAgents(agentsList);
       } catch (error) {
-        toast({
-          title: "Failed to fetch agents",
-          description: error instanceof Error ? error.message : "An unknown error occurred",
-          variant: "destructive"
+        toast.error("Failed to fetch agents", {
+          description: error instanceof Error ? error.message : "An unknown error occurred"
         });
       }
     };
     
     fetchAgents();
-  }, [getAgents]);
+  }, []);
 
   // Handle form submission
   const onSubmit = async (values: FormValues) => {
@@ -112,6 +111,7 @@ const TaskCreationForm = () => {
           <div className="space-y-6">
             <TaskTypeSelector 
               form={form}
+              onChange={handleTaskTypeChange}
             />
             <TaskGoalField 
               control={form.control}

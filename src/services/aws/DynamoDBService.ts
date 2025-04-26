@@ -40,8 +40,28 @@ export const checkAwsCredentials = async (): Promise<boolean> => {
   return true;
 };
 
-// Add other database functions as needed
+// Add missing functions needed by various services
 export const executeQuery = async (query: string, params: any[]): Promise<any[]> => {
   console.log('Executing query:', query, params);
   return [];
+};
+
+export const createTask = async (task: AgentTask): Promise<AgentTask> => {
+  console.log('Creating task:', task);
+  return task;
+};
+
+export const updateTaskStatus = async (
+  taskId: string, 
+  status: string,
+  result?: any,
+  error?: string
+): Promise<boolean> => {
+  console.log(`Updating task ${taskId} status to ${status}`);
+  return true;
+};
+
+export const getTaskById = async (taskId: string): Promise<AgentTask | null> => {
+  console.log(`Getting task with id: ${taskId}`);
+  return null;
 };

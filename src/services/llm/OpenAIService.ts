@@ -17,3 +17,16 @@ export const makeCompletion = async (prompt: string): Promise<string> => {
   // In a real implementation, this would make an API call to OpenAI
   return "This is a mock response from OpenAI";
 };
+
+export const generateText = async (prompt: string, model = "gpt-3.5-turbo"): Promise<string> => {
+  console.log(`Generating text with ${model}:`, prompt);
+  return "This is a mock response from OpenAI";
+};
+
+export const runFunctionCall = async (prompt: string, tools: any[]): Promise<any> => {
+  console.log('Running function call with prompt:', prompt);
+  return {
+    content: "This is a mock response from OpenAI",
+    toolCalls: []
+  };
+};
