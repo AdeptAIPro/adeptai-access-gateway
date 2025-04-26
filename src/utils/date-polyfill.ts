@@ -96,6 +96,11 @@ export const formatDistance = (date: Date | number, baseDate: Date | number): st
   return `${years} year${years !== 1 ? 's' : ''}`;
 };
 
+export const formatDistanceToNow = (date: Date | number, options?: { addSuffix?: boolean }): string => {
+  const distance = formatDistance(date, new Date());
+  return options?.addSuffix ? `${distance} ago` : distance;
+};
+
 export const formatRelative = (date: Date | number, baseDate: Date | number): string => {
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const d = new Date(date);

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { z } from '@/utils/zod-polyfill';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -10,13 +10,13 @@ import TaskTypeSelector from './TaskTypeSelector';
 import TaskGoalField from './TaskGoalField';
 import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
-import { useAgenticTasks } from '@/hooks/use-agentic';
+import { useAgenticAI } from '@/hooks/use-agentic';
 import { showError } from '@/utils/toast-utils'; // Import our custom toast function
 
 const formSchema = z.object({
   taskType: z.string({ required_error: 'Please select a task type.' }),
   goal: z.string({ required_error: 'Please describe your goal.' })
-    .min(10, 'Goal description must be at least 10 characters.'),
+    .default(''),
   agentId: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high']).optional()
 });
@@ -24,7 +24,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const TaskCreationForm: React.FC = () => {
-  const { createTask, isCreating } = useAgenticTasks();
+  const { createTask, isCreating } = useAgenticAI();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
