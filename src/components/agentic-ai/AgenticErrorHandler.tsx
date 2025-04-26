@@ -2,7 +2,7 @@
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, RefreshCcw } from 'lucide-react';
+import { AlertCircle, RefreshCcw } from '@/utils/icon-polyfill';
 
 interface AgenticErrorHandlerProps {
   error: string;

@@ -1,6 +1,6 @@
 
 import React from "react";
-import { CheckIcon } from "lucide-react";
+import { Check } from "@/utils/icon-polyfill";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +51,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         <ul className="space-y-2 text-sm">
           {features.map((feature, i) => (
             <li key={i} className="flex items-center gap-2">
-              <CheckIcon className={`h-4 w-4 ${feature.included ? "text-adept" : "text-muted-foreground/50"}`} />
+              <Check className={`h-4 w-4 ${feature.included ? "text-adept" : "text-muted-foreground/50"}`} />
               <span className={!feature.included ? "text-muted-foreground/70" : ""}>
                 {feature.text}
               </span>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot } from 'lucide-react';
+import { Bot } from '@/utils/icon-polyfill';
 import TaskCreationForm from './task-creator/TaskCreationForm';
 import HowItWorksCard from './task-creator/HowItWorksCard';
 

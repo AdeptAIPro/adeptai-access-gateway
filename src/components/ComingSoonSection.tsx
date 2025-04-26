@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, AlertCircle } from "lucide-react";
+import { ClipboardList, AlertCircle } from "@/utils/icon-polyfill";
 
 interface ComingSoonSectionProps {
   title: string;

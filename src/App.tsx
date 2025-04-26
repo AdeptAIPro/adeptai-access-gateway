@@ -2,14 +2,14 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Suspense, lazy } from "react";
 import { CredentialsProvider } from "@/context/CredentialsContext";
 
-// Create a client manually instead of importing QueryClient
-const queryClient = {
+// Create a client 
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
@@ -18,7 +18,7 @@ const queryClient = {
       gcTime: 10 * 60 * 1000,
     },
   },
-};
+});
 
 // Lazy load AppRoutes for better initial load performance
 const AppRoutes = lazy(() => import("./AppRoutes"));
@@ -32,7 +32,7 @@ const AppLoader = () => (
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient as any}>
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CredentialsProvider>
           <TooltipProvider>

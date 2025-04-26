@@ -1,7 +1,8 @@
+
 import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-// Replace lucide-react import with plain text
-// import { Loader2 } from "lucide-react";
+// Using icon-polyfill instead of direct lucide-react imports
+import { Loader2 } from '@/utils/icon-polyfill';
 
 // Auth Components - Not lazy loaded as they're essential
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -172,31 +173,5 @@ const AppRoutes = () => {
     </Routes>
   );
 };
-
-// Define lazy loaded components to avoid TypeScript errors
-const Pricing = lazy(() => import("@/pages/Pricing"));
-const Checkout = lazy(() => import("@/pages/Checkout"));
-const PaymentSuccess = lazy(() => import("@/pages/PaymentSuccess"));
-const PaymentCancelled = lazy(() => import("@/pages/PaymentCancelled"));
-const Talent = lazy(() => import("@/pages/Talent"));
-const TalentMatching = lazy(() => import("@/pages/TalentMatching"));
-const TalentSearch = lazy(() => import("@/pages/TalentSearch"));
-const AgenticAI = lazy(() => import("@/pages/AgenticAI"));
-const CRM = lazy(() => import("@/pages/CRM"));
-const Analytics = lazy(() => import("@/pages/Analytics"));
-const Payroll = lazy(() => import("@/pages/Payroll"));
-const ProfessionalDevelopment = lazy(() => import("@/pages/ProfessionalDevelopment"));
-const Skills = lazy(() => import("@/pages/Skills"));
-const Settings = lazy(() => import("@/pages/Settings"));
-const Compliance = lazy(() => import("@/pages/Compliance"));
-const Integrations = lazy(() => import("@/pages/Integrations"));
-const Onboarding = lazy(() => import("@/pages/Onboarding"));
-const EnterpriseIntegrations = lazy(() => import("@/pages/EnterpriseIntegrations"));
-const Resources = lazy(() => import("@/pages/Resources"));
-const ITConsulting = lazy(() => import("@/pages/ITConsulting"));
-const Marketplace = lazy(() => import("@/pages/Marketplace"));
-const TalentMarketplace = lazy(() => import("@/pages/TalentMarketplace"));
-const SoftwareMarketplace = lazy(() => import("@/pages/SoftwareMarketplace"));
-const AffiliateMarketplace = lazy(() => import("@/pages/AffiliateMarketplace"));
 
 export default AppRoutes;

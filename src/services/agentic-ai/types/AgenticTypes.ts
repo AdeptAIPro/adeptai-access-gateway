@@ -3,7 +3,7 @@
 
 export type AgentStatus = 'active' | 'inactive' | 'suspended';
 
-export type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'in-progress';
 
 export type TaskType = 
   'cv-analysis' | 
@@ -13,7 +13,13 @@ export type TaskType =
   'compliance-check' | 
   'background-verification' | 
   'learning-recommendation' | 
-  'payroll-automation';
+  'payroll-automation' |
+  'talent-matching' |
+  'cross-source-talent-intelligence' |
+  'payroll-processing';
+
+// Alias for backward compatibility
+export type AgentTaskType = TaskType;
 
 export interface AgentTask {
   id: string;

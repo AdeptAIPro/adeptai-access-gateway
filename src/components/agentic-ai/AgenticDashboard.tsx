@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/utils/icon-polyfill';
 import MetricsCards from './dashboard/MetricsCards';
 import TaskList from './dashboard/TaskList';
 import AgentsList from './dashboard/AgentsList';
