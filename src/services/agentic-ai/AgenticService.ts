@@ -1,351 +1,149 @@
 
-import { AgentTask, Agent, AgentTaskType } from './types/AgenticTypes';
-import { processAgenticTask } from './AgenticTaskProcessor';
-import * as dynamoDb from '../aws/DynamoDBService';
-import { isOpenAIInitialized } from '../llm/OpenAIService';
-import { toast } from 'sonner';
-import { createMockAgents } from './db/mockAgentsData';
+import { v4 as uuidv4 } from 'uuid';
+import { AgentTask, AgentTaskType, Agent } from './types/AgenticTypes';
 
-// Flag to check if real storage is available
-let usingRealStorage = false;
-
-// Get stored tasks from various sources
-const getStoredTasks = async (userId: string): Promise<AgentTask[]> => {
-  try {
-    // Try to get tasks from DynamoDB first
-    if (usingRealStorage) {
-      return await dynamoDb.getUserTasks(userId);
-    }
-    
-    // Fall back to localStorage if DynamoDB is not available
-    const storedTasks = localStorage.getItem('agenticTasks');
-    if (storedTasks) {
-      try {
-        const parsedTasks = JSON.parse(storedTasks);
-        return parsedTasks.filter((task: AgentTask) => task.userId === userId);
-      } catch (e) {
-        console.error("Failed to parse stored tasks:", e);
-      }
-    }
-    
-    // Return empty array if no tasks found
-    return [];
-  } catch (error) {
-    console.error("Error getting stored tasks:", error);
-    return [];
+// Mock data for demonstration
+const mockTasks: AgentTask[] = [
+  {
+    id: '1',
+    userId: 'user1',
+    taskType: 'research',
+    title: 'Market Research',
+    goal: 'Research competitive products in the AI space',
+    agent: 'Research Agent',
+    agentId: 'agent1',
+    status: 'completed',
+    priority: 'high',
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    completedAt: new Date().toISOString()
+  },
+  {
+    id: '2',
+    userId: 'user1',
+    taskType: 'analysis',
+    goal: 'Analyze customer feedback data',
+    agent: 'Data Analyst',
+    agentId: 'agent2',
+    status: 'pending',
+    priority: 'medium',
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: '3',
+    userId: 'user1',
+    taskType: 'creation',
+    goal: 'Generate a blog post about AI trends',
+    agent: 'Content Creator',
+    agentId: 'agent3',
+    status: 'failed',
+    priority: 'low',
+    error: 'Failed to connect to language model',
+    createdAt: new Date(Date.now() - 172800000).toISOString()
   }
+];
+
+const mockAgents: Agent[] = [
+  {
+    id: 'agent1',
+    name: 'Research Agent',
+    description: 'Specialized in gathering and synthesizing information',
+    capabilities: ['research'],
+    status: 'active'
+  },
+  {
+    id: 'agent2',
+    name: 'Data Analyst',
+    description: 'Processes and analyzes complex datasets',
+    capabilities: ['analysis'],
+    status: 'active'
+  },
+  {
+    id: 'agent3',
+    name: 'Content Creator',
+    description: 'Creates engaging content across various formats',
+    capabilities: ['creation'],
+    status: 'active'
+  }
+];
+
+// Interface for task creation
+export interface CreateTaskParams {
+  taskType: AgentTaskType;
+  goal: string;
+  userId: string;
+  agentId?: string;
+  params?: Record<string, any>;
+  priority?: 'low' | 'medium' | 'high';
+  deadline?: string;
+}
+
+// Get all tasks for a user
+const getUserTasks = async (userId: string): Promise<AgentTask[]> => {
+  // In a real implementation, this would fetch from a database
+  return mockTasks.filter(task => task.userId === userId);
 };
 
-// Save task to storage
-const saveTask = async (task: AgentTask): Promise<void> => {
-  try {
-    if (usingRealStorage) {
-      // Store in DynamoDB
-      await dynamoDb.createTask(task as any);
-      return;
-    }
-    
-    // Store in localStorage as fallback
-    const storedTasks = localStorage.getItem('agenticTasks');
-    let tasks = [];
-    
-    if (storedTasks) {
-      try {
-        tasks = JSON.parse(storedTasks);
-        // Filter out any existing task with the same ID
-        tasks = tasks.filter((t: AgentTask) => t.id !== task.id);
-      } catch (e) {
-        console.error("Failed to parse stored tasks:", e);
-      }
-    }
-    
-    tasks.push(task);
-    localStorage.setItem('agenticTasks', JSON.stringify(tasks));
-  } catch (error) {
-    console.error("Error saving task:", error);
-    throw error;
-  }
+// Get all available agents
+const getAgents = async (): Promise<Agent[]> => {
+  // In a real implementation, this would fetch from a database
+  return mockAgents;
 };
 
-// Update a task in storage
-const updateTask = async (task: AgentTask): Promise<void> => {
-  try {
-    if (usingRealStorage) {
-      // Update in DynamoDB
-      await dynamoDb.updateTaskStatus(
-        task.id, 
-        task.status, 
-        task.result, 
-        task.error
-      );
-      return;
+// Create a new task
+const createTask = async (params: CreateTaskParams): Promise<AgentTask> => {
+  const newTask: AgentTask = {
+    id: uuidv4(),
+    userId: params.userId,
+    taskType: params.taskType,
+    goal: params.goal,
+    agentId: params.agentId,
+    status: 'pending',
+    priority: params.priority || 'medium',
+    createdAt: new Date().toISOString()
+  };
+  
+  if (params.agentId) {
+    const agent = mockAgents.find(a => a.id === params.agentId);
+    if (agent) {
+      newTask.agent = agent.name;
     }
-    
-    // Update in localStorage as fallback
-    const storedTasks = localStorage.getItem('agenticTasks');
-    if (!storedTasks) {
-      await saveTask(task);
-      return;
-    }
-    
-    try {
-      const tasks = JSON.parse(storedTasks);
-      const taskIndex = tasks.findIndex((t: AgentTask) => t.id === task.id);
-      
-      if (taskIndex >= 0) {
-        tasks[taskIndex] = task;
-      } else {
-        tasks.push(task);
-      }
-      
-      localStorage.setItem('agenticTasks', JSON.stringify(tasks));
-    } catch (e) {
-      console.error("Failed to update task in localStorage:", e);
-      throw e;
-    }
-  } catch (error) {
-    console.error(`Error updating task ${task.id}:`, error);
-    throw error;
-  }
-};
-
-// Get stored agents
-const getStoredAgents = async (): Promise<Agent[]> => {
-  try {
-    if (usingRealStorage) {
-      return await dynamoDb.getAgents();
-    }
-    
-    // Fall back to localStorage
-    const storedAgents = localStorage.getItem('agenticAgents');
-    if (storedAgents) {
-      try {
-        return JSON.parse(storedAgents);
-      } catch (e) {
-        console.error("Failed to parse stored agents:", e);
-      }
-    }
-    
-    // Return mock agents as fallback
-    const mockAgents = createMockAgents();
-    localStorage.setItem('agenticAgents', JSON.stringify(mockAgents));
-    return mockAgents;
-  } catch (error) {
-    console.error("Error getting stored agents:", error);
-    
-    // Return mock agents as fallback
-    const mockAgents = createMockAgents();
-    localStorage.setItem('agenticAgents', JSON.stringify(mockAgents));
-    return mockAgents;
-  }
-};
-
-// Check if backend services are available
-export const checkBackendAvailability = async (): Promise<boolean> => {
-  // Check if OpenAI is initialized
-  if (!isOpenAIInitialized()) {
-    return false;
   }
   
-  // Try to check AWS credentials
-  try {
-    // Try basic DynamoDB operation
-    await dynamoDb.getAgents();
-    usingRealStorage = true;
-    return true;
-  } catch (error) {
-    console.log("AWS services not available, falling back to localStorage");
-    usingRealStorage = false;
-    return false;
-  }
+  // In a real implementation, this would save to a database
+  mockTasks.unshift(newTask);
+  
+  console.log('Task created:', newTask);
+  return newTask;
 };
 
-// Service to manage AI agents and tasks
+// Process a task
+export const processTask = async (taskId: string): Promise<boolean> => {
+  // Find the task
+  const taskIndex = mockTasks.findIndex(t => t.id === taskId);
+  if (taskIndex === -1) return false;
+  
+  const task = mockTasks[taskIndex];
+  
+  // Simulate processing
+  console.log(`Processing task ${taskId}...`);
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  // Update the task (randomly succeed or fail for demo purposes)
+  mockTasks[taskIndex] = {
+    ...task,
+    status: Math.random() > 0.2 ? 'completed' : 'failed',
+    completedAt: new Date().toISOString(),
+    error: Math.random() > 0.8 ? 'An error occurred during processing' : undefined
+  };
+  
+  return mockTasks[taskIndex].status === 'completed';
+};
+
 const agenticService = {
-  // Check if backend is ready
-  isBackendReady: async (): Promise<boolean> => {
-    return await checkBackendAvailability();
-  },
-  
-  // Task management
-  async createTask(taskData: Partial<AgentTask>): Promise<AgentTask | null> {
-    try {
-      const timestamp = new Date().toISOString();
-      const newTask: AgentTask = {
-        id: `task-${Date.now()}`,
-        taskType: taskData.taskType!,
-        status: 'pending',
-        goal: taskData.goal || '',
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        userId: taskData.userId || '',
-        agentId: taskData.agentId || '',
-        priority: taskData.priority || 'medium',
-        params: taskData.params || {},
-      };
-      
-      await saveTask(newTask);
-      return newTask;
-    } catch (error) {
-      console.error('Error creating task:', error);
-      return null;
-    }
-  },
-  
-  async getUserTasks(userId: string): Promise<AgentTask[]> {
-    try {
-      return await getStoredTasks(userId);
-    } catch (error) {
-      console.error('Error fetching user tasks:', error);
-      return [];
-    }
-  },
-  
-  async getTaskById(taskId: string): Promise<AgentTask | null> {
-    try {
-      if (usingRealStorage) {
-        return await dynamoDb.getTaskById(taskId);
-      }
-      
-      // Fall back to localStorage
-      const storedTasks = localStorage.getItem('agenticTasks');
-      if (storedTasks) {
-        try {
-          const tasks = JSON.parse(storedTasks);
-          return tasks.find((t: AgentTask) => t.id === taskId) || null;
-        } catch (e) {
-          console.error("Failed to parse stored tasks:", e);
-        }
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error fetching task:', error);
-      return null;
-    }
-  },
-  
-  async updateTaskStatus(
-    taskId: string,
-    status: AgentTask['status'],
-    result?: any,
-    error?: string
-  ): Promise<boolean> {
-    try {
-      if (usingRealStorage) {
-        return await dynamoDb.updateTaskStatus(taskId, status, result, error);
-      }
-      
-      // Fall back to localStorage
-      const task = await this.getTaskById(taskId);
-      if (!task) {
-        return false;
-      }
-      
-      const updatedTask: AgentTask = {
-        ...task,
-        status,
-        updatedAt: new Date().toISOString(),
-        ...(result !== undefined ? { result } : {}),
-        ...(error !== undefined ? { error } : {})
-      };
-      
-      await updateTask(updatedTask);
-      return true;
-    } catch (error) {
-      console.error('Error updating task status:', error);
-      return false;
-    }
-  },
-  
-  // Agent management
-  async getAgents(): Promise<Agent[]> {
-    try {
-      return await getStoredAgents();
-    } catch (error) {
-      console.error('Error fetching agents:', error);
-      return [];
-    }
-  },
-  
-  async getAgentById(agentId: string): Promise<Agent | null> {
-    try {
-      if (usingRealStorage) {
-        return await dynamoDb.getAgentById(agentId);
-      }
-      
-      const agents = await this.getAgents();
-      return agents.find(agent => agent.id === agentId) || null;
-    } catch (error) {
-      console.error('Error fetching agent:', error);
-      return null;
-    }
-  }
+  getUserTasks,
+  getAgents,
+  createTask
 };
 
-// Function to process a task with appropriate service
-const processTask = async (taskId: string): Promise<boolean> => {
-  console.log(`Processing task ${taskId}`);
-  
-  try {
-    // Get the task
-    const task = await agenticService.getTaskById(taskId);
-    
-    if (!task) {
-      console.error(`Task not found: ${taskId}`);
-      return false;
-    }
-    
-    // Get the agent
-    const agent = await agenticService.getAgentById(task.agentId);
-    
-    if (!agent) {
-      console.error(`Agent not found: ${task.agentId}`);
-      await agenticService.updateTaskStatus(taskId, 'failed', undefined, 'Agent not found');
-      return false;
-    }
-    
-    // Check if OpenAI is initialized
-    if (!isOpenAIInitialized()) {
-      console.error("OpenAI is not initialized. Cannot process task.");
-      await agenticService.updateTaskStatus(
-        taskId, 
-        'failed', 
-        undefined, 
-        'OpenAI API is not initialized. Please set your API key.'
-      );
-      toast.error("OpenAI API is not initialized. Please set your API key.");
-      return false;
-    }
-    
-    // Update task status to in progress
-    await agenticService.updateTaskStatus(taskId, 'processing');
-    
-    // Use the task processor service with real LLM integration
-    const processedTask = await processAgenticTask(task);
-    
-    // Update the task with the result
-    if (processedTask.status === 'completed') {
-      await agenticService.updateTaskStatus(taskId, 'completed', processedTask.result);
-      return true;
-    } else {
-      await agenticService.updateTaskStatus(taskId, 'failed', undefined, processedTask.error);
-      return false;
-    }
-  } catch (error) {
-    console.error(`Error processing task ${taskId}:`, error);
-    await agenticService.updateTaskStatus(
-      taskId, 
-      'failed', 
-      undefined, 
-      error instanceof Error ? error.message : `Error: ${error}`
-    );
-    return false;
-  }
-};
-
-export type { AgentTask, Agent, AgentTaskType };
-export { 
-  agenticService as default,
-  processTask
-};
+export default agenticService;
+export { AgentTask, Agent, AgentTaskType };

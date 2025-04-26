@@ -116,7 +116,7 @@ type ToastFunction = (titleOrOptions: string | Omit<ToastProps, 'id' | 'type'>, 
 
 // Toast function factory
 const createToastFunction = (type: ToastType = 'default'): ToastFunction => {
-  return (titleOrOptions, options?) => {
+  return function(titleOrOptions, options?) {
     // Get context inside the component
     const context = useContext(ToasterContext);
     

@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from '@/utils/zod-polyfill';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -12,19 +11,20 @@ import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { showError } from '@/utils/toast-utils'; // Import our custom toast function
+import { z } from 'zod';
 
+// Form schema
 const formSchema = z.object({
   taskType: z.string({ required_error: 'Please select a task type.' }),
-  goal: z.string({ required_error: 'Please describe your goal.' })
-    .default(''),
+  goal: z.string({ required_error: 'Please describe your goal.' }).default(''),
   agentId: z.string().optional(),
-  priority: z.enum(['low', 'medium', 'high']).optional()
+  priority: z.enum(['low', 'medium', 'high']).optional().default('medium')
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 const TaskCreationForm: React.FC = () => {
-  const { createTask, isCreating } = useAgenticAI();
+  const { createTask, agents, isLoading } = useAgenticAI();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -40,12 +40,13 @@ const TaskCreationForm: React.FC = () => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await createTask({
-        taskType: values.taskType as any,
-        goal: values.goal,
-        agentId: values.agentId,
-        priority: values.priority
-      });
+      await createTask(
+        values.taskType as any,
+        values.goal,
+        values.agentId || '',
+        {},
+        values.priority || 'medium'
+      );
     } catch (error) {
       console.error('Error creating task:', error);
       // Use our custom toast function that works with a single argument
@@ -69,15 +70,15 @@ const TaskCreationForm: React.FC = () => {
               <AgentSelector 
                 control={form.control} 
                 selectedTaskType={selectedTaskType} 
-                agents={[]}
+                agents={agents || []}
               />
               
               <PrioritySelector control={form.control} />
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button type="submit" disabled={isCreating}>
-              {isCreating ? 'Creating...' : 'Create Task'}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Creating...' : 'Create Task'}
             </Button>
           </CardFooter>
         </form>

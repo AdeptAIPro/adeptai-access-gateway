@@ -12,7 +12,7 @@ import AgenticCredentialsForm from "@/components/agentic-ai/setup/AgenticCredent
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Database, RefreshCw, KeyRound, CheckCircle } from "lucide-react";
+import { AlertCircle, Database, RefreshCw, KeyRound, CheckCircle } from "@/utils/icon-polyfill";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -64,6 +64,15 @@ const AgenticAI = () => {
   
   const handleCredentialsSet = (newCredentials: any) => {
     setCredentials(newCredentials);
+    // After setting credentials, make sure to set isBackendReady to true
+    // This will enable the other tabs
+    checkBackendStatus().then((isReady) => {
+      if (isReady) {
+        // If backend is ready after setting credentials, auto-switch to dashboard
+        setActiveTab("dashboard");
+        toast.success("Backend connection established successfully!");
+      }
+    });
   };
 
   return (
@@ -133,7 +142,6 @@ const AgenticAI = () => {
               <TabsTrigger 
                 value="create" 
                 className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
-                disabled={!isBackendReady}
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg
@@ -154,7 +162,6 @@ const AgenticAI = () => {
               <TabsTrigger 
                 value="dashboard"
                 className="flex-1 px-4 py-3 text-base font-medium data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
-                disabled={!isBackendReady}
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg

@@ -1,12 +1,14 @@
 
+// Mock AWS configuration service for development
+
 export const checkAwsCredentials = async (): Promise<boolean> => {
-  // This would check AWS credentials in a real implementation
   console.log('Checking AWS credentials...');
+  // In a real implementation, this would check if the AWS credentials are valid
   return true;
 };
 
-// Mock S3 client and bucket names
-export const s3Client = {};
-
-export const TASK_DATA_BUCKET = 'adept-task-data-bucket';
-export const MODEL_ARTIFACTS_BUCKET = 'adept-model-artifacts-bucket';
+export const initializeAwsServices = (region: string, accessKeyId: string, secretAccessKey: string): boolean => {
+  console.log('Initializing AWS services with:', { region, accessKeyId: accessKeyId.substring(0, 3) + '...' });
+  // In a real implementation, this would initialize AWS services
+  return true;
+};

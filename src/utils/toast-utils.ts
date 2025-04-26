@@ -1,24 +1,34 @@
 
 import { toast } from 'sonner';
 
-// Extended toast functions to handle single argument case
-export const showError = (message: string, options?: any) => {
-  if (options) {
-    return toast.error(message, options);
-  }
-  return toast.error(message);
+/**
+ * Show a success toast message
+ * @param message The message to display
+ */
+export const showSuccess = (message: string) => {
+  toast.success(message);
 };
 
-export const showSuccess = (message: string, options?: any) => {
-  if (options) {
-    return toast.success(message, options);
-  }
-  return toast.success(message);
+/**
+ * Show an error toast message
+ * @param message The message to display
+ */
+export const showError = (message: string) => {
+  toast.error(message);
 };
 
-export const showInfo = (message: string, options?: any) => {
-  if (options) {
-    return toast.info(message, options);
-  }
-  return toast.info(message);
+/**
+ * Show an info toast message
+ * @param message The message to display
+ */
+export const showInfo = (message: string) => {
+  toast.info(message);
+};
+
+/**
+ * Show a warning toast message
+ * @param message The message to display
+ */
+export const showWarning = (message: string) => {
+  toast.warning(message);
 };

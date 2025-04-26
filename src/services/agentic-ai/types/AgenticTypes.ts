@@ -1,79 +1,26 @@
 
-// Define the basic types for the agentic AI system
-
-export type AgentStatus = 'active' | 'inactive' | 'suspended';
-
-export type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'in-progress';
-
-export type TaskType = 
-  'cv-analysis' | 
-  'job-match' | 
-  'skill-assessment' | 
-  'market-analysis' | 
-  'compliance-check' | 
-  'background-verification' | 
-  'learning-recommendation' | 
-  'payroll-automation' |
-  'talent-matching' |
-  'cross-source-talent-intelligence' |
-  'payroll-processing';
-
-// Export AgentTaskType for backward compatibility
-export type AgentTaskType = TaskType;
-
-export interface AgentTask {
-  id: string;
-  taskType: TaskType;
-  title?: string;
-  goal: string;
-  status: TaskStatus;
-  agent?: string;
-  createdAt: string;
-  updatedAt?: string;
-  completedAt?: string;
-  params?: Record<string, any>;
-  result?: any;
-  error?: string;
-  // Additional properties needed by various services
-  userId?: string;
-  agentId?: string;
-  priority?: 'low' | 'medium' | 'high';
-  deadline?: string;
-}
-
 export interface Agent {
   id: string;
   name: string;
   description: string;
   capabilities: string[];
-  status: AgentStatus;
-  createdAt: string;
-  updatedAt?: string;
-  type?: string;
-  parameters?: Record<string, any>;
+  status: 'active' | 'inactive';
 }
 
-export interface ExecutionPlan {
-  steps: string[];
-  currentStep?: number;
-}
+export type AgentTaskType = 'research' | 'analysis' | 'creation';
 
-export interface TaskResult {
-  summary: string;
-  findings: string[];
-  recommendations: string[];
-  status: 'success' | 'partial' | 'failed';
-  context?: any;
-  executedAt?: string;
-}
-
-// Service interfaces
-export interface AgenticService {
-  createTask(task: Partial<AgentTask>): Promise<AgentTask>;
-  getTaskById(id: string): Promise<AgentTask | null>;
-  getAllTasks(): Promise<AgentTask[]>;
-  updateTask(id: string, updates: Partial<AgentTask>): Promise<AgentTask>;
-  deleteTask(id: string): Promise<boolean>;
-  processTask(id: string): Promise<AgentTask>;
-  getAgents(): Promise<Agent[]>;
+export interface AgentTask {
+  id: string;
+  userId: string;
+  taskType: AgentTaskType;
+  title?: string;
+  goal: string;
+  agent?: string;
+  agentId?: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  priority?: 'low' | 'medium' | 'high';
+  createdAt?: string;
+  completedAt?: string;
+  error?: string;
+  result?: any;
 }
