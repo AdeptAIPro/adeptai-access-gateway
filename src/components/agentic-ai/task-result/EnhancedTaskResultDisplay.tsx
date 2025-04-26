@@ -1,11 +1,11 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TaskResultDisplay from "./TaskResultDisplay";
 import { AgentTask } from "@/services/agentic-ai/types/AgenticTypes";
 import { Progress } from "@/components/ui/progress";
-import { RefreshCcw, Download, Save, Clock } from "@/utils/icon-polyfill";
+import { RefreshCcw, Clock } from "@/utils/icon-polyfill";
+import { Download, Save } from "lucide-react";
 
 interface EnhancedTaskResultDisplayProps {
   task: AgentTask;
@@ -34,8 +34,8 @@ const EnhancedTaskResultDisplay: React.FC<EnhancedTaskResultDisplayProps> = ({
     if (task.status === 'completed') return 100;
     if (task.status === 'failed') return 100;
     if (task.status === 'processing') return 60;
-    if (task.status === 'in-progress') return 40;
-    return 20; // pending
+    if (task.status === 'pending') return 20;
+    return 40; // for 'in-progress'
   };
 
   return (

@@ -18,6 +18,9 @@ export type TaskType =
   'cross-source-talent-intelligence' |
   'payroll-processing';
 
+// Export AgentTaskType for backward compatibility
+export type AgentTaskType = TaskType;
+
 export interface AgentTask {
   id: string;
   taskType: TaskType;
@@ -31,6 +34,10 @@ export interface AgentTask {
   params?: Record<string, any>;
   result?: any;
   error?: string;
+  // Additional properties needed by various services
+  userId?: string;
+  agentId?: string;
+  priority?: 'low' | 'medium' | 'high';
 }
 
 export interface Agent {
@@ -41,6 +48,7 @@ export interface Agent {
   status: AgentStatus;
   createdAt: string;
   updatedAt?: string;
+  type?: string; // Added type property
 }
 
 export interface ExecutionPlan {

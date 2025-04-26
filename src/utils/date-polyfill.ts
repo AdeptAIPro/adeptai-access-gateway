@@ -1,61 +1,48 @@
 
-// Simple polyfill for date-fns functions used in the app
+// Re-export selected functions from date-fns
+// This will be used as a centralized polyfill for date-fns functionality
 
-interface FormatOptions {
-  addSuffix?: boolean;
-}
-
-// Simple formatDistanceToNow implementation
-export function formatDistanceToNow(date: Date, options: FormatOptions = {}): string {
+export const formatDistanceToNow = (date: Date | number, options?: { addSuffix?: boolean }): string => {
+  // Simple implementation for when date-fns is not available
   const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const diff = now.getTime() - (date instanceof Date ? date.getTime() : date);
+  
+  // Convert to appropriate units
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
   
   let result = '';
   
-  if (diffInSeconds < 60) {
-    result = `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''}`;
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60);
-    result = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    result = `${hours} hour${hours !== 1 ? 's' : ''}`;
-  } else if (diffInSeconds < 2592000) {
-    const days = Math.floor(diffInSeconds / 86400);
-    result = `${days} day${days !== 1 ? 's' : ''}`;
-  } else if (diffInSeconds < 31536000) {
-    const months = Math.floor(diffInSeconds / 2592000);
-    result = `${months} month${months !== 1 ? 's' : ''}`;
+  if (days > 0) {
+    result = `${days} day${days > 1 ? 's' : ''}`;
+  } else if (hours > 0) {
+    result = `${hours} hour${hours > 1 ? 's' : ''}`;
+  } else if (minutes > 0) {
+    result = `${minutes} minute${minutes > 1 ? 's' : ''}`;
   } else {
-    const years = Math.floor(diffInSeconds / 31536000);
-    result = `${years} year${years !== 1 ? 's' : ''}`;
+    result = 'just now';
   }
   
-  if (options.addSuffix) {
+  if (options?.addSuffix && result !== 'just now') {
     result = `${result} ago`;
   }
   
   return result;
-}
+};
 
-export function format(date: Date, formatStr: string): string {
-  // Simple format implementation for common formats
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+export const format = (date: Date | number, formatStr: string): string => {
+  // Simple implementation for when date-fns is not available
+  const d = date instanceof Date ? date : new Date(date);
   
-  if (formatStr === 'yyyy-MM-dd') {
-    return `${year}-${month}-${day}`;
-  }
-  
-  if (formatStr === 'MM/dd/yyyy') {
-    return `${month}/${day}/${year}`;
-  }
-  
-  // Default to ISO string if format not supported
-  return date.toISOString().split('T')[0];
-}
+  // Very basic implementation that replaces some common tokens
+  return formatStr
+    .replace('yyyy', d.getFullYear().toString())
+    .replace('MM', (d.getMonth() + 1).toString().padStart(2, '0'))
+    .replace('dd', d.getDate().toString().padStart(2, '0'))
+    .replace('HH', d.getHours().toString().padStart(2, '0'))
+    .replace('mm', d.getMinutes().toString().padStart(2, '0'))
+    .replace('ss', d.getSeconds().toString().padStart(2, '0'));
+};
 
-export function parseISO(dateStr: string): Date {
-  return new Date(dateStr);
-}
+// Add other date-fns functions as needed

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -13,6 +13,7 @@ import TaskTypeSelector from './TaskTypeSelector';
 import TaskGoalField from './TaskGoalField';
 import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
+import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
 
 // Form schema
 const formSchema = z.object({
@@ -27,8 +28,10 @@ type FormValues = z.infer<typeof formSchema>;
 const TaskCreationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { createTask } = useAgenticAI();
+  const { createTask, getAgents } = useAgenticAI();
   const { user } = useAuth();
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedTaskType, setSelectedTaskType] = useState("");
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -40,6 +43,24 @@ const TaskCreationForm = () => {
       priority: "medium",
     },
   });
+
+  // Fetch agents
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const agentsList = await getAgents();
+        setAgents(agentsList);
+      } catch (error) {
+        toast({
+          title: "Failed to fetch agents",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    fetchAgents();
+  }, [getAgents]);
 
   // Handle form submission
   const onSubmit = async (values: FormValues) => {
@@ -81,6 +102,7 @@ const TaskCreationForm = () => {
   // Handle task type change
   const handleTaskTypeChange = (value: string) => {
     form.setValue('taskType', value);
+    setSelectedTaskType(value);
   };
 
   return (
@@ -98,7 +120,9 @@ const TaskCreationForm = () => {
           
           <div className="space-y-6">
             <AgentSelector 
-              control={form.control} 
+              control={form.control}
+              selectedTaskType={selectedTaskType}
+              agents={agents}
             />
             <PrioritySelector 
               control={form.control}

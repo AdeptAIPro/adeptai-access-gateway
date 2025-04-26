@@ -53,7 +53,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
         
         // Check if OpenAI can be initialized with saved key
         if (parsed.openaiApiKey) {
-          const success = initializeOpenAI(parsed.openaiApiKey);
+          const success = !!isOpenAIInitialized() || !!initializeOpenAI(parsed.openaiApiKey);
           setOpenAIStatus(success ? 'success' : 'failed');
         }
       } catch (e) {
@@ -85,7 +85,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
     setIsTestingOpenAI(true);
     
     try {
-      const success = initializeOpenAI(openaiApiKey);
+      const success = !!initializeOpenAI(openaiApiKey);
       setOpenAIStatus(success ? 'success' : 'failed');
       
       if (success) {
@@ -120,7 +120,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
       process.env.AWS_SECRET_ACCESS_KEY = credentials.awsSecretAccessKey;
       
       const success = await checkAwsCredentials();
-      setAwsStatus(success ? 'success' : 'failed');
+      setAwsStatus(!!success ? 'success' : 'failed');
       
       if (success) {
         toast.success("Successfully connected to AWS");

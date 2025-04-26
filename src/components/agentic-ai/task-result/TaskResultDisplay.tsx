@@ -1,10 +1,10 @@
-
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { AgentTask, TaskType } from "@/services/agentic-ai/types/AgenticTypes";
-import { CheckCircle, AlertCircle, FileCheck, BarChart2, UserCheck } from "@/utils/icon-polyfill";
+import { AgentTask } from "@/services/agentic-ai/types/AgenticTypes";
+import { CheckCircle, AlertCircle, BarChart2 } from "@/utils/icon-polyfill";
+import { FileCheck, UserCheck } from "lucide-react";
 
 export interface TaskResultDisplayProps {
   task: AgentTask;
@@ -27,6 +27,12 @@ const TaskResultDisplay: React.FC<TaskResultDisplayProps> = ({ task }) => {
         return <BarChart2 className="h-5 w-5 text-green-500" />;
       case "job-match":
         return <UserCheck className="h-5 w-5 text-purple-500" />;
+      case "talent-matching":
+        return <UserCheck className="h-5 w-5 text-purple-500" />;
+      case "cross-source-talent-intelligence":
+        return <BarChart2 className="h-5 w-5 text-green-500" />;
+      case "payroll-processing":
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
       default:
         return <CheckCircle className="h-5 w-5 text-green-500" />;
     }

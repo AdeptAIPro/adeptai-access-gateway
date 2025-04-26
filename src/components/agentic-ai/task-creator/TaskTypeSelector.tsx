@@ -4,8 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { TaskType } from '@/services/agentic-ai/types/AgenticTypes';
-import { Bot, Search, ShieldAlert } from '@/utils/icon-polyfill';
-import { FileCheck } from '@/utils/icons';
+import { Bot, Search, ShieldAlert, FileCheck } from '@/utils/icon-polyfill';
 
 interface TaskTypeSelectorProps {
   form: any;
