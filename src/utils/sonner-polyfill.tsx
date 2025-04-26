@@ -111,38 +111,72 @@ export const Toaster = () => {
   );
 };
 
-// Toast function export
-const createToastFunction = (type: ToastType = 'default') => {
-  return (titleOrOptions: string | Omit<ToastProps, 'id' | 'type'>, options?: Omit<ToastProps, 'id' | 'type' | 'title'>) => {
-    const { addToast } = useContext(ToasterContext);
+// Create a type for toast function
+type ToastFunction = (titleOrOptions: string | Omit<ToastProps, 'id' | 'type'>, options?: Omit<ToastProps, 'id' | 'type' | 'title'>) => string;
+
+// Toast function factory
+const createToastFunction = (type: ToastType = 'default'): ToastFunction => {
+  return (titleOrOptions, options?) => {
+    // Get context inside the component
+    const context = useContext(ToasterContext);
     
     if (typeof titleOrOptions === 'string') {
-      return addToast({ title: titleOrOptions, ...options, type });
+      return context.addToast({ 
+        title: titleOrOptions, 
+        ...options, 
+        type 
+      });
     }
     
-    return addToast({ ...titleOrOptions, type });
+    return context.addToast({ ...titleOrOptions, type });
   };
 };
 
 // Toast functions
 export const toast = {
+  // Default toast
+  default: createToastFunction('default'),
   success: createToastFunction('success'),
   error: createToastFunction('error'),
   info: createToastFunction('info'),
   warning: createToastFunction('warning'),
-  // Default toast
-  (...args: Parameters<ReturnType<typeof createToastFunction>>) {
-    return createToastFunction('default')(...args);
+  
+  // Base toast function
+  // @ts-ignore: This is intentionally overloaded
+  (titleOrOptions: string | Omit<ToastProps, 'id'>, options?: Omit<ToastProps, 'id' | 'title'>): string {
+    return createToastFunction('default')(titleOrOptions, options);
   },
-  // Attach methods directly
-  promise: async (promise: Promise<any>, options: any) => {
-    // Simple implementation
-    try {
-      await promise;
-      return createToastFunction('success')(options.success || 'Completed successfully');
-    } catch (e) {
-      return createToastFunction('error')(options.error || 'An error occurred');
+  
+  // Promise toast
+  promise: async function<T>(
+    promise: Promise<T>,
+    options: {
+      loading?: string;
+      success?: string;
+      error?: string;
     }
-  },
-  // You can add more methods as needed
+  ): Promise<T> {
+    const toastContext = useContext(ToasterContext);
+    const id = toastContext.addToast({ 
+      title: options.loading || 'Loading...', 
+      type: 'default' 
+    });
+    
+    try {
+      const result = await promise;
+      toastContext.dismissToast(id);
+      toastContext.addToast({ 
+        title: options.success || 'Completed successfully', 
+        type: 'success' 
+      });
+      return result;
+    } catch (error) {
+      toastContext.dismissToast(id);
+      toastContext.addToast({ 
+        title: options.error || 'An error occurred', 
+        type: 'error' 
+      });
+      throw error;
+    }
+  }
 };

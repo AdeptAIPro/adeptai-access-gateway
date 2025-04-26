@@ -1,119 +1,89 @@
 
-// This file provides polyfill functions for date-fns
+// Basic implementations of date-fns functions
+import { format as originalFormat } from 'date-fns';
 
+// Format
 export const format = (date: Date | number, formatStr: string): string => {
-  const d = new Date(date);
-  
-  // Simple implementation that mimics common date-fns format patterns
-  const formatMap: Record<string, () => string> = {
-    'yyyy': () => d.getFullYear().toString(),
-    'MM': () => (d.getMonth() + 1).toString().padStart(2, '0'),
-    'dd': () => d.getDate().toString().padStart(2, '0'),
-    'HH': () => d.getHours().toString().padStart(2, '0'),
-    'mm': () => d.getMinutes().toString().padStart(2, '0'),
-    'ss': () => d.getSeconds().toString().padStart(2, '0'),
-    'PPP': () => `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`
-  };
-
-  let result = formatStr;
-  for (const [pattern, replacer] of Object.entries(formatMap)) {
-    result = result.replace(pattern, replacer());
+  try {
+    if (typeof originalFormat === 'function') {
+      return originalFormat(date, formatStr);
+    }
+    
+    // Simple implementation for common formats
+    const d = new Date(date);
+    
+    if (formatStr === 'yyyy-MM-dd') {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    
+    if (formatStr === 'MM/dd/yyyy') {
+      return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+    }
+    
+    // Default ISO format
+    return d.toISOString().split('T')[0];
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return String(date);
   }
-  
-  return result;
 };
 
-export const parseISO = (dateString: string): Date => {
-  return new Date(dateString);
+// Parse ISO date
+export const parseISO = (dateStr: string): Date => {
+  return new Date(dateStr);
 };
 
-export const addDays = (date: Date | number, amount: number): Date => {
-  const newDate = new Date(date);
-  newDate.setDate(newDate.getDate() + amount);
-  return newDate;
+// Check if date is valid
+export const isValid = (date: any): boolean => {
+  return date instanceof Date && !isNaN(date.getTime());
 };
 
-export const subDays = (date: Date | number, amount: number): Date => {
-  return addDays(date, -amount);
-};
-
-export const isAfter = (date: Date | number, dateToCompare: Date | number): boolean => {
-  return new Date(date).getTime() > new Date(dateToCompare).getTime();
-};
-
-export const isBefore = (date: Date | number, dateToCompare: Date | number): boolean => {
-  return new Date(date).getTime() < new Date(dateToCompare).getTime();
-};
-
-export const isSameDay = (date: Date | number, dateToCompare: Date | number): boolean => {
-  const d1 = new Date(date);
-  const d2 = new Date(dateToCompare);
-  return (
-    d1.getDate() === d2.getDate() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getFullYear() === d2.getFullYear()
-  );
-};
-
-export const differenceInDays = (dateLeft: Date | number, dateRight: Date | number): number => {
-  const d1 = new Date(dateLeft);
-  const d2 = new Date(dateRight);
-  const diffTime = Math.abs(d1.getTime() - d2.getTime());
-  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-};
-
-export const startOfDay = (date: Date | number): Date => {
+// Add days to date
+export const addDays = (date: Date | number, days: number): Date => {
   const result = new Date(date);
-  result.setHours(0, 0, 0, 0);
+  result.setDate(result.getDate() + days);
   return result;
 };
 
-export const endOfDay = (date: Date | number): Date => {
+// Add months to date
+export const addMonths = (date: Date | number, months: number): Date => {
   const result = new Date(date);
-  result.setHours(23, 59, 59, 999);
+  result.setMonth(result.getMonth() + months);
   return result;
 };
 
+// Format distance (e.g., "2 days ago")
 export const formatDistance = (date: Date | number, baseDate: Date | number): string => {
-  const milliseconds = new Date(date).getTime() - new Date(baseDate).getTime();
-  const seconds = Math.abs(Math.floor(milliseconds / 1000));
+  const dateTime = new Date(date).getTime();
+  const baseDateTime = new Date(baseDate).getTime();
   
-  if (seconds < 60) return `${seconds} seconds`;
+  const diffInSeconds = Math.abs(Math.floor((baseDateTime - dateTime) / 1000));
   
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  if (diffInSeconds < 60) return `${diffInSeconds} seconds`;
   
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''}`;
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''}`;
   
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} day${days !== 1 ? 's' : ''}`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''}`;
   
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months} month${months !== 1 ? 's' : ''}`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) return `${diffInDays} day${diffInDays !== 1 ? 's' : ''}`;
   
-  const years = Math.floor(months / 12);
-  return `${years} year${years !== 1 ? 's' : ''}`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''}`;
+  
+  const diffInYears = Math.floor(diffInMonths / 12);
+  return `${diffInYears} year${diffInYears !== 1 ? 's' : ''}`;
 };
 
-export const formatDistanceToNow = (date: Date | number, options?: { addSuffix?: boolean }): string => {
-  const distance = formatDistance(date, new Date());
-  return options?.addSuffix ? `${distance} ago` : distance;
+// Format distance to now (e.g., "2 days ago")
+export const formatDistanceToNow = (date: Date | number): string => {
+  return formatDistance(date, new Date());
 };
 
-export const formatRelative = (date: Date | number, baseDate: Date | number): string => {
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const d = new Date(date);
-  const bd = new Date(baseDate);
-  
-  if (isSameDay(d, bd)) return 'Today';
-  
-  const dayDiff = differenceInDays(d, bd);
-  if (dayDiff === 1) return 'Tomorrow';
-  if (dayDiff === -1) return 'Yesterday';
-  if (dayDiff > -7 && dayDiff < 7) return dayNames[d.getDay()];
-  
-  return format(d, 'MM/dd/yyyy');
+// Get difference in days
+export const differenceInDays = (dateLeft: Date | number, dateRight: Date | number): number => {
+  const diffInMs = new Date(dateLeft).getTime() - new Date(dateRight).getTime();
+  return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 };
-
-// Add more date-fns functions as needed
