@@ -142,9 +142,18 @@ export const toast = {
   warning: createToastFunction('warning'),
   
   // Base toast function
-  // @ts-ignore: This is intentionally overloaded
   (titleOrOptions: string | Omit<ToastProps, 'id'>, options?: Omit<ToastProps, 'id' | 'title'>): string {
-    return createToastFunction('default')(titleOrOptions, options);
+    const context = useContext(ToasterContext);
+    
+    if (typeof titleOrOptions === 'string') {
+      return context.addToast({ 
+        title: titleOrOptions, 
+        ...options, 
+        type: 'default' 
+      });
+    }
+    
+    return context.addToast(titleOrOptions);
   },
   
   // Promise toast

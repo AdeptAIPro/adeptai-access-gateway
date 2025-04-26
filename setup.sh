@@ -8,11 +8,9 @@ npm install --save-dev vite @vitejs/plugin-react-swc
 # Create directories if they don't exist
 mkdir -p src/utils
 
-# Install vite globally if it's not available
-if ! command -v vite &> /dev/null; then
-    echo "Installing vite globally..."
-    npm install -g vite
-fi
+# Ensure vite is installed globally
+echo "Installing vite globally..."
+npm install -g vite
 
 # Optional: Add helpful message
 echo "Dependencies installed successfully!"
