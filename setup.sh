@@ -11,6 +11,13 @@ mkdir -p src/utils
 # Ensure vite is installed globally
 echo "Installing vite globally..."
 npm install -g vite
+npm install -g @vitejs/plugin-react-swc
+
+# Set executable permissions for vite
+chmod +x $(npm bin)/vite
+
+# Add vite to PATH if it's not already there
+export PATH="$PATH:$(npm bin)"
 
 # Optional: Add helpful message
 echo "Dependencies installed successfully!"

@@ -142,7 +142,7 @@ export const toast = {
   warning: createToastFunction('warning'),
   
   // Base toast function
-  (titleOrOptions: string | Omit<ToastProps, 'id'>, options?: Omit<ToastProps, 'id' | 'title'>): string {
+  toast: function(titleOrOptions: string | Omit<ToastProps, 'id'>, options?: Omit<ToastProps, 'id' | 'title'>): string {
     const context = useContext(ToasterContext);
     
     if (typeof titleOrOptions === 'string') {
