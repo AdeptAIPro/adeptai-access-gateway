@@ -6,3 +6,6 @@ export const useToast = () => {
     toast
   };
 };
+
+// Export toast directly so it can be imported from this file
+export { toast };

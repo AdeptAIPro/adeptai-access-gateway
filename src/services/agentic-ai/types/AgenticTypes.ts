@@ -5,9 +5,10 @@ export interface Agent {
   description: string;
   capabilities: string[];
   status: 'active' | 'inactive';
+  createdAt?: string; // Added missing createdAt property
 }
 
-export type AgentTaskType = 'research' | 'analysis' | 'creation';
+export type AgentTaskType = 'research' | 'analysis' | 'creation' | 'talent-matching' | 'payroll-processing' | 'cross-source-talent-intelligence' | 'cv-analysis' | 'market-analysis' | 'job-match';
 
 export interface AgentTask {
   id: string;
