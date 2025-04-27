@@ -1,8 +1,8 @@
-
 import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "@/utils/router-polyfill";
 // Using icon-polyfill instead of direct lucide-react imports
 import { Loader2 } from '@/utils/icon-polyfill';
+import { RouteErrorBoundary } from "@/components/error-boundary/RouteErrorBoundary";
 
 // Auth Components - Not lazy loaded as they're essential
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -51,13 +51,19 @@ const PageLoader = () => (
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/" element={<RouteErrorBoundary><Index /></RouteErrorBoundary>} />
+      <Route path="/login" element={<RouteErrorBoundary><Login /></RouteErrorBoundary>} />
+      <Route path="/signup" element={<RouteErrorBoundary><Signup /></RouteErrorBoundary>} />
+      <Route path="/unauthorized" element={<RouteErrorBoundary><Unauthorized /></RouteErrorBoundary>} />
       
       {/* Lazy loaded routes */}
-      <Route path="/pricing" element={<Suspense fallback={<PageLoader />}><Pricing /></Suspense>} />
+      <Route path="/pricing" element={
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Pricing />
+          </Suspense>
+        </RouteErrorBoundary>
+      } />
       <Route path="/services/it-consulting" element={<Suspense fallback={<PageLoader />}><ITConsulting /></Suspense>} />
       
       {/* Resources Routes */}
@@ -73,103 +79,149 @@ const AppRoutes = () => {
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Dashboard /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}>
+              <Dashboard />
+            </Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/checkout" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Checkout /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}>
+              <Checkout />
+            </Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/payment-success" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><PaymentSuccess /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}>
+              <PaymentSuccess />
+            </Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/payment-canceled" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><PaymentCancelled /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}>
+              <PaymentCancelled />
+            </Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/talent" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Talent /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Talent /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/talent-matching" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><TalentMatching /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><TalentMatching /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/talent-search" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><TalentSearch /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><TalentSearch /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/agentic-ai" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><AgenticAI /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><AgenticAI /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/integrations" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Integrations /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Integrations /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/dashboard/integrations" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Integrations /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Integrations /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/dashboard/integrations/enterprise" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><EnterpriseIntegrations /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><EnterpriseIntegrations /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/crm" element={
-        <ProtectedRoute requiredPermission="viewCRM">
-          <Suspense fallback={<PageLoader />}><CRM /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewCRM">
+            <Suspense fallback={<PageLoader />}><CRM /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/analytics" element={
-        <ProtectedRoute requiredPermission="viewAnalytics">
-          <Suspense fallback={<PageLoader />}><Analytics /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewAnalytics">
+            <Suspense fallback={<PageLoader />}><Analytics /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/payroll" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Payroll /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Payroll /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/professional-development" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><ProfessionalDevelopment /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><ProfessionalDevelopment /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/skills" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Skills /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Skills /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/settings/*" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Settings /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Settings /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/compliance" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Compliance /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Compliance /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       <Route path="/onboarding" element={
-        <ProtectedRoute requiredPermission="viewDashboard">
-          <Suspense fallback={<PageLoader />}><Onboarding /></Suspense>
-        </ProtectedRoute>
+        <RouteErrorBoundary>
+          <ProtectedRoute requiredPermission="viewDashboard">
+            <Suspense fallback={<PageLoader />}><Onboarding /></Suspense>
+          </ProtectedRoute>
+        </RouteErrorBoundary>
       } />
       
       {/* Catch all route */}
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<RouteErrorBoundary><NotFound /></RouteErrorBoundary>} />
     </Routes>
   );
 };

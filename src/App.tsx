@@ -1,12 +1,15 @@
 
 import { AppProvider } from "./providers/AppProvider";
 import AppRoutes from "./AppRoutes";
+import { ErrorBoundary } from "./components/error-boundary/ErrorBoundary";
 
 function App() {
   return (
-    <AppProvider>
-      <AppRoutes />
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <AppRoutes />
+      </AppProvider>
+    </ErrorBoundary>
   );
 }
 
