@@ -14,7 +14,7 @@ declare global {
     version?: string;
     restrictions?: string[];
     type?: string;
-    createdAt?: string;
+    createdAt: string;
   }
 }
 
