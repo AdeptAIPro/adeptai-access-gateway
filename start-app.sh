@@ -23,4 +23,3 @@ echo "Vite location: $(which vite || echo 'Not found')"
 
 # Start the development server with the full path to vite
 ./node_modules/.bin/vite || $(npm bin)/vite || npx vite
-
