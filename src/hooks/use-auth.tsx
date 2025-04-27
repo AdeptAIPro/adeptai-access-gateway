@@ -1,7 +1,7 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface UserRolePermissions {
   viewCRM: boolean;
@@ -29,6 +29,7 @@ interface AuthContextType {
   loading: boolean; // Add for compatibility with ProtectedRoute
   hasPermission: (permission: keyof UserRolePermissions) => boolean; // Add for compatibility with ProtectedRoute
   signUp: (name: string, email: string, password: string) => Promise<void>; // Add signUp method
+  isAuthenticated: boolean; // Add for compatibility
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -38,7 +39,8 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   loading: true,
   hasPermission: () => false,
-  signUp: async () => {}
+  signUp: async () => {},
+  isAuthenticated: false
 });
 
 export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
@@ -159,7 +161,8 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       isLoading, 
       loading: isLoading,
       hasPermission,
-      signUp
+      signUp,
+      isAuthenticated: !!user
     }}>
       {children}
     </AuthContext.Provider>
