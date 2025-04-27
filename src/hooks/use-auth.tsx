@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface UserRolePermissions {
   viewCRM: boolean;
@@ -26,6 +28,7 @@ interface AuthContextType {
   isLoading: boolean;
   loading: boolean; // Add for compatibility with ProtectedRoute
   hasPermission: (permission: keyof UserRolePermissions) => boolean; // Add for compatibility with ProtectedRoute
+  signUp: (name: string, email: string, password: string) => Promise<void>; // Add signUp method
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -34,12 +37,14 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   isLoading: true,
   loading: true,
-  hasPermission: () => false
+  hasPermission: () => false,
+  signUp: async () => {}
 });
 
 export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   
   // Load user from localStorage on mount
   useEffect(() => {
@@ -60,21 +65,65 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // For demo: any email/password combo works
-      const mockUser: User = {
-        id: 'user1',
-        name: email.split('@')[0],
-        email: email,
-        role: 'user',
-        plan: 'free' // Default to free plan
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      return true;
+      // For demo: specific email/password combos work
+      if (email === "admin@example.com" && password === "password") {
+        const userData: User = {
+          id: 'admin1',
+          name: 'Admin User',
+          email: email,
+          role: 'admin',
+          plan: 'enterprise'
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        toast.success("Login successful!");
+        return true;
+      } else if (email === "user@example.com" && password === "password") {
+        const userData: User = {
+          id: 'user1',
+          name: 'Regular User',
+          email: email,
+          role: 'user',
+          plan: 'free'
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        toast.success("Login successful!");
+        return true;
+      } else {
+        toast.error("Invalid credentials");
+        return false;
+      }
     } catch (error) {
       console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
       return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signUp = async (name: string, email: string, password: string): Promise<void> => {
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      
+      // Create new user (demo implementation)
+      const userData = {
+        id: Date.now().toString(),
+        name,
+        email,
+        role: "user",
+        plan: "free"
+      };
+      
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      toast.success("Registration successful");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      toast.error("Registration failed. Please try again.");
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -83,6 +132,8 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    toast.success("Logged out successfully");
+    navigate('/login');
   };
 
   // Permission check function for ProtectedRoute
@@ -90,8 +141,14 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     // Simple implementation - in reality, this would check against user roles
     if (!user) return false;
     
-    // For demo purposes, grant all permissions to any logged in user
-    return true;
+    // For demo purposes, grant all permissions to admin
+    if (user.role === 'admin') return true;
+    
+    // Grant dashboard access to all users
+    if (permission === 'viewDashboard') return true;
+    
+    // Deny other permissions to non-admin users
+    return false;
   };
   
   return (
@@ -101,7 +158,8 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       logout, 
       isLoading, 
       loading: isLoading,
-      hasPermission 
+      hasPermission,
+      signUp
     }}>
       {children}
     </AuthContext.Provider>

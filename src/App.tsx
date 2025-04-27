@@ -5,8 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/hooks/use-auth";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { CredentialsProvider } from "@/context/CredentialsContext";
+import AppRoutes from "./AppRoutes"; // Change to direct import instead of lazy loading
 
 // Create a client 
 const queryClient = new QueryClient({
@@ -19,9 +20,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-// Lazy load AppRoutes for better initial load performance
-const AppRoutes = lazy(() => import("./AppRoutes"));
 
 // Loading component
 const AppLoader = () => (
