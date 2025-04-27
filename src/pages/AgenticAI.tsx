@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,16 +25,14 @@ const AgenticAI = () => {
   const [isSeeding, setIsSeeding] = useState<boolean>(false);
   const [needsSetup, setNeedsSetup] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("setup");
-  const [tasks, setTasks] = useState<AgentTask[]>([]); // Added tasks state
+  const [tasks, setTasks] = useState<AgentTask[]>([]);
   const isMobile = useIsMobile();
   
   useEffect(() => {
-    // Automatically switch to dashboard tab if backend is ready
     if (isBackendReady && activeTab === "setup") {
       setActiveTab("dashboard");
     }
     
-    // Check if tables need setup
     const checkTables = async () => {
       const tablesExist = await ensureAgenticTables();
       setNeedsSetup(!tablesExist);
@@ -57,18 +54,14 @@ const AgenticAI = () => {
     setIsSeeding(true);
     await seedAgenticAIData();
     setIsSeeding(false);
-    // Check backend status again
     await checkBackendStatus();
     toast.success("Sample data added successfully");
   };
   
   const handleCredentialsSet = (newCredentials: any) => {
     setCredentials(newCredentials);
-    // After setting credentials, make sure to set isBackendReady to true
-    // This will enable the other tabs
     checkBackendStatus().then((isReady) => {
       if (isReady) {
-        // If backend is ready after setting credentials, auto-switch to dashboard
         setActiveTab("dashboard");
         toast.success("Backend connection established successfully!");
       }
@@ -111,18 +104,16 @@ const AgenticAI = () => {
               variant="outline"
               className="gap-2"
             >
-              {isSeeding ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+              {isSeeding ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
               {isSeeding ? "Adding Sample Data..." : "Seed Database"}
             </Button>
           </div>
         </div>
         
-        {/* Show the process flow component when backend is ready */}
         {isBackendReady && (
           <AgenticProcessFlow tasks={tasks} />
         )}
         
-        {/* Redesigned tabs with better alignment and visual appearance */}
         <Tabs 
           value={activeTab} 
           onValueChange={setActiveTab} 
@@ -187,20 +178,16 @@ const AgenticAI = () => {
           
           <TabsContent value="setup">
             <div className="grid gap-6 md:grid-cols-2">
-              {/* API Credentials Form */}
               <AgenticCredentialsForm 
                 onCredentialsSet={handleCredentialsSet}
                 initialCredentials={credentials || undefined}
               />
-              
-              {/* How it works card */}
               <HowItWorksCard />
             </div>
           </TabsContent>
           
           <TabsContent value="create">
             <div className="grid gap-6 md:grid-cols-2">
-              {/* Task Creator with enhanced visuals */}
               <Card className="border-2 border-adept/30 shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-adept/10 to-adept/5 pb-4">
                   <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
@@ -224,8 +211,6 @@ const AgenticAI = () => {
                   <AgentTaskCreator />
                 </CardContent>
               </Card>
-              
-              {/* How it works card */}
               <HowItWorksCard />
             </div>
           </TabsContent>

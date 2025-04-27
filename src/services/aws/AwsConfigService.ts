@@ -1,14 +1,50 @@
 
-// Mock AWS configuration service for development
+import { getEnvVar, setEnvVar } from '@/utils/env-utils';
 
+/**
+ * Check if AWS credentials are valid
+ */
 export const checkAwsCredentials = async (): Promise<boolean> => {
-  console.log('Checking AWS credentials...');
-  // In a real implementation, this would check if the AWS credentials are valid
-  return true;
+  try {
+    // This is a mock implementation since we can't make real AWS API calls from the client
+    // In a real application, you would make an API call to your backend which would verify the credentials
+    
+    const region = getEnvVar('AWS_REGION', '');
+    const accessKeyId = getEnvVar('AWS_ACCESS_KEY_ID', '');
+    const secretAccessKey = getEnvVar('AWS_SECRET_ACCESS_KEY', '');
+    
+    // Basic validation
+    if (!region || !accessKeyId || !secretAccessKey) {
+      console.error("Missing AWS credentials");
+      return false;
+    }
+    
+    if (accessKeyId.length < 16 || secretAccessKey.length < 16) {
+      console.warn("AWS credentials look incomplete");
+    }
+    
+    // In a real app, you would verify these credentials
+    // For demo purposes, we'll just consider them valid if they're provided
+    console.log("AWS credentials seem valid (demo mode)");
+    return true;
+  } catch (error) {
+    console.error("Error checking AWS credentials:", error);
+    return false;
+  }
 };
 
-export const initializeAwsServices = (region: string, accessKeyId: string, secretAccessKey: string): boolean => {
-  console.log('Initializing AWS services with:', { region, accessKeyId: accessKeyId.substring(0, 3) + '...' });
-  // In a real implementation, this would initialize AWS services
-  return true;
+/**
+ * Initialize AWS configuration with credentials
+ */
+export const initializeAwsConfig = (
+  region: string,
+  accessKeyId: string,
+  secretAccessKey: string
+): void => {
+  // Store in localStorage for use across the application
+  setEnvVar('AWS_REGION', region);
+  setEnvVar('AWS_ACCESS_KEY_ID', accessKeyId);
+  setEnvVar('AWS_SECRET_ACCESS_KEY', secretAccessKey);
+  
+  console.log("AWS configuration initialized");
 };

@@ -22,8 +22,8 @@ declare global {
     [key: string]: boolean;
   }
   
-  // Add ElementType to fix component type errors
-  type ElementType<P = any> = React.ComponentType<P> | keyof JSX.IntrinsicElements;
+  // ElementType definition to fix component type errors
+  type ElementType<P = any> = React.ElementType<P>;
   
   // User definition
   interface User {

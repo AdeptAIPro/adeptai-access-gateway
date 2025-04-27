@@ -23,22 +23,36 @@ export interface AgentTask {
   taskType?: string; // Added to align with other imports
   goal?: string;     // Added to align with other imports
   agent?: string;    // Added to align with other imports
+  title?: string;    // Added for clarity in UI
+  error?: string;    // Added for error handling
+  result?: any;      // Added for storing results
+  completedAt?: string; // Added for tracking completion time
 }
 
 // Add AgentTaskType type
 export type AgentTaskType = string;
 
+// Get environment variables safely with fallbacks
+const getEnvVar = (key: string, fallback: string): string => {
+  try {
+    // Try to get from import.meta.env (Vite's way of exposing env vars)
+    return (import.meta.env?.[key] || import.meta.env?.[`VITE_${key}`] || fallback) as string;
+  } catch (e) {
+    return fallback;
+  }
+};
+
 // Initialize DynamoDB client
 const ddbClient = new DynamoDBClient({ 
-  region: process.env.AWS_REGION || "us-east-1",
+  region: getEnvVar('AWS_REGION', 'us-east-1'),
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "AKIAxxxxxxxxxxxxx",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    accessKeyId: getEnvVar('AWS_ACCESS_KEY_ID', 'AKIAxxxxxxxxxxxxx'),
+    secretAccessKey: getEnvVar('AWS_SECRET_ACCESS_KEY', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
   }
 });
 
-const AGENTS_TABLE = process.env.AGENTS_TABLE || "agents";
-const TASKS_TABLE = process.env.TASKS_TABLE || "agent_tasks";
+const AGENTS_TABLE = getEnvVar('AGENTS_TABLE', 'agents');
+const TASKS_TABLE = getEnvVar('TASKS_TABLE', 'agent_tasks');
 
 // Utility function to handle DynamoDB operations
 const executeDbOperation = async (command: any) => {

@@ -119,10 +119,10 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
     setIsTestingAws(true);
     
     try {
-      // Set environment variables for AWS SDK
-      process.env.AWS_REGION = credentials.awsRegion;
-      process.env.AWS_ACCESS_KEY_ID = credentials.awsAccessKeyId;
-      process.env.AWS_SECRET_ACCESS_KEY = credentials.awsSecretAccessKey;
+      // Store environment variables in localStorage instead of trying to set process.env
+      localStorage.setItem('AWS_REGION', credentials.awsRegion);
+      localStorage.setItem('AWS_ACCESS_KEY_ID', credentials.awsAccessKeyId);
+      localStorage.setItem('AWS_SECRET_ACCESS_KEY', credentials.awsSecretAccessKey);
       
       const success = await checkAwsCredentials();
       setAwsStatus(success ? 'success' : 'failed');
@@ -148,10 +148,10 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
     // Initialize services with the credentials
     initializeOpenAI(values.openaiApiKey);
     
-    // Set environment variables for AWS SDK
-    process.env.AWS_REGION = values.awsRegion;
-    process.env.AWS_ACCESS_KEY_ID = values.awsAccessKeyId;
-    process.env.AWS_SECRET_ACCESS_KEY = values.awsSecretAccessKey;
+    // Store environment variables in localStorage
+    localStorage.setItem('AWS_REGION', values.awsRegion);
+    localStorage.setItem('AWS_ACCESS_KEY_ID', values.awsAccessKeyId); 
+    localStorage.setItem('AWS_SECRET_ACCESS_KEY', values.awsSecretAccessKey);
     
     // Notify parent component
     onCredentialsSet(values);
