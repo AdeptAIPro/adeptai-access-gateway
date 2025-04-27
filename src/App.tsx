@@ -1,6 +1,6 @@
 
 import { AppProvider } from "./providers/AppProvider";
-import AppRoutes from "./AppRoutes";
+import AppRoutes from "./routes";
 import { ErrorBoundary } from "./components/error-boundary/ErrorBoundary";
 
 function App() {
