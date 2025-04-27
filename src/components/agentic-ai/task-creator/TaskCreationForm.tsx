@@ -11,7 +11,7 @@ import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { showError } from '@/utils/toast-utils';
-import { Agent } from '@/services/agentic-ai/AgenticService';
+import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
 import { z } from 'zod';
 
 // Form schema

@@ -44,6 +44,9 @@ declare global {
     agent?: string;
     createdAt: string;
     completedAt?: string;
+    error?: string;
+    result?: any;
+    title?: string;
   }
   
   // Add Agent definition for global use

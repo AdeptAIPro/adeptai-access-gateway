@@ -12,7 +12,7 @@ import AgenticCredentialsForm from "@/components/agentic-ai/setup/AgenticCredent
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Database, RefreshCw, KeyRound, CheckCircle } from "@/utils/icon-polyfill";
+import { AlertCircle, Database, RefreshCcw, KeyRound, CheckCircle } from "@/utils/icon-polyfill";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
 import { useIsMobile } from "@/hooks/use-mobile";
