@@ -1,18 +1,25 @@
 
 /**
- * This file provides a fallback mechanism for importing lucide icons
- * It redirects lucide-react imports to our icon-polyfill
+ * This file adds extra functionality to handle lucide-react imports and components
+ * that are using the lucide-react icons in a way that requires TypeScript compatibility
  */
 
-import icons from './icon-polyfill';
+import React from 'react';
+import * as icons from './icon-polyfill';
 export * from './icon-polyfill';
 
-// Mock icon factory to handle missing icons
+// Create a component factory for dynamic icon usage
+export const createIconComponent = (iconName: string) => {
+  // @ts-ignore - We know these icons exist in our polyfill
+  const IconComponent = icons[iconName] || icons.HelpCircle;
+  return React.createElement(IconComponent);
+};
+
+// Export an Icon component that can be used directly
 export const Icon = ({ name, ...props }: { name: string; [key: string]: any }) => {
   // @ts-ignore - We know these icons exist in our polyfill
   const IconComponent = icons[name] || icons.HelpCircle;
-  return IconComponent(props);
+  return React.createElement(IconComponent, props);
 };
 
-// Re-export everything from icon-polyfill
 export default icons;

@@ -31,6 +31,11 @@ declare global {
     viewDashboard: boolean;
     [key: string]: boolean;
   }
+  
+  // Add ElementType to fix component type errors
+  type ElementType<P = any> = {
+    [K in keyof JSX.IntrinsicElements]: K;
+  }[keyof JSX.IntrinsicElements] | React.ComponentType<P>;
 }
 
 // Extend window object
@@ -50,6 +55,25 @@ if [ ! -d "node_modules" ]; then
   echo "Installing dependencies..."
   npm install
 fi
+
+# Create a proper lucide redirect file
+echo "Creating lucide-react redirect..."
+mkdir -p src/utils
+cat > src/utils/lucide-redirect.ts << 'EOF'
+/**
+ * This file redirects all lucide-react imports to our icon polyfill
+ * This ensures we have consistent icon usage across the application
+ */
+
+// Re-export everything from our icon polyfill
+export * from './lucide-polyfill';
+
+// Also create a default export for compatibility
+import * as icons from './lucide-polyfill';
+export default icons;
+EOF
+
+echo "Lucide redirect created."
 
 # Run the import fix script
 echo "Fixing imports in TypeScript files..."
