@@ -9,6 +9,18 @@ chmod +x setup.sh
 chmod +x start-app.sh
 chmod +x fix-all-imports.sh
 
+# Ensure npm is available
+if ! command -v npm &> /dev/null; then
+  echo "npm is not installed. Please install Node.js and npm."
+  exit 1
+fi
+
+# Update npm to the latest version
+npm install -g npm@latest
+
+# Install Vite globally
+npm install -g vite
+
 # Run the setup
 ./setup.sh
 
@@ -34,5 +46,8 @@ fi
 
 # Run node script to fix package.json
 node fix-package.js
+
+# Install all dependencies
+npm install
 
 echo "Setup completed! Run ./start-app.sh to start your application."
