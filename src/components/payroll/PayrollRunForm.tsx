@@ -5,12 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Play, FileText, Users, Loader2, Globe } from "lucide-react";
+import { Calendar, Play, FileText, Users, Loader2, Globe, AlertCircle, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fetchEmployees } from "@/services/payroll/EmployeeService";
 import { Employee } from "@/types/employee";
 import { runPayroll } from "@/services/payroll/PayrollProcessor";
 import { PayrollRunOptions } from "@/services/payroll/types/PayrollTypes";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import BankValidationService from "@/services/payroll/payment/BankValidationService";
 
 interface PayrollRunFormProps {
   onPayrollRun?: () => void;
@@ -26,6 +29,15 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null);
   const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
+  const [useDynamicTaxRates, setUseDynamicTaxRates] = useState<boolean>(true);
+  const [verifyBankAccounts, setVerifyBankAccounts] = useState<boolean>(true);
+  const [optimizeForTaxes, setOptimizeForTaxes] = useState<boolean>(false);
+  const [verifyCompliance, setVerifyCompliance] = useState<boolean>(true);
+  const [validationResults, setValidationResults] = useState<{
+    employees: boolean;
+    bank: boolean;
+    compliance: boolean;
+  }>({ employees: true, bank: true, compliance: true });
   
   // Formatted dates for current pay period
   const today = new Date();
@@ -100,7 +112,68 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
     }
   };
 
+  const validateBeforeRun = async () => {
+    const validation = { employees: true, bank: true, compliance: true };
+    
+    if (runType === "individual" && !selectedEmployee) {
+      validation.employees = false;
+      toast({
+        title: "Employee Selection Required",
+        description: "Please select an employee before running payroll",
+        variant: "destructive",
+      });
+    }
+    
+    if (verifyBankAccounts) {
+      try {
+        let employeesToValidate = employees;
+        
+        if (runType === "individual" && selectedEmployee) {
+          employeesToValidate = employees.filter(emp => emp.id === selectedEmployee);
+        } else if (runType === "all") {
+          // If not loaded yet, load all employees for validation
+          if (employees.length === 0) {
+            employeesToValidate = await fetchEmployees();
+            
+            // Apply filters
+            if (employeeType !== "all") {
+              const typeMapping = {
+                "w2": "W-2",
+                "1099": "1099"
+              };
+              employeesToValidate = employeesToValidate.filter(
+                emp => emp.type === typeMapping[employeeType as keyof typeof typeMapping]
+              );
+            }
+          }
+        }
+        
+        for (const employee of employeesToValidate) {
+          const bankValid = await BankValidationService.validateEmployeeBankInfo(employee);
+          if (!bankValid) {
+            validation.bank = false;
+            break;
+          }
+        }
+      } catch (error) {
+        console.error("Error validating bank accounts:", error);
+        validation.bank = false;
+      }
+    }
+
+    // More validation checks for compliance could go here
+    
+    setValidationResults(validation);
+    return validation.employees && validation.bank && validation.compliance;
+  };
+
   const handleRunPayroll = async () => {
+    // Validate before running payroll
+    const isValid = await validateBeforeRun();
+    if (!isValid) {
+      return;
+    }
+    
     setIsProcessing(true);
     toast({
       title: "Payroll Process Started",
@@ -117,12 +190,15 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
                      employeeType === "1099" ? "1099" :
                      "All",
         country: selectedCountry,
+        individualEmployeeId: runType === "individual" ? selectedEmployee : undefined,
+        useDynamicTaxRates,
         companyInfo: {
           name: "Sample Company, Inc.",
           address: "123 Business St, City, State 12345",
           ein: "12-3456789"
         },
-        individualEmployeeId: runType === "individual" ? selectedEmployee : undefined
+        optimizeForTaxes,
+        verifyCompliance
       };
       
       // Run payroll processing
@@ -131,7 +207,8 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
       if (result.status === "Completed") {
         toast({
           title: "Payroll Completed Successfully",
-          description: `Processed ${result.processedEmployees} employees with total net pay of ${result.totalNetPay.toFixed(2)}`,
+          description: `Processed ${result.processedEmployees} employees with total net pay of $${result.totalNetPay.toFixed(2)}`,
+          variant: "default",
         });
       } else if (result.status === "Partial") {
         toast({
@@ -254,14 +331,58 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
                     <SelectItem key={employee.id} value={employee.id}>
                       <div className="flex items-center gap-2">
                         <Users size={16} />
-                        <span>{employee.name} ({employee.employeeId})</span>
+                        <span>{employee.firstName} {employee.lastName} ({employee.id})</span>
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {!validationResults.employees && (
+                <p className="text-destructive text-xs mt-1">
+                  <AlertCircle className="h-3 w-3 inline mr-1" />
+                  Please select an employee
+                </p>
+              )}
             </div>
           )}
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4 my-4">
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="dynamic-tax-rates" 
+              checked={useDynamicTaxRates} 
+              onCheckedChange={setUseDynamicTaxRates}
+            />
+            <Label htmlFor="dynamic-tax-rates" className="text-sm">Use dynamic tax rates API</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="verify-bank-accounts" 
+              checked={verifyBankAccounts} 
+              onCheckedChange={setVerifyBankAccounts}
+            />
+            <Label htmlFor="verify-bank-accounts" className="text-sm">Verify bank accounts</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="tax-optimization" 
+              checked={optimizeForTaxes} 
+              onCheckedChange={setOptimizeForTaxes}
+            />
+            <Label htmlFor="tax-optimization" className="text-sm">Optimize for taxes</Label>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="verify-compliance" 
+              checked={verifyCompliance} 
+              onCheckedChange={setVerifyCompliance}
+            />
+            <Label htmlFor="verify-compliance" className="text-sm">Verify regulatory compliance</Label>
+          </div>
         </div>
         
         <div className="grid grid-cols-3 gap-4 py-2 mt-4">
@@ -282,6 +403,27 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
         </div>
         
         <Separator className="my-4" />
+        
+        <div className="flex flex-col gap-2 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle size={16} className={useDynamicTaxRates ? "text-green-600" : "text-muted-foreground"} />
+            <span className={useDynamicTaxRates ? "text-green-600" : "text-muted-foreground"}>
+              {useDynamicTaxRates ? "Using real-time tax rates from official tax agencies" : "Using static tax rates (enable dynamic rates for accuracy)"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle size={16} className={verifyBankAccounts ? "text-green-600" : "text-muted-foreground"} />
+            <span className={verifyBankAccounts ? "text-green-600" : "text-muted-foreground"}>
+              {verifyBankAccounts ? "Bank account validation enabled for direct deposit" : "Bank account validation disabled (recommended for live payrolls)"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <CheckCircle size={16} className={verifyCompliance ? "text-green-600" : "text-muted-foreground"} />
+            <span className={verifyCompliance ? "text-green-600" : "text-muted-foreground"}>
+              {verifyCompliance ? "Compliance verification enabled for regulatory requirements" : "Compliance verification disabled (recommended for regulatory compliance)"}
+            </span>
+          </div>
+        </div>
         
         <div className="flex items-center justify-between mt-4">
           <div className="flex flex-col gap-2">

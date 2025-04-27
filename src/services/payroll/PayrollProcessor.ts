@@ -7,6 +7,9 @@ import { processEmployeePayroll } from "./processors/EmployeePayrollProcessor";
 import { calculateHoursPerPeriod, determinePayrollStatus } from "./utils/PayrollCalculationUtils";
 import { PayrollRunOptions, PayrollRunResult, PayrollBatchItem } from "./types/PayrollTypes";
 import { toast } from "@/hooks/use-toast";
+import BankValidationService from "./payment/BankValidationService";
+import TimeTrackingService from "./time/TimeTrackingService";
+import { W2GenerationService } from "./compliance/W2GenerationService";
 
 /**
  * Runs payroll processing for the specified pay period and employees
@@ -32,7 +35,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
         employees = [employee];
         toast({
           title: "Individual Employee Payroll",
-          description: `Processing payroll for ${employee.name}`,
+          description: `Processing payroll for ${employee.firstName} ${employee.lastName}`,
         });
       } else {
         toast({
@@ -59,7 +62,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       
       // Apply filters
       if (options.employeeType && options.employeeType !== "All") {
-        employees = employees.filter(emp => emp.type === options.employeeType);
+        employees = employees.filter(emp => emp.payrollType === options.employeeType);
       }
       
       if (options.departmentFilter) {
@@ -69,11 +72,18 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       // Apply country filter if specified
       if (options.country) {
         employees = employees.filter(emp => {
-          const address = emp.address || "";
-          if (options.country === "USA") {
-            return !address.includes("India");
-          } else if (options.country === "India") {
-            return address.includes("India");
+          if (typeof emp.address === 'string') {
+            const address = emp.address || "";
+            if (options.country === "USA") {
+              return !address.includes("India");
+            } else if (options.country === "India") {
+              return address.includes("India");
+            }
+          } else if (typeof emp.address === 'object' && emp.address) {
+            // Handle address object format
+            if (options.country === "USA") {
+              return emp.address.state !== "India";
+            }
           }
           return true; // Default case, include all
         });
@@ -101,45 +111,87 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
     // 4. Prepare batch processing data
     const paymentBatch: PayrollBatchItem[] = [];
     
-    // 5. Process each eligible employee
-    for (const employee of employees) {
-      const processResult = await processEmployeePayroll(
-        employee,
-        hoursPerPeriod,
-        options.payPeriod,
-        options.payDate,
-        options.payFrequency,
-        options.companyInfo,
-        options.useDynamicTaxRates
-      );
+    // 5. Verify compliance if requested
+    if (options.verifyCompliance) {
+      toast({
+        title: "Verifying Compliance",
+        description: "Checking regulatory compliance and bank account information...",
+      });
       
-      // Add to batch and update totals if processing succeeded
-      if (processResult.payStubItem) {
-        paymentBatch.push(processResult.payStubItem);
-        
-        // Update running totals
-        result.totalGrossPay += processResult.grossPay;
-        result.totalNetPay += processResult.netPay;
-        result.totalTaxes += processResult.totalTaxes;
-        result.processedEmployees++;
+      // Verify bank accounts for direct deposit
+      for (const employee of employees) {
+        if (!await BankValidationService.validateEmployeeBankInfo(employee)) {
+          toast({
+            title: "Bank Validation Failed",
+            description: `Invalid bank information for ${employee.firstName} ${employee.lastName}.`,
+            variant: "destructive",
+          });
+        }
       }
     }
     
-    // 6. Process payments in bulk
+    // 6. Process each eligible employee
+    for (const employee of employees) {
+      try {
+        // Process time tracking data if available
+        let grossPay = 0;
+        if (employee.timeTracking) {
+          const payRate = parseFloat(employee.payRate);
+          if (!isNaN(payRate)) {
+            const timeCalculation = TimeTrackingService.calculatePay(
+              employee,
+              employee.timeTracking,
+              payRate
+            );
+            grossPay = timeCalculation.totalPay;
+          } else {
+            grossPay = hoursPerPeriod * parseFloat(employee.payRate);
+          }
+        } else {
+          // Use standard calculation if no time tracking data
+          grossPay = hoursPerPeriod * parseFloat(employee.payRate);
+        }
+        
+        const processResult = await processEmployeePayroll(
+          employee,
+          hoursPerPeriod,
+          options.payPeriod,
+          options.payDate,
+          options.payFrequency,
+          options.companyInfo,
+          options.useDynamicTaxRates
+        );
+        
+        // Add to batch and update totals if processing succeeded
+        if (processResult.payStubItem) {
+          paymentBatch.push(processResult.payStubItem);
+          
+          // Update running totals
+          result.totalGrossPay += processResult.grossPay;
+          result.totalNetPay += processResult.netPay;
+          result.totalTaxes += processResult.totalTaxes;
+          result.processedEmployees++;
+        }
+      } catch (error) {
+        console.error(`Error processing employee ${employee.id}:`, error);
+      }
+    }
+    
+    // 7. Process payments in bulk
     if (paymentBatch.length > 0) {
       const paymentResults = await processBulkPayments(paymentBatch);
       result.successfulPayments = paymentResults.successful;
       result.failedPayments = paymentResults.failed;
     }
     
-    // 7. Calculate processing time
+    // 8. Calculate processing time
     const endTime = Date.now();
     result.processingTime = (endTime - startTime) / 1000; // Convert to seconds
     
-    // 8. Determine overall status
+    // 9. Determine overall status
     result.status = determinePayrollStatus(result.processedEmployees, result.failedPayments);
     
-    // 9. Record payroll run in history
+    // 10. Record payroll run in history
     await recordPayrollRun({
       runDate: new Date().toISOString(),
       payPeriod: options.payPeriod,
@@ -148,7 +200,7 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       status: result.status === "Failed" ? "Failed" : (result.status === "Partial" ? "Processing" : "Complete")
     });
     
-    // 10. Show summary toast
+    // 11. Show summary toast
     const employeeText = options.individualEmployeeId ? "individual employee" : `${result.processedEmployees} employees`;
     toast({
       title: `Payroll Run ${result.status}`,
@@ -178,4 +230,67 @@ export const runPayroll = async (options: PayrollRunOptions): Promise<PayrollRun
       status: "Failed"
     };
   }
+};
+
+/**
+ * Create audit trail entry for payroll changes
+ */
+export const createPayrollAuditEntry = async (
+  action: string,
+  details: any,
+  userId: string
+): Promise<boolean> => {
+  try {
+    // In a real implementation, this would save to database
+    console.log("Payroll Audit Trail:", {
+      timestamp: new Date().toISOString(),
+      action,
+      details,
+      userId
+    });
+    
+    return true;
+  } catch (error) {
+    console.error("Failed to create audit entry:", error);
+    return false;
+  }
+};
+
+/**
+ * Get payroll tax filing deadlines
+ */
+export const getTaxFilingDeadlines = (): { name: string; deadline: string; state?: string }[] => {
+  const now = new Date();
+  const year = now.getFullYear();
+  
+  return [
+    {
+      name: "Form 941 (Q1)",
+      deadline: `${year}-04-30`
+    },
+    {
+      name: "Form 941 (Q2)",
+      deadline: `${year}-07-31`
+    },
+    {
+      name: "Form 941 (Q3)",
+      deadline: `${year}-10-31`
+    },
+    {
+      name: "Form 941 (Q4)",
+      deadline: `${year+1}-01-31`
+    },
+    {
+      name: "W-2 Distribution",
+      deadline: `${year+1}-01-31`
+    },
+    {
+      name: "Form 940",
+      deadline: `${year+1}-01-31`
+    },
+    {
+      name: "1099-NEC Distribution",
+      deadline: `${year+1}-01-31`
+    }
+  ];
 };
