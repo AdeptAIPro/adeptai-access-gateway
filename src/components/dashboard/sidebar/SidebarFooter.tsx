@@ -1,6 +1,6 @@
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/utils/router-polyfill";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, LogOut, Moon, Sun } from "lucide-react";
 import { Switch } from "@/components/ui/switch"; 

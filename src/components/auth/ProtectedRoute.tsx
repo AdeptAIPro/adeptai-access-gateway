@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "@/utils/router-polyfill";
 import { useAuth } from "@/hooks/use-auth";
 import { UserRolePermissions } from "@/services/crm/types";
 

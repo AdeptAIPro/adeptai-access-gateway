@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@/utils/router-polyfill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,10 +27,8 @@ const Login = () => {
     
     try {
       await login(email, password);
-      // Navigation is handled in the login function
     } catch (error) {
       console.error("Login failed:", error);
-      // Error handling is done in the login function
     } finally {
       setIsLoading(false);
     }

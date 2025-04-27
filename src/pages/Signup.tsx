@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "@/utils/router-polyfill";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,6 @@ const Signup = () => {
   const { signUp } = useAuth();
   
   useEffect(() => {
-    // Extract plan from URL query params if present
     const params = new URLSearchParams(location.search);
     const planId = params.get("plan");
     if (planId) {
@@ -47,7 +46,6 @@ const Signup = () => {
     try {
       await signUp(name, email, password);
       
-      // If there's a selected plan, redirect to checkout
       if (selectedPlan) {
         toast.success("Account created! Proceeding to checkout...");
         navigate(`/checkout?plan=${selectedPlan}`);

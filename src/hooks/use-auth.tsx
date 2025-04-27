@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/utils/router-polyfill";
 import { toast } from "sonner";
 
 interface UserRolePermissions {

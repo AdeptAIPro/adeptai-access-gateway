@@ -3,11 +3,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "@/utils/router-polyfill"; // Use our polyfill
 import { AuthProvider } from "@/hooks/use-auth";
 import { Suspense } from "react";
 import { CredentialsProvider } from "@/context/CredentialsContext";
-import AppRoutes from "./AppRoutes"; // Change to direct import instead of lazy loading
+import AppRoutes from "./AppRoutes"; 
 
 // Create a client 
 const queryClient = new QueryClient({
@@ -31,19 +31,19 @@ const AppLoader = () => (
 function App() {
   return (
     <div className="QueryClientProvider" data-client={queryClient}>
-      <AuthProvider>
-        <CredentialsProvider>
-          <TooltipProvider>
-            <BrowserRouter>
-              <Suspense fallback={<AppLoader />}>
-                <AppRoutes />
-              </Suspense>
-              <Toaster />
-              <Sonner />
-            </BrowserRouter>
-          </TooltipProvider>
-        </CredentialsProvider>
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <CredentialsProvider>
+            <TooltipProvider>
+                <Suspense fallback={<AppLoader />}>
+                  <AppRoutes />
+                </Suspense>
+                <Toaster />
+                <Sonner />
+            </TooltipProvider>
+          </CredentialsProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </div>
   );
 }

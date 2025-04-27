@@ -1,6 +1,6 @@
 
 import React, { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "@/utils/router-polyfill";
 // Using icon-polyfill instead of direct lucide-react imports
 import { Loader2 } from '@/utils/icon-polyfill';
 
