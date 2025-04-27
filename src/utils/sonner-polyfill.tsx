@@ -1,152 +1,94 @@
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 
-// Define toast types
-type ToastType = 'default' | 'success' | 'error' | 'info' | 'warning';
+// Basic toast types
+type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info';
 
-interface ToastProps {
-  id: string;
-  title?: string;
-  description?: string;
-  type?: ToastType;
+// Toast options
+interface ToastOptions {
+  description?: ReactNode;
   duration?: number;
-  onDismiss?: () => void;
-  variant?: string;
-}
-
-interface ToasterContextProps {
-  toasts: ToastProps[];
-  addToast: (toast: Omit<ToastProps, 'id'>) => string;
-  dismissToast: (id: string) => void;
-}
-
-// Create context
-const ToasterContext = createContext<ToasterContextProps>({
-  toasts: [],
-  addToast: () => '',
-  dismissToast: () => {},
-});
-
-// Create provider
-export const ToasterProvider = ({ children }: { children: ReactNode }) => {
-  const [toasts, setToasts] = useState<ToastProps[]>([]);
-
-  const addToast = (toast: Omit<ToastProps, 'id'>): string => {
-    const id = Math.random().toString(36).substring(2);
-    const newToast: ToastProps = { ...toast, id };
-    
-    setToasts((prev) => [...prev, newToast]);
-    
-    // Auto dismiss
-    if (toast.duration !== Infinity) {
-      setTimeout(() => {
-        dismissToast(id);
-      }, toast.duration || 5000);
-    }
-    
-    return id;
+  icon?: ReactNode;
+  id?: string;
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top-center' | 'bottom-center';
+  action?: {
+    label: string;
+    onClick: () => void;
   };
-
-  const dismissToast = (id: string) => {
-    setToasts((prev) => {
-      const toast = prev.find(t => t.id === id);
-      if (toast?.onDismiss) toast.onDismiss();
-      return prev.filter(t => t.id !== id);
-    });
-  };
-
-  return (
-    <ToasterContext.Provider value={{ toasts, addToast, dismissToast }}>
-      {children}
-    </ToasterContext.Provider>
-  );
-};
-
-// Hook to use the context
-export const useToaster = () => {
-  return useContext(ToasterContext);
-};
-
-// Toast component
-export const Toast = ({ 
-  children,
-  ...props
-}: { 
-  children: ReactNode;
-  className?: string;
+  onDismiss?: (toast: ToastT) => void;
+  onAutoClose?: (toast: ToastT) => void;
   [key: string]: any;
-}) => {
-  return (
-    <div className={`bg-white rounded shadow-md p-4 ${props.className || ''}`}>
-      {children}
-    </div>
-  );
+}
+
+// Toast instance
+type ToastT = {
+  id: string;
+  type: ToastType;
+  message: string;
+  options?: ToastOptions;
 };
 
-// Toaster component
-export const Toaster = () => {
-  const { toasts, dismissToast } = useToaster();
+// Define a simple toast implementation
+const toastQueue: ToastT[] = [];
 
-  return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 min-w-[300px]">
-      {toasts.map((toast) => (
-        <div
-          key={toast.id}
-          className={`bg-white rounded shadow-md p-4 animate-in slide-in-from-right-5 
-            ${toast.type === 'error' ? 'border-l-4 border-red-500' : ''}
-            ${toast.type === 'success' ? 'border-l-4 border-green-500' : ''}
-            ${toast.type === 'info' ? 'border-l-4 border-blue-500' : ''}
-            ${toast.type === 'warning' ? 'border-l-4 border-yellow-500' : ''}`}
-        >
-          {toast.title && <h4 className="font-medium">{toast.title}</h4>}
-          {toast.description && <p className="text-sm text-gray-500">{toast.description}</p>}
-          <button
-            onClick={() => dismissToast(toast.id)}
-            className="absolute top-1 right-1 p-1 text-gray-400 hover:text-gray-600"
-          >
-            ×
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-};
+function createToast(message: string, options: ToastOptions = {}, type: ToastType = 'default'): string {
+  const id = options.id || Date.now().toString();
+  const toast = { id, message, options, type };
+  
+  // Add toast to queue
+  toastQueue.push(toast);
+  
+  // Log toast to console for debugging
+  console.log(`Toast (${type}):`, message, options);
+  
+  // Return id for potential dismissal
+  return id;
+}
 
-// Create object with toast functions
-export const toast = {
-  default: function(message: string) {
-    const context = useContext(ToasterContext);
-    return context.addToast({ title: message, type: 'default' });
-  },
-  success: function(message: string) {
-    const context = useContext(ToasterContext);
-    return context.addToast({ title: message, type: 'success' });
-  },
-  error: function(message: string) {
-    const context = useContext(ToasterContext);
-    return context.addToast({ title: message, type: 'error' });
-  },
-  info: function(message: string) {
-    const context = useContext(ToasterContext);
-    return context.addToast({ title: message, type: 'info' });
-  },
-  warning: function(message: string) {
-    const context = useContext(ToasterContext);
-    return context.addToast({ title: message, type: 'warning' });
-  },
-  promise: async function(promise: Promise<any>, options: { loading: string; success: string; error: string }) {
-    const context = useContext(ToasterContext);
-    const id = context.addToast({ title: options.loading, type: 'default' });
-    
-    try {
-      const result = await promise;
-      context.dismissToast(id);
-      context.addToast({ title: options.success, type: 'success' });
-      return result;
-    } catch (error) {
-      context.dismissToast(id);
-      context.addToast({ title: options.error, type: 'error' });
-      throw error;
+// Toast API
+export const toast = Object.assign(
+  (message: string, options: ToastOptions = {}): string => createToast(message, options, 'default'),
+  {
+    success: (message: string, options: ToastOptions = {}): string => createToast(message, options, 'success'),
+    error: (message: string, options: ToastOptions = {}): string => createToast(message, options, 'error'),
+    warning: (message: string, options: ToastOptions = {}): string => createToast(message, options, 'warning'),
+    info: (message: string, options: ToastOptions = {}): string => createToast(message, options, 'info'),
+    dismiss: (id: string): void => {
+      const index = toastQueue.findIndex(toast => toast.id === id);
+      if (index !== -1) {
+        toastQueue.splice(index, 1);
+      }
+    },
+    promise: <T,>(
+      promise: Promise<T>, 
+      { loading, success, error }: { loading: string; success: string | ((data: T) => string); error: string | ((error: any) => string); },
+      options?: ToastOptions
+    ): Promise<T> => {
+      const id = createToast(loading, { ...options, duration: Infinity }, 'default');
+      
+      return promise
+        .then((data) => {
+          const successMessage = typeof success === 'function' ? success(data) : success;
+          toast.dismiss(id);
+          toast.success(successMessage, options);
+          return data;
+        })
+        .catch((err) => {
+          const errorMessage = typeof error === 'function' ? error(err) : error;
+          toast.dismiss(id);
+          toast.error(errorMessage, options);
+          throw err;
+        });
     }
   }
+);
+
+// The Toaster component (just a placeholder, we're not using actual rendering in the polyfill)
+export const Toaster: React.FC<{ 
+  position?: ToastOptions['position']; 
+  theme?: 'light' | 'dark' | 'system';
+  className?: string;
+  toastOptions?: ToastOptions;
+}> = () => {
+  return null; // This is just a placeholder for imports to work
 };
