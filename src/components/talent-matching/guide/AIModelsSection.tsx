@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Info, Zap } from "lucide-react";
+import { Info, Zap } from "@/utils/lucide-polyfill";
 import { AIModel, AIModelsSectionProps } from "./types";
 
 const AIModelsSection: React.FC<AIModelsSectionProps> = ({ models }) => {
@@ -12,7 +12,7 @@ const AIModelsSection: React.FC<AIModelsSectionProps> = ({ models }) => {
           <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-indigo-100 hover:border-indigo-300 transition-all">
             <div className="flex items-center mb-3">
               <div className="bg-indigo-100 p-2 rounded-full mr-3">
-                <model.icon className="h-5 w-5 text-indigo-600" />
+                {React.createElement(model.icon, { className: "h-5 w-5 text-indigo-600" })}
               </div>
               <h4 className="font-medium text-indigo-900">{model.name}</h4>
             </div>

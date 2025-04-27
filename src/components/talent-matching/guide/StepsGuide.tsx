@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "@/utils/lucide-polyfill";
 import { Step, StepsGuideProps } from "./types";
 
 const StepsGuide: React.FC<StepsGuideProps> = ({ steps }) => {
@@ -16,7 +16,7 @@ const StepsGuide: React.FC<StepsGuideProps> = ({ steps }) => {
             <CardHeader className="pb-2">
               <div className="flex items-center mb-2">
                 <div className="bg-adept/10 p-2 rounded-full mr-3">
-                  <step.icon className="h-5 w-5 text-adept" />
+                  {React.createElement(step.icon, { className: "h-5 w-5 text-adept" })}
                 </div>
                 <span className="bg-adept/10 text-adept text-xs font-medium px-2 py-1 rounded-full">Step {index + 1}</span>
               </div>

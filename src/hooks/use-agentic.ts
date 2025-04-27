@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './use-auth';
 import agenticService, { AgentTask, Agent, AgentTaskType, processTask } from '@/services/agentic-ai/AgenticService';
-import { toast } from './use-toast';
+import { toast } from '@/utils/sonner-polyfill';
 
 export function useAgenticAI() {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
@@ -29,10 +29,8 @@ export function useAgenticAI() {
       setTasks(userTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
-      toast({
-        title: "Failed to Load Tasks",
-        description: "We couldn't fetch your AI agent tasks.",
-        variant: "destructive",
+      toast.error("Failed to Load Tasks", { 
+        description: "We couldn't fetch your AI agent tasks." 
       });
     } finally {
       setIsLoading(false);
@@ -57,10 +55,8 @@ export function useAgenticAI() {
       setAgents(availableAgents);
     } catch (error) {
       console.error('Error fetching agents:', error);
-      toast({
-        title: "Failed to Load Agents",
-        description: "We couldn't fetch available AI agents.",
-        variant: "destructive",
+      toast.error("Failed to Load Agents", {
+        description: "We couldn't fetch available AI agents."
       });
     }
   };
@@ -75,10 +71,8 @@ export function useAgenticAI() {
     deadline?: string
   ) => {
     if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to create AI tasks.",
-        variant: "destructive",
+      toast.error("Authentication Required", {
+        description: "Please log in to create AI tasks."
       });
       return null;
     }
@@ -97,19 +91,16 @@ export function useAgenticAI() {
       
       if (task) {
         setTasks(prev => [task, ...prev]);
-        toast({
-          title: "Task Created",
-          description: "Your AI agent has been assigned a new task.",
+        toast.success("Task Created", {
+          description: "Your AI agent has been assigned a new task."
         });
         return task;
       }
       return null;
     } catch (error) {
       console.error('Error creating task:', error);
-      toast({
-        title: "Failed to Create Task",
-        description: "We couldn't create your AI task. Please try again.",
-        variant: "destructive",
+      toast.error("Failed to Create Task", {
+        description: "We couldn't create your AI task. Please try again."
       });
       return null;
     } finally {
@@ -132,15 +123,12 @@ export function useAgenticAI() {
       if (success) {
         // Refresh the tasks to get the updated status
         await fetchUserTasks();
-        toast({
-          title: "Task Completed",
-          description: "Your AI agent has completed the assigned task.",
+        toast.success("Task Completed", {
+          description: "Your AI agent has completed the assigned task."
         });
       } else {
-        toast({
-          title: "Task Processing Failed",
-          description: "The AI agent couldn't complete the task. Please try again.",
-          variant: "destructive",
+        toast.error("Task Processing Failed", {
+          description: "The AI agent couldn't complete the task. Please try again."
         });
       }
       
@@ -148,10 +136,8 @@ export function useAgenticAI() {
       return success;
     } catch (error) {
       console.error('Error processing task:', error);
-      toast({
-        title: "Processing Error",
-        description: "There was an error while processing your AI task.",
-        variant: "destructive",
+      toast.error("Processing Error", {
+        description: "There was an error while processing your AI task."
       });
       setActiveTask(null);
       return false;

@@ -1,5 +1,5 @@
 
-import { toast } from '@/utils/sonner-polyfill';
+import { toast as sonnerToast } from '@/utils/sonner-polyfill';
 
 interface ToastProps {
   title?: string;
@@ -11,17 +11,17 @@ interface ToastProps {
 export const useToast = () => {
   const showToast = ({ title, description, variant, ...props }: ToastProps) => {
     if (variant === 'destructive') {
-      toast.error(title || '', {
+      sonnerToast.error(title || '', {
         description,
         ...props
       });
     } else if (variant === 'success') {
-      toast.success(title || '', {
+      sonnerToast.success(title || '', {
         description,
         ...props
       });
     } else {
-      toast(title || '', {
+      sonnerToast(title || '', {
         description,
         ...props
       });
@@ -34,4 +34,4 @@ export const useToast = () => {
 };
 
 // Export toast directly so it can be imported from this file
-export { toast };
+export const toast = sonnerToast;

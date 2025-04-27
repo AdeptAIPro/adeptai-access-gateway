@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Employee } from "@/types/employee";
 import { mockEmployees } from "@/data/mockEmployees";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/utils/sonner-polyfill";
 
 /**
  * Hook to fetch and manage all payroll employees
@@ -25,11 +25,7 @@ export function usePayrollEmployees() {
         setError(null);
       } catch (err) {
         setError("Failed to load employees");
-        toast({
-          title: "Error",
-          description: "Failed to load employees",
-          variant: "destructive",
-        });
+        toast.error("Failed to load employees");
       } finally {
         setIsLoading(false);
       }
@@ -73,11 +69,7 @@ export function usePayrollEmployee(employeeId: string | null) {
         setError(null);
       } catch (err) {
         setError("Failed to load employee details");
-        toast({
-          title: "Error",
-          description: "Failed to load employee details",
-          variant: "destructive",
-        });
+        toast.error("Failed to load employee details");
       } finally {
         setIsLoading(false);
       }

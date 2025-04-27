@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Users, UserPlus, ShieldCheck, Zap } from "lucide-react";
+import { TrendingUp, Users, UserPlus, ShieldCheck, Zap } from "@/utils/lucide-polyfill";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const DashboardMetricsCards = () => {

@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plug, Filter, Zap, Link, Settings } from "lucide-react";
+import { Plug, Filter, Zap, Link, Settings } from "@/utils/lucide-polyfill";
 import { Step } from "@/components/talent-matching/guide/types";
 
 interface IntegrationsGuideProps {
@@ -77,7 +77,7 @@ const IntegrationsGuide: React.FC<IntegrationsGuideProps> = ({ steps }) => {
               <div className="flex flex-col h-full">
                 <div className="mb-4 flex items-center space-x-3">
                   <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-md">
-                    <step.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    {React.createElement(step.icon, { className: "h-5 w-5 text-blue-600 dark:text-blue-400" })}
                   </div>
                   <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
                     Step {index + 1}
