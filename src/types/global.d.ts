@@ -21,6 +21,9 @@ declare global {
     viewDashboard: boolean;
     [key: string]: boolean;
   }
+  
+  // Add ElementType to fix component type errors
+  type ElementType<P = any> = React.ComponentType<P> | keyof JSX.IntrinsicElements;
 }
 
 // Extend window object

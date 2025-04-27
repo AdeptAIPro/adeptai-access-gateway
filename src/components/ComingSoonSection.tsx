@@ -2,25 +2,25 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, AlertCircle } from "@/utils/icon-polyfill";
+import { ClipboardList, AlertCircle } from "@/utils/lucide-polyfill";
 
 interface ComingSoonSectionProps {
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<any>;
 }
 
 const ComingSoonSection: React.FC<ComingSoonSectionProps> = ({
   title,
   description,
-  icon: Icon
+  icon: IconComponent
 }) => {
   return (
     <div className="flex items-center justify-center h-[70vh]">
       <Card className="w-full max-w-md text-center p-6">
         <CardHeader className="pb-4">
           <div className="mx-auto bg-primary/10 rounded-full p-6 mb-4">
-            <Icon className="h-12 w-12 text-primary" />
+            <IconComponent className="h-12 w-12 text-primary" />
           </div>
           <CardTitle className="text-2xl">{title}</CardTitle>
           <CardDescription className="text-base mt-2">

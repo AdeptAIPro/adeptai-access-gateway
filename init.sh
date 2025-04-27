@@ -15,4 +15,24 @@ chmod +x fix-all-imports.sh
 # Fix all imports
 ./fix-all-imports.sh
 
+# Create a simple package.json if it doesn't exist
+if [ ! -f "package.json" ]; then
+  echo '{
+    "name": "vite_react_shadcn_ts",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "start": "vite"
+    }
+  }' > package.json
+  
+  echo "Created package.json file"
+fi
+
+# Run node script to fix package.json
+node fix-package.js
+
 echo "Setup completed! Run ./start-app.sh to start your application."

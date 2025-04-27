@@ -33,9 +33,7 @@ declare global {
   }
   
   // Add ElementType to fix component type errors
-  type ElementType<P = any> = {
-    [K in keyof JSX.IntrinsicElements]: K;
-  }[keyof JSX.IntrinsicElements] | React.ComponentType<P>;
+  type ElementType<P = any> = React.ComponentType<P> | keyof JSX.IntrinsicElements;
 }
 
 // Extend window object
