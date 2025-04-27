@@ -1,158 +1,244 @@
 
 import { toast } from "sonner";
 
-/**
- * Error types for better classification and handling
- */
 export enum ErrorType {
-  API = "API",
-  VALIDATION = "VALIDATION",
-  NETWORK = "NETWORK",
-  AUTHENTICATION = "AUTHENTICATION",
-  AUTHORIZATION = "AUTHORIZATION",
-  NOT_FOUND = "NOT_FOUND",
-  SERVER = "SERVER",
-  CLIENT = "CLIENT",
-  UNKNOWN = "UNKNOWN"
+  API = "API_ERROR",
+  NETWORK = "NETWORK_ERROR",
+  AUTHENTICATION = "AUTHENTICATION_ERROR",
+  AUTHORIZATION = "AUTHORIZATION_ERROR",
+  VALIDATION = "VALIDATION_ERROR",
+  NOT_FOUND = "NOT_FOUND_ERROR",
+  SERVER = "SERVER_ERROR",
+  PROCESSING = "PROCESSING_ERROR",
+  UNKNOWN = "UNKNOWN_ERROR",
+  SECURITY = "SECURITY_ERROR",
+  DATA_ENCRYPTION = "DATA_ENCRYPTION_ERROR",
+  INPUT_VALIDATION = "INPUT_VALIDATION_ERROR",
+  RATE_LIMIT = "RATE_LIMIT_ERROR"
 }
 
-/**
- * Structured error object with additional context
- */
-export interface AppError {
+export interface AppError extends Error {
   type: ErrorType;
-  message: string;
-  originalError?: any;
-  code?: string;
+  userFriendlyMessage: string;
+  originalError?: Error;
   context?: Record<string, any>;
-  userFriendlyMessage?: string;
 }
 
-/**
- * Create a structured application error
- */
-export function createAppError(
-  message: string,
-  type: ErrorType = ErrorType.UNKNOWN,
+interface GlobalErrorState {
+  hasError: boolean;
+  error: AppError | null;
+  errorCount: Record<string, number>;
+  lastErrorTime: Record<string, number>;
+}
+
+// Global state to track errors
+const errorState: GlobalErrorState = {
+  hasError: false,
+  error: null,
+  errorCount: {},
+  lastErrorTime: {}
+};
+
+// Reset global error state
+export const resetErrorState = () => {
+  errorState.hasError = false;
+  errorState.error = null;
+};
+
+// Get global error state
+export const getErrorState = (): Readonly<GlobalErrorState> => ({ ...errorState });
+
+// Create an AppError from any error
+export const createAppError = (
+  message: string, 
+  type: ErrorType = ErrorType.UNKNOWN, 
   originalError?: any,
   context?: Record<string, any>
-): AppError {
-  // Generate user-friendly message based on error type
-  let userFriendlyMessage = "Something went wrong. Please try again.";
-  
-  switch (type) {
-    case ErrorType.API:
-      userFriendlyMessage = "We're having trouble communicating with our services.";
-      break;
-    case ErrorType.NETWORK:
-      userFriendlyMessage = "Network connection issue. Please check your internet connection.";
-      break;
-    case ErrorType.AUTHENTICATION:
-      userFriendlyMessage = "Your session may have expired. Please sign in again.";
-      break;
-    case ErrorType.AUTHORIZATION:
-      userFriendlyMessage = "You don't have permission to perform this action.";
-      break;
-    case ErrorType.NOT_FOUND:
-      userFriendlyMessage = "The requested information could not be found.";
-      break;
-    case ErrorType.SERVER:
-      userFriendlyMessage = "Our servers are experiencing issues. Please try again later.";
-      break;
-    case ErrorType.VALIDATION:
-      userFriendlyMessage = "Please check your input and try again.";
-      break;
-  }
-
+): AppError => {
   return {
+    name: "AppError",
     type,
     message,
+    userFriendlyMessage: getUserFriendlyMessage(type, message),
     originalError,
-    context,
-    userFriendlyMessage,
-    code: originalError?.code
-  };
-}
+    context
+  } as AppError;
+};
 
-/**
- * Handle application errors consistently across the app
- */
-export function handleError(error: unknown, showToast = true): AppError {
-  console.error("Error caught by global handler:", error);
-  
-  let appError: AppError;
-  
-  // Convert unknown error to structured AppError
-  if (typeof error === "string") {
-    appError = createAppError(error);
-  } else if (error instanceof Error) {
-    // Try to determine error type from error name or message
-    let errorType = ErrorType.UNKNOWN;
-    
-    if (error.message.includes("network") || error.message.includes("fetch") || error.message.includes("timeout")) {
-      errorType = ErrorType.NETWORK;
-    } else if (error.message.includes("401") || error.message.includes("auth") || error.message.includes("token")) {
-      errorType = ErrorType.AUTHENTICATION;
-    } else if (error.message.includes("403") || error.message.includes("permission") || error.message.includes("access")) {
-      errorType = ErrorType.AUTHORIZATION;
-    } else if (error.message.includes("404") || error.message.includes("not found")) {
-      errorType = ErrorType.NOT_FOUND;
-    } else if (error.message.includes("500") || error.message.includes("server")) {
-      errorType = ErrorType.SERVER;
-    } else if (error.message.includes("validation") || error.message.includes("invalid")) {
-      errorType = ErrorType.VALIDATION;
-    }
-    
-    appError = createAppError(error.message, errorType, error);
-  } else if (typeof error === "object" && error !== null) {
-    const errorObj = error as Record<string, any>;
-    appError = createAppError(
-      errorObj.message || "Unknown error occurred",
-      (errorObj.type as ErrorType) || ErrorType.UNKNOWN,
-      error
-    );
-  } else {
-    appError = createAppError("An unexpected error occurred");
+// Handle error globally
+export const handleError = (
+  error: any,
+  showToast: boolean = true,
+  critical: boolean = false
+): AppError => {
+  // Convert to AppError if not already
+  const appError: AppError = error && error.type 
+    ? error as AppError 
+    : createAppError(
+        error?.message || "An unexpected error occurred",
+        getErrorTypeFromError(error),
+        error
+      );
+
+  // Set global error state for critical errors
+  if (critical) {
+    errorState.hasError = true;
+    errorState.error = appError;
   }
   
-  // Show toast notification if requested
-  if (showToast) {
-    toast.error(appError.userFriendlyMessage || appError.message, {
-      description: appError.type !== ErrorType.UNKNOWN ? `Error type: ${appError.type}` : undefined,
-      duration: 5000,
-    });
+  // Track error frequency
+  const errorKey = `${appError.type}:${appError.message}`;
+  errorState.errorCount[errorKey] = (errorState.errorCount[errorKey] || 0) + 1;
+  errorState.lastErrorTime[errorKey] = Date.now();
+
+  // Rate limiting for same error
+  const sameErrorCount = errorState.errorCount[errorKey] || 0;
+  const lastErrorTime = errorState.lastErrorTime[errorKey] || 0;
+  const timeSinceLastError = Date.now() - lastErrorTime;
+  
+  // Only show toast if:
+  // 1. Toast is requested
+  // 2. Not the same error in quick succession (within 5 seconds)
+  // 3. Not showing too many of the same error (max 3 within a minute)
+  const showToastForThisError = showToast && 
+    (timeSinceLastError > 5000 || errorKey !== errorState.error?.message) &&
+    (sameErrorCount <= 3 || timeSinceLastError > 60000);
+  
+  // Show toast notification if appropriate
+  if (showToastForThisError) {
+    const toastOptions = getToastOptions(appError.type);
+    
+    // Show security errors with more prominence
+    if (appError.type === ErrorType.SECURITY || 
+        appError.type === ErrorType.DATA_ENCRYPTION ||
+        appError.type === ErrorType.INPUT_VALIDATION) {
+      toast.error(appError.userFriendlyMessage, {
+        ...toastOptions,
+        duration: 8000, // Show security warnings longer
+      });
+    } else {
+      toast.error(appError.userFriendlyMessage, toastOptions);
+    }
+  }
+  
+  // Log to console with context info
+  console.error(`[${appError.type}]`, appError.message, {
+    userFriendlyMessage: appError.userFriendlyMessage,
+    context: appError.context,
+    originalError: appError.originalError
+  });
+  
+  // For security issues, also log specifically for monitoring
+  if (appError.type === ErrorType.SECURITY || 
+      appError.type === ErrorType.DATA_ENCRYPTION ||
+      appError.type === ErrorType.INPUT_VALIDATION) {
+    console.error("[SECURITY ALERT]", appError);
+    
+    // In a production app, you would send this to your security monitoring system
   }
   
   return appError;
-}
+};
 
-/**
- * Try to execute a function and handle any errors
- * @returns [result, error] tuple
- */
-export async function tryCatch<T>(fn: () => Promise<T>): Promise<[T | null, AppError | null]> {
-  try {
-    const result = await fn();
-    return [result, null];
-  } catch (error) {
-    const appError = handleError(error, false);
-    return [null, appError];
+// Get user friendly message based on error type
+const getUserFriendlyMessage = (type: ErrorType, message: string): string => {
+  // For security issues, be careful with the messages - don't reveal too much
+  switch (type) {
+    case ErrorType.NETWORK:
+      return "Unable to connect to the server. Please check your internet connection and try again.";
+    case ErrorType.AUTHENTICATION:
+      return "Your session has expired or is invalid. Please sign in again.";
+    case ErrorType.AUTHORIZATION:
+      return "You don't have permission to access this resource.";
+    case ErrorType.VALIDATION:
+      return message || "The submitted data was invalid. Please check your inputs and try again.";
+    case ErrorType.NOT_FOUND:
+      return "The requested resource could not be found.";
+    case ErrorType.SERVER:
+      return "We're experiencing technical difficulties. Our team has been notified.";
+    case ErrorType.SECURITY:
+      return "A security issue was detected. Please refresh the page and try again.";
+    case ErrorType.DATA_ENCRYPTION:
+      return "A data security issue was detected. Your data is safe, but please try again.";
+    case ErrorType.INPUT_VALIDATION:
+      return "Invalid input detected. Please check your data and try again.";
+    case ErrorType.RATE_LIMIT:
+      return "You've made too many requests. Please wait a moment and try again.";
+    default:
+      return message || "An unexpected error occurred. Please try again.";
   }
-}
+};
 
-/**
- * Create an async function wrapper that handles errors
- */
-export function withErrorHandling<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  showToast = true
-): (...args: Parameters<T>) => Promise<ReturnType<T>> {
-  return async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      handleError(error, showToast);
-      throw error;
-    }
-  };
-}
+// Determine error type from various error objects
+const getErrorTypeFromError = (error: any): ErrorType => {
+  if (!error) return ErrorType.UNKNOWN;
+  
+  // Check for network errors
+  if (error.name === 'NetworkError' || 
+      error.message?.includes('network') || 
+      error.message?.includes('connection')) {
+    return ErrorType.NETWORK;
+  }
+
+  // Check for authorization errors
+  if (error.status === 403 || 
+      error.statusCode === 403 || 
+      error.message?.includes('forbidden')) {
+    return ErrorType.AUTHORIZATION;
+  }
+
+  // Check for authentication errors
+  if (error.status === 401 || 
+      error.statusCode === 401 || 
+      error.message?.includes('unauthorized') || 
+      error.message?.includes('unauthenticated')) {
+    return ErrorType.AUTHENTICATION;
+  }
+
+  // Check for security issues
+  if (error.message?.includes('security') || 
+      error.message?.includes('xss') ||
+      error.message?.includes('csrf') ||
+      error.message?.includes('injection')) {
+    return ErrorType.SECURITY;
+  }
+
+  // Check for validation errors
+  if (error.status === 422 || 
+      error.statusCode === 422 ||
+      error.status === 400 || 
+      error.statusCode === 400 || 
+      error.name === 'ValidationError') {
+    return ErrorType.VALIDATION;
+  }
+
+  // Default to unknown
+  return ErrorType.UNKNOWN;
+};
+
+// Get toast options based on error type
+const getToastOptions = (type: ErrorType) => {
+  switch (type) {
+    case ErrorType.SECURITY:
+    case ErrorType.DATA_ENCRYPTION:
+    case ErrorType.INPUT_VALIDATION:
+      return {
+        duration: 8000, // Show longer
+        description: "This issue has been logged for security review."
+      };
+    case ErrorType.NETWORK:
+      return {
+        duration: 5000,
+        description: "Check your internet connection"
+      };
+    case ErrorType.AUTHENTICATION:
+      return {
+        duration: 5000,
+        description: "You will be redirected to login"
+      };
+    default:
+      return {
+        duration: 5000
+      };
+  }
+};

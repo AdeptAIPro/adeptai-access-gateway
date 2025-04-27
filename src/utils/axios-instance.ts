@@ -11,6 +11,10 @@ export const createApiClient = (config: AxiosRequestConfig = {}): AxiosInstance 
     timeout: DEFAULT_TIMEOUT,
     headers: {
       'Content-Type': 'application/json',
+      // Add security headers
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
     },
     ...config,
   });
@@ -23,6 +27,20 @@ export const createApiClient = (config: AxiosRequestConfig = {}): AxiosInstance 
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+      
+      // Add CSRF token for non-GET requests
+      const csrfToken = localStorage.getItem('csrf_token');
+      if (csrfToken && config.headers && config.method !== 'get') {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
+
+      // Add timestamp to prevent caching of sensitive requests
+      if (config.method !== 'get') {
+        const url = new URL(config.url || '', window.location.origin);
+        url.searchParams.append('_t', Date.now().toString());
+        config.url = url.toString().replace(window.location.origin, '');
+      }
+      
       return config;
     },
     (error) => {
@@ -33,6 +51,26 @@ export const createApiClient = (config: AxiosRequestConfig = {}): AxiosInstance 
   // Response interceptor
   instance.interceptors.response.use(
     (response) => {
+      // Verify response doesn't contain malicious scripts
+      if (
+        response.data && 
+        typeof response.data === 'string' && 
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(response.data)
+      ) {
+        const cleanedError = createAppError(
+          "Potential security risk detected in response",
+          ErrorType.SECURITY,
+          new Error("XSS attempt detected in response"),
+          { url: response.config.url }
+        );
+        return Promise.reject(cleanedError);
+      }
+      
+      // Renew CSRF token periodically
+      if (response.headers['x-csrf-token']) {
+        localStorage.setItem('csrf_token', response.headers['x-csrf-token']);
+      }
+      
       return response;
     },
     (error: AxiosError) => {
@@ -63,6 +101,13 @@ export const createApiClient = (config: AxiosRequestConfig = {}): AxiosInstance 
           case 404:
             errorType = ErrorType.NOT_FOUND;
             errorMessage = "The requested resource was not found.";
+            break;
+          case 419: // Laravel CSRF token mismatch
+          case 422: // CSRF failure in some frameworks
+            errorType = ErrorType.SECURITY;
+            errorMessage = "Security validation failed. Please refresh and try again.";
+            // Regenerate CSRF token
+            localStorage.setItem('csrf_token', `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
             break;
           case 500:
           case 502:
@@ -103,6 +148,22 @@ export const createApiClient = (config: AxiosRequestConfig = {}): AxiosInstance 
   );
   
   return instance;
+};
+
+// Create a function to generate AppError
+export const createAppError = (
+  message: string, 
+  type: ErrorType, 
+  originalError?: Error, 
+  context?: Record<string, any>
+): AppError => {
+  return {
+    type,
+    message,
+    userFriendlyMessage: message,
+    originalError,
+    context
+  };
 };
 
 // Default API client instance

@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSecureStorage } from '@/hooks/use-secure-storage';
+import { handleError, ErrorType } from '@/utils/error-handler';
 
 interface CredentialsContextType {
   credentials: any | null;
@@ -16,32 +18,70 @@ const CredentialsContext = createContext<CredentialsContextType>({
 });
 
 export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [credentials, setCredentials] = useState<any | null>(null);
+  const [credentials, setCredentialsState] = useState<any | null>(null);
   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
+  const { getItem, setItem } = useSecureStorage({ 
+    storageType: 'local',
+    encryptionKey: 'adept_credentials_key'
+  });
   
-  // Load credentials from localStorage on mount
+  // Load credentials from secure storage on mount
   useEffect(() => {
-    const savedCredentials = localStorage.getItem('agenticCredentials');
-    if (savedCredentials) {
-      try {
-        const parsed = JSON.parse(savedCredentials);
-        setCredentials(parsed);
+    try {
+      const savedCredentials = getItem('agenticCredentials');
+      if (savedCredentials) {
+        setCredentialsState(savedCredentials);
         
         // Check if backend is ready
         checkBackendStatus();
-      } catch (e) {
-        console.error("Failed to parse saved credentials:", e);
       }
+    } catch (error) {
+      handleError({
+        type: ErrorType.DATA_ENCRYPTION,
+        message: "Failed to load saved credentials",
+        userFriendlyMessage: "Failed to retrieve saved credentials",
+        originalError: error
+      }, true);
     }
-  }, []);
+  }, [getItem]);
   
   // Check if the backend services are ready
   const checkBackendStatus = async (): Promise<boolean> => {
-    // In a real implementation, this would check if the backend is ready
-    // For demo purposes, we'll simulate success if credentials exist
-    const isReady = !!credentials;
-    setIsBackendReady(isReady);
-    return isReady;
+    try {
+      // In a real implementation, this would check if the backend is ready
+      // For demo purposes, we'll simulate success if credentials exist
+      const isReady = !!credentials;
+      setIsBackendReady(isReady);
+      return isReady;
+    } catch (error) {
+      handleError({
+        type: ErrorType.API,
+        message: "Failed to check backend status",
+        userFriendlyMessage: "Failed to connect to backend services",
+        originalError: error
+      }, true);
+      return false;
+    }
+  };
+  
+  // Set credentials securely
+  const setCredentials = (creds: any) => {
+    try {
+      if (creds) {
+        setItem('agenticCredentials', creds);
+        setCredentialsState(creds);
+      } else {
+        setItem('agenticCredentials', null);
+        setCredentialsState(null);
+      }
+    } catch (error) {
+      handleError({
+        type: ErrorType.DATA_ENCRYPTION,
+        message: "Failed to securely store credentials",
+        userFriendlyMessage: "Failed to save credentials securely",
+        originalError: error
+      }, true);
+    }
   };
   
   // When credentials change, update backend ready status
