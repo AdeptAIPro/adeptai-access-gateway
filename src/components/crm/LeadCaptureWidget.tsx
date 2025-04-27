@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X } from "@/utils/icon-polyfill";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import LeadCaptureForm from "./LeadCaptureForm";

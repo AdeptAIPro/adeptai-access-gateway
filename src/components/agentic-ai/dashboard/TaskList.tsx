@@ -2,7 +2,7 @@
 import React from 'react';
 import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 import { Card, CardContent } from "@/components/ui/card";
-import { Bot } from 'lucide-react';
+import { Bot } from '@/utils/icon-polyfill';
 import TaskCard from './TaskCard';
 
 interface TaskListProps {

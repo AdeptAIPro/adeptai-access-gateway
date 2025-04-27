@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw } from "lucide-react";
+import { Download, RefreshCw } from "@/utils/icon-polyfill";
 import LeadFilters from "./LeadFilters";
 import LeadTable from "./LeadTable";
 import { Lead, LeadFilter } from "@/services/crm/types";

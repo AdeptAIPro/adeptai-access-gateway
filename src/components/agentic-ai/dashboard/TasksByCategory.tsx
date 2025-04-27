@@ -3,7 +3,7 @@ import React from 'react';
 import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 import TaskCard from './TaskCard';
 import { Card, CardContent } from "@/components/ui/card";
-import { Bot } from 'lucide-react';
+import { Bot } from '@/utils/icon-polyfill';
 import { formatTaskType } from './TaskStatusBadge';
 
 interface TasksByCategoryProps {

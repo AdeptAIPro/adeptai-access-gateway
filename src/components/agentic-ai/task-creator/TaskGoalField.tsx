@@ -3,7 +3,7 @@ import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Control } from 'react-hook-form';
-import { FileText } from 'lucide-react';
+import { FileText } from '@/utils/icon-polyfill';
 
 interface TaskGoalFieldProps {
   control: Control<any>;

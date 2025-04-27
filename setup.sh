@@ -8,32 +8,31 @@ npm install --save-dev vite @vitejs/plugin-react-swc
 # Create directories if they don't exist
 mkdir -p src/utils
 
-# Ensure vite is installed globally and locally
-echo "Installing vite globally and locally..."
-npm install -g vite
-npm install vite --save-dev
-npm install -g @vitejs/plugin-react-swc
-npm install @vitejs/plugin-react-swc --save-dev
+# Install Vite globally with sudo if needed
+echo "Installing Vite globally..."
+npm install -g vite || sudo npm install -g vite
+npm install -g @vitejs/plugin-react-swc || sudo npm install -g @vitejs/plugin-react-swc
 
 # Set executable permissions for vite
 chmod +x $(npm bin)/vite
 
-# Add vite to PATH if it's not already there
-if ! command -v vite &> /dev/null; then
-  echo "Adding npm bin directory to PATH"
-  export PATH="$PATH:$(npm bin)"
-  echo 'export PATH="$PATH:$(npm bin)"' >> ~/.bashrc
-  echo 'export PATH="$PATH:$(npm bin)"' >> ~/.profile
-fi
-
-# Verify vite is working
-vite --version || echo "Warning: vite still not found in PATH. You may need to run 'npm exec vite' instead of just 'vite'."
-
-# Create a helper script to start the application
-echo '#!/bin/bash
+# Add npm bin directory to PATH
 export PATH="$PATH:$(npm bin)"
-npm run dev
-' > start-app.sh
+echo 'export PATH="$PATH:$(npm bin)"' >> ~/.bashrc
+echo 'export PATH="$PATH:$(npm bin)"' >> ~/.profile
+
+# Create a helper script to start the application that ensures vite is in PATH
+cat > start-app.sh << 'EOF'
+#!/bin/bash
+export PATH="$PATH:$(npm bin)"
+if ! command -v vite &> /dev/null; then
+  echo "Vite not found, trying to run with npx..."
+  npx vite
+else
+  vite
+fi
+EOF
+
 chmod +x start-app.sh
 
 # Update package.json scripts to use npx for vite

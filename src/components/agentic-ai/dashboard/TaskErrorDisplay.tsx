@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { AlertCircle } from '@/utils/icon-polyfill';
+import { toast } from '@/hooks/use-toast';
 
 interface TaskErrorDisplayProps {
   error: string;

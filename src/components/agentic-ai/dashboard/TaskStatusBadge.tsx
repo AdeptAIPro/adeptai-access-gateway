@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { CheckCircle, AlertCircle, Clock } from '@/utils/icon-polyfill';
 
 interface TaskStatusBadgeProps {
   status: string;

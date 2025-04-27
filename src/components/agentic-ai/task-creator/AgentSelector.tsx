@@ -4,7 +4,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
 import { Control } from 'react-hook-form';
-import { Bot } from 'lucide-react';
+import { Bot } from '@/utils/icon-polyfill';
 
 interface AgentSelectorProps {
   control: Control<any>;

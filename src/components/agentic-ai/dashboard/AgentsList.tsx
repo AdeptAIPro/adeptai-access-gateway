@@ -3,7 +3,7 @@ import React from 'react';
 import { Agent } from '@/services/agentic-ai/AgenticService';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bot } from 'lucide-react';
+import { Bot } from '@/utils/icon-polyfill';
 
 interface AgentsListProps {
   agents: Agent[];

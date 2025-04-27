@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import {
   MinusCircle, 
   Maximize2, 
   Loader
-} from "lucide-react";
+} from "@/utils/icon-polyfill";
 import { processMessage } from "@/services/chatbot/ChatbotService";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -35,7 +34,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Add initial bot message when chat opens for the first time
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([
@@ -48,14 +46,12 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
     }
   }, [isOpen]);
 
-  // Scroll to bottom of chat when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  // Focus input when chat opens
   useEffect(() => {
     if (isOpen && !isMinimized && inputRef.current) {
       inputRef.current.focus();
@@ -76,7 +72,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    // Add user message
     const userMessage: Message = {
       text: newMessage,
       isUser: true,
@@ -87,10 +82,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
     setIsLoading(true);
 
     try {
-      // Get response from chatbot service
       const response = await processMessage(newMessage);
-
-      // Add bot response with a small delay to appear more natural
       setTimeout(() => {
         setMessages(prev => [
           ...prev, 
@@ -120,7 +112,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
         position === "bottom-right" ? "bottom-6 right-6" : "bottom-6 left-6"
       )}
     >
-      {/* Chatbot Button */}
       {!isOpen && (
         <Button 
           onClick={toggleChat}
@@ -130,7 +121,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
         </Button>
       )}
 
-      {/* Chatbot Window */}
       {isOpen && (
         <div 
           className={cn(
@@ -138,7 +128,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
             isMinimized ? "w-64 h-14" : "w-80 sm:w-96 h-[500px]"
           )}
         >
-          {/* Chat Header */}
           <div 
             className="bg-adept text-white px-4 py-3 flex items-center justify-between cursor-pointer"
             onClick={isMinimized ? toggleChat : undefined}
@@ -167,7 +156,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
             </div>
           </div>
 
-          {/* Chat Body - Only shown when not minimized */}
           {!isMinimized && (
             <>
               <ScrollArea className="h-[400px] p-4 bg-gray-50">
@@ -196,7 +184,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
                     </div>
                   ))}
                   
-                  {/* Loading indicator */}
                   {isLoading && (
                     <div className="flex justify-start">
                       <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none px-4 py-2">
@@ -212,7 +199,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
                 </div>
               </ScrollArea>
 
-              {/* Chat Input */}
               <form
                 onSubmit={handleSubmit}
                 className="border-t p-3 bg-white flex items-center space-x-2"

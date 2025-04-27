@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot, Clock, Check, AlertCircle } from 'lucide-react';
+import { Bot, Clock, Check, AlertCircle } from '@/utils/icon-polyfill';
 import { AgentTask } from '@/services/agentic-ai/AgenticService';
 
 interface MetricsCardsProps {

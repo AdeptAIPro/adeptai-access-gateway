@@ -1,53 +1,49 @@
 
-/**
- * Types for CRM data
- */
-
-// Types for lead data
 export interface Lead {
   id?: string;
+  name: string;
   email: string;
-  name?: string;
   company?: string;
   phone?: string;
-  source: string;
   message?: string;
+  source: string;
+  status?: string;
   created_at?: string;
-  status?: 'new' | 'contacted' | 'qualified' | 'proposal' | 'won' | 'lost';
-  score?: number; // AI-generated lead score (0-100)
-  scoringFactors?: string[]; // Factors that contributed to the score
+  score?: number;
+  scoringFactors?: string[];
+}
+
+export interface UserRolePermissions {
+  viewCRM: boolean;
+  editCRM: boolean;
+  viewPayroll: boolean;
+  runPayroll: boolean;
+  viewAnalytics: boolean;
+  viewDashboard: boolean; // Added this needed permission
+  // Add other permissions as needed
 }
 
 export interface LeadFilter {
   status?: string;
   source?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-  minScore?: number; // Filter by minimum lead score
+  fromDate?: Date;
+  toDate?: Date;
+  minScore?: number;
 }
 
-// HubSpot contact interface
-export interface HubspotContact {
+export interface TalentSource {
   id: string;
-  properties: {
-    email: string;
-    firstname?: string;
-    lastname?: string;
-    company?: string;
-    phone?: string;
-    createdate: string;
-    [key: string]: any;
-  };
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  connected: boolean;
+  count?: number;
+  lastSync?: string;
 }
 
-// User role types for role-based access control
-export type UserRole = 'admin' | 'sales' | 'marketing' | 'leadership';
-
-export interface UserRolePermissions {
-  viewCRM: boolean;
-  viewDashboard: boolean;
-  editLeads: boolean;
-  viewAnalytics: boolean;
+export interface EnrichmentTool {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  type: "leads" | "talents" | "both";
+  configured: boolean;
 }

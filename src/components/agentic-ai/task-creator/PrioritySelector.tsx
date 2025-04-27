@@ -3,7 +3,7 @@ import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control } from 'react-hook-form';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/utils/icon-polyfill';
 
 interface PrioritySelectorProps {
   control: Control<any>;

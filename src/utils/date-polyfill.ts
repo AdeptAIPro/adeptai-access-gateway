@@ -44,3 +44,30 @@ export function formatDistanceToNow(date: Date, options?: { addSuffix?: boolean 
   const output = diffYears === 1 ? '1 year' : `${diffYears} years`;
   return options?.addSuffix ? `${output} ago` : output;
 }
+
+export function format(date: Date, formatString: string): string {
+  // Simple implementation of format function for the most commonly used patterns
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const shortMonthNames = monthNames.map(m => m.substring(0, 3));
+
+  switch (formatString) {
+    case 'MM/dd/yyyy':
+      return `${month}/${day}/${year}`;
+    case 'yyyy-MM-dd':
+      return `${year}-${month}-${day}`;
+    case 'MMM dd, yyyy':
+      return `${shortMonthNames[date.getMonth()]} ${day}, ${year}`;
+    case 'MMMM dd, yyyy':
+      return `${monthNames[date.getMonth()]} ${day}, ${year}`;
+    case 'PPP':
+      return `${monthNames[date.getMonth()]} ${day}, ${year}`;
+    default:
+      return `${month}/${day}/${year}`;
+  }
+}

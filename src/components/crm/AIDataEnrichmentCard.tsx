@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { BotIcon } from "lucide-react";
+import { BotIcon } from "@/utils/icon-polyfill";
 import EnrichmentToggle from "./ai-enrichment/EnrichmentToggle";
 import EnrichmentConfigurationForm from "./ai-enrichment/EnrichmentConfigurationForm";
 import EnrichmentToolsList from "./ai-enrichment/EnrichmentToolsList";

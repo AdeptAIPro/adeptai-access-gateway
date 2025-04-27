@@ -1,21 +1,22 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  plan?: string; // Add plan property for compatibility
-}
-
 interface UserRolePermissions {
   viewCRM: boolean;
   editCRM: boolean;
   viewPayroll: boolean;
   runPayroll: boolean;
   viewAnalytics: boolean;
+  viewDashboard: boolean; // Added this missing permission
   // Add other permissions as needed
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  plan?: string; // Add plan property for compatibility
 }
 
 interface AuthContextType {

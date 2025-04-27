@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Table,
@@ -16,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { formatDistanceToNow } from '@/utils/date-polyfill';
 import { Lead } from "@/services/crm/types";
 import LeadScoreIndicator from "./LeadScoreIndicator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -61,7 +60,7 @@ const LeadTable: React.FC<LeadTableProps> = ({
             <div className="pt-2 flex items-center justify-between">
               <div className="text-xs text-muted-foreground">
                 {lead.created_at
-                  ? format(new Date(lead.created_at), "MMM dd, yyyy")
+                  ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })
                   : "—"}
               </div>
               <div className="flex items-center space-x-2">
@@ -135,7 +134,7 @@ const LeadTable: React.FC<LeadTableProps> = ({
                 </TableCell>
                 <TableCell>
                   {lead.created_at
-                    ? format(new Date(lead.created_at), "MMM dd, yyyy")
+                    ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })
                     : "—"}
                 </TableCell>
                 <TableCell>

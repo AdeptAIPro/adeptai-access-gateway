@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Search } from "lucide-react";
+import { Search } from "@/utils/icon-polyfill";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format } from "date-fns";
+import { formatDistanceToNow } from '@/utils/date-polyfill';
 import { LeadFilter } from "@/services/crm/types";
 import { Slider } from "@/components/ui/slider";
 
