@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatDistanceToNow } from '@/utils/date-polyfill';
+import { format } from '@/utils/date-polyfill';
 import { LeadFilter } from "@/services/crm/types";
 import { Slider } from "@/components/ui/slider";
 

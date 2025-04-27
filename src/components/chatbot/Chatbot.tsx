@@ -2,17 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  MessageCircle, 
-  Send, 
-  X, 
-  MinusCircle, 
-  Maximize2, 
-  Loader
-} from "@/utils/icon-polyfill";
+import { Send, X } from "@/utils/icon-polyfill";
+import { MessageSquare as MessageCircle, MinusCircle, Maximize2, Loader2 as Loader } from "lucide-react";
 import { processMessage } from "@/services/chatbot/ChatbotService";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface Message {
   text: string;
@@ -32,7 +26,6 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -96,11 +89,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ position = "bottom-right" }) => {
       }, 800);
     } catch (error) {
       console.error("Error processing message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to get a response. Please try again.",
-        variant: "destructive"
-      });
+      toast.error("Failed to get a response. Please try again.");
       setIsLoading(false);
     }
   };

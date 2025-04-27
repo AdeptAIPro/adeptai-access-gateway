@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { 
-  Bot, 
-  Search, 
-  ShieldAlert, 
-  Loader2, 
-  CheckCircle, 
-  Clock, 
+import {
+  Bot,
+  Search,
+  ShieldAlert,
+  Loader2,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Download,
   Save,
@@ -102,23 +102,34 @@ import {
   BarChart,
   PenTool,
   PlayCircle,
-  Power
+  Power,
+  MinusCircle,
+  Maximize2,
+  AlertTriangle,
+  ArrowUpDown,
+  CheckCircle2,
+  History,
+  XCircle,
+  BarChart3
 } from 'lucide-react';
 
-// Export all icons individually
+// Export all icons individually - including specific ones missing earlier
 export {
-  Bot, 
-  Search, 
-  ShieldAlert, 
-  Loader2, 
-  CheckCircle, 
-  Clock, 
+  Bot as BotIcon, // Also export as BotIcon for compatibility
+  Bot,
+  Search,
+  ShieldAlert,
+  Loader2 as Loader, // Export Loader2 as Loader for compatibility
+  Loader2,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Download,
   Save,
   FileCheck,
   UserCheck,
   BarChart2,
+  RefreshCcw as RefreshCw, // Export RefreshCcw as RefreshCw for compatibility
   RefreshCcw,
   Check,
   ClipboardList,
@@ -208,23 +219,34 @@ export {
   BarChart,
   PenTool,
   PlayCircle,
-  Power
+  Power,
+  MinusCircle,
+  Maximize2,
+  AlertTriangle,
+  ArrowUpDown,
+  CheckCircle2,
+  History,
+  XCircle,
+  BarChart3
 };
 
 // Define all icons in a default export for backwards compatibility
 const icons = {
-  Bot, 
-  Search, 
-  ShieldAlert, 
-  Loader2, 
-  CheckCircle, 
-  Clock, 
+  Bot,
+  BotIcon: Bot,
+  Search,
+  ShieldAlert,
+  Loader: Loader2,
+  Loader2,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Download,
   Save,
   FileCheck,
   UserCheck,
   BarChart2,
+  RefreshCw: RefreshCcw,
   RefreshCcw,
   Check,
   ClipboardList,
@@ -314,7 +336,15 @@ const icons = {
   BarChart,
   PenTool,
   PlayCircle,
-  Power
+  Power,
+  MinusCircle,
+  Maximize2,
+  AlertTriangle,
+  ArrowUpDown,
+  CheckCircle2,
+  History,
+  XCircle,
+  BarChart3
 };
 
 export default icons;

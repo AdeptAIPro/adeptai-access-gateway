@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { BotIcon } from "@/utils/icon-polyfill";
+import { toast } from "sonner";
+import { Bot } from "lucide-react";
 import EnrichmentToggle from "./ai-enrichment/EnrichmentToggle";
 import EnrichmentConfigurationForm from "./ai-enrichment/EnrichmentConfigurationForm";
 import EnrichmentToolsList from "./ai-enrichment/EnrichmentToolsList";
@@ -18,7 +18,6 @@ const AIDataEnrichmentCard: React.FC<AIDataEnrichmentCardProps> = ({
   onEnrichLeads,
   onEnrichTalents
 }) => {
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("leads");
   const [isAutoEnrichEnabled, setIsAutoEnrichEnabled] = useState(false);
   const [isConfiguring, setIsConfiguring] = useState<string | null>(null);
@@ -29,12 +28,15 @@ const AIDataEnrichmentCard: React.FC<AIDataEnrichmentCardProps> = ({
     const newValue = !isAutoEnrichEnabled;
     setIsAutoEnrichEnabled(newValue);
     
-    toast({
-      title: newValue ? "Auto-enrichment Enabled" : "Auto-enrichment Disabled",
-      description: newValue 
-        ? "New entries will be automatically enriched with AI data" 
-        : "Automatic data enrichment has been turned off",
-    });
+    if (newValue) {
+      toast.success("Auto-enrichment Enabled", {
+        description: "New entries will be automatically enriched with AI data"
+      });
+    } else {
+      toast.info("Auto-enrichment Disabled", {
+        description: "Automatic data enrichment has been turned off"
+      });
+    }
   };
 
   const handleConfigure = (toolId: string) => {
@@ -43,9 +45,8 @@ const AIDataEnrichmentCard: React.FC<AIDataEnrichmentCardProps> = ({
   };
 
   const handleSaveConfig = () => {
-    toast({
-      title: "Configuration Saved",
-      description: "Your integration settings have been updated",
+    toast.success("Configuration Saved", {
+      description: "Your integration settings have been updated"
     });
     setIsConfiguring(null);
   };
@@ -63,10 +64,8 @@ const AIDataEnrichmentCard: React.FC<AIDataEnrichmentCardProps> = ({
         onEnrichTalents(source);
       }
     } catch (error) {
-      toast({
-        title: "Enrichment Failed",
-        description: "There was an error enriching your data. Please try again.",
-        variant: "destructive",
+      toast.error("Enrichment Failed", {
+        description: "There was an error enriching your data. Please try again."
       });
     } finally {
       setIsProcessing(false);
@@ -77,7 +76,7 @@ const AIDataEnrichmentCard: React.FC<AIDataEnrichmentCardProps> = ({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center">
-          <BotIcon className="mr-2 h-5 w-5 text-blue-500" />
+          <Bot className="mr-2 h-5 w-5 text-blue-500" />
           AI Data Enrichment
         </CardTitle>
         <CardDescription>

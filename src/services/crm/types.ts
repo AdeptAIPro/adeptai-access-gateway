@@ -19,7 +19,7 @@ export interface UserRolePermissions {
   viewPayroll: boolean;
   runPayroll: boolean;
   viewAnalytics: boolean;
-  viewDashboard: boolean; // Added this needed permission
+  viewDashboard: boolean; // Ensure this exists
   // Add other permissions as needed
 }
 

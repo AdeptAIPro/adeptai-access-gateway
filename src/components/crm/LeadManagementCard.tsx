@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw } from "@/utils/icon-polyfill";
+import { Download, RefreshCcw } from "@/utils/icon-polyfill";
 import LeadFilters from "./LeadFilters";
 import LeadTable from "./LeadTable";
 import { Lead, LeadFilter } from "@/services/crm/types";
@@ -49,7 +48,6 @@ const LeadManagementCard: React.FC<LeadManagementCardProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Filter leads based on search query
   const filteredLeads = leads.filter(lead => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
@@ -69,7 +67,7 @@ const LeadManagementCard: React.FC<LeadManagementCardProps> = ({
         </div>
         <div className="flex items-center space-x-2">
           <Button size="sm" variant="outline" onClick={fetchLeads}>
-            <RefreshCw className="mr-2 h-4 w-4" />
+            <RefreshCcw className="mr-2 h-4 w-4" />
             {isMobile ? '' : 'Refresh'}
           </Button>
           <Button size="sm" variant="outline" onClick={exportToCsv}>

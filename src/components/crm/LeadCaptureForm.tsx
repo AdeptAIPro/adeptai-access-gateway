@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { saveLead } from "@/services/crm/LeadService";
 
 interface LeadCaptureFormProps {
@@ -17,7 +17,6 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
   onSuccess,
   compact = false
 }) => {
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -36,10 +35,8 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     e.preventDefault();
     
     if (!formData.email) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address",
-        variant: "destructive",
+      toast.error("Email Required", {
+        description: "Please enter your email address"
       });
       return;
     }
@@ -53,9 +50,8 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
       });
       
       if (success) {
-        toast({
-          title: "Thank You!",
-          description: "We've received your information and will be in touch soon.",
+        toast.success("Thank You!", {
+          description: "We've received your information and will be in touch soon."
         });
         
         // Reset form
@@ -72,18 +68,14 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
           onSuccess();
         }
       } else {
-        toast({
-          title: "Submission Error",
-          description: "There was a problem submitting your information. Please try again.",
-          variant: "destructive",
+        toast.error("Submission Error", {
+          description: "There was a problem submitting your information. Please try again."
         });
       }
     } catch (error) {
       console.error("Error submitting lead:", error);
-      toast({
-        title: "Submission Error",
-        description: "There was a problem submitting your information. Please try again.",
-        variant: "destructive",
+      toast.error("Submission Error", {
+        description: "There was a problem submitting your information. Please try again."
       });
     } finally {
       setIsLoading(false);
