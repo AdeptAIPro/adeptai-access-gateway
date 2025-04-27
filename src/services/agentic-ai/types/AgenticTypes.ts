@@ -1,27 +1,50 @@
 
+// Types for the Agentic AI system
+
 export interface Agent {
   id: string;
   name: string;
   description: string;
   capabilities: string[];
-  status: 'active' | 'inactive';
-  createdAt?: string; // Added missing createdAt property
+  icon?: string;
+  status: 'active' | 'inactive' | 'maintenance';
+  specialties?: string[];
+  version?: string;
+  restrictions?: string[];
+  type?: string; // Added to fix errors
 }
-
-export type AgentTaskType = 'research' | 'analysis' | 'creation' | 'talent-matching' | 'payroll-processing' | 'cross-source-talent-intelligence' | 'cv-analysis' | 'market-analysis' | 'job-match';
 
 export interface AgentTask {
   id: string;
-  userId: string;
-  taskType: AgentTaskType;
+  taskType: string;
   title?: string;
   goal: string;
-  agent?: string;
-  agentId?: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  priority?: 'low' | 'medium' | 'high';
-  createdAt?: string;
-  completedAt?: string;
-  error?: string;
+  agent: string;
+  progress?: number;
   result?: any;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+  priority?: 'low' | 'medium' | 'high';
+  params?: any; // Added to fix errors
 }
+
+export interface TaskWithAgent extends AgentTask {
+  agentDetails?: Agent;
+}
+
+export interface AgenticCredentials {
+  apiKey: string;
+  organizationId?: string;
+  isValid: boolean;
+}
+
+export type TaskResult = {
+  title: string;
+  data: any;
+  format?: 'json' | 'text' | 'html' | 'markdown';
+};
+
+// Re-export commonly used types
+export type { Agent, AgentTask, TaskWithAgent };

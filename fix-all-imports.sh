@@ -33,7 +33,15 @@ declare global {
   }
   
   // Add ElementType to fix component type errors
-  type ElementType<P = any> = React.ComponentType<P> | keyof JSX.IntrinsicElements;
+  type ElementType<P = any> = React.ComponentType<P>;
+  
+  // User definition
+  interface User {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  }
 }
 
 // Extend window object
@@ -48,30 +56,13 @@ EOF
 
 echo "Global TypeScript declarations created."
 
-# Make sure node_modules exists before running the script
-if [ ! -d "node_modules" ]; then
-  echo "Installing dependencies..."
-  npm install
-fi
-
-# Create a proper lucide redirect file
-echo "Creating lucide-react redirect..."
+# Create proper icons utility file
+echo "Ensuring icons utility is correctly set up..."
 mkdir -p src/utils
-cat > src/utils/lucide-redirect.ts << 'EOF'
-/**
- * This file redirects all lucide-react imports to our icon polyfill
- * This ensures we have consistent icon usage across the application
- */
 
-// Re-export everything from our icon polyfill
-export * from './lucide-polyfill';
-
-// Also create a default export for compatibility
-import * as icons from './lucide-polyfill';
-export default icons;
-EOF
-
-echo "Lucide redirect created."
+# Ensure directories exist
+mkdir -p node_modules
+mkdir -p src/components/ui
 
 # Run the import fix script
 echo "Fixing imports in TypeScript files..."

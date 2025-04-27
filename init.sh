@@ -51,6 +51,9 @@ if [ ! -f "package.json" ]; then
   }' > package.json
 fi
 
+# Add executable permission to NPX
+chmod +x $(which npx) || echo "Could not set permission on npx, you might need sudo"
+
 # Run node script to fix package.json
 node fix-package.js
 

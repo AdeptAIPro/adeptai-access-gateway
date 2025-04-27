@@ -9,21 +9,29 @@ interface ToastProps {
 }
 
 export const useToast = () => {
-  const showToast = ({ title, description, variant, ...props }: ToastProps) => {
+  const showToast = (props: ToastProps | string) => {
+    // Handle both string and object formats
+    if (typeof props === 'string') {
+      sonnerToast(props);
+      return;
+    }
+    
+    const { title, description, variant, ...rest } = props;
+    
     if (variant === 'destructive') {
       sonnerToast.error(title || '', {
         description,
-        ...props
+        ...rest
       });
     } else if (variant === 'success') {
       sonnerToast.success(title || '', {
         description,
-        ...props
+        ...rest
       });
     } else {
       sonnerToast(title || '', {
         description,
-        ...props
+        ...rest
       });
     }
   };

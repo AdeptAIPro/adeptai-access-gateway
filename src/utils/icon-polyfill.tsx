@@ -110,7 +110,10 @@ import {
   CheckCircle2,
   History,
   XCircle,
-  BarChart3
+  BarChart3,
+  KeyRound,
+  Copy,
+  Plug
 } from 'lucide-react';
 
 // Export all icons individually - including specific ones missing earlier
@@ -227,7 +230,10 @@ export {
   CheckCircle2,
   History,
   XCircle,
-  BarChart3
+  BarChart3,
+  KeyRound,
+  Copy,
+  Plug
 };
 
 // Define all icons in a default export for backwards compatibility
@@ -344,7 +350,10 @@ const icons = {
   CheckCircle2,
   History,
   XCircle,
-  BarChart3
+  BarChart3,
+  KeyRound,
+  Copy,
+  Plug
 };
 
 export default icons;

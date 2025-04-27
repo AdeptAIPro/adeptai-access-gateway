@@ -1,72 +1,35 @@
 
-/**
- * Employee type definitions
- */
 export interface Employee {
   id: string;
-  employeeId: string;
-  name: string;
-  title: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  phone: string;
-  address: string;
-  dateOfBirth: string;
-  ssn: string;
-  type: "W-2" | "1099" | "Independent Contractor" | "Per Diem";
-  status: "Active" | "Inactive" | "On Leave";
+  phone?: string;
+  position: string;
   department: string;
-  payRate: string;
-  paySchedule: string;
   startDate: string;
-  avatar?: string;
-  emergencyContact?: {
-    name: string;
-    phone: string;
-    relationship: string;
-  };
-  bankInfo?: {
-    bankName: string;
-    accountType: string;
-    routingNumber: string;
+  salary?: number;
+  hourlyRate?: number;
+  status: 'active' | 'inactive' | 'pending';
+  employmentType: 'full-time' | 'part-time' | 'contract' | 'per-diem';
+  payrollType: 'W2' | '1099';
+  bankAccount?: {
     accountNumber: string;
-  };
-  paymentDistribution?: Array<{
-    bankName: string;
-    accountType: string;
     routingNumber: string;
-    accountNumber: string;
-    percentage: number;
-    type: "Primary" | "Secondary";
-  }>;
-  taxForms?: {
-    w4?: {
-      submitted: boolean;
-      lastUpdated?: string;
-    };
-    i9?: {
-      submitted: boolean;
-      lastUpdated?: string;
-    };
-    w2?: {
-      available: boolean;
-      year?: string;
-    };
-    form1099?: {
-      available: boolean;
-      year?: string;
-    };
+    accountType: 'checking' | 'savings';
   };
-  taxWithholdings?: {
-    federalFilingStatus: string;
-    federalAllowances: string;
+  address?: {
+    street: string;
+    city: string;
     state: string;
-    stateFilingStatus: string;
+    zipCode: string;
   };
-  recentPayslips?: Array<{
-    payPeriod: string;
-    payDate: string;
-    grossPay: string;
-    netPay: string;
-    id: string;
-  }>;
+  taxInfo?: {
+    ssn: string;
+    federalFilingStatus: string;
+    federalExemptions: number;
+    stateFilingStatus: string;
+    stateExemptions: number;
+  };
+  [key: string]: any;
 }
