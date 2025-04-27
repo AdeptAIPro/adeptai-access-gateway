@@ -23,9 +23,8 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({ theme, toggleTheme }) => 
   };
 
   const handleHelpClick = () => {
-    toast({
-      title: "Help & Support",
-      description: "Support resources are being loaded. Our team will assist you shortly.",
+    toast("Help & Support", {
+      description: "Support resources are being loaded. Our team will assist you shortly."
     });
   };
 

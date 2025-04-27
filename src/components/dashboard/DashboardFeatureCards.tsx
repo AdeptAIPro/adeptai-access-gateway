@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface DashboardCard {
   title: string;
   description: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   route: string;
   color: string;
   stats: string;
@@ -33,7 +33,7 @@ const DashboardFeatureCards: React.FC<DashboardFeatureCardsProps> = ({ dashboard
           <CardHeader className={`bg-gradient-to-r ${card.color} text-white py-4 px-4 md:p-6`}>
             <div className="flex justify-between items-start">
               <div className="bg-white/20 p-2 md:p-3 rounded-lg">
-                {React.createElement(card.icon, { className: "h-5 w-5 md:h-6 md:w-6" })}
+                <card.icon className="h-5 w-5 md:h-6 md:w-6" />
               </div>
               <div className="bg-white/20 px-2 py-1 md:px-3 md:py-1 rounded-full">
                 <span className="text-xs font-medium">{card.stats}</span>

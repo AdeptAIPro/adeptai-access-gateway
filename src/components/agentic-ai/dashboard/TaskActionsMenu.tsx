@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, RefreshCcw, CheckCircle, AlertCircle } from '@/utils/icon-polyfill';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,

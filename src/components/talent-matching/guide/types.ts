@@ -5,7 +5,7 @@ import { LucideIcon } from "lucide-react";
  * Interface for a step in the talent matching guide
  */
 export interface Step {
-  icon: React.ElementType;
+  icon: LucideIcon;
   title: string;
   description: string;
   points: string[];
@@ -22,7 +22,7 @@ export interface StepsGuideProps {
  * Interface for an AI model in the talent matching guide
  */
 export interface AIModel {
-  icon: React.ElementType;
+  icon: LucideIcon;
   name: string;
   description: string;
   accuracy: number;

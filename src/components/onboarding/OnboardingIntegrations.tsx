@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { connectOnboardingTool, OnboardingTool } from "@/services/onboarding/OnboardingService";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import IntegrationConnectDialog from "./integrations/IntegrationConnectDialog";
 import ConnectedToolCard from "./integrations/ConnectedToolCard";
 import EmptyIntegrationsState from "./integrations/EmptyIntegrationsState";
@@ -26,22 +26,18 @@ const OnboardingIntegrations: React.FC<OnboardingIntegrationsProps> = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [automationActivated, setAutomationActivated] = useState(false);
   const [sector, setSector] = useState<"healthcare" | "it" | "general">("general");
-  const { toast } = useToast();
 
   const handleToolConnection = async () => {
-    toast({
-      title: "Integration connected",
-      description: "Successfully connected the integration tool",
+    toast("Integration connected", {
+      description: "Successfully connected the integration tool"
     });
     onToolConnected();
   };
 
   const handleActivateAutomation = () => {
     setAutomationActivated(true);
-    toast({
-      title: "Automation Activated",
-      description: `${sector.charAt(0).toUpperCase() + sector.slice(1)} onboarding automation is now active.`,
-      variant: "default",
+    toast("Automation Activated", {
+      description: `${sector.charAt(0).toUpperCase() + sector.slice(1)} onboarding automation is now active.`
     });
   };
 
