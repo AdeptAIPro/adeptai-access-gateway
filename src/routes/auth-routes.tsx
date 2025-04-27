@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Route } from "@/utils/router-polyfill";
 import { RouteErrorBoundary } from "@/components/error-boundary/RouteErrorBoundary";
 import Login from "@/pages/Login";
@@ -9,6 +9,7 @@ import NotFound from "@/pages/NotFound";
 import Index from "@/pages/Index";
 import Pricing from "@/pages/Pricing";
 import ITConsulting from "@/pages/ITConsulting";
+import { PageLoader } from "./page-loader";
 
 export const authRoutes = (
   <>
