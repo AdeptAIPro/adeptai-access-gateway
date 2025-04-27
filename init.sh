@@ -16,19 +16,28 @@ if ! command -v npm &> /dev/null; then
 fi
 
 # Update npm to the latest version
+echo "Updating npm to latest version..."
 npm install -g npm@latest
 
+# Clear npm cache
+echo "Clearing npm cache..."
+npm cache clean --force
+
 # Install Vite globally
+echo "Installing Vite globally..."
 npm install -g vite
 
 # Run the setup
+echo "Running setup script..."
 ./setup.sh
 
 # Fix all imports
+echo "Fixing imports..."
 ./fix-all-imports.sh
 
 # Create a simple package.json if it doesn't exist
 if [ ! -f "package.json" ]; then
+  echo "Creating package.json..."
   echo '{
     "name": "vite_react_shadcn_ts",
     "private": true,
@@ -40,14 +49,17 @@ if [ ! -f "package.json" ]; then
       "start": "vite"
     }
   }' > package.json
-  
-  echo "Created package.json file"
 fi
 
 # Run node script to fix package.json
 node fix-package.js
 
 # Install all dependencies
+echo "Installing dependencies..."
 npm install
+
+# Add Vite to PATH
+export PATH="$PATH:$(npm bin)"
+export PATH="$PATH:$(npm config get prefix)/bin"
 
 echo "Setup completed! Run ./start-app.sh to start your application."
