@@ -1,156 +1,119 @@
-
 import { Employee } from "@/types/employee";
 
-/**
- * Mock data for W-2 employees
- */
 export const w2Employees: Employee[] = [
   {
-    id: "emp-001",
-    employeeId: "EMP001",
-    name: "Sarah Johnson",
-    title: "Registered Nurse",
-    email: "sarah.johnson@example.com",
+    id: "W2-001",
+    name: "John Smith",
+    email: "john.smith@example.com",
     phone: "(555) 123-4567",
-    address: "123 Main St, Anytown, CA 90210",
-    dateOfBirth: "1985-06-15",
-    ssn: "123-45-6789",
-    type: "W-2",
-    status: "Active",
-    department: "Nursing",
-    payRate: "45.00",
-    paySchedule: "Bi-Weekly",
-    startDate: "2022-03-15",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    emergencyContact: {
-      name: "John Johnson",
-      phone: "(555) 987-6543",
-      relationship: "Spouse"
+    address: {
+      street: "123 Main St",
+      city: "Boston",
+      state: "MA",
+      zipCode: "02108"
     },
+    status: "active",
+    employeeType: "W2",
+    startDate: "2023-01-15",
+    payRate: 75000,
+    payType: "salary",
     bankInfo: {
-      bankName: "First National Bank",
-      accountType: "Checking",
-      routingNumber: "123456789",
-      accountNumber: "987654321"
-    },
-    taxForms: {
-      w4: {
-        submitted: true,
-        lastUpdated: "2022-03-10"
-      },
-      i9: {
-        submitted: true,
-        lastUpdated: "2022-03-10"
-      },
-      w2: {
-        available: true,
-        year: "2023"
-      }
-    },
-    taxWithholdings: {
-      federalFilingStatus: "Married Filing Jointly",
-      federalAllowances: "2",
-      state: "California",
-      stateFilingStatus: "Married Filing Jointly"
-    },
-    recentPayslips: [
-      {
-        payPeriod: "Jun 1 - Jun 15, 2023",
-        payDate: "Jun 20, 2023",
-        grossPay: "3,600.00",
-        netPay: "2,748.50",
-        id: "pay-20230620"
-      },
-      {
-        payPeriod: "May 16 - May 31, 2023",
-        payDate: "Jun 5, 2023",
-        grossPay: "3,600.00",
-        netPay: "2,748.50",
-        id: "pay-20230605"
-      }
-    ]
+      accountNumber: "****1234",
+      routingNumber: "****5678",
+      accountType: "checking",
+      bankName: "Bank of America"
+    }
   },
   {
-    id: "emp-002",
-    employeeId: "EMP002",
-    name: "Michael Chen",
-    title: "Software Developer",
-    email: "michael.chen@example.com",
+    id: "W2-002",
+    name: "Emily White",
+    email: "emily.white@example.com",
     phone: "(555) 234-5678",
-    address: "456 Tech Ave, Silicon Valley, CA 94024",
-    dateOfBirth: "1990-09-22",
-    ssn: "234-56-7890",
-    type: "W-2",
-    status: "Active",
-    department: "IT",
-    payRate: "60.00",
-    paySchedule: "Bi-Weekly",
-    startDate: "2021-11-01",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    emergencyContact: {
-      name: "Lin Chen",
-      phone: "(555) 876-5432",
-      relationship: "Parent"
+    address: {
+      street: "456 Elm St",
+      city: "Cambridge",
+      state: "MA",
+      zipCode: "02138"
     },
+    status: "active",
+    employeeType: "W2",
+    startDate: "2023-02-01",
+    payRate: 62000,
+    payType: "salary",
     bankInfo: {
-      bankName: "Tech Credit Union",
-      accountType: "Checking",
-      routingNumber: "987654321",
-      accountNumber: "123456789"
+      accountNumber: "****9876",
+      routingNumber: "****5432",
+      accountType: "savings",
+      bankName: "Citibank"
+    }
+  },
+  {
+    id: "W2-003",
+    name: "David Lee",
+    email: "david.lee@example.com",
+    phone: "(555) 345-6789",
+    address: {
+      street: "789 Oak St",
+      city: "New York",
+      state: "NY",
+      zipCode: "10001"
     },
-    paymentDistribution: [
-      {
-        bankName: "Tech Credit Union",
-        accountType: "Checking",
-        routingNumber: "987654321",
-        accountNumber: "123456789",
-        percentage: 80,
-        type: "Primary"
-      },
-      {
-        bankName: "Investment Bank",
-        accountType: "Savings",
-        routingNumber: "567891234",
-        accountNumber: "987123456",
-        percentage: 20,
-        type: "Secondary"
-      }
-    ],
-    taxForms: {
-      w4: {
-        submitted: true,
-        lastUpdated: "2021-10-25"
-      },
-      i9: {
-        submitted: true,
-        lastUpdated: "2021-10-25"
-      },
-      w2: {
-        available: true,
-        year: "2023"
-      }
+    status: "inactive",
+    employeeType: "W2",
+    startDate: "2022-11-01",
+    payRate: 80000,
+    payType: "salary",
+    bankInfo: {
+      accountNumber: "****2345",
+      routingNumber: "****6789",
+      accountType: "checking",
+      bankName: "Capital One"
+    }
+  },
+  {
+    id: "W2-004",
+    name: "Priya Sharma",
+    email: "priya.sharma@example.com",
+    phone: "(555) 456-7890",
+    address: {
+      street: "101 Pine St",
+      city: "Seattle",
+      state: "WA",
+      zipCode: "98101"
     },
-    taxWithholdings: {
-      federalFilingStatus: "Single",
-      federalAllowances: "1",
-      state: "California",
-      stateFilingStatus: "Single"
+    status: "active",
+    employeeType: "W2",
+    startDate: "2023-03-15",
+    payRate: 70000,
+    payType: "salary",
+    bankInfo: {
+      accountNumber: "****8765",
+      routingNumber: "****3210",
+      accountType: "savings",
+      bankName: "US Bank"
+    }
+  },
+  {
+    id: "W2-005",
+    name: "Kevin Brown",
+    email: "kevin.brown@example.com",
+    phone: "(555) 567-8901",
+    address: {
+      street: "222 Maple St",
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90001"
     },
-    recentPayslips: [
-      {
-        payPeriod: "Jun 1 - Jun 15, 2023",
-        payDate: "Jun 20, 2023",
-        grossPay: "4,800.00",
-        netPay: "3,552.00",
-        id: "pay-20230620-2"
-      },
-      {
-        payPeriod: "May 16 - May 31, 2023",
-        payDate: "Jun 5, 2023",
-        grossPay: "4,800.00",
-        netPay: "3,552.00",
-        id: "pay-20230605-2"
-      }
-    ]
+    status: "pending",
+    employeeType: "W2",
+    startDate: "2023-04-01",
+    payRate: 65000,
+    payType: "salary",
+    bankInfo: {
+      accountNumber: "****3456",
+      routingNumber: "****7890",
+      accountType: "checking",
+      bankName: "Wells Fargo"
+    }
   }
 ];

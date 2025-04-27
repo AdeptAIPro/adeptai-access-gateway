@@ -1,42 +1,73 @@
-
 import { Employee } from "@/types/employee";
 
-/**
- * Mock data for 1099 contractor employees
- */
 export const contractorEmployees: Employee[] = [
   {
-    id: "emp-003",
-    employeeId: "EMP003",
-    name: "Jessica Williams",
-    title: "Healthcare Consultant",
-    email: "jessica.williams@example.com",
-    phone: "(555) 345-6789",
-    address: "789 Consulting Rd, Businesstown, NY 10001",
-    dateOfBirth: "1982-04-12",
-    ssn: "345-67-8901",
-    type: "1099",
-    status: "Active",
-    department: "Healthcare",
-    payRate: "85.00",
-    paySchedule: "Monthly",
-    startDate: "2023-01-15",
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    bankInfo: {
-      bankName: "Consultant Credit Union",
-      accountType: "Checking",
-      routingNumber: "345678912",
-      accountNumber: "891234567"
+    id: "C-001",
+    name: "Alice Johnson",
+    email: "alice.j@contractor.com",
+    phone: "(555) 987-6543",
+    address: {
+      street: "456 Tech Lane",
+      city: "San Francisco",
+      state: "CA",
+      zipCode: "94105"
     },
-    taxForms: {
-      i9: {
-        submitted: true,
-        lastUpdated: "2023-01-10"
-      },
-      form1099: {
-        available: true,
-        year: "2023"
-      }
+    status: "active",
+    employeeType: "contractor",
+    startDate: "2023-03-01",
+    payRate: 85,
+    payType: "hourly",
+    bankInfo: {
+      accountNumber: "****4321",
+      routingNumber: "****8765",
+      accountType: "checking",
+      bankName: "Chase"
+    }
+  },
+  {
+    id: "C-002",
+    name: "Bob Williams",
+    email: "bob.w@contractor.com",
+    phone: "(555) 345-6789",
+    address: {
+      street: "789 Digital Rd",
+      city: "Los Angeles",
+      state: "CA",
+      zipCode: "90001"
+    },
+    status: "active",
+    employeeType: "contractor",
+    startDate: "2023-04-15",
+    payRate: 95,
+    payType: "hourly",
+    bankInfo: {
+      accountNumber: "****9876",
+      routingNumber: "****2345",
+      accountType: "checking",
+      bankName: "Wells Fargo"
+    }
+  },
+  {
+    id: "C-003",
+    name: "Catherine Brown",
+    email: "catherine.b@contractor.com",
+    phone: "(555) 456-7890",
+    address: {
+      street: "101 Innovation Plaza",
+      city: "Seattle",
+      state: "WA",
+      zipCode: "98101"
+    },
+    status: "inactive",
+    employeeType: "contractor",
+    startDate: "2022-11-01",
+    payRate: 110,
+    payType: "hourly",
+    bankInfo: {
+      accountNumber: "****3456",
+      routingNumber: "****7890",
+      accountType: "checking",
+      bankName: "Citibank"
     }
   }
 ];

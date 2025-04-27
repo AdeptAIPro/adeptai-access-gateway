@@ -1,48 +1,73 @@
-
 import { Employee } from "@/types/employee";
 
-/**
- * Mock data for per diem employees
- */
 export const perDiemEmployees: Employee[] = [
   {
-    id: "emp-004",
-    employeeId: "EMP004",
-    name: "David Park",
-    title: "Traveling Nurse",
-    email: "david.park@example.com",
-    phone: "(555) 456-7890",
-    address: "1010 Travel Ln, Mobiletown, FL 33101",
-    dateOfBirth: "1988-11-30",
-    ssn: "456-78-9012",
-    type: "Per Diem",
-    status: "Active",
-    department: "Nursing",
-    payRate: "55.00",
-    paySchedule: "Weekly",
-    startDate: "2023-02-01",
-    avatar: "https://randomuser.me/api/portraits/men/55.jpg",
+    id: "PD-001",
+    name: "Sarah Wilson",
+    email: "sarah.w@perdiem.com",
+    phone: "(555) 234-5678",
+    address: {
+      street: "789 Healthcare Ave",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60601"
+    },
+    status: "active",
+    employeeType: "perDiem",
+    startDate: "2023-06-01",
+    payRate: 45,
+    payType: "hourly",
     bankInfo: {
-      bankName: "Mobile Banking Co",
-      accountType: "Checking",
-      routingNumber: "456789123",
-      accountNumber: "567891234"
+      accountNumber: "****5678",
+      routingNumber: "****4321",
+      accountType: "checking",
+      bankName: "Wells Fargo"
+    }
+  },
+  {
+    id: "PD-002",
+    name: "Kevin Brown",
+    email: "kevin.b@perdiem.com",
+    phone: "(555) 345-6789",
+    address: {
+      street: "321 Nursing Home Rd",
+      city: "Miami",
+      state: "FL",
+      zipCode: "33101"
     },
-    taxForms: {
-      w4: {
-        submitted: true,
-        lastUpdated: "2023-01-25"
-      },
-      i9: {
-        submitted: true,
-        lastUpdated: "2023-01-25"
-      }
+    status: "active",
+    employeeType: "perDiem",
+    startDate: "2023-07-15",
+    payRate: 50,
+    payType: "hourly",
+    bankInfo: {
+      accountNumber: "****8765",
+      routingNumber: "****1234",
+      accountType: "checking",
+      bankName: "Citibank"
+    }
+  },
+  {
+    id: "PD-003",
+    name: "Emily Davis",
+    email: "emily.d@perdiem.com",
+    phone: "(555) 456-7890",
+    address: {
+      street: "654 Assisted Living Dr",
+      city: "Dallas",
+      state: "TX",
+      zipCode: "75201"
     },
-    taxWithholdings: {
-      federalFilingStatus: "Single",
-      federalAllowances: "1",
-      state: "Florida",
-      stateFilingStatus: "Single"
+    status: "inactive",
+    employeeType: "perDiem",
+    startDate: "2023-08-01",
+    payRate: 55,
+    payType: "hourly",
+    bankInfo: {
+      accountNumber: "****2345",
+      routingNumber: "****5678",
+      accountType: "checking",
+      bankName: "Capital One"
     }
   }
 ];
