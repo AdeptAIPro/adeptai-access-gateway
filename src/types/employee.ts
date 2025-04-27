@@ -30,4 +30,5 @@ export interface Employee {
   };
   payRate: number;
   payType: "hourly" | "salary";
+  type?: string; // Added to fix compatibility with PayrollRunForm
 }

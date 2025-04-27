@@ -13,7 +13,8 @@ const searchDirs = [
   'src/utils',
   'src/pages',
   'src/layouts',
-  'src/lib'
+  'src/lib',
+  'src/providers'
 ];
 
 // Find all TypeScript files
@@ -28,7 +29,7 @@ function findFiles(dir, fileList = []) {
     
     if (stat.isDirectory()) {
       findFiles(filePath, fileList);
-    } else if (/\.(ts|tsx)$/.test(file)) {
+    } else if (/\.(ts|tsx|js|jsx)$/.test(file)) {
       fileList.push(filePath);
     }
   });
@@ -42,15 +43,9 @@ function fixImports(filePath) {
     let content = fs.readFileSync(filePath, 'utf8');
     let modified = false;
     
-    // Replace lucide-react imports with explicit reference to our icon polyfill
+    // Replace lucide-react imports with our polyfill
     if (content.includes("from 'lucide-react'") || content.includes('from "lucide-react"')) {
       content = content.replace(/(from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
-      modified = true;
-    }
-    
-    // Also catch lucide-react import lines with destructuring
-    if (content.includes("} from 'lucide-react'") || content.includes('} from "lucide-react"')) {
-      content = content.replace(/(}\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
       modified = true;
     }
     
@@ -60,22 +55,16 @@ function fixImports(filePath) {
       modified = true;
     }
     
-    // Replace date-fns imports
+    // Replace date-fns imports with our polyfill
     if (content.includes("from 'date-fns'") || content.includes('from "date-fns"')) {
       content = content.replace(/(from\s+['"])date-fns(['"])/g, '$1@/utils/date-polyfill$2');
       modified = true;
     }
     
-    // Replace sonner imports
+    // Replace sonner imports with our polyfill
     if (content.includes("from 'sonner'") || content.includes('from "sonner"')) {
       content = content.replace(/(from\s+['"])sonner(['"])/g, '$1@/utils/sonner-polyfill$2');
       modified = true;
-    }
-    
-    // Also fix React.createElement calls with icon components
-    if (content.includes("React.createElement(") && (content.includes("lucide-react") || content.includes("Icon"))) {
-      // This is a complex operation and might need custom handling
-      console.log(`⚠️ Complex React.createElement found in ${filePath}, may need manual review`);
     }
     
     // Write modified content back to file
