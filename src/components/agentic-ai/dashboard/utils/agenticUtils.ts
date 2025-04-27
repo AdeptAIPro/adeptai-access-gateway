@@ -3,10 +3,11 @@ import { AgentTask } from '@/services/agentic-ai/AgenticService';
 
 export const groupTasksByType = (tasks: AgentTask[]): Record<string, AgentTask[]> => {
   return tasks.reduce((acc: Record<string, AgentTask[]>, task) => {
-    if (!acc[task.taskType]) {
-      acc[task.taskType] = [];
+    const taskType = task.taskType || 'unknown';
+    if (!acc[taskType]) {
+      acc[taskType] = [];
     }
-    acc[task.taskType].push(task);
+    acc[taskType].push(task);
     return acc;
   }, {});
 };

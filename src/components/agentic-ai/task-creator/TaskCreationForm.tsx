@@ -10,7 +10,8 @@ import TaskGoalField from './TaskGoalField';
 import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
 import { useAgenticAI } from '@/hooks/use-agentic';
-import { showError } from '@/utils/toast-utils'; // Import our custom toast function
+import { showError } from '@/utils/toast-utils';
+import { Agent } from '@/services/agentic-ai/AgenticService';
 import { z } from 'zod';
 
 // Form schema
@@ -41,7 +42,7 @@ const TaskCreationForm: React.FC = () => {
   const onSubmit = async (values: FormValues) => {
     try {
       await createTask(
-        values.taskType as any,
+        values.taskType,
         values.goal,
         values.agentId || '',
         {},
@@ -70,7 +71,7 @@ const TaskCreationForm: React.FC = () => {
               <AgentSelector 
                 control={form.control} 
                 selectedTaskType={selectedTaskType} 
-                agents={agents || []}
+                agents={agents as Agent[]} 
               />
               
               <PrioritySelector control={form.control} />

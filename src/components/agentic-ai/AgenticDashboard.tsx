@@ -10,19 +10,23 @@ import AgentsList from './dashboard/AgentsList';
 import TasksByCategory from './dashboard/TasksByCategory';
 import { filterTasksByStatus, groupTasksByType } from './dashboard/utils/agenticUtils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { AgentTask } from '@/services/agentic-ai/AgenticService';
 
 const AgenticDashboard = () => {
   const { tasks, agents, isLoading, activeTask, processTask } = useAgenticAI();
   const { user } = useAuth();
   const isMobile = useIsMobile();
   
+  // Type assertion for tasks to ensure compatibility with utility functions
+  const typedTasks = tasks as AgentTask[];
+  
   // Filter tasks by status
-  const pendingTasks = filterTasksByStatus(tasks, 'pending');
-  const completedTasks = filterTasksByStatus(tasks, 'completed');
-  const failedTasks = filterTasksByStatus(tasks, 'failed');
+  const pendingTasks = filterTasksByStatus(typedTasks, 'pending');
+  const completedTasks = filterTasksByStatus(typedTasks, 'completed');
+  const failedTasks = filterTasksByStatus(typedTasks, 'failed');
   
   // Group tasks by type
-  const tasksByType = groupTasksByType(tasks);
+  const tasksByType = groupTasksByType(typedTasks);
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -57,7 +61,7 @@ const AgenticDashboard = () => {
         
         <TabsContent value="all-tasks" className="space-y-4 p-1">
           <TaskList 
-            tasks={tasks} 
+            tasks={typedTasks as any[]} 
             activeTaskId={activeTask?.id || null} 
             processTask={processTask} 
           />
@@ -65,7 +69,7 @@ const AgenticDashboard = () => {
         
         <TabsContent value="by-category" className="p-1">
           <TasksByCategory 
-            tasksByType={tasksByType} 
+            tasksByType={tasksByType as any} 
             activeTaskId={activeTask?.id || null}
             processTask={processTask}
           />

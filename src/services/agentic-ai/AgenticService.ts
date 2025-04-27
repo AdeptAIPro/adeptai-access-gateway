@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { DynamoDBClient, ScanCommand, PutItemCommand, GetItemCommand, UpdateItemCommand, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
@@ -10,7 +11,7 @@ export interface Agent {
   description: string;
   capabilities: string[];
   status: "active" | "inactive" | "busy";
-  createdAt: string; // Add the missing createdAt field
+  createdAt: string;
 }
 
 export interface AgentTask {
@@ -19,7 +20,13 @@ export interface AgentTask {
   description: string;
   status: "pending" | "in progress" | "completed" | "failed";
   createdAt: string;
+  taskType?: string; // Added to align with other imports
+  goal?: string;     // Added to align with other imports
+  agent?: string;    // Added to align with other imports
 }
+
+// Add AgentTaskType type
+export type AgentTaskType = string;
 
 // Initialize DynamoDB client
 const ddbClient = new DynamoDBClient({ 
@@ -172,6 +179,8 @@ export const createTask = async (taskData: Omit<AgentTask, 'id' | 'createdAt'>):
     id: taskId,
     createdAt,
     ...taskData,
+    taskType: taskData.taskType || 'default', // Ensure taskType is always set
+    goal: taskData.description // Map description to goal for compatibility
   };
 
   const params = {
@@ -226,6 +235,53 @@ export const updateTask = async (id: string, updates: Partial<AgentTask>): Promi
   return response.Attributes ? unmarshall(response.Attributes) as AgentTask : undefined;
 };
 
+export const updateTaskStatus = async (
+  id: string, 
+  status: AgentTask['status'], 
+  result?: any,
+  error?: string
+): Promise<boolean> => {
+  try {
+    let updateExp = 'SET #status = :status';
+    let expAttrNames: Record<string, string> = { '#status': 'status' };
+    let expAttrValues: Record<string, any> = { ':status': status };
+    
+    if (result !== undefined) {
+      updateExp += ', #result = :result';
+      expAttrNames['#result'] = 'result';
+      expAttrValues[':result'] = result;
+    }
+    
+    if (error) {
+      updateExp += ', #error = :error';
+      expAttrNames['#error'] = 'error';
+      expAttrValues[':error'] = error;
+    }
+    
+    // Add completion timestamp if completed or failed
+    if (status === 'completed' || status === 'failed') {
+      updateExp += ', #completedAt = :completedAt';
+      expAttrNames['#completedAt'] = 'completedAt';
+      expAttrValues[':completedAt'] = new Date().toISOString();
+    }
+    
+    const params = {
+      TableName: TASKS_TABLE,
+      Key: marshall({ id }),
+      UpdateExpression: updateExp,
+      ExpressionAttributeNames: expAttrNames,
+      ExpressionAttributeValues: marshall(expAttrValues)
+    };
+    
+    const command = new UpdateItemCommand(params);
+    await executeDbOperation(command);
+    return true;
+  } catch (error) {
+    console.error(`Error updating task status: ${error}`);
+    return false;
+  }
+};
+
 export const deleteTask = async (id: string): Promise<boolean> => {
   const params = {
     TableName: TASKS_TABLE,
@@ -237,3 +293,25 @@ export const deleteTask = async (id: string): Promise<boolean> => {
 
   return true;
 };
+
+// Export a function to process tasks
+export const processTask = async (taskId: string): Promise<boolean> => {
+  try {
+    console.log(`Processing task ${taskId}`);
+    await updateTaskStatus(taskId, "in progress");
+    
+    // Simulate task processing with a delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Update task as completed
+    await updateTaskStatus(taskId, "completed");
+    return true;
+  } catch (error) {
+    console.error(`Error processing task ${taskId}:`, error);
+    await updateTaskStatus(taskId, "failed");
+    return false;
+  }
+};
+
+// Need to expose this for compatibility with other imports
+export const getAgents = getAllAgents;

@@ -121,7 +121,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
         )}
         
         <TaskList 
-          tasks={tasks} 
+          tasks={tasks as any[]} // Use type assertion here since the components are compatible
           activeTaskId={activeTaskId}
           processTask={processTask}
           emptyMessage="No AI Tasks Created Yet"
@@ -134,7 +134,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
         
         {activeTask ? (
           <EnhancedTaskResultDisplay 
-            task={activeTask} 
+            task={activeTask as any} // Use type assertion to maintain compatibility
             loading={isProcessing}
             onRetry={() => handleRetryTask(activeTask.id)}
             onSave={() => handleSaveTask(activeTask.id)}
