@@ -8,5 +8,5 @@
 export * from './icon-polyfill';
 
 // Also create a default export for compatibility
-import icons from './icon-polyfill';
+import * as icons from './icon-polyfill';
 export default icons;

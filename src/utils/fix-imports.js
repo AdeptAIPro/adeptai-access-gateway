@@ -41,9 +41,15 @@ function fixImports(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
   let modified = false;
   
-  // Replace lucide-react imports
+  // Replace lucide-react imports with explicit reference to our icon polyfill
   if (content.includes("from 'lucide-react'") || content.includes('from "lucide-react"')) {
     content = content.replace(/(from\s+['"])lucide-react(['"])/g, '$1@/utils/icon-polyfill$2');
+    modified = true;
+  }
+  
+  // Also catch lucide-react import lines with destructuring
+  if (content.includes("} from 'lucide-react'") || content.includes('} from "lucide-react"')) {
+    content = content.replace(/(}\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/icon-polyfill$2');
     modified = true;
   }
   

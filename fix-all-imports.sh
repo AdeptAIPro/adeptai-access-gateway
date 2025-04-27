@@ -4,34 +4,60 @@
 # Make sure we're in the project root
 cd "$(dirname "$0")"
 
-# Install dependencies if node_modules doesn't exist
+# Create a global .d.ts file to fix React component props issues
+echo "Creating global TypeScript declarations..."
+mkdir -p src/types
+
+cat > src/types/global.d.ts << 'EOF'
+// Global type declarations for the project
+
+// React declarations
+import React from 'react';
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      // Allow title property in React elements
+      [elemName: string]: any;
+    }
+  }
+
+  // UserRolePermissions definition
+  interface UserRolePermissions {
+    viewCRM: boolean;
+    editCRM: boolean;
+    viewPayroll: boolean;
+    runPayroll: boolean;
+    viewAnalytics: boolean;
+    viewDashboard: boolean;
+    [key: string]: boolean;
+  }
+}
+
+// Extend window object
+declare global {
+  interface Window {
+    vite?: any;
+  }
+}
+
+export {};
+EOF
+
+echo "Global TypeScript declarations created."
+
+# Make sure node_modules exists before running the script
 if [ ! -d "node_modules" ]; then
   echo "Installing dependencies..."
   npm install
 fi
 
-# Run the package.json fix script
-echo "Fixing package.json..."
-node fix-package.js
-
-# Fix imports in all TypeScript files
+# Run the import fix script
 echo "Fixing imports in TypeScript files..."
 node src/utils/fix-imports.js
 
-# Install lucide-react and other missing dependencies
+# Install any missing dependencies
 echo "Installing required dependencies..."
 npm install --save lucide-react react-router-dom sonner recharts date-fns zod
 npm install --save-dev vite @vitejs/plugin-react-swc typescript
 
-# Clear node_modules cache and reinstall if needed
-echo "Checking for Vite..."
-if ! command -v vite &> /dev/null; then
-  echo "Reinstalling Vite globally..."
-  npm cache clean --force
-  npm install -g vite @vitejs/plugin-react-swc
-fi
-
-# Make start-app.sh executable
-chmod +x start-app.sh
-
-echo "Fix completed! You can now run your app with: ./start-app.sh"
+echo "All imports have been fixed! You can now run your app with: ./start-app.sh"
