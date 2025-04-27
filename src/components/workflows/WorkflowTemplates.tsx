@@ -10,7 +10,7 @@ interface WorkflowTemplatesProps {
 }
 
 interface TemplateProps {
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   name: string;
   description: string;
   steps: number;

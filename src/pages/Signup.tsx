@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -21,7 +20,7 @@ const Signup = () => {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { register } = useAuth();
+  const { signUp } = useAuth();
   
   useEffect(() => {
     // Extract plan from URL query params if present
@@ -47,7 +46,7 @@ const Signup = () => {
     
     try {
       // In a real app, this would call your registration API
-      await register(name, email, password);
+      await signUp(name, email, password);
       
       // If there's a selected plan, redirect to checkout
       if (selectedPlan) {

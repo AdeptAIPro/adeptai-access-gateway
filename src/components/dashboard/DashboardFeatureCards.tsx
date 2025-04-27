@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface DashboardCard {
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: React.ComponentType;
   route: string;
   color: string;
   stats: string;

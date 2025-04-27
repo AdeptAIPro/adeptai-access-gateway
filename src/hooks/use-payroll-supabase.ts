@@ -1,255 +1,190 @@
 
 import { useState, useEffect } from "react";
-import { Employee } from "@/types/employee";
-import { toast } from "@/hooks/use-toast";
-import { fetchEmployees, fetchEmployeeById, createEmployee, updateEmployee } from "@/services/payroll";
+import { fetchEmployees, addEmployee as addEmployeeService } from "@/services/payroll/EmployeeService";
+import { fetchCompanyPayrollSettings } from "@/services/payroll/CompanyPayrollSettings";
+import { toast } from "sonner";
 
 export function usePayrollEmployeesSupabase() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const getEmployees = async () => {
-    try {
-      setIsLoading(true);
-      const employeeData = await fetchEmployees();
-      
-      // If we get data back from Supabase, use it
-      if (employeeData && employeeData.length > 0) {
-        setEmployees(employeeData);
-        setError(null);
-      } else {
-        // Fall back to mock data
-        console.log("No employees found in Supabase, falling back to mock data");
-        try {
-          const { mockEmployees } = await import("@/data/mockEmployees");
-          
-          if (mockEmployees && mockEmployees.length > 0) {
-            setEmployees(mockEmployees);
-            toast({
-              title: "Using Mock Data",
-              description: "No employee data found in database. Using sample data instead.",
-              variant: "default",
-            });
-          } else {
-            setError("No employee data available");
-            toast({
-              title: "No Data Available",
-              description: "Please add employees or seed the database with sample data.",
-              variant: "default",
-            });
-          }
-        } catch (mockError) {
-          console.error("Error loading mock data:", mockError);
-          setError("Failed to load any employee data");
-          toast({
-            title: "Data Loading Error",
-            description: "Could not load employee data from any source.",
-            variant: "destructive",
-          });
-        }
-      }
-    } catch (err) {
-      console.error("Error loading employees:", err);
-      setError("Failed to load employees");
-      
-      // Fall back to mock data
-      try {
-        const { mockEmployees } = await import("@/data/mockEmployees");
-        
-        if (mockEmployees && mockEmployees.length > 0) {
-          setEmployees(mockEmployees);
-          toast({
-            title: "Using Mock Data",
-            description: "Error connecting to database. Using sample data instead.",
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to load employees",
-            variant: "destructive",
-          });
-        }
-      } catch (mockErr) {
-        console.error("Error loading mock data after DB error:", mockErr);
-        toast({
-          title: "Error",
-          description: "Failed to load employees from any source",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Fetch employees
   useEffect(() => {
-    getEmployees();
-  }, []);
-
-  const addEmployee = async (employee: Omit<Employee, "id">): Promise<boolean> => {
-    try {
-      const newEmployee = await createEmployee(employee);
-      if (newEmployee) {
-        setEmployees(prev => [...prev, newEmployee]);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Error adding employee:", error);
-      toast({
-        title: "Error",
-        description: "Failed to add employee. Please try again.",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
-  const updateEmployeeData = async (id: string, updates: Partial<Employee>): Promise<boolean> => {
-    try {
-      const updatedEmployee = await updateEmployee(id, updates);
-      if (updatedEmployee) {
-        setEmployees(prev => prev.map(emp => emp.id === id ? updatedEmployee : emp));
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Error updating employee:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update employee. Please try again.",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
-  return {
-    employees,
-    isLoading,
-    error,
-    addEmployee,
-    updateEmployee: updateEmployeeData,
-    refreshEmployees: getEmployees
-  };
-}
-
-export function usePayrollEmployeeSupabase(employeeId: string | null) {
-  const [employee, setEmployee] = useState<Employee | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getEmployee = async () => {
-      if (!employeeId) {
-        setEmployee(null);
-        setIsLoading(false);
-        return;
-      }
-      
+    const loadEmployees = async () => {
       try {
         setIsLoading(true);
-        
-        // Try to fetch from Supabase first
-        const employeeData = await fetchEmployeeById(employeeId);
-        
-        // If we get data back from Supabase, use it
-        if (employeeData) {
-          setEmployee(employeeData);
-          setError(null);
-        } else {
-          // Fall back to mock data
-          console.log(`Employee ${employeeId} not found in Supabase, falling back to mock data`);
-          try {
-            const { mockEmployees } = await import("@/data/mockEmployees");
-            const mockEmployee = mockEmployees.find(emp => emp.id === employeeId);
-            
-            if (mockEmployee) {
-              setEmployee(mockEmployee);
-              setError(null);
-            } else {
-              setError("Employee not found");
-              toast({
-                title: "Not Found",
-                description: "Employee details could not be found",
-                variant: "destructive",
-              });
-            }
-          } catch (mockErr) {
-            console.error("Error loading mock employee data:", mockErr);
-            setError("Failed to load employee data from any source");
-            toast({
-              title: "Error",
-              description: "Failed to load employee details from any source",
-              variant: "destructive",
-            });
-          }
-        }
+        const data = await fetchEmployees();
+        setEmployees(data);
       } catch (err) {
-        console.error("Error loading employee details:", err);
-        setError("Failed to load employee details");
-        
-        // Fall back to mock data
-        try {
-          const { mockEmployees } = await import("@/data/mockEmployees");
-          const mockEmployee = mockEmployees.find(emp => emp.id === employeeId);
-          
-          if (mockEmployee) {
-            setEmployee(mockEmployee);
-            toast({
-              title: "Using Mock Data",
-              description: "Using sample employee data due to database error",
-              variant: "default",
-            });
-          } else {
-            toast({
-              title: "Error",
-              description: "Failed to load employee details",
-              variant: "destructive",
-            });
-          }
-        } catch (mockErr) {
-          toast({
-            title: "Error",
-            description: "Failed to load employee details",
-            variant: "destructive",
-          });
-        }
+        console.error("Error fetching employees:", err);
+        setError("Failed to load employees");
+        toast.error("Failed to load employees");
       } finally {
         setIsLoading(false);
       }
     };
 
-    getEmployee();
-  }, [employeeId]);
+    loadEmployees();
+  }, []);
 
-  const updateEmployeeData = async (updates: Partial<Employee>): Promise<boolean> => {
-    if (!employee) return false;
-    
-    try {
-      const updatedEmployee = await updateEmployee(employee.id, updates);
-      if (updatedEmployee) {
-        setEmployee(updatedEmployee);
-        return true;
+  // Fetch company payroll settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settingsData = await fetchCompanyPayrollSettings();
+        setSettings(settingsData);
+      } catch (err) {
+        console.error("Error fetching payroll settings:", err);
+        toast.error("Failed to load company payroll settings");
       }
-      return false;
-    } catch (error) {
-      console.error("Error updating employee:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update employee. Please try again.",
-        variant: "destructive",
-      });
+    };
+
+    loadSettings();
+  }, []);
+
+  // Add employee function
+  const addEmployee = async (employeeData: any) => {
+    try {
+      const newEmployee = await addEmployeeService(employeeData);
+      
+      // Update local state
+      setEmployees(prevEmployees => [...prevEmployees, newEmployee]);
+      
+      toast.success("Employee added successfully");
+      return true;
+    } catch (err) {
+      console.error("Error adding employee:", err);
+      toast.error("Failed to add employee");
       return false;
     }
   };
 
+  // Update employee function
+  const updateEmployee = async (id: string, updates: any) => {
+    try {
+      // In a real app with Supabase, you'd update the database here
+      // For now, we'll just update the local state
+      
+      setEmployees(prevEmployees => 
+        prevEmployees.map(emp => 
+          emp.id === id ? { ...emp, ...updates } : emp
+        )
+      );
+      
+      toast.success("Employee updated successfully");
+      return true;
+    } catch (err) {
+      console.error("Error updating employee:", err);
+      toast.error("Failed to update employee");
+      return false;
+    }
+  };
+
+  // Delete employee function
+  const deleteEmployee = async (id: string) => {
+    try {
+      // In a real app with Supabase, you'd delete from the database here
+      // For now, we'll just update the local state
+      
+      setEmployees(prevEmployees => 
+        prevEmployees.filter(emp => emp.id !== id)
+      );
+      
+      toast.success("Employee deleted successfully");
+      return true;
+    } catch (err) {
+      console.error("Error deleting employee:", err);
+      toast.error("Failed to delete employee");
+      return false;
+    }
+  };
+
+  // Employee payroll calculations
+  const calculatePayroll = async (employeeId: string, options = {}) => {
+    try {
+      const employee = employees.find(emp => emp.id === employeeId);
+      
+      if (!employee) {
+        throw new Error("Employee not found");
+      }
+      
+      // In a real app, you would call a Supabase function or Edge function to do this
+      // For now, we'll simulate some calculations
+      
+      // Simulated response
+      const payrollResult = {
+        employeeId: employee.id,
+        employeeName: employee.name,
+        grossPay: 3000,
+        deductions: 750,
+        netPay: 2250,
+        payPeriod: "April 1-15, 2023",
+        payDate: "April 20, 2023",
+        taxWithholdings: {
+          federal: 450,
+          state: 150,
+          medicare: 75,
+          socialSecurity: 75
+        },
+        otherDeductions: {
+          retirement: 0,
+          health: 0
+        }
+      };
+      
+      toast.success("Payroll calculated successfully");
+      return payrollResult;
+    } catch (err) {
+      console.error("Error calculating payroll:", err);
+      toast.error("Failed to calculate payroll");
+      throw err;
+    }
+  };
+
+  // Run payroll function
+  const runPayroll = async (options = {}) => {
+    try {
+      // In a real app, this would call a Supabase function to process payroll
+      // For now, simulate the operation
+      
+      toast.success("Processing payroll...");
+      
+      // Simulate a delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate results
+      const payrollResults = {
+        success: true,
+        processingDate: new Date().toISOString(),
+        employeesProcessed: employees.length,
+        totalGrossPay: 65000,
+        totalNetPay: 48750,
+        totalTaxes: 16250,
+        payPeriod: "April 1-15, 2023",
+        payDate: "April 20, 2023"
+      };
+      
+      toast.success("Payroll completed successfully");
+      return payrollResults;
+    } catch (err) {
+      console.error("Error running payroll:", err);
+      toast.error("Failed to run payroll");
+      throw err;
+    }
+  };
+
+  // Return values and functions
   return {
-    employee,
+    employees,
     isLoading,
     error,
-    updateEmployee: updateEmployeeData
+    settings,
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+    calculatePayroll,
+    runPayroll
   };
 }

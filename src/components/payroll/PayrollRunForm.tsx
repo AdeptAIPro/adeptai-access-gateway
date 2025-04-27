@@ -66,9 +66,11 @@ const PayrollRunForm = ({ onPayrollRun }: PayrollRunFormProps) => {
         filteredEmployees = loadedEmployees.filter(emp => {
           const address = emp.address || "";
           if (selectedCountry === "USA") {
-            return !address.includes("India");
+            // Check if address is a string before using includes
+            return typeof address === "string" ? !address.includes("India") : true;
           } else if (selectedCountry === "India") {
-            return address.includes("India");
+            // Check if address is a string before using includes
+            return typeof address === "string" ? address.includes("India") : false;
           }
           return true;
         });

@@ -22,18 +22,13 @@ const Unauthorized = () => {
           You don't have permission to access this page. Please contact your administrator if you believe this is an error.
         </p>
         
-        {user?.roles && (
+        {user?.role && (
           <div className="mb-6 p-4 bg-muted rounded-md">
-            <p className="text-sm font-medium mb-2">Your current role(s):</p>
+            <p className="text-sm font-medium mb-2">Your current role:</p>
             <div className="flex flex-wrap gap-2 justify-center">
-              {user.roles.map((role, index) => (
-                <span 
-                  key={index}
-                  className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs"
-                >
-                  {role.charAt(0).toUpperCase() + role.slice(1)}
-                </span>
-              ))}
+              <span className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs">
+                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              </span>
             </div>
           </div>
         )}

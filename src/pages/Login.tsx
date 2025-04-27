@@ -1,62 +1,37 @@
 
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import AuthLayout from "@/components/AuthLayout";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { GoogleIcon, FacebookIcon, LinkedInIcon } from "@/utils/icons";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserRole } from "@/services/crm/types";
+import { toast } from "sonner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("admin");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
-  
-  // Get redirect path from location state or default to dashboard
-  const from = location.state?.from?.pathname || "/dashboard";
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
-      return toast.error("Please fill in all fields");
+      return toast.error("Please fill in all required fields");
     }
     
     setIsLoading(true);
     
     try {
-      // In a real app, this would call an authentication API
-      // For demo: set the email based on selected role to trigger proper role assignment
-      const roleMappedEmail = role === "admin" ? email : `${role}@adeptaipro.com`;
-      
-      await login(roleMappedEmail, password);
-      
-      toast.success("Login successful!");
-
-      // Redirect based on role
-      if (role === "leadership") {
-        navigate("/dashboard");
-      } else if (["sales", "marketing"].includes(role)) {
-        navigate("/dashboard/crm");
-      } else {
-        // Admin can access everything
-        navigate(from, { replace: true });
-      }
+      await login(email, password);
+      // Navigation is handled in the login function
     } catch (error) {
       console.error("Login failed:", error);
-      toast.error("Invalid email or password. Please try again.");
+      // Error handling is done in the login function
     } finally {
       setIsLoading(false);
     }
@@ -68,16 +43,47 @@ const Login = () => {
       subtitle="Enter your credentials to access your account" 
       type="login"
     >
-      <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+      <div className="mb-6">
+        <div className="flex flex-col space-y-2 text-center">
+          <div className="flex justify-center gap-2 mb-2">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              type="button" 
+              onClick={() => {
+                setEmail("admin@example.com");
+                setPassword("password");
+              }}
+            >
+              Admin Demo
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              type="button"
+              onClick={() => {
+                setEmail("user@example.com");
+                setPassword("password");
+              }}
+            >
+              User Demo
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Click a demo account or login with your credentials
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
-            type="email"
-            placeholder="you@example.com"
+            placeholder="name@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input-glow bg-gray-50 border-gray-200"
+            className="input-glow"
             required
           />
         </div>
@@ -85,23 +91,21 @@ const Login = () => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Button 
-              variant="link" 
-              className="px-0 font-normal text-xs text-adept h-auto"
-              type="button"
-              onClick={() => navigate("/forgot-password")}
+            <Link 
+              to="/forgot-password" 
+              className="text-xs text-muted-foreground hover:text-primary transition-colors"
             >
               Forgot password?
-            </Button>
+            </Link>
           </div>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input-glow pr-10 bg-gray-50 border-gray-200"
+              className="input-glow pr-10"
               required
             />
             <Button
@@ -115,77 +119,45 @@ const Login = () => {
             </Button>
           </div>
         </div>
-
-        {/* Role selector for demo purposes */}
-        <div className="space-y-2">
-          <Label htmlFor="role">Login as (Demo)</Label>
-          <Select
-            value={role}
-            onValueChange={(value) => setRole(value as UserRole)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="admin">Administrator</SelectItem>
-              <SelectItem value="sales">Sales Team</SelectItem>
-              <SelectItem value="marketing">Marketing Team</SelectItem>
-              <SelectItem value="leadership">Leadership</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            {role === "admin" ? "Full access to all features" : 
-             role === "sales" ? "Access to CRM with edit permissions" :
-             role === "marketing" ? "Access to CRM and Analytics" :
-             "Access to Dashboards and Analytics only"}
-          </p>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="remember"
-            checked={rememberMe}
-            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-          />
-          <Label htmlFor="remember" className="text-sm font-normal">
-            Remember me for 30 days
-          </Label>
-        </div>
         
         <Button
           type="submit"
-          className="w-full bg-adept hover:bg-adept-dark transition-all duration-300 shadow-md"
+          className="w-full bg-adept hover:bg-adept-dark transition-all duration-300"
           disabled={isLoading}
         >
-          {isLoading ? "Signing in..." : "Sign in"}
+          {isLoading ? "Signing in..." : "Sign In"}
         </Button>
-        
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-3">
-          <Button variant="outline" type="button" className="hover-lift flex items-center justify-center gap-2 bg-white">
-            <GoogleIcon className="h-4 w-4" />
-            <span className="sr-only md:not-sr-only md:text-xs whitespace-nowrap">Google</span>
-          </Button>
-          <Button variant="outline" type="button" className="hover-lift flex items-center justify-center gap-2 bg-white">
-            <FacebookIcon className="h-4 w-4" />
-            <span className="sr-only md:not-sr-only md:text-xs whitespace-nowrap">Facebook</span>
-          </Button>
-          <Button variant="outline" type="button" className="hover-lift flex items-center justify-center gap-2 bg-white">
-            <LinkedInIcon className="h-4 w-4" />
-            <span className="sr-only md:not-sr-only md:text-xs whitespace-nowrap">LinkedIn</span>
-          </Button>
-        </div>
       </form>
+      
+      <div className="mt-4 text-center text-sm">
+        <span className="text-muted-foreground">Don't have an account?{" "}</span>
+        <Link to="/signup" className="text-adept hover:underline">
+          Sign up
+        </Link>
+      </div>
+      
+      <div className="relative mt-4">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t"></span>
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
+      </div>
+      
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        <Button variant="outline" type="button">
+          Google
+        </Button>
+        <Button variant="outline" type="button">
+          GitHub
+        </Button>
+        <Button variant="outline" type="button">
+          Apple
+        </Button>
+      </div>
     </AuthLayout>
   );
 };

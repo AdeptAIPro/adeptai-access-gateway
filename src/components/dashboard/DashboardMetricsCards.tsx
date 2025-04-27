@@ -50,7 +50,7 @@ const DashboardMetricsCards = () => {
 
 interface MetricCardProps {
   title: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   iconColor: string;
   value: string;
   change: string;

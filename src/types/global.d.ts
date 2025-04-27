@@ -22,7 +22,7 @@ declare global {
     [key: string]: boolean;
   }
   
-  // ElementType definition to fix component type errors
+  // ElementType definition for React components
   type ElementType<P = any> = React.ElementType<P>;
   
   // User definition
@@ -58,6 +58,31 @@ declare global {
     capabilities: string[];
     status: "active" | "inactive" | "busy" | "maintenance";
     createdAt: string;
+  }
+
+  // Add Employee interface
+  interface Employee {
+    id: string;
+    name: string;
+    employeeId: string;
+    email: string;
+    type: string;
+    phone?: string;
+    address?: string | {
+      street: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+    status: "active" | "inactive" | "pending";
+    department?: string;
+    position?: string;
+    hireDate?: string;
+    taxInfo?: {
+      ssn: string;
+      withholding: number;
+      w4Status: string;
+    };
   }
 }
 

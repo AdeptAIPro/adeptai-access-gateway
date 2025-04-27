@@ -6,7 +6,7 @@ import { Search, Filter, Star, Send, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface TalentSearchStep {
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   points: string[];
@@ -88,61 +88,34 @@ const TalentSearchGuide: React.FC<TalentSearchGuideProps> = ({ onClose, useAgent
             <p className="text-gray-600 dark:text-gray-300 mt-2 max-w-2xl mx-auto">
               {useAgenticIntelligence 
                 ? "Leverage AI-powered cross-source intelligence to find the perfect candidates faster" 
-                : "Follow these simple steps to find your ideal candidates efficiently"}
+                : "Follow these steps to find and connect with the perfect candidates"}
             </p>
-            
-            {useAgenticIntelligence && (
-              <div className="flex flex-wrap justify-center gap-2 mt-4">
-                <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
-                  Cross-Source Verification
-                </Badge>
-                <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
-                  Intelligent Candidate Matching
-                </Badge>
-                <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
-                  Automated Skill Assessment
-                </Badge>
-                <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
-                  Candidate Insights
-                </Badge>
-              </div>
-            )}
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-            {steps.map((step, index) => (
-              <div 
-                key={index} 
-                className="border border-indigo-100 dark:border-indigo-900/30 bg-white dark:bg-gray-800 rounded-lg p-5 hover:shadow-md transition-all"
-              >
-                <div className="flex flex-col h-full">
-                  <div className="mb-4 flex items-center space-x-3">
-                    <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-md">
-                      <step.icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+            {steps.map((step, index) => {
+              const StepIcon = step.icon;
+              return (
+                <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 p-5 shadow-sm hover:shadow-md transition-all">
+                  <div className="mb-3 flex justify-between">
+                    <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg">
+                      <StepIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                     </div>
-                    <Badge variant="outline" className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
-                      Step {index + 1}
-                    </Badge>
+                    <Badge variant="outline" className="bg-gray-50 dark:bg-gray-700 font-normal">Step {index + 1}</Badge>
                   </div>
-                  
-                  <h3 className="font-semibold text-lg mb-2 text-gray-900 dark:text-white">{step.title}</h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">{step.description}</p>
-                  
-                  <div className="mt-auto">
-                    <ul className="space-y-2">
-                      {step.points.map((point, i) => (
-                        <li key={i} className="text-xs text-gray-600 dark:text-gray-300 flex items-start">
-                          <div className="bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-1 mr-2 flex-shrink-0 mt-0.5">
-                            <div className="h-1.5 w-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full"></div>
-                          </div>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <h3 className="font-medium text-lg mb-2">{step.title}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">{step.description}</p>
+                  <ul className="space-y-2 mt-4">
+                    {step.points.map((point, i) => (
+                      <li key={i} className="flex items-start text-sm">
+                        <span className="h-1.5 w-1.5 bg-indigo-500 dark:bg-indigo-400 rounded-full mt-1.5 mr-2 flex-shrink-0" />
+                        <span className="text-gray-600 dark:text-gray-300">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </div>

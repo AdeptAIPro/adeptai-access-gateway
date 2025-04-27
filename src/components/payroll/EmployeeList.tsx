@@ -8,6 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Search } from "lucide-react";
 import AddEmployeeDialog from "./AddEmployeeDialog";
 
+interface AddEmployeeDialogProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onAddEmployee: (newEmployee: any) => Promise<void>;
+}
+
 interface EmployeeListProps {
   onSelectEmployee: (employeeId: string | null) => void;
   selectedEmployee: string | null;
@@ -75,8 +81,8 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedE
                   <TableCell>{employee.employeeId}</TableCell>
                   <TableCell>{employee.type}</TableCell>
                   <TableCell>
-                    <Badge variant={employee.status === "Active" ? "success" : "default"}>
-                      {employee.status}
+                    <Badge variant={employee.status === "active" ? "success" : "default"}>
+                      {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
                     </Badge>
                   </TableCell>
                 </TableRow>
@@ -95,7 +101,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedE
       )}
 
       <AddEmployeeDialog 
-        open={isAddDialogOpen} 
+        isOpen={isAddDialogOpen} 
         onOpenChange={setIsAddDialogOpen} 
         onAddEmployee={handleAddEmployee}
       />
