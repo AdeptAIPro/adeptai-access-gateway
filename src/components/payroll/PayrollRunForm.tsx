@@ -1,7 +1,7 @@
-import React from 'react';
+
+import React, { useMemo } from 'react';
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { Calendar } from "@/utils/lucide-polyfill";  // Fixed import
+import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Employee } from "@/types/employee";
 
 interface PayrollRunFormProps {
@@ -9,7 +9,7 @@ interface PayrollRunFormProps {
   onSubmit: (data: any) => Promise<void>;
 }
 
-const PayrollRunForm: React.FC<PayrollRunFormProps> = ({ employees, onSubmit }) => {
+const PayrollRunForm = React.memo(({ employees, onSubmit }: PayrollRunFormProps) => {
   const [formData, setFormData] = React.useState({
     date: new Date().toISOString().split('T')[0],
     employeeType: 'W2',
@@ -27,57 +27,67 @@ const PayrollRunForm: React.FC<PayrollRunFormProps> = ({ employees, onSubmit }) 
     await onSubmit(formData);
   };
 
+  // Memoize form sections to prevent unnecessary re-renders
+  const dateSection = useMemo(() => (
+    <FormItem>
+      <FormLabel>Date</FormLabel>
+      <FormControl>
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        />
+      </FormControl>
+    </FormItem>
+  ), [formData.date]);
+
+  const employeeTypeSection = useMemo(() => (
+    <FormItem>
+      <FormLabel>Employee Type</FormLabel>
+      <FormControl>
+        <select
+          name="employeeType"
+          value={formData.employeeType}
+          onChange={handleChange}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <option value="W2">W2</option>
+          <option value="contractor">Contractor</option>
+          <option value="perDiem">Per Diem</option>
+        </select>
+      </FormControl>
+    </FormItem>
+  ), [formData.employeeType]);
+
+  const payTypeSection = useMemo(() => (
+    <FormItem>
+      <FormLabel>Pay Type</FormLabel>
+      <FormControl>
+        <select
+          name="payType"
+          value={formData.payType}
+          onChange={handleChange}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <option value="hourly">Hourly</option>
+          <option value="salary">Salary</option>
+        </select>
+      </FormControl>
+    </FormItem>
+  ), [formData.payType]);
+
   return (
-    <Form>
-      <div className="space-y-4">
-        <div>
-          <Form.Label>Date</Form.Label>
-          <Form.Control>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </Form.Control>
-        </div>
-
-        <div>
-          <Form.Label>Employee Type</Form.Label>
-          <Form.Control>
-            <select
-              name="employeeType"
-              value={formData.employeeType}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <option value="W2">W2</option>
-              <option value="contractor">Contractor</option>
-              <option value="perDiem">Per Diem</option>
-            </select>
-          </Form.Control>
-        </div>
-
-        <div>
-          <Form.Label>Pay Type</Form.Label>
-          <Form.Control>
-            <select
-              name="payType"
-              value={formData.payType}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <option value="hourly">Hourly</option>
-              <option value="salary">Salary</option>
-            </select>
-          </Form.Control>
-        </div>
-
-        <Button onClick={handleSubmit}>Submit Payroll Run</Button>
-      </div>
-    </Form>
+    <div className="space-y-4">
+      {dateSection}
+      {employeeTypeSection}
+      {payTypeSection}
+      <Button onClick={handleSubmit}>Submit Payroll Run</Button>
+    </div>
   );
-};
+});
+
+PayrollRunForm.displayName = 'PayrollRunForm';
 
 export default PayrollRunForm;

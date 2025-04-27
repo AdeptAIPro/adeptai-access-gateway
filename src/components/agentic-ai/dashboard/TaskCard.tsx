@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from '@/utils/date-polyfill';
@@ -18,21 +18,29 @@ interface TaskCardProps {
   onSave?: () => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ 
+const TaskCard = React.memo(({ 
   task, 
   onProcess, 
   isProcessing,
   onRetry,
   onDelete,
   onSave
-}) => {
+}: TaskCardProps) => {
+  // Memoize the card classes since they depend on task status and processing state
+  const cardClasses = useMemo(() => `
+    border
+    ${task.status === 'failed' ? 'border-destructive/40 bg-destructive/5' : ''}
+    ${isProcessing ? 'shadow-md border-primary/30' : ''}
+    transition-all hover:shadow-sm
+  `, [task.status, isProcessing]);
+
+  // Memoize the formatted time since it only needs to update when task.createdAt changes
+  const formattedTime = useMemo(() => (
+    task.createdAt ? formatDistanceToNow(new Date(task.createdAt)) : ''
+  ), [task.createdAt]);
+
   return (
-    <Card className={`
-      border
-      ${task.status === 'failed' ? 'border-destructive/40 bg-destructive/5' : ''}
-      ${isProcessing ? 'shadow-md border-primary/30' : ''}
-      transition-all hover:shadow-sm
-    `}>
+    <Card className={cardClasses}>
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <CardTitle className="text-base">
@@ -54,9 +62,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <span className="text-xs">Agent: {task.agent}</span>
             )}
           </div>
-          {task.createdAt && (
+          {formattedTime && (
             <span className="text-xs">
-              {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
+              {formattedTime}
             </span>
           )}
         </div>
@@ -81,6 +89,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
       </CardFooter>
     </Card>
   );
-};
+});
+
+TaskCard.displayName = 'TaskCard';
 
 export default TaskCard;

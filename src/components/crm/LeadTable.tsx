@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -26,15 +26,55 @@ interface LeadTableProps {
   handleStatusChange: (id: string, status: string) => Promise<void>;
 }
 
-const LeadTable: React.FC<LeadTableProps> = ({
-  leads,
-  loading,
-  handleStatusChange,
-}) => {
+const LeadTable = React.memo(({ leads, loading, handleStatusChange }: LeadTableProps) => {
   const isMobile = useIsMobile();
 
-  // Determine which columns to show based on screen size
-  const renderMobileTable = () => (
+  const renderMobileLeadCard = useMemo(() => (lead: Lead) => (
+    <div key={lead.id} className="border rounded-md p-3 space-y-2">
+      <div className="flex justify-between">
+        <h3 className="font-medium">{lead.name || "—"}</h3>
+        <Badge variant="outline" className="capitalize">
+          {lead.source}
+        </Badge>
+      </div>
+      <p className="text-sm text-muted-foreground">{lead.email}</p>
+      {lead.company && (
+        <p className="text-sm text-muted-foreground">{lead.company}</p>
+      )}
+      <div className="pt-2 flex items-center justify-between">
+        <div className="text-xs text-muted-foreground">
+          {lead.created_at
+            ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })
+            : "—"}
+        </div>
+        <div className="flex items-center space-x-2">
+          {lead.score !== undefined && (
+            <LeadScoreIndicator score={lead.score} factors={lead.scoringFactors} />
+          )}
+          <Select
+            defaultValue={lead.status || "new"}
+            onValueChange={(value) =>
+              handleStatusChange(lead.id as string, value)
+            }
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="new">New</SelectItem>
+              <SelectItem value="contacted">Contacted</SelectItem>
+              <SelectItem value="qualified">Qualified</SelectItem>
+              <SelectItem value="proposal">Proposal</SelectItem>
+              <SelectItem value="won">Won</SelectItem>
+              <SelectItem value="lost">Lost</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </div>
+  ), []);
+
+  const mobileContent = useMemo(() => (
     <div className="space-y-4">
       {loading ? (
         <div className="h-24 flex items-center justify-center">
@@ -45,56 +85,12 @@ const LeadTable: React.FC<LeadTableProps> = ({
           <p className="text-center">No leads found. Try adjusting your filters.</p>
         </div>
       ) : (
-        leads.map((lead) => (
-          <div key={lead.id} className="border rounded-md p-3 space-y-2">
-            <div className="flex justify-between">
-              <h3 className="font-medium">{lead.name || "—"}</h3>
-              <Badge variant="outline" className="capitalize">
-                {lead.source}
-              </Badge>
-            </div>
-            <p className="text-sm text-muted-foreground">{lead.email}</p>
-            {lead.company && (
-              <p className="text-sm text-muted-foreground">{lead.company}</p>
-            )}
-            <div className="pt-2 flex items-center justify-between">
-              <div className="text-xs text-muted-foreground">
-                {lead.created_at
-                  ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })
-                  : "—"}
-              </div>
-              <div className="flex items-center space-x-2">
-                {lead.score !== undefined && (
-                  <LeadScoreIndicator score={lead.score} factors={lead.scoringFactors} />
-                )}
-                <Select
-                  defaultValue={lead.status || "new"}
-                  onValueChange={(value) =>
-                    handleStatusChange(lead.id as string, value)
-                  }
-                >
-                  <SelectTrigger className="w-[100px]">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="new">New</SelectItem>
-                    <SelectItem value="contacted">Contacted</SelectItem>
-                    <SelectItem value="qualified">Qualified</SelectItem>
-                    <SelectItem value="proposal">Proposal</SelectItem>
-                    <SelectItem value="won">Won</SelectItem>
-                    <SelectItem value="lost">Lost</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        ))
+        leads.map(renderMobileLeadCard)
       )}
     </div>
-  );
+  ), [loading, leads, renderMobileLeadCard]);
 
-  // Desktop table view
-  const renderDesktopTable = () => (
+  const desktopContent = useMemo(() => (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
@@ -173,9 +169,11 @@ const LeadTable: React.FC<LeadTableProps> = ({
         </TableBody>
       </Table>
     </div>
-  );
+  ), [loading, leads, handleStatusChange]);
 
-  return isMobile ? renderMobileTable() : renderDesktopTable();
-};
+  return isMobile ? mobileContent : desktopContent;
+});
+
+LeadTable.displayName = 'LeadTable';
 
 export default LeadTable;

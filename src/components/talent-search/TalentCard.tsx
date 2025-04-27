@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   Card, 
   CardContent
@@ -22,7 +22,16 @@ interface TalentCardProps {
   talent: Talent;
 }
 
-const TalentCard: React.FC<TalentCardProps> = ({ talent }) => {
+const TalentCard = React.memo(({ talent }: TalentCardProps) => {
+  // Memoize the skills badges since they're mapped in the render
+  const skillBadges = useMemo(() => (
+    talent.skills.map((skill, index) => (
+      <Badge key={index} variant="secondary">
+        {skill}
+      </Badge>
+    ))
+  ), [talent.skills]);
+
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all">
       <CardContent className="p-0">
@@ -64,11 +73,7 @@ const TalentCard: React.FC<TalentCardProps> = ({ talent }) => {
             <div className="mb-4">
               <h4 className="text-sm font-medium mb-2">Skills</h4>
               <div className="flex flex-wrap gap-2">
-                {talent.skills.map((skill, index) => (
-                  <Badge key={index} variant="secondary">
-                    {skill}
-                  </Badge>
-                ))}
+                {skillBadges}
               </div>
             </div>
             
@@ -101,6 +106,8 @@ const TalentCard: React.FC<TalentCardProps> = ({ talent }) => {
       </CardContent>
     </Card>
   );
-};
+});
+
+TalentCard.displayName = 'TalentCard';
 
 export default TalentCard;
