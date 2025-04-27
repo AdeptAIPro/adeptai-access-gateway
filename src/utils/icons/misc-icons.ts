@@ -31,7 +31,8 @@ import {
   Puzzle,
   GraduationCap,
   PenTool,
-  Paperclip
+  Paperclip,
+  Clock
 } from 'lucide-react';
 
 export {
@@ -66,7 +67,8 @@ export {
   Puzzle,
   GraduationCap,
   PenTool,
-  Paperclip
+  Paperclip,
+  Clock
 };
 
 // Also export Bot as BotIcon for compatibility

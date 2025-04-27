@@ -3,7 +3,7 @@
 // This maps import paths to our polyfill implementations
 
 export const moduleRedirects: Record<string, string> = {
-  'lucide-react': '@/utils/icon-polyfill',
+  'lucide-react': '@/utils/lucide-polyfill',
   'react-router-dom': '@/utils/router-polyfill',
   'recharts': '@/utils/recharts-polyfill',
   'sonner': '@/utils/sonner-polyfill',

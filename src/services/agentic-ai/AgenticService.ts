@@ -1,149 +1,239 @@
-
 import { v4 as uuidv4 } from 'uuid';
-import { AgentTask, AgentTaskType, Agent } from './types/AgenticTypes';
+import { DynamoDBClient, ScanCommand, PutItemCommand, GetItemCommand, UpdateItemCommand, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-// Mock data for demonstration
-const mockTasks: AgentTask[] = [
-  {
-    id: '1',
-    userId: 'user1',
-    taskType: 'research',
-    title: 'Market Research',
-    goal: 'Research competitive products in the AI space',
-    agent: 'Research Agent',
-    agentId: 'agent1',
-    status: 'completed',
-    priority: 'high',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    completedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    userId: 'user1',
-    taskType: 'analysis',
-    goal: 'Analyze customer feedback data',
-    agent: 'Data Analyst',
-    agentId: 'agent2',
-    status: 'pending',
-    priority: 'medium',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: '3',
-    userId: 'user1',
-    taskType: 'creation',
-    goal: 'Generate a blog post about AI trends',
-    agent: 'Content Creator',
-    agentId: 'agent3',
-    status: 'failed',
-    priority: 'low',
-    error: 'Failed to connect to language model',
-    createdAt: new Date(Date.now() - 172800000).toISOString()
-  }
-];
-
-const mockAgents: Agent[] = [
-  {
-    id: 'agent1',
-    name: 'Research Agent',
-    description: 'Specialized in gathering and synthesizing information',
-    capabilities: ['research'],
-    status: 'active'
-  },
-  {
-    id: 'agent2',
-    name: 'Data Analyst',
-    description: 'Processes and analyzes complex datasets',
-    capabilities: ['analysis'],
-    status: 'active'
-  },
-  {
-    id: 'agent3',
-    name: 'Content Creator',
-    description: 'Creates engaging content across various formats',
-    capabilities: ['creation'],
-    status: 'active'
-  }
-];
-
-// Interface for task creation
-export interface CreateTaskParams {
-  taskType: AgentTaskType;
-  goal: string;
-  userId: string;
-  agentId?: string;
-  params?: Record<string, any>;
-  priority?: 'low' | 'medium' | 'high';
-  deadline?: string;
+// Define types for Agentic AI entities
+export interface Agent {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  capabilities: string[];
+  status: "active" | "inactive" | "busy";
+  createdAt: string; // Add the missing createdAt field
 }
 
-// Get all tasks for a user
-const getUserTasks = async (userId: string): Promise<AgentTask[]> => {
-  // In a real implementation, this would fetch from a database
-  return mockTasks.filter(task => task.userId === userId);
+export interface AgentTask {
+  id: string;
+  agentId: string;
+  description: string;
+  status: "pending" | "in progress" | "completed" | "failed";
+  createdAt: string;
+}
+
+// Initialize DynamoDB client
+const ddbClient = new DynamoDBClient({ 
+  region: process.env.AWS_REGION || "us-east-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "AKIAxxxxxxxxxxxxx",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  }
+});
+
+const AGENTS_TABLE = process.env.AGENTS_TABLE || "agents";
+const TASKS_TABLE = process.env.TASKS_TABLE || "agent_tasks";
+
+// Utility function to handle DynamoDB operations
+const executeDbOperation = async (command: any) => {
+  try {
+    const response = await ddbClient.send(command);
+    return response;
+  } catch (error) {
+    console.error("DynamoDB operation failed:", error);
+    throw error;
+  }
 };
 
-// Get all available agents
-const getAgents = async (): Promise<Agent[]> => {
-  // In a real implementation, this would fetch from a database
-  return mockAgents;
-};
-
-// Create a new task
-const createTask = async (params: CreateTaskParams): Promise<AgentTask> => {
-  const newTask: AgentTask = {
-    id: uuidv4(),
-    userId: params.userId,
-    taskType: params.taskType,
-    goal: params.goal,
-    agentId: params.agentId,
-    status: 'pending',
-    priority: params.priority || 'medium',
-    createdAt: new Date().toISOString()
+// --- Agent Operations ---
+export const getAllAgents = async (): Promise<Agent[]> => {
+  const params = {
+    TableName: AGENTS_TABLE,
   };
-  
-  if (params.agentId) {
-    const agent = mockAgents.find(a => a.id === params.agentId);
-    if (agent) {
-      newTask.agent = agent.name;
+
+  const command = new ScanCommand(params);
+  const response = await executeDbOperation(command);
+
+  return response.Items ? response.Items.map(item => unmarshall(item) as Agent) : [];
+};
+
+export const getAgentById = async (id: string): Promise<Agent | undefined> => {
+  const params = {
+    TableName: AGENTS_TABLE,
+    Key: marshall({ id: id }),
+  };
+
+  const command = new GetItemCommand(params);
+  const response = await executeDbOperation(command);
+
+  return response.Item ? unmarshall(response.Item) as Agent : undefined;
+};
+
+export const createAgent = async (agentData: Omit<Agent, 'id' | 'createdAt'>): Promise<Agent> => {
+  const agentId = uuidv4();
+  const createdAt = new Date().toISOString();
+  const newAgent: Agent = {
+    id: agentId,
+    createdAt,
+    ...agentData,
+  };
+
+  const params = {
+    TableName: AGENTS_TABLE,
+    Item: marshall(newAgent),
+  };
+
+  const command = new PutItemCommand(params);
+  await executeDbOperation(command);
+
+  return newAgent;
+};
+
+export const updateAgent = async (id: string, updates: Partial<Agent>): Promise<Agent | undefined> => {
+  const existingAgent = await getAgentById(id);
+  if (!existingAgent) {
+    return undefined;
+  }
+
+  // Prepare update expression
+  let updateExpression = 'SET ';
+  const expressionAttributeValues: any = {};
+  let expressionAttributeNames: any = {};
+  let attributeCount = 0;
+
+  for (const key in updates) {
+    if (key !== 'id' && key !== 'createdAt') {
+      const attributeName = `#attr${attributeCount}`;
+      const attributeValue = `:val${attributeCount}`;
+      updateExpression += `${attributeName} = ${attributeValue}, `;
+      expressionAttributeValues[attributeValue] = updates[key];
+      expressionAttributeNames[attributeName] = key;
+      attributeCount++;
     }
   }
-  
-  // In a real implementation, this would save to a database
-  mockTasks.unshift(newTask);
-  
-  console.log('Task created:', newTask);
+
+  // Remove trailing comma and space
+  updateExpression = updateExpression.slice(0, -2);
+
+  const params = {
+    TableName: AGENTS_TABLE,
+    Key: marshall({ id: id }),
+    UpdateExpression: updateExpression,
+    ExpressionAttributeValues: marshall(expressionAttributeValues),
+    ExpressionAttributeNames: expressionAttributeNames,
+    ReturnValues: "ALL_NEW"
+  };
+
+  const command = new UpdateItemCommand(params);
+  const response = await executeDbOperation(command);
+
+  return response.Attributes ? unmarshall(response.Attributes) as Agent : undefined;
+};
+
+export const deleteAgent = async (id: string): Promise<boolean> => {
+  const params = {
+    TableName: AGENTS_TABLE,
+    Key: marshall({ id: id }),
+  };
+
+  const command = new DeleteItemCommand(params);
+  await executeDbOperation(command);
+
+  return true;
+};
+
+// --- Task Operations ---
+export const getAllTasks = async (): Promise<AgentTask[]> => {
+  const params = {
+    TableName: TASKS_TABLE,
+  };
+
+  const command = new ScanCommand(params);
+  const response = await executeDbOperation(command);
+
+  return response.Items ? response.Items.map(item => unmarshall(item) as AgentTask) : [];
+};
+
+export const getTaskById = async (id: string): Promise<AgentTask | undefined> => {
+  const params = {
+    TableName: TASKS_TABLE,
+    Key: marshall({ id: id }),
+  };
+
+  const command = new GetItemCommand(params);
+  const response = await executeDbOperation(command);
+
+  return response.Item ? unmarshall(response.Item) as AgentTask : undefined;
+};
+
+export const createTask = async (taskData: Omit<AgentTask, 'id' | 'createdAt'>): Promise<AgentTask> => {
+  const taskId = uuidv4();
+  const createdAt = new Date().toISOString();
+  const newTask: AgentTask = {
+    id: taskId,
+    createdAt,
+    ...taskData,
+  };
+
+  const params = {
+    TableName: TASKS_TABLE,
+    Item: marshall(newTask),
+  };
+
+  const command = new PutItemCommand(params);
+  await executeDbOperation(command);
+
   return newTask;
 };
 
-// Process a task
-export const processTask = async (taskId: string): Promise<boolean> => {
-  // Find the task
-  const taskIndex = mockTasks.findIndex(t => t.id === taskId);
-  if (taskIndex === -1) return false;
-  
-  const task = mockTasks[taskIndex];
-  
-  // Simulate processing
-  console.log(`Processing task ${taskId}...`);
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  // Update the task (randomly succeed or fail for demo purposes)
-  mockTasks[taskIndex] = {
-    ...task,
-    status: Math.random() > 0.2 ? 'completed' : 'failed',
-    completedAt: new Date().toISOString(),
-    error: Math.random() > 0.8 ? 'An error occurred during processing' : undefined
+export const updateTask = async (id: string, updates: Partial<AgentTask>): Promise<AgentTask | undefined> => {
+  const existingTask = await getTaskById(id);
+  if (!existingTask) {
+    return undefined;
+  }
+
+  // Prepare update expression
+  let updateExpression = 'SET ';
+  const expressionAttributeValues: any = {};
+  let expressionAttributeNames: any = {};
+  let attributeCount = 0;
+
+  for (const key in updates) {
+    if (key !== 'id' && key !== 'createdAt') {
+      const attributeName = `#attr${attributeCount}`;
+      const attributeValue = `:val${attributeCount}`;
+      updateExpression += `${attributeName} = ${attributeValue}, `;
+      expressionAttributeValues[attributeValue] = updates[key];
+      expressionAttributeNames[attributeName] = key;
+      attributeCount++;
+    }
+  }
+
+  // Remove trailing comma and space
+  updateExpression = updateExpression.slice(0, -2);
+
+  const params = {
+    TableName: TASKS_TABLE,
+    Key: marshall({ id: id }),
+    UpdateExpression: updateExpression,
+    ExpressionAttributeValues: marshall(expressionAttributeValues),
+    ExpressionAttributeNames: expressionAttributeNames,
+    ReturnValues: "ALL_NEW"
   };
-  
-  return mockTasks[taskIndex].status === 'completed';
+
+  const command = new UpdateItemCommand(params);
+  const response = await executeDbOperation(command);
+
+  return response.Attributes ? unmarshall(response.Attributes) as AgentTask : undefined;
 };
 
-const agenticService = {
-  getUserTasks,
-  getAgents,
-  createTask
-};
+export const deleteTask = async (id: string): Promise<boolean> => {
+  const params = {
+    TableName: TASKS_TABLE,
+    Key: marshall({ id: id }),
+  };
 
-export default agenticService;
-export { AgentTask, Agent, AgentTaskType };
+  const command = new DeleteItemCommand(params);
+  await executeDbOperation(command);
+
+  return true;
+};

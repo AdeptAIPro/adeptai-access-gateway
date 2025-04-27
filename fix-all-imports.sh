@@ -66,7 +66,9 @@ mkdir -p src/components/ui
 
 # Run the import fix script
 echo "Fixing imports in TypeScript files..."
-node src/utils/fix-imports.js
+if [ -f "src/utils/fix-imports.js" ]; then
+  node src/utils/fix-imports.js
+fi
 
 # Install any missing dependencies
 echo "Installing required dependencies..."
