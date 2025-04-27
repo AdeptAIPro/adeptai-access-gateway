@@ -7,7 +7,7 @@ import { BrowserRouter } from "@/utils/router-polyfill"; // Use our polyfill
 import { AuthProvider } from "@/hooks/use-auth";
 import { Suspense } from "react";
 import { CredentialsProvider } from "@/context/CredentialsContext";
-import AppRoutes from "./AppRoutes"; 
+import AppRoutes from "./AppRoutes";
 
 // Create a client 
 const queryClient = new QueryClient({
@@ -35,11 +35,11 @@ function App() {
         <AuthProvider>
           <CredentialsProvider>
             <TooltipProvider>
-                <Suspense fallback={<AppLoader />}>
-                  <AppRoutes />
-                </Suspense>
-                <Toaster />
-                <Sonner />
+              <Suspense fallback={<AppLoader />}>
+                <AppRoutes />
+              </Suspense>
+              <Toaster />
+              <Sonner />
             </TooltipProvider>
           </CredentialsProvider>
         </AuthProvider>

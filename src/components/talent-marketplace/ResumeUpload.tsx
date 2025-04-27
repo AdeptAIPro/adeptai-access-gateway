@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,10 +45,8 @@ const ResumeUpload: React.FC = () => {
 
   const onSubmit = (data: ResumeFormValues) => {
     if (!file) {
-      toast({
-        title: "Resume required",
-        description: "Please upload your resume before submitting.",
-        variant: "destructive",
+      toast("Resume required", {
+        description: "Please upload your resume before submitting."
       });
       return;
     }
@@ -60,10 +57,8 @@ const ResumeUpload: React.FC = () => {
     setTimeout(() => {
       setUploading(false);
       setUploadComplete(true);
-      toast({
-        title: "Resume uploaded",
-        description: "Your resume has been uploaded successfully. Employers will be able to view your profile.",
-        variant: "default",
+      toast("Resume uploaded", {
+        description: "Your resume has been uploaded successfully. Employers will be able to view your profile."
       });
     }, 2000);
   };

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -48,9 +47,8 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({ job, onSubmit }
     console.log("Application submitted:", values);
     
     // Show success toast
-    toast({
-      title: "Application Submitted",
-      description: "Your application has been submitted successfully.",
+    toast("Application Submitted", {
+      description: "Your application has been submitted successfully."
     });
     
     // Reset form

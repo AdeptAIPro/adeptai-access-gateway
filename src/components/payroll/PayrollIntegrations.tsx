@@ -29,10 +29,8 @@ const PayrollIntegrations = () => {
 
   const handleConnect = (id: string) => {
     if (!apiKey.trim()) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter a valid API key to connect.",
-        variant: "destructive",
+      toast("API Key Required", {
+        description: "Please enter a valid API key to connect."
       });
       return;
     }
@@ -45,9 +43,8 @@ const PayrollIntegrations = () => {
     setApiKey("");
     setSelectedSystem(null);
     
-    toast({
-      title: "Integration Successful",
-      description: `Successfully connected to ${payrollSystems.find(s => s.id === id)?.name}.`,
+    toast("Integration Successful", {
+      description: `Successfully connected to ${payrollSystems.find(s => s.id === id)?.name}.`
     });
   };
 
@@ -58,9 +55,8 @@ const PayrollIntegrations = () => {
       )
     );
     
-    toast({
-      title: "Integration Removed",
-      description: `Disconnected from ${payrollSystems.find(s => s.id === id)?.name}.`,
+    toast("Integration Removed", {
+      description: `Disconnected from ${payrollSystems.find(s => s.id === id)?.name}.`
     });
   };
 

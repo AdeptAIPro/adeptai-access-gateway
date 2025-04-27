@@ -25,7 +25,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   if (!user) {
     // Redirect to login if not authenticated
-    return <Navigate to={redirectTo} state={{ from: location }} replace />;
+    // Note: Our custom Navigate doesn't support state, so we just redirect
+    return <Navigate to={redirectTo} replace />;
   }
 
   if (!hasPermission(requiredPermission)) {

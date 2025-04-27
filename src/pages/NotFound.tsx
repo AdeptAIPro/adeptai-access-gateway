@@ -1,4 +1,5 @@
-import { useLocation } from "react-router-dom";
+
+import { useLocation } from "@/utils/router-polyfill";
 import { useEffect } from "react";
 
 const NotFound = () => {

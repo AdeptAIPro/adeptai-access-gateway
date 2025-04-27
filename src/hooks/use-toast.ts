@@ -7,5 +7,5 @@ export const toast = sonnerToast;
 
 // Hook for component usage
 export const useToast = () => {
-  return { toast };
+  return { toast: sonnerToast };
 };
