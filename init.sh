@@ -27,6 +27,10 @@ npm cache clean --force
 echo "Installing Vite globally..."
 npm install -g vite
 
+# Install important dependencies locally
+echo "Installing critical dependencies..."
+npm install --no-save vite lucide-react react-router-dom sonner recharts date-fns zod uuid
+
 # Run the setup
 echo "Running setup script..."
 ./setup.sh
@@ -52,7 +56,7 @@ if [ ! -f "package.json" ]; then
 fi
 
 # Add executable permission to NPX
-chmod +x $(which npx) || echo "Could not set permission on npx, you might need sudo"
+chmod +x $(which npx) 2>/dev/null || echo "Could not set permission on npx, you might need sudo"
 
 # Run node script to fix package.json
 node fix-package.js
@@ -64,5 +68,6 @@ npm install
 # Add Vite to PATH
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
+export PATH="$PATH:./node_modules/.bin"
 
 echo "Setup completed! Run ./start-app.sh to start your application."

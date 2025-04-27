@@ -38,44 +38,54 @@ function findFiles(dir, fileList = []) {
 
 // Fix imports in a file
 function fixImports(filePath) {
-  let content = fs.readFileSync(filePath, 'utf8');
-  let modified = false;
-  
-  // Replace lucide-react imports with explicit reference to our icon polyfill
-  if (content.includes("from 'lucide-react'") || content.includes('from "lucide-react"')) {
-    content = content.replace(/(from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
-    modified = true;
-  }
-  
-  // Also catch lucide-react import lines with destructuring
-  if (content.includes("} from 'lucide-react'") || content.includes('} from "lucide-react"')) {
-    content = content.replace(/(}\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
-    modified = true;
-  }
-  
-  // Handle default imports from lucide-react
-  if (content.includes("lucide-react';") || content.includes('lucide-react";')) {
-    content = content.replace(/(import\s+[A-Za-z0-9_]+\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
-    modified = true;
-  }
-  
-  // Replace date-fns imports
-  if (content.includes("from 'date-fns'") || content.includes('from "date-fns"')) {
-    content = content.replace(/(from\s+['"])date-fns(['"])/g, '$1@/utils/date-polyfill$2');
-    modified = true;
-  }
-  
-  // Replace sonner imports
-  if (content.includes("from 'sonner'") || content.includes('from "sonner"')) {
-    content = content.replace(/(from\s+['"])sonner(['"])/g, '$1@/utils/sonner-polyfill$2');
-    modified = true;
-  }
-  
-  // Write modified content back to file
-  if (modified) {
-    fs.writeFileSync(filePath, content);
-    console.log(`✅ Fixed imports in: ${filePath}`);
-    return true;
+  try {
+    let content = fs.readFileSync(filePath, 'utf8');
+    let modified = false;
+    
+    // Replace lucide-react imports with explicit reference to our icon polyfill
+    if (content.includes("from 'lucide-react'") || content.includes('from "lucide-react"')) {
+      content = content.replace(/(from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
+      modified = true;
+    }
+    
+    // Also catch lucide-react import lines with destructuring
+    if (content.includes("} from 'lucide-react'") || content.includes('} from "lucide-react"')) {
+      content = content.replace(/(}\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
+      modified = true;
+    }
+    
+    // Handle default imports from lucide-react
+    if (content.includes("lucide-react';") || content.includes('lucide-react";')) {
+      content = content.replace(/(import\s+[A-Za-z0-9_]+\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
+      modified = true;
+    }
+    
+    // Replace date-fns imports
+    if (content.includes("from 'date-fns'") || content.includes('from "date-fns"')) {
+      content = content.replace(/(from\s+['"])date-fns(['"])/g, '$1@/utils/date-polyfill$2');
+      modified = true;
+    }
+    
+    // Replace sonner imports
+    if (content.includes("from 'sonner'") || content.includes('from "sonner"')) {
+      content = content.replace(/(from\s+['"])sonner(['"])/g, '$1@/utils/sonner-polyfill$2');
+      modified = true;
+    }
+    
+    // Also fix React.createElement calls with icon components
+    if (content.includes("React.createElement(") && (content.includes("lucide-react") || content.includes("Icon"))) {
+      // This is a complex operation and might need custom handling
+      console.log(`⚠️ Complex React.createElement found in ${filePath}, may need manual review`);
+    }
+    
+    // Write modified content back to file
+    if (modified) {
+      fs.writeFileSync(filePath, content);
+      console.log(`✅ Fixed imports in: ${filePath}`);
+      return true;
+    }
+  } catch (error) {
+    console.error(`❌ Error processing file ${filePath}:`, error);
   }
   
   return false;

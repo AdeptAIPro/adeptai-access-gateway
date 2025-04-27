@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Read package.json
 const packageJsonPath = path.join(__dirname, 'package.json');
@@ -26,6 +27,9 @@ try {
     "recharts": "^2.11.0",
     "date-fns": "^2.30.0",
     "zod": "^3.22.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.0"
   };
   
   // Ensure proper dev dependencies
@@ -38,6 +42,15 @@ try {
   
   // Write updated package.json
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  
+  // Install dependencies to make sure they're available locally
+  try {
+    console.log('Installing core dependencies...');
+    execSync('npm install --no-save vite lucide-react react-router-dom sonner recharts date-fns zod', { stdio: 'inherit' });
+  } catch (installError) {
+    console.warn('Warning during dependency installation:', installError.message);
+  }
+  
   console.log('✅ package.json has been updated successfully');
   
 } catch (error) {

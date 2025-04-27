@@ -8,12 +8,10 @@ chmod +x fix-package.js
 # Add npm bin directories to PATH
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
+export PATH="$PATH:./node_modules/.bin"
 
-# Make sure we have vite installed globally
-npm install -g vite
-
-# Also install local dependencies
-npm install
+# Make sure we have dependencies installed
+npm install --no-save vite lucide-react react-router-dom sonner recharts date-fns zod
 
 # Fix imports
 ./fix-all-imports.sh
@@ -27,6 +25,6 @@ echo "Current PATH: $PATH"
 # Show where vite is installed
 echo "Vite location: $(which vite || echo 'Not found')"
 
-# Start the development server with the full path
-$(npm bin)/vite || $(npm config get prefix)/bin/vite || npx vite
+# Start the development server with the full path to vite
+./node_modules/.bin/vite || $(npm bin)/vite || npx vite
 
