@@ -5,7 +5,7 @@ import TaskStatusBadge from './TaskStatusBadge';
 import TaskGoalPreview from './TaskGoalPreview';
 import TaskActionButton from './TaskActionButton';
 import TaskActionsMenu from './TaskActionsMenu';
-import { formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { AgentTask } from '@/services/agentic-ai';
 
 interface TaskCardProps {

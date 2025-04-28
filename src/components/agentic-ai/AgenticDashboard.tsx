@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2 } from '@/utils/icon-polyfill';
+import { Loader2 } from 'lucide-react';
 import MetricsCards from './dashboard/MetricsCards';
 import TaskList from './dashboard/TaskList';
 import AgentsList from './dashboard/AgentsList';
@@ -61,7 +61,7 @@ const AgenticDashboard = () => {
         
         <TabsContent value="all-tasks" className="space-y-4 p-1">
           <TaskList 
-            tasks={typedTasks as any[]} 
+            tasks={typedTasks} 
             activeTaskId={activeTask?.id || null} 
             processTask={processTask} 
           />
@@ -69,7 +69,7 @@ const AgenticDashboard = () => {
         
         <TabsContent value="by-category" className="p-1">
           <TasksByCategory 
-            tasksByType={tasksByType as any} 
+            tasksByType={tasksByType} 
             activeTaskId={activeTask?.id || null}
             processTask={processTask}
           />

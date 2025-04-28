@@ -209,10 +209,5 @@ export async function tryCatch<T>(promise: Promise<T>): Promise<[T | null, AppEr
   }
 }
 
-/**
- * Utility to help with React's useEffect hook to ensure dependencies are properly handled
- */
-export function useEffect(effect: () => void | (() => void), deps?: any[]): void {
-  // This is just a type definition helper, the actual implementation comes from React
-  throw new Error('This is a type helper only, import useEffect from React instead');
-}
+// Export all necessary functions and types
+export { handleError, createAppError, AppError, ErrorType };

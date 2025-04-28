@@ -9,13 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AgentTask } from '@/services/agentic-ai';
+
+// Import icons from the icon-polyfill
 import { 
-  MoreVertical, 
+  MoreVertical,
   Copy, 
   Trash, 
   Share 
-} from '@/utils/icon-polyfill';
-import { AgentTask } from '@/services/agentic-ai';
+} from 'lucide-react';
 
 interface TaskActionsMenuProps {
   task: AgentTask;
