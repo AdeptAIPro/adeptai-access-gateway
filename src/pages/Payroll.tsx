@@ -19,8 +19,9 @@ const Payroll = () => {
   const { toast } = useToast();
   const { employees, isLoading } = usePayrollEmployeesSupabase();
 
+  // Safely find the selected employee and provide a fallback if not found
   const selectedEmployee = selectedEmployeeId 
-    ? employees.find(emp => emp.id === selectedEmployeeId) 
+    ? employees.find(emp => emp && emp.id === selectedEmployeeId) || null
     : null;
 
   const handlePayrollRun = () => {

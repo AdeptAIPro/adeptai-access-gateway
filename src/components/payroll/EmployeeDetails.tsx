@@ -11,6 +11,24 @@ interface EmployeeDetailsProps {
 }
 
 const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
+  // Safety check: if employee is undefined or null, render a placeholder card
+  if (!employee) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">Employee Details</CardTitle>
+          <CardDescription>No employee selected or data unavailable</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">Please select an employee to view their details.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Make sure employee.status exists with a fallback
+  const status = employee.status || 'unknown';
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -19,8 +37,8 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
             <CardTitle className="text-xl font-bold">{employee.name}</CardTitle>
             <CardDescription className="flex items-center gap-2">
               <span>{employee.employeeId}</span>
-              <Badge variant={employee.status === 'active' ? 'success' : 'default'}>
-                {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
+              <Badge variant={status === 'active' ? 'success' : 'default'}>
+                {status.charAt(0).toUpperCase() + status.slice(1)}
               </Badge>
             </CardDescription>
           </div>
@@ -45,7 +63,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Email:</span>
-                  <span>{employee.email}</span>
+                  <span>{employee.email || 'N/A'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
@@ -56,9 +74,9 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Address:</span>
                   <span className="truncate">
-                    {typeof employee.address === 'object' 
-                      ? `${employee.address.street}, ${employee.address.city}, ${employee.address.state}`
-                      : employee.address || 'N/A'}
+                    {typeof employee.address === 'object' && employee.address
+                      ? `${employee.address.street || ''}, ${employee.address.city || ''}, ${employee.address.state || ''}`
+                      : (employee.address || 'N/A')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -80,7 +98,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
 
               <div className="mt-6">
                 <h4 className="text-sm font-medium mb-2">Employment Type</h4>
-                <Badge variant="outline">{employee.type}</Badge>
+                <Badge variant="outline">{employee.type || 'N/A'}</Badge>
               </div>
             </div>
           </TabsContent>
@@ -90,7 +108,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="border rounded-md p-3">
                   <div className="text-xs text-muted-foreground">Pay Rate</div>
-                  <div className="text-lg font-bold">$0.00 / hr</div>
+                  <div className="text-lg font-bold">${employee.payRate || '0.00'} / hr</div>
                 </div>
                 <div className="border rounded-md p-3">
                   <div className="text-xs text-muted-foreground">Pay Frequency</div>

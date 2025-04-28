@@ -24,11 +24,14 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { employees, isLoading, addEmployee } = usePayrollEmployeesSupabase();
 
-  const filteredEmployees = employees.filter(emp => 
-    emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    emp.type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter and safely handle employees that might be null/undefined
+  const filteredEmployees = employees
+    .filter(emp => emp) // Filter out null/undefined employees
+    .filter(emp => 
+      (emp.name && emp.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (emp.employeeId && emp.employeeId.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (emp.type && emp.type.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
   const handleAddEmployee = async (newEmployee: any) => {
     const success = await addEmployee(newEmployee);
@@ -77,12 +80,12 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ onSelectEmployee, selectedE
                   className={`cursor-pointer ${selectedEmployee === employee.id ? "bg-muted" : ""}`}
                   onClick={() => onSelectEmployee(employee.id)}
                 >
-                  <TableCell className="font-medium">{employee.name}</TableCell>
-                  <TableCell>{employee.employeeId}</TableCell>
-                  <TableCell>{employee.type}</TableCell>
+                  <TableCell className="font-medium">{employee.name || 'Unnamed'}</TableCell>
+                  <TableCell>{employee.employeeId || 'No ID'}</TableCell>
+                  <TableCell>{employee.type || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge variant={employee.status === "active" ? "success" : "default"}>
-                      {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
+                    <Badge variant={(employee.status || '').toLowerCase() === "active" ? "success" : "default"}>
+                      {employee.status ? (employee.status.charAt(0).toUpperCase() + employee.status.slice(1)) : 'Unknown'}
                     </Badge>
                   </TableCell>
                 </TableRow>
