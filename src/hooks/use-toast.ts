@@ -1,5 +1,7 @@
 
-import { toast } from "sonner";
+import { toast as sonnerToast } from "sonner";
+import { unifiedToast } from "@/utils/toast-adapter";
+import { ToastProps } from "@/components/ui/toast";
 
 type ToastMessage = string | React.ReactNode;
 type ToastOptions = {
@@ -12,19 +14,16 @@ type ToastOptions = {
 };
 
 export function useToast() {
-  const showToast = (message: ToastMessage, options?: ToastOptions) => {
-    toast(message, {
-      ...options,
-      duration: options?.duration ?? 5000,
-    });
+  const showToast = (message: ToastMessage | ToastProps, options?: ToastOptions) => {
+    return unifiedToast.toast(message as any, options);
   };
 
-  const showSuccess = (message: ToastMessage, options?: ToastOptions) => {
-    toast.success(message, options);
+  const showSuccess = (message: ToastMessage | ToastProps, options?: ToastOptions) => {
+    return unifiedToast.success(message as any, options);
   };
 
-  const showError = (message: ToastMessage, options?: ToastOptions) => {
-    toast.error(message, options);
+  const showError = (message: ToastMessage | ToastProps, options?: ToastOptions) => {
+    return unifiedToast.error(message as any, options);
   };
 
   return {
@@ -35,4 +34,4 @@ export function useToast() {
 }
 
 // For direct usage without hook
-export { toast };
+export { sonnerToast as toast };

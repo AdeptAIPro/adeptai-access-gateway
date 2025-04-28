@@ -5,9 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserCog, Mail, Phone, MapPin, CalendarClock, Building, Briefcase, CreditCard, FileText, Download } from 'lucide-react';
+import { Employee } from '@/types/employee';
 
 interface EmployeeDetailsProps {
-  employee: Employee;
+  employee: Employee | any; // Allow for global Employee type
 }
 
 const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
@@ -28,6 +29,19 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
 
   // Make sure employee.status exists with a fallback
   const status = employee.status || 'unknown';
+  
+  // Format address properly to avoid object display issue
+  const formatAddress = (address: any) => {
+    if (!address) return 'N/A';
+    if (typeof address === 'string') return address;
+    
+    // If it's an object, format it appropriately
+    if (typeof address === 'object') {
+      return `${address.street || ''}, ${address.city || ''}, ${address.state || ''}`;
+    }
+    
+    return 'N/A';
+  };
 
   return (
     <Card>
@@ -36,7 +50,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
           <div>
             <CardTitle className="text-xl font-bold">{employee.name}</CardTitle>
             <CardDescription className="flex items-center gap-2">
-              <span>{employee.employeeId}</span>
+              <span>{employee.employeeId || employee.id}</span>
               <Badge variant={status === 'active' ? 'success' : 'default'}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </Badge>
@@ -73,11 +87,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Address:</span>
-                  <span className="truncate">
-                    {typeof employee.address === 'object' && employee.address
-                      ? `${employee.address.street || ''}, ${employee.address.city || ''}, ${employee.address.state || ''}`
-                      : (employee.address || 'N/A')}
-                  </span>
+                  <span className="truncate">{formatAddress(employee.address)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CalendarClock className="h-4 w-4 text-muted-foreground" />
@@ -98,7 +108,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
 
               <div className="mt-6">
                 <h4 className="text-sm font-medium mb-2">Employment Type</h4>
-                <Badge variant="outline">{employee.type || 'N/A'}</Badge>
+                <Badge variant="outline">{employee.type || employee.employeeType || 'N/A'}</Badge>
               </div>
             </div>
           </TabsContent>
@@ -121,7 +131,7 @@ const EmployeeDetails: React.FC<EmployeeDetailsProps> = ({ employee }) => {
                 <div className="flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Withholding:</span>
-                  <span>{employee.taxInfo?.withholding || 'Not set'}</span>
+                  <span>{employee.taxInfo?.withholding || employee.taxInfo?.withholdings || 'Not set'}</span>
                 </div>
               </div>
 

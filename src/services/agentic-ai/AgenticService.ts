@@ -38,8 +38,8 @@ const mockTasks: AgentTask[] = [
       insights: ['Product A had highest revenue', 'Product B had best margin'],
       charts: ['sales-by-product.png', 'margin-analysis.png']
     },
-    createdAt: new Date('2025-03-15'),
-    completedAt: new Date('2025-03-16'),
+    createdAt: new Date('2025-03-15').toString(),
+    completedAt: new Date('2025-03-16').toString(),
     title: 'Q1 Sales Analysis'
   },
   {
@@ -48,7 +48,7 @@ const mockTasks: AgentTask[] = [
     goal: 'Write a blog post about AI trends in 2025',
     agent: '2',
     status: 'processing',
-    createdAt: new Date('2025-04-02'),
+    createdAt: new Date('2025-04-02').toString(),
     title: 'AI Trends Blog Post'
   },
   {
@@ -58,14 +58,30 @@ const mockTasks: AgentTask[] = [
     agent: '3',
     status: 'failed',
     error: 'Could not access required data sources',
-    createdAt: new Date('2025-03-28'),
+    createdAt: new Date('2025-03-28').toString(),
     title: 'Competitor Research'
   }
 ];
 
-// Get all agents
-export const getAgents = (): Agent[] => {
+// Get all agents - this function is imported as 'getAgents' in use-agentic.ts
+export const getAllAgents = (): Agent[] => {
   return mockAgents;
+};
+
+// Create a new agent
+export const createAgent = (agent: Partial<Agent>): Agent => {
+  const newAgent: Agent = {
+    id: uuidv4(),
+    name: agent.name || 'New Agent',
+    type: agent.type || 'general',
+    status: agent.status || 'inactive',
+    capabilities: agent.capabilities || [],
+    createdAt: new Date().toString(),
+    ...agent
+  };
+  
+  mockAgents.push(newAgent);
+  return newAgent;
 };
 
 // Get a specific agent by ID
@@ -89,12 +105,15 @@ export const getTaskById = (id: string): AgentTask | undefined => {
 };
 
 // Create a new task
-export const createTask = (task: Omit<AgentTask, 'id' | 'createdAt' | 'status'>): AgentTask => {
+export const createTask = (task: Partial<AgentTask>): AgentTask => {
   const newTask: AgentTask = {
-    ...task,
     id: uuidv4(),
+    taskType: task.taskType || 'general',
+    goal: task.goal || '',
+    agent: task.agent || '',
     status: 'pending',
-    createdAt: new Date(),
+    createdAt: new Date().toString(),
+    ...task
   };
   
   mockTasks.push(newTask);
@@ -116,6 +135,36 @@ export const updateTask = (id: string, updates: Partial<AgentTask>): AgentTask |
   
   mockTasks[taskIndex] = updatedTask;
   return updatedTask;
+};
+
+// Update task status specifically
+export const updateTaskStatus = (id: string, status: AgentTask['status']): AgentTask | undefined => {
+  return updateTask(id, { status });
+};
+
+// Update task result specifically
+export const updateTaskResult = (id: string, result: any): AgentTask | undefined => {
+  return updateTask(id, { result });
+};
+
+// Create agentic processor (placeholder for use-agentic.ts)
+export const createAgenticProcessor = () => {
+  return {
+    process: async (taskId: string) => {
+      return await processTask(taskId);
+    }
+  };
+};
+
+// Create agentic service client (placeholder for use-agentic.ts)
+export const createAgenticServiceClient = () => {
+  return {
+    getTasks,
+    getTaskById,
+    createTask,
+    updateTask,
+    getAllAgents
+  };
 };
 
 // Process a task (simulate async processing)
@@ -146,7 +195,7 @@ export const processTask = async (id: string): Promise<AgentTask | undefined> =>
     return updateTask(id, { 
       status: 'completed', 
       result, 
-      completedAt: new Date() 
+      completedAt: new Date().toString() 
     });
   } else {
     return updateTask(id, {

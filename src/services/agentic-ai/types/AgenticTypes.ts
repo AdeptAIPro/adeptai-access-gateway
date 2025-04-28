@@ -6,9 +6,12 @@ export interface Agent {
   type: string;
   status: 'active' | 'inactive' | 'maintenance' | 'error';
   capabilities: string[];
-  // Add these optional properties to prevent TypeScript errors in AgentsList
   description?: string;
-  createdAt?: Date;
+  createdAt?: string | Date;
+  specialties?: string[];
+  version?: string;
+  restrictions?: string[];
+  icon?: string;
 }
 
 // Define the AgentTask interface
@@ -16,13 +19,16 @@ export interface AgentTask {
   id: string;
   taskType: string;
   goal: string;
-  agent: string;
+  agentId?: string;
+  agent?: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   result?: any;
   error?: string;
-  createdAt: Date;
-  completedAt?: Date;
+  createdAt: string | Date;
+  completedAt?: string | Date;
   title?: string;
+  description?: string;
+  priority?: 'low' | 'medium' | 'high';
 }
 
 // Task result interfaces

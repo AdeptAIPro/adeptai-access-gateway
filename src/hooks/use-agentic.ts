@@ -1,26 +1,34 @@
+
 import { useState, useEffect, useCallback } from "react";
 import {
   AgentTask,
-  getAllAgents as getAgents,
+  getAllAgents,
   createAgent,
   createTask,
   createAgenticProcessor,
   createAgenticServiceClient,
   updateTaskStatus,
-  updateTaskResult
+  updateTaskResult,
+  processTask
 } from "@/services/agentic-ai";
+import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 const getUserTasks = async () => {
+  // This is a placeholder function - will be replaced with proper implementation when available
   console.warn("getUserTasks is a placeholder function - replace with proper implementation when available");
   return [];
 };
 
 export function useAgenticAI() {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const [agents, setAgents] = useState<any[]>([]); // Using any[] to avoid type conflicts
   const [isLoading, setIsLoading] = useState(false);
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
-  const { user } = useAuth();
+  
+  // Use a safer approach for useAuth to avoid potential undefined errors
+  const auth = useAuth?.() || {};
+  const user = auth.user;
   
   useEffect(() => {
     if (user) {
@@ -48,7 +56,7 @@ export function useAgenticAI() {
   
   const fetchAgents = async () => {
     try {
-      const availableAgents = await getAgents();
+      const availableAgents = await getAllAgents();
       console.log('Fetched agents:', availableAgents);
       
       if (availableAgents.length === 0) {
@@ -87,12 +95,10 @@ export function useAgenticAI() {
     try {
       const task = await createTask({
         taskType,
-        description: goal,
         goal,
-        status: "pending",
         agent: agentId,
+        status: "pending",
         priority,
-        params
       });
       
       if (task) {
@@ -136,7 +142,7 @@ export function useAgenticAI() {
       }
       
       setActiveTask(null);
-      return success;
+      return !!success;
     } catch (error) {
       console.error('Error processing task:', error);
       toast.error("Processing Error", {

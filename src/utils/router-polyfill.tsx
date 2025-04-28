@@ -8,6 +8,7 @@ interface RouterContextType {
   basename?: string;
 }
 
+// Initialize with default values to prevent null context issues
 const RouterContext = createContext<RouterContextType>({
   pathname: '/',
   navigate: () => {},
@@ -32,8 +33,11 @@ export const BrowserRouter = ({ children, basename = '' }: { children: ReactNode
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  // Create context value
+  const contextValue = { pathname, navigate, basename };
+
   return (
-    <RouterContext.Provider value={{ pathname, navigate, basename }}>
+    <RouterContext.Provider value={contextValue}>
       {children}
     </RouterContext.Provider>
   );

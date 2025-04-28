@@ -2,19 +2,26 @@
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
 import { Control } from 'react-hook-form';
-import { Bot } from '@/utils/icon-polyfill';
+import { Bot } from 'lucide-react';
 
+// Use a more generic type that works with both Agent definitions
 interface AgentSelectorProps {
   control: Control<any>;
   selectedTaskType: string;
-  agents: Agent[];
+  agents: {
+    id: string;
+    name: string;
+    capabilities: string[];
+  }[];
 }
 
 const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps) => {
   const filteredAgents = selectedTaskType
-    ? agents.filter(agent => agent.capabilities.includes(selectedTaskType))
+    ? agents.filter(agent => 
+        Array.isArray(agent.capabilities) && 
+        agent.capabilities.includes(selectedTaskType)
+      )
     : agents;
 
   return (

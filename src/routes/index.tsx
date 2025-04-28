@@ -1,23 +1,18 @@
 
-import React from "react";
-import { Routes, Route } from "@/utils/router-polyfill";
-import { RouteErrorBoundary } from "@/components/error-boundary/RouteErrorBoundary";
-import { authRoutes } from "./auth-routes";
-import { protectedRoutes } from "./protected-routes";
-import { marketplaceRoutes } from "./marketplace-routes";
-import { resourceRoutes } from "./resource-routes";
-import NotFound from "@/pages/NotFound";
+import React from 'react';
+import { Route, Routes } from '@/utils/router-polyfill';
+import CRM from '@/pages/CRM';
+import Payroll from '@/pages/Payroll';
+import AgenticAI from '@/pages/AgenticAI';
 
-const AppRoutes = () => {
+export default function AppRoutes() {
   return (
     <Routes>
-      {authRoutes}
-      {protectedRoutes}
-      {marketplaceRoutes}
-      {resourceRoutes}
-      <Route path="*" element={<RouteErrorBoundary><NotFound /></RouteErrorBoundary>} />
+      <Route path="/" element={<CRM />} />
+      <Route path="/crm" element={<CRM />} />
+      <Route path="/payroll" element={<Payroll />} />
+      <Route path="/agentic-ai" element={<AgenticAI />} />
+      <Route path="*" element={<div>Page not found</div>} />
     </Routes>
   );
-};
-
-export default AppRoutes;
+}

@@ -1,19 +1,10 @@
 
 // Type definitions for Agent
-import { UserRolePermissions } from './auth-types';
+import { Agent as AgenticAgent } from '../services/agentic-ai/types/AgenticTypes';
 
 declare global {
-  interface Agent {
-    id: string;
-    name: string;
-    description: string;
-    capabilities: string[];
-    icon?: string;
-    status: 'active' | 'inactive' | 'maintenance';
-    specialties?: string[];
-    version?: string;
-    restrictions?: string[];
-    type?: string;
+  // Making global Agent compatible with the AgenticAgent interface
+  interface Agent extends Omit<AgenticAgent, 'createdAt'> {
     createdAt: string;
   }
 }
