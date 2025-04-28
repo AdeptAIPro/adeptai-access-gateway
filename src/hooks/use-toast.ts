@@ -3,7 +3,7 @@ import { toast as sonnerToast } from "sonner";
 import { unifiedToast } from "@/utils/toast-adapter";
 import { ToastProps } from "@/components/ui/toast";
 
-type ToastMessage = string;
+type ToastMessage = string | ToastProps;
 type ToastOptions = {
   description?: React.ReactNode;
   action?: {
@@ -15,15 +15,15 @@ type ToastOptions = {
 
 export function useToast() {
   const showToast = (message: ToastMessage, options?: ToastOptions) => {
-    return unifiedToast.toast(message, options);
+    return unifiedToast.toast(message as any, options);
   };
 
   const showSuccess = (message: ToastMessage, options?: ToastOptions) => {
-    return unifiedToast.success(message, options);
+    return unifiedToast.success(message as any, options);
   };
 
   const showError = (message: ToastMessage, options?: ToastOptions) => {
-    return unifiedToast.error(message, options);
+    return unifiedToast.error(message as any, options);
   };
 
   return {

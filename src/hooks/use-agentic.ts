@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import {
   Agent,
@@ -29,7 +28,7 @@ export function useAgenticAI() {
   
   // Use a safer approach for useAuth to avoid potential undefined errors
   const auth = useAuth?.() || {};
-  const user = auth.user;
+  const user = auth.user || null;
   
   useEffect(() => {
     if (user) {

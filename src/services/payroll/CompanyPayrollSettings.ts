@@ -48,3 +48,8 @@ export const updateCompanyPayrollSettings = async (settings: Partial<CompanyPayr
     ...settings,
   };
 };
+
+// Add the missing export function that's imported in use-payroll-supabase.ts
+export const fetchCompanyPayrollSettings = async (companyId?: string): Promise<CompanyPayrollSettings> => {
+  return getCompanyPayrollSettings(companyId || 'default-company');
+};
