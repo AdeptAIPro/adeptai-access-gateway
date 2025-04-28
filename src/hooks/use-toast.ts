@@ -2,8 +2,9 @@
 import { toast as sonnerToast } from "sonner";
 import { unifiedToast } from "@/utils/toast-adapter";
 import { ToastProps } from "@/components/ui/toast";
+import { compatibleToast, ExtendedToastOptions } from "@/utils/toast-compat";
 
-type ToastMessage = string | ToastProps;
+type ToastMessage = string | ToastProps | ExtendedToastOptions;
 type ToastOptions = {
   description?: React.ReactNode;
   action?: {
@@ -15,15 +16,15 @@ type ToastOptions = {
 
 export function useToast() {
   const showToast = (message: ToastMessage, options?: ToastOptions) => {
-    return unifiedToast.toast(message as any, options);
+    return compatibleToast(message as any, options);
   };
 
   const showSuccess = (message: ToastMessage, options?: ToastOptions) => {
-    return unifiedToast.success(message as any, options);
+    return compatibleToast.success(message as any, options);
   };
 
   const showError = (message: ToastMessage, options?: ToastOptions) => {
-    return unifiedToast.error(message as any, options);
+    return compatibleToast.error(message as any, options);
   };
 
   return {
@@ -33,5 +34,5 @@ export function useToast() {
   };
 }
 
-// For direct usage without hook
-export { sonnerToast as toast };
+// For direct usage without hook - use the compatible version
+export { compatibleToast as toast };

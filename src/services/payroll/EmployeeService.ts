@@ -152,3 +152,6 @@ export const updateEmployee = async (id: string, updates: Partial<Employee>): Pr
     return null;
   }
 };
+
+// Add the missing function that's imported in use-payroll-supabase.ts
+export const addEmployee = createEmployee;

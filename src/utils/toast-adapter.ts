@@ -1,6 +1,7 @@
 
 import { toast as sonnerToast } from "sonner";
 import { ToastProps } from '@/components/ui/toast';
+import { compatibleToast, ExtendedToastOptions } from "@/utils/toast-compat";
 
 /**
  * This adapter allows code to use shadcn/ui toast props with sonner
@@ -22,40 +23,18 @@ export const adaptShadcnToSonner = (toastProps: ToastProps): void => {
 export const createUnifiedToastHandler = () => {
   return {
     // Standard toast method that accepts either format
-    toast: (message: string | ToastProps, options?: any) => {
-      if (typeof message === 'object') {
-        // It's a shadcn-style object
-        adaptShadcnToSonner(message);
-        return message;
-      } else {
-        // It's a sonner-style call
-        return sonnerToast(message, options);
-      }
+    toast: (message: string | ToastProps | ExtendedToastOptions, options?: any) => {
+      return compatibleToast(message as any, options);
     },
     
     // Error toast method that accepts either format
-    error: (message: string | ToastProps, options?: any) => {
-      if (typeof message === 'object') {
-        // It's a shadcn-style object with variant
-        message.variant = 'destructive';
-        adaptShadcnToSonner(message);
-        return message;
-      } else {
-        // It's a sonner-style call
-        return sonnerToast.error(message, options);
-      }
+    error: (message: string | ToastProps | ExtendedToastOptions, options?: any) => {
+      return compatibleToast.error(message as any, options);
     },
     
     // Success toast method that accepts either format
-    success: (message: string | ToastProps, options?: any) => {
-      if (typeof message === 'object') {
-        // It's a shadcn-style object
-        adaptShadcnToSonner(message);
-        return message;
-      } else {
-        // It's a sonner-style call
-        return sonnerToast.success(message, options);
-      }
+    success: (message: string | ToastProps | ExtendedToastOptions, options?: any) => {
+      return compatibleToast.success(message as any, options);
     }
   };
 };
