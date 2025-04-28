@@ -1,14 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import useMatchingProcess from "@/hooks/use-matching-process";
 import { MatchingOptions } from "@/components/talent-matching/types";
 
 export const useTalentMatching = () => {
   console.log("Initializing useTalentMatching hook");
   const { user } = useAuth();
-  const { toast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
@@ -125,17 +123,15 @@ export const useTalentMatching = () => {
     }
     
     if (!jobDescription) {
-      toast({
-        title: "Missing Job Description",
-        description: "Please enter a job description to start matching",
+      toast("Missing Job Description", {
+        description: "Please enter a job description to start matching"
       });
       return;
     }
     
     if (selectedTargetSources.length === 0) {
-      toast({
-        title: "No Target Sources Selected",
-        description: "Please select at least one candidate source",
+      toast("No Target Sources Selected", {
+        description: "Please select at least one candidate source"
       });
       return;
     }

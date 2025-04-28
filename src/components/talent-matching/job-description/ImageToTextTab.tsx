@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Image as ImageIcon, Camera, RotateCcw, Copy, Check, Loader2 } from "lucide-react";
 import ImageProcessor from "./ImageProcessor";
 
@@ -19,7 +18,6 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
   jobDescription,
   setJobDescription,
 }) => {
-  const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
 
@@ -27,9 +25,8 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
       setFileUploaded(file);
-      toast({
-        title: "Image Uploaded",
-        description: `${file.name} has been uploaded`,
+      toast("Image Uploaded", {
+        description: `${file.name} has been uploaded`
       });
     }
   };
@@ -38,9 +35,8 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
     setIsCapturing(true);
     // In a real implementation, this would activate the camera
     setTimeout(() => {
-      toast({
-        title: "Camera Feature",
-        description: "This is a demo of the camera capture feature. In production, this would access your device camera.",
+      toast("Camera Feature", {
+        description: "This is a demo of the camera capture feature. In production, this would access your device camera."
       });
       setIsCapturing(false);
     }, 1500);
@@ -50,9 +46,8 @@ const ImageToTextTab: React.FC<ImageToTextTabProps> = ({
     if (jobDescription) {
       navigator.clipboard.writeText(jobDescription);
       setCopied(true);
-      toast({
-        title: "Text Copied",
-        description: "Job description copied to clipboard",
+      toast("Text Copied", {
+        description: "Job description copied to clipboard"
       });
       setTimeout(() => setCopied(false), 2000);
     }

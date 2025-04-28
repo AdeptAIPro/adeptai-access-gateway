@@ -9,9 +9,9 @@ export const adaptShadcnToSonner = (toastProps: ToastProps): void => {
   const { title, description, variant } = toastProps;
   
   if (variant === 'destructive') {
-    sonnerToast.error(title as string, { description });
+    sonnerToast.error(title as string, { description: description as string });
   } else {
-    sonnerToast(title as string, { description });
+    sonnerToast(title as string, { description: description as string });
   }
 };
 
@@ -21,35 +21,14 @@ export const adaptShadcnToSonner = (toastProps: ToastProps): void => {
  */
 export const createUnifiedToastHandler = () => {
   return {
-    toast: (message: string | ToastProps, options?: any) => {
-      if (typeof message === 'object' && 'title' in message) {
-        // It's a shadcn/ui-style toast
-        adaptShadcnToSonner(message);
-        return message;
-      } else {
-        // It's a sonner-style toast
-        return sonnerToast(message as string, options);
-      }
+    toast: (message: string, options?: any) => {
+      return sonnerToast(message, options);
     },
-    error: (message: string | ToastProps, options?: any) => {
-      if (typeof message === 'object' && 'title' in message) {
-        // It's a shadcn/ui-style toast
-        adaptShadcnToSonner({ ...message, variant: 'destructive' });
-        return message;
-      } else {
-        // It's a sonner-style toast
-        return sonnerToast.error(message as string, options);
-      }
+    error: (message: string, options?: any) => {
+      return sonnerToast.error(message, options);
     },
-    success: (message: string | ToastProps, options?: any) => {
-      if (typeof message === 'object' && 'title' in message) {
-        // It's a shadcn/ui-style toast
-        adaptShadcnToSonner(message);
-        return message;
-      } else {
-        // It's a sonner-style toast
-        return sonnerToast.success(message as string, options);
-      }
+    success: (message: string, options?: any) => {
+      return sonnerToast.success(message, options);
     }
   };
 };

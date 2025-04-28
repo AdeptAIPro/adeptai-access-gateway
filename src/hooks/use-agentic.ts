@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
+  Agent,
   AgentTask,
   getAllAgents,
   createAgent,
@@ -10,8 +11,8 @@ import {
   updateTaskStatus,
   updateTaskResult,
   processTask
-} from "@/services/agentic-ai";
-import { toast } from "@/hooks/use-toast";
+} from "@/services/agentic-ai/AgenticService";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 
 const getUserTasks = async () => {
@@ -22,7 +23,7 @@ const getUserTasks = async () => {
 
 export function useAgenticAI() {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
-  const [agents, setAgents] = useState<any[]>([]); // Using any[] to avoid type conflicts
+  const [agents, setAgents] = useState<Agent[]>([]); 
   const [isLoading, setIsLoading] = useState(false);
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   

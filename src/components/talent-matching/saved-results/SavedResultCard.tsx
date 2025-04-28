@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Check, Download, Trash2, Clock, Star, StarOff } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { SavedMatchResult } from "../types/saved-results.types";
 
 interface SavedResultCardProps {
@@ -32,8 +31,6 @@ export const SavedResultCard: React.FC<SavedResultCardProps> = ({
   onExport,
   onToggleFavorite,
 }) => {
-  const { toast } = useToast();
-
   return (
     <Card className={result.favorited ? "border-primary/40 shadow-sm" : ""}>
       <CardHeader className="pb-2">
@@ -73,8 +70,7 @@ export const SavedResultCard: React.FC<SavedResultCardProps> = ({
               <DropdownMenuItem 
                 onClick={() => {
                   onDelete(result.id);
-                  toast({
-                    title: "Result deleted",
+                  toast("Result deleted", {
                     description: "The matching result has been deleted"
                   });
                 }}
