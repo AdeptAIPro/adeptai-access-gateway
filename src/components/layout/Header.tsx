@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/utils/router-polyfill";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {

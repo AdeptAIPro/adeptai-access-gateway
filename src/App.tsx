@@ -10,7 +10,7 @@ function App() {
   return (
     <ErrorBoundary variant="fullscreen">
       <AppProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="">
           <ToastProvider />
           <AppRoutes />
           <GlobalErrorDialog />

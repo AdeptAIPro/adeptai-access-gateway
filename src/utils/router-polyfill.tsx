@@ -5,15 +5,17 @@ import React, { createContext, useContext, ReactNode, useState, useEffect } from
 interface RouterContextType {
   pathname: string;
   navigate: (to: string) => void;
+  basename?: string;
 }
 
 const RouterContext = createContext<RouterContextType>({
   pathname: '/',
-  navigate: () => {}
+  navigate: () => {},
+  basename: '',
 });
 
 // BrowserRouter component
-export const BrowserRouter = ({ children }: { children: ReactNode }) => {
+export const BrowserRouter = ({ children, basename = '' }: { children: ReactNode, basename?: string }) => {
   const [pathname, setPathname] = useState(window.location.pathname);
 
   const navigate = (to: string) => {
@@ -31,7 +33,7 @@ export const BrowserRouter = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <RouterContext.Provider value={{ pathname, navigate }}>
+    <RouterContext.Provider value={{ pathname, navigate, basename }}>
       {children}
     </RouterContext.Provider>
   );
@@ -49,11 +51,14 @@ export const Routes = ({ children }: { children: React.ReactNode }) => {
 
 // Route component
 export const Route = ({ path, element }: RouteProps) => {
-  const { pathname } = useContext(RouterContext);
+  const { pathname, basename = '' } = useContext(RouterContext);
+  
+  // Adjust path with basename if provided
+  const fullPath = basename ? `${basename}${path}` : path;
   
   // Simple path matching (this is highly simplified)
-  const isMatch = path === '*' || pathname === path || 
-    (path.includes('*') && pathname.startsWith(path.replace('*', '')));
+  const isMatch = path === '*' || pathname === fullPath || 
+    (path.includes('*') && pathname.startsWith(fullPath.replace('*', '')));
   
   return isMatch ? <>{element}</> : null;
 };
@@ -62,21 +67,26 @@ export const Route = ({ path, element }: RouteProps) => {
 export const Link = ({ 
   to, 
   children, 
-  className = ''
+  className = '',
+  ...rest
 }: { 
   to: string; 
   children: ReactNode;
-  className?: string; 
+  className?: string;
+  [key: string]: any;
 }) => {
-  const { navigate } = useContext(RouterContext);
+  const { navigate, basename = '' } = useContext(RouterContext);
+  
+  // Adjust "to" with basename if provided
+  const fullPath = basename ? `${basename}${to}` : to;
   
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate(to);
+    navigate(fullPath);
   };
   
   return (
-    <a href={to} onClick={handleClick} className={className}>
+    <a href={fullPath} onClick={handleClick} className={className} {...rest}>
       {children}
     </a>
   );
@@ -87,24 +97,31 @@ export const NavLink = ({
   to, 
   children,
   className = '',
+  ...rest
 }: { 
   to: string; 
   children: ReactNode | ((props: { isActive: boolean }) => ReactNode);
   className?: string;
+  [key: string]: any;
 }) => {
-  const { pathname, navigate } = useContext(RouterContext);
-  const isActive = pathname === to;
+  const { pathname, navigate, basename = '' } = useContext(RouterContext);
+  
+  // Adjust "to" with basename if provided
+  const fullPath = basename ? `${basename}${to}` : to;
+  
+  const isActive = pathname === fullPath;
   
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate(to);
+    navigate(fullPath);
   };
   
   return (
     <a 
-      href={to} 
+      href={fullPath} 
       onClick={handleClick} 
       className={className}
+      {...rest}
     >
       {typeof children === 'function' ? children({ isActive }) : children}
     </a>
@@ -113,8 +130,13 @@ export const NavLink = ({
 
 // useNavigate hook
 export const useNavigate = () => {
-  const { navigate } = useContext(RouterContext);
-  return navigate;
+  const { navigate, basename = '' } = useContext(RouterContext);
+  
+  return (to: string, options?: { replace?: boolean }) => {
+    // Adjust "to" with basename if provided
+    const fullPath = basename ? `${basename}${to}` : to;
+    return navigate(fullPath);
+  };
 };
 
 // useLocation hook

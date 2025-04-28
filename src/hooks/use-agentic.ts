@@ -1,21 +1,19 @@
-
-import { useState, useEffect } from 'react';
-import { useAuth } from './use-auth';
-import { 
-  Agent, 
+import { useState, useEffect, useCallback } from "react";
+import {
   AgentTask,
   getAllAgents as getAgents,
-  getAllTasks as getUserTasks,
   createAgent,
   createTask,
-  updateTask,
-  deleteTask
-} from '@/services/agentic-ai';
-import { processTask } from '@/services/agentic-ai';
-import { toast } from '@/utils/sonner-polyfill';
+  createAgenticProcessor,
+  createAgenticServiceClient,
+  updateTaskStatus,
+  updateTaskResult
+} from "@/services/agentic-ai";
 
-// Define AgentTaskType type for use in createTask
-type AgentTaskType = string;
+const getUserTasks = async () => {
+  console.warn("getUserTasks is a placeholder function - replace with proper implementation when available");
+  return [];
+};
 
 export function useAgenticAI() {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
@@ -24,7 +22,6 @@ export function useAgenticAI() {
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const { user } = useAuth();
   
-  // Load user's tasks and available agents
   useEffect(() => {
     if (user) {
       fetchUserTasks();
@@ -32,7 +29,6 @@ export function useAgenticAI() {
     }
   }, [user]);
   
-  // Fetch user tasks
   const fetchUserTasks = async () => {
     if (!user) return;
     
@@ -50,7 +46,6 @@ export function useAgenticAI() {
     }
   };
   
-  // Fetch available agents
   const fetchAgents = async () => {
     try {
       const availableAgents = await getAgents();
@@ -59,7 +54,6 @@ export function useAgenticAI() {
       if (availableAgents.length === 0) {
         console.warn('No agents found. This will cause the agent selection dropdown to be empty.');
       } else {
-        // Debug log for agent capabilities
         availableAgents.forEach(agent => {
           console.log(`Agent ${agent.name} capabilities:`, agent.capabilities);
         });
@@ -74,9 +68,8 @@ export function useAgenticAI() {
     }
   };
   
-  // Create a new task
   const handleCreateTask = async (
-    taskType: AgentTaskType,
+    taskType: string,
     goal: string,
     agentId: string,
     params: Record<string, any> = {},
@@ -95,7 +88,7 @@ export function useAgenticAI() {
       const task = await createTask({
         taskType,
         description: goal,
-        goal, // Ensure goal is properly set
+        goal,
         status: "pending",
         agent: agentId,
         priority,
@@ -121,11 +114,9 @@ export function useAgenticAI() {
     }
   };
   
-  // Process a task
   const handleProcessTask = async (taskId: string) => {
     setIsLoading(true);
     try {
-      // Find the task in our local state
       const task = tasks.find(t => t.id === taskId);
       if (task) {
         setActiveTask(task);
@@ -134,7 +125,6 @@ export function useAgenticAI() {
       const success = await processTask(taskId);
       
       if (success) {
-        // Refresh the tasks to get the updated status
         await fetchUserTasks();
         toast.success("Task Completed", {
           description: "Your AI agent has completed the assigned task."

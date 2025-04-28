@@ -1,6 +1,6 @@
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink } from "@/utils/router-polyfill";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
