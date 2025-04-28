@@ -10,7 +10,7 @@ import AgentsList from './dashboard/AgentsList';
 import TasksByCategory from './dashboard/TasksByCategory';
 import { filterTasksByStatus, groupTasksByType } from './dashboard/utils/agenticUtils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AgentTask } from '@/services/agentic-ai/AgenticService';
+import { AgentTask } from '@/services/agentic-ai';
 
 const AgenticDashboard = () => {
   const { tasks, agents, isLoading, activeTask, processTask } = useAgenticAI();
@@ -54,9 +54,9 @@ const AgenticDashboard = () => {
       
       <Tabs defaultValue="all-tasks" className="w-full">
         <TabsList className="w-full md:w-auto mb-4 bg-card shadow-sm border border-border p-1 rounded-lg overflow-x-auto flex md:inline-flex">
-          <TabsTrigger value="all-tasks" className="flex-1 md:flex-none">All Tasks</TabsTrigger>
-          <TabsTrigger value="by-category" className="flex-1 md:flex-none">By Category</TabsTrigger>
-          <TabsTrigger value="agents" className="flex-1 md:flex-none">Agents</TabsTrigger>
+          <TabsTrigger value="all-tasks">All Tasks</TabsTrigger>
+          <TabsTrigger value="by-category">By Category</TabsTrigger>
+          <TabsTrigger value="agents">Agents</TabsTrigger>
         </TabsList>
         
         <TabsContent value="all-tasks" className="space-y-4 p-1">

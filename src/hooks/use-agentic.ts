@@ -3,37 +3,19 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './use-auth';
 import { 
   Agent, 
-  AgentTask, 
+  AgentTask,
+  getAllAgents as getAgents,
   getAllTasks as getUserTasks,
-  getAgents,
+  createAgent,
   createTask,
-  updateTaskStatus,
-  updateAgent,
+  updateTask,
   deleteTask
-} from '@/services/agentic-ai/AgenticService';
+} from '@/services/agentic-ai';
+import { processTask } from '@/services/agentic-ai';
 import { toast } from '@/utils/sonner-polyfill';
 
 // Define AgentTaskType type for use in createTask
 type AgentTaskType = string;
-
-// Helper function to process task (moved from the service)
-const processTask = async (taskId: string): Promise<boolean> => {
-  try {
-    console.log(`Processing task ${taskId}`);
-    await updateTaskStatus(taskId, "in progress");
-    
-    // Simulate task processing with a delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Update task as completed
-    await updateTaskStatus(taskId, "completed");
-    return true;
-  } catch (error) {
-    console.error(`Error processing task ${taskId}:`, error);
-    await updateTaskStatus(taskId, "failed");
-    return false;
-  }
-};
 
 export function useAgenticAI() {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
@@ -113,9 +95,11 @@ export function useAgenticAI() {
       const task = await createTask({
         taskType,
         description: goal,
+        goal, // Ensure goal is properly set
         status: "pending",
-        agentId,
-        // We don't use userId from the API directly since it's not in the interface
+        agent: agentId,
+        priority,
+        params
       });
       
       if (task) {

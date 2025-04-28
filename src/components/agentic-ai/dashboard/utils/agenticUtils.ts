@@ -1,5 +1,5 @@
 
-import { AgentTask } from '@/services/agentic-ai/AgenticService';
+import { AgentTask } from '@/services/agentic-ai';
 
 export const groupTasksByType = (tasks: AgentTask[]): Record<string, AgentTask[]> => {
   return tasks.reduce((acc: Record<string, AgentTask[]>, task) => {

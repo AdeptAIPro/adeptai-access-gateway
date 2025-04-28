@@ -38,6 +38,7 @@ const TaskActionsMenu: React.FC<TaskActionsMenuProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -46,20 +47,17 @@ const TaskActionsMenu: React.FC<TaskActionsMenuProps> = ({
         <DropdownMenuSeparator />
         {status === 'failed' && onRetry && (
           <DropdownMenuItem onClick={handleRetry}>
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Retry Task
+            <RefreshCcw className="mr-2 h-4 w-4" /> Retry Task
           </DropdownMenuItem>
         )}
         {onSave && (
           <DropdownMenuItem onClick={onSave}>
-            <CheckCircle className="mr-2 h-4 w-4" />
-            Save Results
+            <CheckCircle className="mr-2 h-4 w-4" /> Save Results
           </DropdownMenuItem>
         )}
         {onDelete && (
           <DropdownMenuItem onClick={onDelete}>
-            <AlertCircle className="mr-2 h-4 w-4 text-destructive" />
-            Delete Task
+            <AlertCircle className="mr-2 h-4 w-4 text-destructive" /> Delete Task
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

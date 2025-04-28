@@ -6,7 +6,7 @@ import EnhancedTaskResultDisplay from "@/components/agentic-ai/task-result/Enhan
 import AgenticErrorHandler from "@/components/agentic-ai/AgenticErrorHandler";
 import usePersistedState from "@/hooks/use-persisted-state";
 import { toast } from "sonner";
-import { AgentTask } from "@/services/agentic-ai/AgenticService";
+import { AgentTask } from "@/services/agentic-ai";
 
 interface AgenticProcessFlowProps {
   tasks: AgentTask[];
