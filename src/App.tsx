@@ -4,14 +4,17 @@ import AppRoutes from "./routes";
 import { ErrorBoundary } from "./components/error-boundary/ErrorBoundary";
 import GlobalErrorDialog from "./components/error-handling/GlobalErrorDialog";
 import { ToastProvider } from "./providers/ToastProvider";
+import { BrowserRouter } from "./utils/router-polyfill";
 
 function App() {
   return (
     <ErrorBoundary variant="fullscreen">
       <AppProvider>
-        <ToastProvider />
-        <AppRoutes />
-        <GlobalErrorDialog />
+        <BrowserRouter>
+          <ToastProvider />
+          <AppRoutes />
+          <GlobalErrorDialog />
+        </BrowserRouter>
       </AppProvider>
     </ErrorBoundary>
   );

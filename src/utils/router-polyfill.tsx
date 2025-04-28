@@ -129,7 +129,7 @@ export const Navigate = ({ to, replace = false }: { to: string; replace?: boolea
   
   useEffect(() => {
     navigate(to);
-  }, [to]);
+  }, [to, navigate]);
   
   return null;
 };
