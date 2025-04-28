@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useSecureStorage } from '@/hooks/use-secure-storage';
 import { handleError, ErrorType } from '@/utils/error-handler';
 import { useSecurity } from '@/providers/SecurityProvider';
-import { initializeAwsConfig, checkAwsCredentials } from '@/services/aws/AwsConfigService';
+import { initializeAwsConfig, checkAwsCredentials, checkAwsInfrastructure } from '@/services/aws/AwsConfigService';
 import { toast } from 'sonner';
 
 interface AWSCredentials {
@@ -22,12 +22,19 @@ export interface AppCredentials {
   [key: string]: any; // Allow for other credential types
 }
 
+interface InfrastructureStatus {
+  ready: boolean;
+  issues: string[];
+  lastChecked: string;
+}
+
 interface CredentialsContextType {
   credentials: AppCredentials | null;
   setCredentials: (creds: AppCredentials) => void;
   isBackendReady: boolean;
   checkBackendStatus: () => Promise<boolean>;
   testAwsConnection: (awsCredentials: AWSCredentials) => Promise<boolean>;
+  checkInfrastructure: () => Promise<InfrastructureStatus>;
   clearCredentials: () => void;
 }
 
@@ -37,12 +44,14 @@ const CredentialsContext = createContext<CredentialsContextType>({
   isBackendReady: false,
   checkBackendStatus: async () => false,
   testAwsConnection: async () => false,
+  checkInfrastructure: async () => ({ ready: false, issues: [], lastChecked: '' }),
   clearCredentials: () => {}
 });
 
 export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [credentials, setCredentialsState] = useState<AppCredentials | null>(null);
   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
+  const [infrastructureStatus, setInfrastructureStatus] = useState<InfrastructureStatus | null>(null);
   const { encryptData, decryptData } = useSecurity();
   const { getItem, setItem } = useSecureStorage({ 
     storageType: 'local',
@@ -132,6 +141,43 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
     }
   };
   
+  // Check AWS infrastructure readiness
+  const checkInfrastructure = async (): Promise<InfrastructureStatus> => {
+    try {
+      if (!credentials?.aws) {
+        return {
+          ready: false,
+          issues: ["AWS credentials not configured"],
+          lastChecked: new Date().toISOString()
+        };
+      }
+      
+      const { ready, issues } = await checkAwsInfrastructure();
+      
+      const status = {
+        ready,
+        issues,
+        lastChecked: new Date().toISOString()
+      };
+      
+      setInfrastructureStatus(status);
+      return status;
+    } catch (error) {
+      handleError({
+        type: ErrorType.INFRASTRUCTURE,
+        message: "Failed to check infrastructure status",
+        userFriendlyMessage: "Unable to verify AWS infrastructure readiness",
+        originalError: error
+      }, true);
+      
+      return {
+        ready: false,
+        issues: ["Error checking infrastructure status"],
+        lastChecked: new Date().toISOString()
+      };
+    }
+  };
+  
   // Set credentials securely
   const setCredentials = (creds: AppCredentials) => {
     try {
@@ -164,6 +210,7 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
       setItem('agenticCredentials', null);
       setCredentialsState(null);
       setIsBackendReady(false);
+      setInfrastructureStatus(null);
       toast.success("All credentials have been cleared");
     } catch (error) {
       handleError({
@@ -192,6 +239,7 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
         isBackendReady,
         checkBackendStatus,
         testAwsConnection,
+        checkInfrastructure,
         clearCredentials
       }}
     >

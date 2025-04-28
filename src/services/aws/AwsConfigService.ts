@@ -1,12 +1,17 @@
 
 import { getEnvVar, setEnvVar } from '@/utils/env-utils';
-import { S3Client } from '@aws-sdk/client-s3';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { S3Client, ListBucketsCommand, HeadBucketCommand } from '@aws-sdk/client-s3';
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { handleError, ErrorType } from '@/utils/error-handler';
+import { toast } from 'sonner';
 
 // Define bucket names
 export const TASK_DATA_BUCKET = 'adeptai-task-data';
 export const MODEL_ARTIFACTS_BUCKET = 'adeptai-model-artifacts';
+
+// Define table names
+export const TASKS_TABLE = 'adeptai-tasks';
+export const AGENTS_TABLE = 'adeptai-agents';
 
 // Store clients to be reused across the application
 let s3ClientInstance: S3Client | null = null;
@@ -31,19 +36,17 @@ export const checkAwsCredentials = async (): Promise<boolean> => {
       console.warn("AWS credentials look incomplete");
     }
     
-    // In production, we would verify these credentials by making a test call
-    // For demo purposes, we'll just initialize S3 client with error handling
     try {
       const s3 = getS3Client();
       const dynamoDB = getDynamoDBClient();
       
-      // In a real implementation, we'd make a lightweight call to verify access
-      // For example: await s3.send(new HeadBucketCommand({ Bucket: TASK_DATA_BUCKET }));
+      // Make lightweight calls to verify access
+      const s3Response = await s3.send(new ListBucketsCommand({}));
       
-      console.log("AWS clients initialized successfully");
+      console.log("AWS S3 connection verified successfully");
       return true;
     } catch (error) {
-      console.error("Failed to initialize AWS clients:", error);
+      console.error("Failed to verify AWS access:", error);
       return false;
     }
   } catch (error) {
@@ -75,6 +78,85 @@ export const initializeAwsConfig = (
   dynamoDBClientInstance = null;
   
   console.log("AWS configuration initialized");
+};
+
+/**
+ * Verify if required S3 buckets exist
+ */
+export const verifyRequiredBuckets = async (): Promise<{
+  success: boolean;
+  missingBuckets: string[];
+}> => {
+  const requiredBuckets = [TASK_DATA_BUCKET, MODEL_ARTIFACTS_BUCKET];
+  const missingBuckets: string[] = [];
+  
+  try {
+    const s3Client = getS3Client();
+    
+    for (const bucket of requiredBuckets) {
+      try {
+        await s3Client.send(new HeadBucketCommand({ Bucket: bucket }));
+        console.log(`Bucket ${bucket} exists`);
+      } catch (error) {
+        console.warn(`Bucket ${bucket} does not exist or is not accessible`);
+        missingBuckets.push(bucket);
+      }
+    }
+    
+    return {
+      success: missingBuckets.length === 0,
+      missingBuckets
+    };
+  } catch (error) {
+    handleError({
+      type: ErrorType.AWS,
+      message: "Error verifying S3 buckets",
+      userFriendlyMessage: "Failed to verify S3 storage buckets",
+      originalError: error
+    }, true);
+    
+    return {
+      success: false,
+      missingBuckets: requiredBuckets
+    };
+  }
+};
+
+/**
+ * Verify if required DynamoDB tables exist
+ */
+export const verifyRequiredTables = async (): Promise<{
+  success: boolean;
+  missingTables: string[];
+}> => {
+  const requiredTables = [TASKS_TABLE, AGENTS_TABLE];
+  
+  try {
+    const dynamoClient = getDynamoDBClient();
+    const response = await dynamoClient.send(new ListTablesCommand({}));
+    const existingTables = response.TableNames || [];
+    
+    const missingTables = requiredTables.filter(
+      table => !existingTables.includes(table)
+    );
+    
+    return {
+      success: missingTables.length === 0,
+      missingTables
+    };
+  } catch (error) {
+    handleError({
+      type: ErrorType.AWS,
+      message: "Error verifying DynamoDB tables",
+      userFriendlyMessage: "Failed to verify database tables",
+      originalError: error
+    }, true);
+    
+    return {
+      success: false,
+      missingTables: requiredTables
+    };
+  }
 };
 
 /**
@@ -139,6 +221,52 @@ export const clearAwsConfig = (): void => {
   dynamoDBClientInstance = null;
   
   console.log("AWS configuration cleared");
+};
+
+/**
+ * Check if AWS infrastructure is ready for production use
+ */
+export const checkAwsInfrastructure = async (): Promise<{
+  ready: boolean;
+  issues: string[];
+}> => {
+  const issues: string[] = [];
+  
+  try {
+    // Check credentials
+    const credentialsValid = await checkAwsCredentials();
+    if (!credentialsValid) {
+      issues.push("AWS credentials are invalid or missing");
+      return { ready: false, issues };
+    }
+    
+    // Check S3 buckets
+    const { success: bucketsExist, missingBuckets } = await verifyRequiredBuckets();
+    if (!bucketsExist) {
+      issues.push(`Missing required S3 buckets: ${missingBuckets.join(", ")}`);
+    }
+    
+    // Check DynamoDB tables
+    const { success: tablesExist, missingTables } = await verifyRequiredTables();
+    if (!tablesExist) {
+      issues.push(`Missing required DynamoDB tables: ${missingTables.join(", ")}`);
+    }
+    
+    return {
+      ready: bucketsExist && tablesExist,
+      issues
+    };
+  } catch (error) {
+    handleError({
+      type: ErrorType.AWS,
+      message: "Error checking AWS infrastructure",
+      userFriendlyMessage: "Failed to verify AWS infrastructure readiness",
+      originalError: error
+    }, true);
+    
+    issues.push("Error occurred while checking AWS infrastructure");
+    return { ready: false, issues };
+  }
 };
 
 // Export client instances for use throughout the application

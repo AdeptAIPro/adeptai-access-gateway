@@ -1,244 +1,167 @@
 
-import { toast } from "sonner";
+import { toast } from 'sonner';
 
 export enum ErrorType {
-  API = "API_ERROR",
-  NETWORK = "NETWORK_ERROR",
-  AUTHENTICATION = "AUTHENTICATION_ERROR",
-  AUTHORIZATION = "AUTHORIZATION_ERROR",
-  VALIDATION = "VALIDATION_ERROR",
-  NOT_FOUND = "NOT_FOUND_ERROR",
-  SERVER = "SERVER_ERROR",
-  PROCESSING = "PROCESSING_ERROR",
-  UNKNOWN = "UNKNOWN_ERROR",
-  SECURITY = "SECURITY_ERROR",
-  DATA_ENCRYPTION = "DATA_ENCRYPTION_ERROR",
-  INPUT_VALIDATION = "INPUT_VALIDATION_ERROR",
-  RATE_LIMIT = "RATE_LIMIT_ERROR"
+  API = 'API',
+  AUTHENTICATION = 'AUTHENTICATION',
+  AUTHORIZATION = 'AUTHORIZATION',
+  DATABASE = 'DATABASE',
+  NETWORK = 'NETWORK',
+  VALIDATION = 'VALIDATION',
+  UNKNOWN = 'UNKNOWN',
+  AWS = 'AWS',
+  CONFIGURATION = 'CONFIGURATION',
+  DATA_PROCESSING = 'DATA_PROCESSING',
+  DATA_ENCRYPTION = 'DATA_ENCRYPTION',
+  DEPLOYMENT = 'DEPLOYMENT',
+  CI_CD = 'CI_CD',
+  INFRASTRUCTURE = 'INFRASTRUCTURE'
 }
 
-export interface AppError extends Error {
+export interface ErrorDetails {
   type: ErrorType;
-  userFriendlyMessage: string;
-  originalError?: Error;
+  message: string;
+  userFriendlyMessage?: string;
+  originalError?: any;
   context?: Record<string, any>;
 }
 
-interface GlobalErrorState {
-  hasError: boolean;
-  error: AppError | null;
-  errorCount: Record<string, number>;
-  lastErrorTime: Record<string, number>;
-}
-
-// Global state to track errors
-const errorState: GlobalErrorState = {
-  hasError: false,
-  error: null,
-  errorCount: {},
-  lastErrorTime: {}
-};
-
-// Reset global error state
-export const resetErrorState = () => {
-  errorState.hasError = false;
-  errorState.error = null;
-};
-
-// Get global error state
-export const getErrorState = (): Readonly<GlobalErrorState> => ({ ...errorState });
-
-// Create an AppError from any error
-export const createAppError = (
-  message: string, 
-  type: ErrorType = ErrorType.UNKNOWN, 
-  originalError?: any,
-  context?: Record<string, any>
-): AppError => {
-  return {
-    name: "AppError",
+// Generic error handler that can be used throughout the application
+export const handleError = (errorDetails: ErrorDetails, showToast: boolean = true): void => {
+  const {
     type,
     message,
-    userFriendlyMessage: getUserFriendlyMessage(type, message),
+    userFriendlyMessage,
     originalError,
     context
-  } as AppError;
-};
-
-// Handle error globally
-export const handleError = (
-  error: any,
-  showToast: boolean = true,
-  critical: boolean = false
-): AppError => {
-  // Convert to AppError if not already
-  const appError: AppError = error && error.type 
-    ? error as AppError 
-    : createAppError(
-        error?.message || "An unexpected error occurred",
-        getErrorTypeFromError(error),
-        error
-      );
-
-  // Set global error state for critical errors
-  if (critical) {
-    errorState.hasError = true;
-    errorState.error = appError;
+  } = errorDetails;
+  
+  // Determine if this is a critical error
+  const isCritical = [
+    ErrorType.DATABASE,
+    ErrorType.AUTHENTICATION,
+    ErrorType.AWS,
+    ErrorType.DEPLOYMENT,
+    ErrorType.INFRASTRUCTURE
+  ].includes(type);
+  
+  // Log the error with additional context for debugging
+  const logMessage = `[${type}] ${message}`;
+  if (isCritical) {
+    console.error(logMessage, { originalError, context });
+  } else {
+    console.warn(logMessage, { originalError, context });
   }
   
-  // Track error frequency
-  const errorKey = `${appError.type}:${appError.message}`;
-  errorState.errorCount[errorKey] = (errorState.errorCount[errorKey] || 0) + 1;
-  errorState.lastErrorTime[errorKey] = Date.now();
-
-  // Rate limiting for same error
-  const sameErrorCount = errorState.errorCount[errorKey] || 0;
-  const lastErrorTime = errorState.lastErrorTime[errorKey] || 0;
-  const timeSinceLastError = Date.now() - lastErrorTime;
-  
-  // Only show toast if:
-  // 1. Toast is requested
-  // 2. Not the same error in quick succession (within 5 seconds)
-  // 3. Not showing too many of the same error (max 3 within a minute)
-  const showToastForThisError = showToast && 
-    (timeSinceLastError > 5000 || errorKey !== errorState.error?.message) &&
-    (sameErrorCount <= 3 || timeSinceLastError > 60000);
-  
-  // Show toast notification if appropriate
-  if (showToastForThisError) {
-    const toastOptions = getToastOptions(appError.type);
+  // Show user-friendly toast message if requested
+  if (showToast) {
+    const toastMessage = userFriendlyMessage || 
+      'An error occurred. Please try again or contact support.';
     
-    // Show security errors with more prominence
-    if (appError.type === ErrorType.SECURITY || 
-        appError.type === ErrorType.DATA_ENCRYPTION ||
-        appError.type === ErrorType.INPUT_VALIDATION) {
-      toast.error(appError.userFriendlyMessage, {
-        ...toastOptions,
-        duration: 8000, // Show security warnings longer
+    // Critical errors get a different toast style
+    if (isCritical) {
+      toast.error(toastMessage, {
+        duration: 5000,
+        description: type === ErrorType.NETWORK ? 'Check your internet connection' : undefined
       });
     } else {
-      toast.error(appError.userFriendlyMessage, toastOptions);
+      toast.warning(toastMessage, {
+        duration: 3000
+      });
     }
   }
   
-  // Log to console with context info
-  console.error(`[${appError.type}]`, appError.message, {
-    userFriendlyMessage: appError.userFriendlyMessage,
-    context: appError.context,
-    originalError: appError.originalError
-  });
+  // For specific error types, take additional action
+  switch (type) {
+    case ErrorType.AUTHENTICATION:
+      // Could redirect to login page or clear invalid tokens
+      break;
+    case ErrorType.AWS:
+      // Could trigger AWS credential refresh or fall back to demo mode
+      break;
+    case ErrorType.DEPLOYMENT:
+    case ErrorType.CI_CD:
+    case ErrorType.INFRASTRUCTURE:
+      // Log additional details for ops monitoring
+      console.info('[OPERATIONS] Infrastructure or deployment issue detected', {
+        timestamp: new Date().toISOString(),
+        error: message,
+        context
+      });
+      break;
+    default:
+      // No specific action needed
+      break;
+  }
   
-  // For security issues, also log specifically for monitoring
-  if (appError.type === ErrorType.SECURITY || 
-      appError.type === ErrorType.DATA_ENCRYPTION ||
-      appError.type === ErrorType.INPUT_VALIDATION) {
-    console.error("[SECURITY ALERT]", appError);
+  // Return error for potential further handling
+  return;
+};
+
+// Utility for handling API errors with appropriate status code handling
+export const handleApiError = (error: any): void => {
+  let errorType = ErrorType.API;
+  let userMessage = 'An API error occurred';
+  
+  // Determine error type and message based on HTTP status
+  if (error.response) {
+    const status = error.response.status;
     
-    // In a production app, you would send this to your security monitoring system
+    if (status === 401) {
+      errorType = ErrorType.AUTHENTICATION;
+      userMessage = 'Your session has expired. Please sign in again.';
+    } else if (status === 403) {
+      errorType = ErrorType.AUTHORIZATION;
+      userMessage = 'You do not have permission to perform this action.';
+    } else if (status === 404) {
+      userMessage = 'The requested resource could not be found.';
+    } else if (status >= 500) {
+      userMessage = 'A server error occurred. Please try again later.';
+    }
+  } else if (error.request) {
+    errorType = ErrorType.NETWORK;
+    userMessage = 'Network error. Please check your connection.';
   }
   
-  return appError;
+  handleError({
+    type: errorType,
+    message: error.message || 'API request failed',
+    userFriendlyMessage: userMessage,
+    originalError: error
+  }, true);
 };
 
-// Get user friendly message based on error type
-const getUserFriendlyMessage = (type: ErrorType, message: string): string => {
-  // For security issues, be careful with the messages - don't reveal too much
-  switch (type) {
-    case ErrorType.NETWORK:
-      return "Unable to connect to the server. Please check your internet connection and try again.";
-    case ErrorType.AUTHENTICATION:
-      return "Your session has expired or is invalid. Please sign in again.";
-    case ErrorType.AUTHORIZATION:
-      return "You don't have permission to access this resource.";
-    case ErrorType.VALIDATION:
-      return message || "The submitted data was invalid. Please check your inputs and try again.";
-    case ErrorType.NOT_FOUND:
-      return "The requested resource could not be found.";
-    case ErrorType.SERVER:
-      return "We're experiencing technical difficulties. Our team has been notified.";
-    case ErrorType.SECURITY:
-      return "A security issue was detected. Please refresh the page and try again.";
-    case ErrorType.DATA_ENCRYPTION:
-      return "A data security issue was detected. Your data is safe, but please try again.";
-    case ErrorType.INPUT_VALIDATION:
-      return "Invalid input detected. Please check your data and try again.";
-    case ErrorType.RATE_LIMIT:
-      return "You've made too many requests. Please wait a moment and try again.";
-    default:
-      return message || "An unexpected error occurred. Please try again.";
-  }
-};
-
-// Determine error type from various error objects
-const getErrorTypeFromError = (error: any): ErrorType => {
-  if (!error) return ErrorType.UNKNOWN;
+// Parse and handle AWS errors
+export const handleAwsError = (error: any): void => {
+  let userMessage = 'AWS operation failed';
   
-  // Check for network errors
-  if (error.name === 'NetworkError' || 
-      error.message?.includes('network') || 
-      error.message?.includes('connection')) {
-    return ErrorType.NETWORK;
+  // Detect common AWS error patterns
+  if (error.name === 'CredentialsProviderError' || 
+      error.message?.includes('credentials')) {
+    userMessage = 'AWS authentication failed. Please check your credentials.';
+  } else if (error.name === 'ResourceNotFoundException') {
+    userMessage = 'The requested AWS resource was not found.';
+  } else if (error.name === 'AccessDenied' || 
+             error.message?.includes('access denied') ||
+             error.message?.includes('not authorized')) {
+    userMessage = 'Access denied to AWS resource. Check your permissions.';
   }
-
-  // Check for authorization errors
-  if (error.status === 403 || 
-      error.statusCode === 403 || 
-      error.message?.includes('forbidden')) {
-    return ErrorType.AUTHORIZATION;
-  }
-
-  // Check for authentication errors
-  if (error.status === 401 || 
-      error.statusCode === 401 || 
-      error.message?.includes('unauthorized') || 
-      error.message?.includes('unauthenticated')) {
-    return ErrorType.AUTHENTICATION;
-  }
-
-  // Check for security issues
-  if (error.message?.includes('security') || 
-      error.message?.includes('xss') ||
-      error.message?.includes('csrf') ||
-      error.message?.includes('injection')) {
-    return ErrorType.SECURITY;
-  }
-
-  // Check for validation errors
-  if (error.status === 422 || 
-      error.statusCode === 422 ||
-      error.status === 400 || 
-      error.statusCode === 400 || 
-      error.name === 'ValidationError') {
-    return ErrorType.VALIDATION;
-  }
-
-  // Default to unknown
-  return ErrorType.UNKNOWN;
+  
+  handleError({
+    type: ErrorType.AWS,
+    message: error.message || 'AWS error',
+    userFriendlyMessage: userMessage,
+    originalError: error
+  }, true);
 };
 
-// Get toast options based on error type
-const getToastOptions = (type: ErrorType) => {
-  switch (type) {
-    case ErrorType.SECURITY:
-    case ErrorType.DATA_ENCRYPTION:
-    case ErrorType.INPUT_VALIDATION:
-      return {
-        duration: 8000, // Show longer
-        description: "This issue has been logged for security review."
-      };
-    case ErrorType.NETWORK:
-      return {
-        duration: 5000,
-        description: "Check your internet connection"
-      };
-    case ErrorType.AUTHENTICATION:
-      return {
-        duration: 5000,
-        description: "You will be redirected to login"
-      };
-    default:
-      return {
-        duration: 5000
-      };
-  }
+// Handle deployment and CI/CD errors
+export const handleDeploymentError = (error: any, stage: string): void => {
+  handleError({
+    type: ErrorType.DEPLOYMENT,
+    message: `Deployment failed at stage: ${stage}`,
+    userFriendlyMessage: `Failed to deploy: ${stage} stage error`,
+    originalError: error,
+    context: { deploymentStage: stage }
+  }, true);
 };
