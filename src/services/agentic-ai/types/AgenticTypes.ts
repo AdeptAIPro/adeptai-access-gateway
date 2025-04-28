@@ -12,6 +12,7 @@ export interface Agent {
   version?: string;
   restrictions?: string[];
   icon?: string;
+  parameters?: Record<string, any>; // Add parameters property
 }
 
 // Define the AgentTask interface
@@ -29,7 +30,13 @@ export interface AgentTask {
   title?: string;
   description?: string;
   priority?: 'low' | 'medium' | 'high';
+  params?: Record<string, any>; // Add params property
+  userId?: string; // Add userId property
+  updatedAt?: string | Date; // Add updatedAt property
 }
+
+// Define the AgentTaskType type alias
+export type AgentTaskType = string;
 
 // Task result interfaces
 export interface TaskResult {

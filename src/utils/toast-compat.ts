@@ -18,6 +18,7 @@ export interface ExtendedToastOptions {
     label: string;
     onClick: () => void;
   };
+  onOpenChange?: (open: boolean) => void;
 }
 
 // Augment the ToastProps type to include description
@@ -25,6 +26,7 @@ declare module "@/components/ui/toast" {
   interface ToastProps {
     description?: React.ReactNode;
     variant?: 'default' | 'destructive';
+    onOpenChange?: (open: boolean) => void;
   }
 }
 
@@ -36,7 +38,7 @@ export const createCompatibleToast = () => {
       return sonnerToast(options, opts);
     } else {
       // It's an object with our extended properties
-      const { title, description, variant, action, ...rest } = options as ExtendedToastOptions;
+      const { title, description, variant, action, onOpenChange, ...rest } = options as ExtendedToastOptions;
       
       if (variant === 'destructive') {
         return sonnerToast.error(title as string, {
@@ -59,7 +61,7 @@ export const createCompatibleToast = () => {
     if (typeof options === 'string') {
       return sonnerToast.error(options, opts);
     } else {
-      const { title, description, ...rest } = options as ExtendedToastOptions;
+      const { title, description, onOpenChange, ...rest } = options as ExtendedToastOptions;
       return sonnerToast.error(title as string, {
         description,
         ...rest
