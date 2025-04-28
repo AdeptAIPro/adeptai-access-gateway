@@ -1,10 +1,18 @@
+
 import React from 'react';
 import { format } from '@/utils/date-polyfill';
 import { Eye } from '@/utils/lucide-polyfill';
 import { Button } from "@/components/ui/button";
-import { PayrollRun } from '@/services/payroll/types/PayrollTypes';
-import PayrollRunForm from './PayrollRunForm';
 import { mockEmployees } from '@/data/mockEmployees';
+import PayrollRunForm from './PayrollRunForm';
+
+// Update the PayrollRun type to include totalAmount
+interface PayrollRun {
+  id: string;
+  date: string;
+  employeeCount: number;
+  totalAmount: number; // Adding the missing property
+}
 
 interface PayrollRunHistoryProps {
   history?: PayrollRun[];

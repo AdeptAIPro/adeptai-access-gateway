@@ -1,45 +1,56 @@
 
-import { toast } from '@/utils/sonner-polyfill';
+import { ReactNode } from 'react';
+import { ToastProps } from '@/components/ui/toast';
+
+// This interface matches what the useToast hook expects
+interface ToastOptions {
+  title?: string;
+  description?: ReactNode;
+  variant?: 'default' | 'destructive';
+  duration?: number;
+}
 
 /**
- * Show a success toast message
+ * Safely create toast options object with proper typing
  */
-export const showSuccess = (message: string, options = {}) => {
-  toast.success(message, options);
-};
+export function createToast({
+  title,
+  description,
+  variant = 'default',
+  duration
+}: ToastOptions): ToastProps {
+  return {
+    title,
+    description,
+    variant,
+    duration
+  };
+}
 
 /**
- * Show an error toast message
+ * Helper to consistently format error toasts
  */
-export const showError = (message: string, options = {}) => {
-  toast.error(message, options);
-};
+export function createErrorToast(
+  title: string = 'Error',
+  message: string = 'Something went wrong'
+): ToastProps {
+  return {
+    title,
+    description: message,
+    variant: 'destructive'
+  };
+}
 
 /**
- * Show a warning toast message
+ * Helper to consistently format success toasts
  */
-export const showWarning = (message: string, options = {}) => {
-  toast.warning ? toast.warning(message, options) : toast(message, {...options, className: 'warning-toast'});
-};
-
-/**
- * Show an info toast message
- */
-export const showInfo = (message: string, options = {}) => {
-  toast(message, options);
-};
-
-/**
- * Show a promise toast
- */
-export const showPromise = <T>(
-  promise: Promise<T>,
-  messages: {
-    loading: string;
-    success: string | ((data: T) => string);
-    error: string | ((error: any) => string);
-  },
-  options = {}
-) => {
-  return toast.promise(promise, messages, options);
-};
+export function createSuccessToast(
+  title: string,
+  message?: string
+): ToastProps {
+  return {
+    title,
+    description: message,
+    variant: 'default'
+  };
+}

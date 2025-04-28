@@ -9,13 +9,10 @@ import {
   saveRecentSearch 
 } from "./talent-matching/matching-utils";
 import { saveCandidate as saveCandidateAction, contactCandidate as contactCandidateAction } from "./talent-matching/candidate-actions";
+import { createToast } from "@/utils/toast-utils";
 
 type ToastFunction = {
-  (props: {
-    title: string;
-    description: string;
-    variant?: "default" | "destructive" | undefined;
-  }): void;
+  (props: any): void;
 };
 
 const useMatchingProcess = (
@@ -86,10 +83,10 @@ const useMatchingProcess = (
       setMatchingCandidates(result.candidates);
       setIsLoading(false);
       
-      toast({
+      toast(createToast({
         title: "Matching Complete",
         description: `Found ${result.candidates.length} matching candidates from ${matchingOptions.targetSources?.length || 0} sources`,
-      });
+      }));
       
       if (descriptionToUse) {
         // Only save the search if we have valid Supabase credentials
@@ -105,11 +102,11 @@ const useMatchingProcess = (
     } catch (error) {
       clearInterval(interval);
       setIsLoading(false);
-      toast({
+      toast(createToast({
         title: "Error",
         description: "Failed to match candidates",
         variant: "destructive",
-      });
+      }));
     }
   };
 
