@@ -27,13 +27,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Lead as ServiceLead } from "@/services/crm/types";
 
-// Define the Lead type
-interface Lead {
-  id: string;
-  name: string;
-  email: string;
-  company: string;
+// Define the Lead type that matches what LeadManagementCard expects
+interface Lead extends ServiceLead {
   createdAt: Date;
   lastActivity: Date;
   status: 'Open' | 'In Progress' | 'Closed';
@@ -89,7 +86,7 @@ const columns: ColumnDef<Lead>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(lead.id)}
+              onClick={() => navigator.clipboard.writeText(lead.id || '')}
             >
               Copy lead ID
             </DropdownMenuItem>
@@ -114,6 +111,7 @@ const data: Lead[] = [
     createdAt: new Date(),
     lastActivity: new Date(),
     status: "Open",
+    source: "website"
   },
   {
     id: "2",
@@ -123,6 +121,7 @@ const data: Lead[] = [
     createdAt: new Date(),
     lastActivity: new Date(),
     status: "In Progress",
+    source: "referral"
   },
   {
     id: "3",
@@ -132,6 +131,7 @@ const data: Lead[] = [
     createdAt: new Date(),
     lastActivity: new Date(),
     status: "Closed",
+    source: "email"
   },
 ];
 

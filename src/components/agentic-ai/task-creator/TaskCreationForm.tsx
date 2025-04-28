@@ -10,9 +10,10 @@ import TaskGoalField from './TaskGoalField';
 import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
 import { useAgenticAI } from '@/hooks/use-agentic';
-import { showError } from '@/utils/toast-utils';
+import { createErrorToast } from '@/utils/toast-utils';
 import { Agent } from '@/services/agentic-ai/types/AgenticTypes';
 import { z } from 'zod';
+import { useToast } from '@/hooks/use-toast';
 
 // Form schema
 const formSchema = z.object({
@@ -26,6 +27,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const TaskCreationForm: React.FC = () => {
   const { createTask, agents, isLoading } = useAgenticAI();
+  const { toast } = useToast();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,8 +52,7 @@ const TaskCreationForm: React.FC = () => {
       );
     } catch (error) {
       console.error('Error creating task:', error);
-      // Use our custom toast function that works with a single argument
-      showError('Failed to create task. Please try again later.');
+      toast(createErrorToast('Failed to create task. Please try again later.'));
     }
   };
 

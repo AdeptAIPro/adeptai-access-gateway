@@ -54,3 +54,20 @@ export function createSuccessToast(
     variant: 'default'
   };
 }
+
+/**
+ * Direct helper functions to show toasts (for simpler imports)
+ */
+export function showError(
+  message: string = 'Something went wrong',
+  title: string = 'Error'
+): ToastProps {
+  return createErrorToast(title, message);
+}
+
+export function showSuccess(
+  title: string,
+  message?: string
+): ToastProps {
+  return createSuccessToast(title, message);
+}

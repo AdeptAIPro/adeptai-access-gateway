@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import useSafeToast from "@/hooks/use-safe-toast";
 import { Loader2, Upload } from "lucide-react";
 import { extractTextFromImage } from "@/services/talent-matching/ImageProcessingService";
 
@@ -18,7 +18,7 @@ const ImageProcessor: React.FC<ImageProcessorProps> = ({
   setExtractedText,
   className,
 }) => {
-  const { toast } = useToast();
+  const { showSuccess, showError } = useSafeToast();
   const [processingImage, setProcessingImage] = useState(false);
 
   const processImageFile = async (imageFile: File) => {
@@ -28,24 +28,13 @@ const ImageProcessor: React.FC<ImageProcessorProps> = ({
       
       if (extractedText.trim().length > 0) {
         setExtractedText(extractedText);
-        toast({
-          title: "Image Processed",
-          description: "Successfully extracted text from the image",
-        });
+        showSuccess("Image Processed", "Successfully extracted text from the image");
       } else {
-        toast({
-          title: "Processing Warning",
-          description: "No text could be extracted from this image",
-          variant: "destructive",
-        });
+        showError("Processing Warning", "No text could be extracted from this image");
       }
     } catch (error) {
       console.error("Error processing image:", error);
-      toast({
-        title: "Processing Error",
-        description: "Failed to extract text from the image",
-        variant: "destructive",
-      });
+      showError("Processing Error", "Failed to extract text from the image");
     } finally {
       setProcessingImage(false);
     }

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { mockEmployees } from '@/data/mockEmployees';
 import PayrollRunForm from './PayrollRunForm';
 
-// Update the PayrollRun type to include totalAmount
+// Updated PayrollRun type to include totalAmount
 interface PayrollRun {
   id: string;
   date: string;

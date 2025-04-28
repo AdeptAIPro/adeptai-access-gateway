@@ -4,20 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import useSafeToast from "@/hooks/use-safe-toast";
 
 interface TalentMatchingCTAProps {
   onDismiss?: () => void;
 }
 
 const TalentMatchingCallToAction: React.FC<TalentMatchingCTAProps> = ({ onDismiss }) => {
-  const { toast } = useToast();
+  const { showSuccess } = useSafeToast();
   
   const handleTryFree = () => {
-    toast({
-      title: "Free Trial Activated",
-      description: "You now have access to premium features for the next 7 days.",
-    });
+    showSuccess("Free Trial Activated", "You now have access to premium features for the next 7 days.");
     if (onDismiss) onDismiss();
   };
   
