@@ -1,26 +1,29 @@
 
-import { useState, useCallback, SetStateAction, Dispatch, useRef, useEffect } from 'react';
+import { useState, useCallback, SetStateAction, Dispatch } from 'react';
 
 /**
- * A safer version of useState that prevents state updates on unmounted components
- * @returns [state, setState] - Similar to useState but prevents memory leaks
+ * A wrapper around useState that provides a safe setState function
+ * that won't cause errors if the component is unmounted
  */
 export function useSafeState<T>(initialState: T | (() => T)): [T, Dispatch<SetStateAction<T>>] {
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState<T>(initialState);
+  
   const isMounted = useRef(true);
   
   useEffect(() => {
-    isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
   }, []);
   
-  const setSafeState = useCallback((value: SetStateAction<T>) => {
+  const safeSetState = useCallback((value: SetStateAction<T>) => {
     if (isMounted.current) {
       setState(value);
     }
   }, []);
   
-  return [state, setSafeState];
+  return [state, safeSetState];
 }
+
+// Add missing React import
+import { useRef, useEffect } from 'react';

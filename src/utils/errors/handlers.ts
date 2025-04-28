@@ -2,6 +2,7 @@
 import { ErrorType } from './types';
 import { AppError } from './AppError';
 import { determineErrorType, getDefaultUserFriendlyMessage } from './utils';
+import { showToast } from '../toast-wrapper';
 
 /**
  * Create an AppError from error details
@@ -59,16 +60,15 @@ function convertToAppError(error: unknown): AppError {
 /**
  * Handle errors consistently across the application
  */
-export function handleError(error: unknown, showToast: boolean = false): AppError {
+export function handleError(error: unknown, showToastNotification: boolean = false): AppError {
   const appError = convertToAppError(error);
   
   // Log the error
   console.error('[Error]:', appError.message, appError);
   
-  if (showToast) {
+  if (showToastNotification) {
     try {
-      const { toast } = require('sonner');
-      toast.error(appError.userFriendlyMessage);
+      showToast.error(appError.message, appError.userFriendlyMessage);
     } catch (e) {
       console.error('Toast notification failed:', e);
     }

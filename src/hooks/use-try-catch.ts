@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { handleError, AppError, tryCatch } from '@/utils/error-handler';
 import { useSafeState } from './use-safe-state';
 
