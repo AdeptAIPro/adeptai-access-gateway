@@ -4,7 +4,7 @@ import { unifiedToast } from "@/utils/toast-adapter";
 import { ToastProps } from "@/components/ui/toast";
 import { compatibleToast, ExtendedToastOptions } from "@/utils/toast-compat";
 
-type ToastMessage = string | ToastProps | ExtendedToastOptions;
+type ToastMessage = string | (ToastProps & { description?: React.ReactNode }) | ExtendedToastOptions;
 type ToastOptions = {
   description?: React.ReactNode;
   action?: {

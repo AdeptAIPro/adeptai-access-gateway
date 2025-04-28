@@ -1,4 +1,3 @@
-
 import { supabase } from "@/lib/supabase";
 import { Employee } from "@/types/employee";
 import { toast } from "@/hooks/use-toast";
@@ -153,5 +152,5 @@ export const updateEmployee = async (id: string, updates: Partial<Employee>): Pr
   }
 };
 
-// Add the missing function that's imported in use-payroll-supabase.ts
+// Export addEmployee as an alias to createEmployee for backward compatibility
 export const addEmployee = createEmployee;

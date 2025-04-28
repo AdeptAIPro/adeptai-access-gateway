@@ -20,9 +20,16 @@ export interface ExtendedToastOptions {
   };
 }
 
+// Augment the ToastProps type to include description
+declare module "@/components/ui/toast" {
+  interface ToastProps {
+    description?: React.ReactNode;
+  }
+}
+
 // Flexibly handle both the shadcn format and the sonner format
 export const createCompatibleToast = () => {
-  const compatibleToast = (options: string | ExtendedToastOptions, opts?: any) => {
+  const compatibleToast = (options: string | ExtendedToastOptions | (ToastProps & { description?: React.ReactNode }), opts?: any) => {
     if (typeof options === 'string') {
       // It's a simple string message
       return sonnerToast(options, opts);
@@ -47,7 +54,7 @@ export const createCompatibleToast = () => {
   };
   
   // Add error, success, warning variants
-  compatibleToast.error = (options: string | ExtendedToastOptions, opts?: any) => {
+  compatibleToast.error = (options: string | ExtendedToastOptions | (ToastProps & { description?: React.ReactNode }), opts?: any) => {
     if (typeof options === 'string') {
       return sonnerToast.error(options, opts);
     } else {
@@ -59,7 +66,7 @@ export const createCompatibleToast = () => {
     }
   };
   
-  compatibleToast.success = (options: string | ExtendedToastOptions, opts?: any) => {
+  compatibleToast.success = (options: string | ExtendedToastOptions | (ToastProps & { description?: React.ReactNode }), opts?: any) => {
     if (typeof options === 'string') {
       return sonnerToast.success(options, opts);
     } else {
@@ -71,7 +78,7 @@ export const createCompatibleToast = () => {
     }
   };
   
-  compatibleToast.warning = (options: string | ExtendedToastOptions, opts?: any) => {
+  compatibleToast.warning = (options: string | ExtendedToastOptions | (ToastProps & { description?: React.ReactNode }), opts?: any) => {
     if (typeof options === 'string') {
       return sonnerToast.warning(options, opts);
     } else {
@@ -83,7 +90,7 @@ export const createCompatibleToast = () => {
     }
   };
   
-  compatibleToast.info = (options: string | ExtendedToastOptions, opts?: any) => {
+  compatibleToast.info = (options: string | ExtendedToastOptions | (ToastProps & { description?: React.ReactNode }), opts?: any) => {
     if (typeof options === 'string') {
       return sonnerToast.info(options, opts);
     } else {

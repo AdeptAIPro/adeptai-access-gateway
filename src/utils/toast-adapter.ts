@@ -6,7 +6,7 @@ import { compatibleToast, ExtendedToastOptions } from "@/utils/toast-compat";
 /**
  * This adapter allows code to use shadcn/ui toast props with sonner
  */
-export const adaptShadcnToSonner = (toastProps: ToastProps): void => {
+export const adaptShadcnToSonner = (toastProps: ToastProps & { description?: React.ReactNode }): void => {
   const { title, description, variant } = toastProps;
   
   if (variant === 'destructive') {
@@ -23,17 +23,17 @@ export const adaptShadcnToSonner = (toastProps: ToastProps): void => {
 export const createUnifiedToastHandler = () => {
   return {
     // Standard toast method that accepts either format
-    toast: (message: string | ToastProps | ExtendedToastOptions, options?: any) => {
+    toast: (message: string | (ToastProps & { description?: React.ReactNode }) | ExtendedToastOptions, options?: any) => {
       return compatibleToast(message as any, options);
     },
     
     // Error toast method that accepts either format
-    error: (message: string | ToastProps | ExtendedToastOptions, options?: any) => {
+    error: (message: string | (ToastProps & { description?: React.ReactNode }) | ExtendedToastOptions, options?: any) => {
       return compatibleToast.error(message as any, options);
     },
     
     // Success toast method that accepts either format
-    success: (message: string | ToastProps | ExtendedToastOptions, options?: any) => {
+    success: (message: string | (ToastProps & { description?: React.ReactNode }) | ExtendedToastOptions, options?: any) => {
       return compatibleToast.success(message as any, options);
     }
   };
