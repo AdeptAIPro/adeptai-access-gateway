@@ -1,8 +1,6 @@
 
-// Re-export everything from services
-export * from './services/agent-service';
-export * from './services/task-service';
-export * from './services/task-processor';
-
-// Re-export types
+// Re-export all types from AgenticTypes
 export * from './types/AgenticTypes';
+
+// Re-export all functions from AgenticService
+export * from './AgenticService';

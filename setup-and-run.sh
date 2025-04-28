@@ -4,8 +4,13 @@
 # Install dependencies
 npm install
 
-# Fix imports
-node src/utils/fix-imports.js
+# Create scripts directory if it doesn't exist
+mkdir -p scripts
+
+# Run the fix-imports script
+echo "Running fix-imports script to fix lucide-react imports..."
+node scripts/fix-imports.js
 
 # Start the application
+echo "Starting the application..."
 npm run dev

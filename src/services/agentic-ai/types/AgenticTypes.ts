@@ -4,8 +4,12 @@ export interface AgentTask {
   taskType: string;
   goal: string;
   agent?: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'completed' | 'failed' | 'processing';
   result?: any;
+  error?: string;
+  createdAt?: Date;
+  completedAt?: Date;
+  title?: string;
 }
 
 export interface Agent {
@@ -13,4 +17,5 @@ export interface Agent {
   name: string;
   type: string;
   status: 'active' | 'inactive';
+  capabilities?: string[];
 }

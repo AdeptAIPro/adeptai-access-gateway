@@ -1,179 +1,19 @@
-import React, { useMemo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { formatDistanceToNow } from '@/utils/date-polyfill';
-import { Lead } from "@/services/crm/types";
-import LeadScoreIndicator from "./LeadScoreIndicator";
-import { useIsMobile } from "@/hooks/use-mobile";
+// This is a partial update just to fix the specific errors with formatDistanceToNow
+// Import the formatDistanceToNow function with correct usage
+import { formatDistanceToNow } from 'date-fns';
 
-interface LeadTableProps {
-  leads: Lead[];
-  loading: boolean;
-  handleStatusChange: (id: string, status: string) => Promise<void>;
-}
+// ... keep existing code
 
-const LeadTable = React.memo(({ leads, loading, handleStatusChange }: LeadTableProps) => {
-  const isMobile = useIsMobile();
+// Replace the incorrect usage on line 47 with:
+<p className="text-xs text-muted-foreground">
+  {formatDistanceToNow(new Date(lead.createdAt))} ago
+</p>
 
-  const renderMobileLeadCard = useMemo(() => (lead: Lead) => (
-    <div key={lead.id} className="border rounded-md p-3 space-y-2">
-      <div className="flex justify-between">
-        <h3 className="font-medium">{lead.name || "—"}</h3>
-        <Badge variant="outline" className="capitalize">
-          {lead.source}
-        </Badge>
-      </div>
-      <p className="text-sm text-muted-foreground">{lead.email}</p>
-      {lead.company && (
-        <p className="text-sm text-muted-foreground">{lead.company}</p>
-      )}
-      <div className="pt-2 flex items-center justify-between">
-        <div className="text-xs text-muted-foreground">
-          {lead.created_at
-            ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })
-            : "—"}
-        </div>
-        <div className="flex items-center space-x-2">
-          {lead.score !== undefined && (
-            <LeadScoreIndicator score={lead.score} factors={lead.scoringFactors} />
-          )}
-          <Select
-            defaultValue={lead.status || "new"}
-            onValueChange={(value) =>
-              handleStatusChange(lead.id as string, value)
-            }
-          >
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new">New</SelectItem>
-              <SelectItem value="contacted">Contacted</SelectItem>
-              <SelectItem value="qualified">Qualified</SelectItem>
-              <SelectItem value="proposal">Proposal</SelectItem>
-              <SelectItem value="won">Won</SelectItem>
-              <SelectItem value="lost">Lost</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-    </div>
-  ), []);
+// ... keep existing code
 
-  const mobileContent = useMemo(() => (
-    <div className="space-y-4">
-      {loading ? (
-        <div className="h-24 flex items-center justify-center">
-          <p className="text-center">Loading leads...</p>
-        </div>
-      ) : leads.length === 0 ? (
-        <div className="h-24 flex items-center justify-center">
-          <p className="text-center">No leads found. Try adjusting your filters.</p>
-        </div>
-      ) : (
-        leads.map(renderMobileLeadCard)
-      )}
-    </div>
-  ), [loading, leads, renderMobileLeadCard]);
+// Replace the incorrect usage on line 133 with:
+<p className="text-xs text-muted-foreground">
+  {formatDistanceToNow(new Date(lead.lastActivity))} ago
+</p>
 
-  const desktopContent = useMemo(() => (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Company</TableHead>
-            <TableHead>Source</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Status</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
-                Loading leads...
-              </TableCell>
-            </TableRow>
-          ) : leads.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
-                No leads found. Try adjusting your filters.
-              </TableCell>
-            </TableRow>
-          ) : (
-            leads.map((lead) => (
-              <TableRow key={lead.id}>
-                <TableCell>{lead.name || "—"}</TableCell>
-                <TableCell>{lead.email}</TableCell>
-                <TableCell>{lead.company || "—"}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="capitalize">
-                    {lead.source}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {lead.created_at
-                    ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })
-                    : "—"}
-                </TableCell>
-                <TableCell>
-                  {lead.score !== undefined ? (
-                    <LeadScoreIndicator 
-                      score={lead.score} 
-                      factors={lead.scoringFactors} 
-                    />
-                  ) : (
-                    "—"
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Select
-                    defaultValue={lead.status || "new"}
-                    onValueChange={(value) =>
-                      handleStatusChange(lead.id as string, value)
-                    }
-                  >
-                    <SelectTrigger className="w-[110px]">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="contacted">Contacted</SelectItem>
-                      <SelectItem value="qualified">Qualified</SelectItem>
-                      <SelectItem value="proposal">Proposal</SelectItem>
-                      <SelectItem value="won">Won</SelectItem>
-                      <SelectItem value="lost">Lost</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
-  ), [loading, leads, handleStatusChange]);
-
-  return isMobile ? mobileContent : desktopContent;
-});
-
-LeadTable.displayName = 'LeadTable';
-
-export default LeadTable;
+// ... keep existing code
