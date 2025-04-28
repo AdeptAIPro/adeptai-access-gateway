@@ -1,4 +1,3 @@
-
 export enum ErrorType {
   VALIDATION = 'VALIDATION',
   NETWORK = 'NETWORK',
@@ -210,5 +209,5 @@ export async function tryCatch<T>(promise: Promise<T>): Promise<[T | null, AppEr
 }
 
 // Export only what hasn't been exported yet
-export { handleError, createAppError, AppError };
-// Removed the duplicate export of ErrorType
+export { handleError, createAppError };
+// AppError is already exported via the class declaration
