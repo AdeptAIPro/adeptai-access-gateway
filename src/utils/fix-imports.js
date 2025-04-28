@@ -1,107 +1,38 @@
 
-#!/usr/bin/env node
-
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
-// Directories to search for files
-const searchDirs = [
-  'src/components',
-  'src/hooks',
-  'src/services',
-  'src/utils',
-  'src/pages',
-  'src/layouts',
-  'src/lib',
-  'src/providers'
-];
-
-// Find all TypeScript files
-function findFiles(dir, fileList = []) {
-  if (!fs.existsSync(dir)) return fileList;
-  
+function findFiles(dir) {
   const files = fs.readdirSync(dir);
+  const result = [];
   
   files.forEach(file => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
     
     if (stat.isDirectory()) {
-      findFiles(filePath, fileList);
-    } else if (/\.(ts|tsx|js|jsx)$/.test(file)) {
-      fileList.push(filePath);
+      result.push(...findFiles(filePath));
+    } else if (/\.(ts|tsx)$/.test(file)) {
+      result.push(filePath);
     }
   });
   
-  return fileList;
+  return result;
 }
 
-// Fix imports in a file
 function fixImports(filePath) {
-  try {
-    let content = fs.readFileSync(filePath, 'utf8');
-    let modified = false;
-    
-    // Replace lucide-react imports with our polyfill
-    if (content.includes("from 'lucide-react'") || content.includes('from "lucide-react"')) {
-      content = content.replace(/(from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
-      modified = true;
-    }
-    
-    // Handle default imports from lucide-react
-    if (content.includes("lucide-react';") || content.includes('lucide-react";')) {
-      content = content.replace(/(import\s+[A-Za-z0-9_]+\s+from\s+['"])lucide-react(['"])/g, '$1@/utils/lucide-polyfill$2');
-      modified = true;
-    }
-    
-    // Replace date-fns imports with our polyfill
-    if (content.includes("from 'date-fns'") || content.includes('from "date-fns"')) {
-      content = content.replace(/(from\s+['"])date-fns(['"])/g, '$1@/utils/date-polyfill$2');
-      modified = true;
-    }
-    
-    // Replace sonner imports with our polyfill
-    if (content.includes("from 'sonner'") || content.includes('from "sonner"')) {
-      content = content.replace(/(from\s+['"])sonner(['"])/g, '$1@/utils/sonner-polyfill$2');
-      modified = true;
-    }
-    
-    // Write modified content back to file
-    if (modified) {
-      fs.writeFileSync(filePath, content);
-      console.log(`✅ Fixed imports in: ${filePath}`);
-      return true;
-    }
-  } catch (error) {
-    console.error(`❌ Error processing file ${filePath}:`, error);
-  }
+  let content = fs.readFileSync(filePath, 'utf8');
   
-  return false;
+  // Replace lucide-react imports with our polyfill
+  content = content.replace(
+    /from ['"]lucide-react['"]/g, 
+    `from '@/utils/icon-polyfill'`
+  );
+  
+  fs.writeFileSync(filePath, content);
+  console.log(`Fixed imports in ${filePath}`);
 }
 
-// Main function
-function main() {
-  console.log('🔍 Searching for files to fix imports...');
-  
-  let allFiles = [];
-  searchDirs.forEach(dir => {
-    const dirPath = path.join(process.cwd(), dir);
-    if (fs.existsSync(dirPath)) {
-      allFiles = [...allFiles, ...findFiles(dirPath)];
-    }
-  });
-  
-  console.log(`🔎 Found ${allFiles.length} files to check`);
-  
-  let fixedFilesCount = 0;
-  allFiles.forEach(file => {
-    if (fixImports(file)) {
-      fixedFilesCount++;
-    }
-  });
-  
-  console.log(`🎉 Fixed imports in ${fixedFilesCount} files`);
-}
-
-main();
+const files = findFiles('./src');
+files.forEach(fixImports);
+console.log('All imports have been fixed');
