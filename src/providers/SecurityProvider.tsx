@@ -10,6 +10,7 @@ interface SecurityContextType {
   decryptData: (data: string) => any;
   validateInput: (input: string, pattern?: RegExp) => boolean;
   sanitizeHTML: (html: string) => string;
+  generateSecureToken: () => string;
 }
 
 const SecurityContext = createContext<SecurityContextType>({
@@ -20,6 +21,7 @@ const SecurityContext = createContext<SecurityContextType>({
   decryptData: () => null,
   validateInput: () => false,
   sanitizeHTML: () => "",
+  generateSecureToken: () => "",
 });
 
 /**
@@ -71,6 +73,15 @@ const sanitizeHTML = (html: string): string => {
   return temp.innerHTML;
 };
 
+/**
+ * Generate a secure random token for CSRF protection or other security needs
+ */
+const generateSecureToken = (): string => {
+  const array = new Uint32Array(4);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, val => val.toString(16).padStart(8, '0')).join('');
+};
+
 export const SecurityProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [isEncrypted, setIsEncrypted] = useState<boolean>(false);
   const [isCSRFProtected, setIsCSRFProtected] = useState<boolean>(false);
@@ -80,7 +91,7 @@ export const SecurityProvider: React.FC<{children: ReactNode}> = ({ children }) 
   useEffect(() => {
     // Set up CSRF token in localStorage for API requests
     if (!localStorage.getItem('csrf_token')) {
-      localStorage.setItem('csrf_token', `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+      localStorage.setItem('csrf_token', generateSecureToken());
     }
     setIsCSRFProtected(true);
     
@@ -118,7 +129,8 @@ export const SecurityProvider: React.FC<{children: ReactNode}> = ({ children }) 
       encryptData,
       decryptData,
       validateInput,
-      sanitizeHTML
+      sanitizeHTML,
+      generateSecureToken
     }}>
       {children}
     </SecurityContext.Provider>

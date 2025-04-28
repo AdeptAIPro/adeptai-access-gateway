@@ -1,14 +1,22 @@
 
 import { getEnvVar, setEnvVar } from '@/utils/env-utils';
+import { S3Client } from '@aws-sdk/client-s3';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { handleError, ErrorType } from '@/utils/error-handler';
+
+// Define bucket names
+export const TASK_DATA_BUCKET = 'adeptai-task-data';
+export const MODEL_ARTIFACTS_BUCKET = 'adeptai-model-artifacts';
+
+// Store clients to be reused across the application
+let s3ClientInstance: S3Client | null = null;
+let dynamoDBClientInstance: DynamoDBClient | null = null;
 
 /**
- * Check if AWS credentials are valid
+ * Check if AWS credentials are valid by attempting to instantiate clients
  */
 export const checkAwsCredentials = async (): Promise<boolean> => {
   try {
-    // This is a mock implementation since we can't make real AWS API calls from the client
-    // In a real application, you would make an API call to your backend which would verify the credentials
-    
     const region = getEnvVar('AWS_REGION', '');
     const accessKeyId = getEnvVar('AWS_ACCESS_KEY_ID', '');
     const secretAccessKey = getEnvVar('AWS_SECRET_ACCESS_KEY', '');
@@ -23,12 +31,28 @@ export const checkAwsCredentials = async (): Promise<boolean> => {
       console.warn("AWS credentials look incomplete");
     }
     
-    // In a real app, you would verify these credentials
-    // For demo purposes, we'll just consider them valid if they're provided
-    console.log("AWS credentials seem valid (demo mode)");
-    return true;
+    // In production, we would verify these credentials by making a test call
+    // For demo purposes, we'll just initialize S3 client with error handling
+    try {
+      const s3 = getS3Client();
+      const dynamoDB = getDynamoDBClient();
+      
+      // In a real implementation, we'd make a lightweight call to verify access
+      // For example: await s3.send(new HeadBucketCommand({ Bucket: TASK_DATA_BUCKET }));
+      
+      console.log("AWS clients initialized successfully");
+      return true;
+    } catch (error) {
+      console.error("Failed to initialize AWS clients:", error);
+      return false;
+    }
   } catch (error) {
-    console.error("Error checking AWS credentials:", error);
+    handleError({
+      type: ErrorType.CONFIGURATION,
+      message: "Error checking AWS credentials",
+      userFriendlyMessage: "Unable to verify AWS credentials",
+      originalError: error
+    }, true);
     return false;
   }
 };
@@ -46,5 +70,106 @@ export const initializeAwsConfig = (
   setEnvVar('AWS_ACCESS_KEY_ID', accessKeyId);
   setEnvVar('AWS_SECRET_ACCESS_KEY', secretAccessKey);
   
+  // Reset existing clients to force recreation with new credentials
+  s3ClientInstance = null;
+  dynamoDBClientInstance = null;
+  
   console.log("AWS configuration initialized");
+};
+
+/**
+ * Get S3 client instance (create if doesn't exist)
+ */
+export const getS3Client = (): S3Client => {
+  if (!s3ClientInstance) {
+    const region = getEnvVar('AWS_REGION', '');
+    const accessKeyId = getEnvVar('AWS_ACCESS_KEY_ID', '');
+    const secretAccessKey = getEnvVar('AWS_SECRET_ACCESS_KEY', '');
+    
+    if (!region || !accessKeyId || !secretAccessKey) {
+      throw new Error("AWS credentials not configured");
+    }
+    
+    s3ClientInstance = new S3Client({
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey
+      }
+    });
+  }
+  
+  return s3ClientInstance;
+};
+
+/**
+ * Get DynamoDB client instance (create if doesn't exist)
+ */
+export const getDynamoDBClient = (): DynamoDBClient => {
+  if (!dynamoDBClientInstance) {
+    const region = getEnvVar('AWS_REGION', '');
+    const accessKeyId = getEnvVar('AWS_ACCESS_KEY_ID', '');
+    const secretAccessKey = getEnvVar('AWS_SECRET_ACCESS_KEY', '');
+    
+    if (!region || !accessKeyId || !secretAccessKey) {
+      throw new Error("AWS credentials not configured");
+    }
+    
+    dynamoDBClientInstance = new DynamoDBClient({
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey
+      }
+    });
+  }
+  
+  return dynamoDBClientInstance;
+};
+
+/**
+ * Clear AWS credentials and reset clients
+ */
+export const clearAwsConfig = (): void => {
+  localStorage.removeItem('AWS_REGION');
+  localStorage.removeItem('AWS_ACCESS_KEY_ID');
+  localStorage.removeItem('AWS_SECRET_ACCESS_KEY');
+  
+  s3ClientInstance = null;
+  dynamoDBClientInstance = null;
+  
+  console.log("AWS configuration cleared");
+};
+
+// Export client instances for use throughout the application
+export const s3Client = {
+  send: async (command: any) => {
+    try {
+      return await getS3Client().send(command);
+    } catch (error) {
+      handleError({
+        type: ErrorType.AWS,
+        message: "S3 operation failed",
+        userFriendlyMessage: "Storage operation failed",
+        originalError: error
+      }, true);
+      throw error;
+    }
+  }
+};
+
+export const dynamoDBClient = {
+  send: async (command: any) => {
+    try {
+      return await getDynamoDBClient().send(command);
+    } catch (error) {
+      handleError({
+        type: ErrorType.AWS,
+        message: "DynamoDB operation failed",
+        userFriendlyMessage: "Database operation failed",
+        originalError: error
+      }, true);
+      throw error;
+    }
+  }
 };

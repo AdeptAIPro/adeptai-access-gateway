@@ -2,24 +2,48 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useSecureStorage } from '@/hooks/use-secure-storage';
 import { handleError, ErrorType } from '@/utils/error-handler';
+import { useSecurity } from '@/providers/SecurityProvider';
+import { initializeAwsConfig, checkAwsCredentials } from '@/services/aws/AwsConfigService';
+import { toast } from 'sonner';
+
+interface AWSCredentials {
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+}
+
+interface OpenAICredentials {
+  apiKey: string;
+}
+
+export interface AppCredentials {
+  aws?: AWSCredentials;
+  openai?: OpenAICredentials;
+  [key: string]: any; // Allow for other credential types
+}
 
 interface CredentialsContextType {
-  credentials: any | null;
-  setCredentials: (creds: any) => void;
+  credentials: AppCredentials | null;
+  setCredentials: (creds: AppCredentials) => void;
   isBackendReady: boolean;
   checkBackendStatus: () => Promise<boolean>;
+  testAwsConnection: (awsCredentials: AWSCredentials) => Promise<boolean>;
+  clearCredentials: () => void;
 }
 
 const CredentialsContext = createContext<CredentialsContextType>({
   credentials: null,
   setCredentials: () => {},
   isBackendReady: false,
-  checkBackendStatus: async () => false
+  checkBackendStatus: async () => false,
+  testAwsConnection: async () => false,
+  clearCredentials: () => {}
 });
 
 export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [credentials, setCredentialsState] = useState<any | null>(null);
+  const [credentials, setCredentialsState] = useState<AppCredentials | null>(null);
   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
+  const { encryptData, decryptData } = useSecurity();
   const { getItem, setItem } = useSecureStorage({ 
     storageType: 'local',
     encryptionKey: 'adept_credentials_key'
@@ -31,6 +55,12 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
       const savedCredentials = getItem('agenticCredentials');
       if (savedCredentials) {
         setCredentialsState(savedCredentials);
+        
+        // Initialize AWS config with saved credentials if present
+        if (savedCredentials.aws) {
+          const { region, accessKeyId, secretAccessKey } = savedCredentials.aws;
+          initializeAwsConfig(region, accessKeyId, secretAccessKey);
+        }
         
         // Check if backend is ready
         checkBackendStatus();
@@ -48,8 +78,15 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
   // Check if the backend services are ready
   const checkBackendStatus = async (): Promise<boolean> => {
     try {
-      // In a real implementation, this would check if the backend is ready
-      // For demo purposes, we'll simulate success if credentials exist
+      // If we have AWS credentials, check if they're valid
+      if (credentials?.aws) {
+        const awsReady = await checkAwsCredentials();
+        setIsBackendReady(awsReady);
+        return awsReady;
+      }
+      
+      // For other backend services, implement appropriate checks
+      // For now, consider backend ready if we have any credentials
       const isReady = !!credentials;
       setIsBackendReady(isReady);
       return isReady;
@@ -64,21 +101,75 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
     }
   };
   
+  // Test AWS connection with provided credentials
+  const testAwsConnection = async (awsCredentials: AWSCredentials): Promise<boolean> => {
+    try {
+      // First initialize the AWS config with the credentials
+      initializeAwsConfig(
+        awsCredentials.region,
+        awsCredentials.accessKeyId,
+        awsCredentials.secretAccessKey
+      );
+      
+      // Then test the connection
+      const isConnected = await checkAwsCredentials();
+      
+      if (isConnected) {
+        toast.success("Successfully connected to AWS");
+      } else {
+        toast.error("Failed to connect to AWS. Please check your credentials.");
+      }
+      
+      return isConnected;
+    } catch (error) {
+      handleError({
+        type: ErrorType.API,
+        message: "Failed to test AWS connection",
+        userFriendlyMessage: "Could not verify AWS credentials",
+        originalError: error
+      }, true);
+      return false;
+    }
+  };
+  
   // Set credentials securely
-  const setCredentials = (creds: any) => {
+  const setCredentials = (creds: AppCredentials) => {
     try {
       if (creds) {
+        // Ensure we're using secure storage
         setItem('agenticCredentials', creds);
         setCredentialsState(creds);
+        
+        // If AWS credentials are provided, initialize the AWS config
+        if (creds.aws) {
+          const { region, accessKeyId, secretAccessKey } = creds.aws;
+          initializeAwsConfig(region, accessKeyId, secretAccessKey);
+        }
       } else {
-        setItem('agenticCredentials', null);
-        setCredentialsState(null);
+        clearCredentials();
       }
     } catch (error) {
       handleError({
         type: ErrorType.DATA_ENCRYPTION,
         message: "Failed to securely store credentials",
         userFriendlyMessage: "Failed to save credentials securely",
+        originalError: error
+      }, true);
+    }
+  };
+  
+  // Clear all credentials
+  const clearCredentials = () => {
+    try {
+      setItem('agenticCredentials', null);
+      setCredentialsState(null);
+      setIsBackendReady(false);
+      toast.success("All credentials have been cleared");
+    } catch (error) {
+      handleError({
+        type: ErrorType.DATA_ENCRYPTION,
+        message: "Failed to clear credentials",
+        userFriendlyMessage: "Failed to clear stored credentials",
         originalError: error
       }, true);
     }
@@ -99,7 +190,9 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
         credentials,
         setCredentials,
         isBackendReady,
-        checkBackendStatus
+        checkBackendStatus,
+        testAwsConnection,
+        clearCredentials
       }}
     >
       {children}

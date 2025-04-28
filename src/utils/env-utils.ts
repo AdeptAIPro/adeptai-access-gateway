@@ -1,67 +1,81 @@
 
 /**
- * Utility functions for handling environment variables in the browser environment
+ * Utilities for handling environment variables in browser context
+ * Since we can't directly access process.env in the browser,
+ * we use localStorage as a temporary storage for environment variables
  */
 
 /**
- * Get an environment variable with a fallback value
- * Checks for variables in import.meta.env (Vite) and localStorage
+ * Get environment variable from localStorage or return default
  */
-export const getEnvVar = (key: string, fallback: string = ''): string => {
-  try {
-    // Try to get from import.meta.env first (Vite's way of exposing env vars)
-    if (import.meta.env?.[key] !== undefined) {
-      return import.meta.env[key];
-    }
-    
-    // Then try with VITE_ prefix
-    if (import.meta.env?.[`VITE_${key}`] !== undefined) {
-      return import.meta.env[`VITE_${key}`];
-    }
-    
-    // Then check localStorage
-    const localValue = localStorage.getItem(key);
-    if (localValue) {
-      return localValue;
-    }
-    
-    // Fallback value
-    return fallback;
-  } catch (e) {
-    console.warn(`Error retrieving env var ${key}`, e);
-    return fallback;
+export const getEnvVar = (key: string, defaultValue: string = ''): string => {
+  // First check localStorage
+  const localValue = localStorage.getItem(key);
+  if (localValue) return localValue;
+  
+  // Then check import.meta.env (for Vite environment variables)
+  const envKey = `VITE_${key}`;
+  // @ts-ignore - import.meta.env is not typed
+  const envValue = import.meta.env[envKey];
+  if (envValue) return envValue;
+  
+  // Fall back to default
+  return defaultValue;
+};
+
+/**
+ * Set environment variable in localStorage
+ */
+export const setEnvVar = (key: string, value: string): void => {
+  if (value) {
+    localStorage.setItem(key, value);
+  } else {
+    localStorage.removeItem(key);
   }
 };
 
 /**
- * Set an environment variable in localStorage
+ * Check if a specific environment is active
  */
-export const setEnvVar = (key: string, value: string): void => {
-  localStorage.setItem(key, value);
+export const isEnvironment = (env: 'development' | 'production' | 'test'): boolean => {
+  // @ts-ignore - import.meta.env is not typed
+  return import.meta.env.MODE === env;
 };
 
 /**
- * Get all available environment variables
+ * Get all environment variables as an object
  */
 export const getAllEnvVars = (): Record<string, string> => {
   const vars: Record<string, string> = {};
   
-  // Get vars from import.meta.env
-  try {
-    Object.keys(import.meta.env || {}).forEach(key => {
-      vars[key] = import.meta.env[key];
-    });
-  } catch (e) {
-    console.warn('Error accessing import.meta.env', e);
-  }
-  
-  // Get vars from localStorage
+  // Add all localStorage vars that look like env vars
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key) {
+    if (key && (key.startsWith('AWS_') || key.startsWith('API_') || key.includes('_API_KEY'))) {
       vars[key] = localStorage.getItem(key) || '';
     }
   }
   
+  // Add all import.meta.env vars
+  // @ts-ignore - import.meta.env is not typed
+  Object.keys(import.meta.env).forEach(key => {
+    if (key.startsWith('VITE_')) {
+      // @ts-ignore - import.meta.env is not typed
+      vars[key.replace('VITE_', '')] = import.meta.env[key];
+    }
+  });
+  
   return vars;
+};
+
+/**
+ * Clear all environment variables from localStorage
+ */
+export const clearEnvVars = (): void => {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.startsWith('AWS_') || key.startsWith('API_') || key.includes('_API_KEY'))) {
+      localStorage.removeItem(key);
+    }
+  }
 };
