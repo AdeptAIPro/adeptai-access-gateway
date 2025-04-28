@@ -4,26 +4,45 @@ const path = require('path');
 
 // Function to recursively find all TypeScript files
 function findTsFiles(dir) {
-  const files = fs.readdirSync(dir);
-  const result = [];
-  
-  for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stat = fs.statSync(filePath);
-    
-    if (stat.isDirectory()) {
-      result.push(...findTsFiles(filePath));
-    } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-      result.push(filePath);
-    }
+  if (!fs.existsSync(dir)) {
+    console.warn(`Directory not found: ${dir}`);
+    return [];
   }
-  
-  return result;
+
+  try {
+    const files = fs.readdirSync(dir);
+    const result = [];
+    
+    for (const file of files) {
+      const filePath = path.join(dir, file);
+      try {
+        const stat = fs.statSync(filePath);
+        
+        if (stat.isDirectory()) {
+          result.push(...findTsFiles(filePath));
+        } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
+          result.push(filePath);
+        }
+      } catch (err) {
+        console.warn(`Error processing ${filePath}: ${err.message}`);
+      }
+    }
+    
+    return result;
+  } catch (err) {
+    console.warn(`Error reading directory ${dir}: ${err.message}`);
+    return [];
+  }
 }
 
 // Update imports in a file
 function updateImports(filePath) {
   try {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`File not found: ${filePath}`);
+      return false;
+    }
+
     let content = fs.readFileSync(filePath, 'utf8');
     
     // Replace direct lucide-react imports with our polyfill
@@ -48,15 +67,20 @@ function updateImports(filePath) {
 
 // Main execution
 console.log('🔍 Finding TypeScript files...');
-const srcDir = path.resolve(__dirname, '../src');
-const files = findTsFiles(srcDir);
-console.log(`📁 Found ${files.length} TypeScript files`);
+try {
+  const srcDir = path.resolve(__dirname, '../src');
+  console.log(`Looking for TypeScript files in: ${srcDir}`);
+  const files = findTsFiles(srcDir);
+  console.log(`📁 Found ${files.length} TypeScript files`);
 
-let updatedCount = 0;
-for (const file of files) {
-  if (updateImports(file)) {
-    updatedCount++;
+  let updatedCount = 0;
+  for (const file of files) {
+    if (updateImports(file)) {
+      updatedCount++;
+    }
   }
-}
 
-console.log(`\n✨ Done! Updated imports in ${updatedCount} files`);
+  console.log(`\n✨ Done! Updated imports in ${updatedCount} files`);
+} catch (err) {
+  console.error('❌ Error during import fixing process:', err);
+}
