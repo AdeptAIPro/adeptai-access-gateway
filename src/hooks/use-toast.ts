@@ -4,9 +4,10 @@ import { unifiedToast } from "@/utils/toast-adapter";
 import { ToastProps } from "@/components/ui/toast";
 import { compatibleToast, ExtendedToastOptions } from "@/utils/toast-compat";
 
-type ToastMessage = string | (ToastProps & { description?: React.ReactNode }) | ExtendedToastOptions;
+type ToastMessage = string | (ToastProps & { description?: React.ReactNode, variant?: 'default' | 'destructive' }) | ExtendedToastOptions;
 type ToastOptions = {
   description?: React.ReactNode;
+  variant?: 'default' | 'destructive';
   action?: {
     label: string;
     onClick: () => void;

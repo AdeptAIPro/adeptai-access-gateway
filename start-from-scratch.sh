@@ -142,3 +142,4 @@ if [ $? -ne 0 ]; then
   echo "⚠️ Failed to start with primary method, trying alternate approaches..."
   npx vite || ./node_modules/.bin/vite || npm run dev
 fi
+

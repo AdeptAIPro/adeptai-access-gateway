@@ -1,6 +1,6 @@
 
 import { toast as sonnerToast } from "sonner";
-import { ToastProps } from "@/components/ui/toast";
+import { ToastProps } from '@/components/ui/toast';
 import { ReactNode } from 'react';
 
 /**
@@ -24,6 +24,7 @@ export interface ExtendedToastOptions {
 declare module "@/components/ui/toast" {
   interface ToastProps {
     description?: React.ReactNode;
+    variant?: 'default' | 'destructive';
   }
 }
 
