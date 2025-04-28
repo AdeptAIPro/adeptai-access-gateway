@@ -1,4 +1,5 @@
-import { AgentTask } from '../AgenticService';
+
+import { AgentTask } from '../types/AgenticTypes';
 import { runPayroll } from '@/services/payroll/PayrollProcessor';
 import { PayrollRunOptions, PayrollRunResult } from '@/services/payroll/types/PayrollTypes';
 import { fetchEmployees } from '@/services/payroll/EmployeeService';
@@ -7,7 +8,7 @@ export interface PayrollTaskParams {
   payrollType: 'regular' | 'bonus' | 'commission';
   payPeriod: string;
   payDate: string;
-  payFrequency: "Weekly" | "Bi-Weekly" | "Monthly" | "Semi-Monthly";
+  payFrequency: "weekly" | "biweekly" | "monthly" | "semi-monthly";
   employeeType?: "W-2" | "1099" | "All";
   departmentFilter?: string;
   country?: string;
@@ -30,7 +31,7 @@ export async function processPayrollTask(task: AgentTask): Promise<any> {
     const payrollOptions: PayrollRunOptions = {
       payPeriod: params.payPeriod,
       payDate: params.payDate,
-      payFrequency: params.payFrequency,
+      payFrequency: params.payFrequency.toLowerCase() as 'weekly' | 'biweekly' | 'monthly' | 'semi-monthly',
       employeeType: params.employeeType,
       departmentFilter: params.departmentFilter,
       country: params.country,
@@ -100,7 +101,7 @@ function generatePayrollInsights(result: PayrollRunResult, params: PayrollTaskPa
   // In a real implementation, this would use LLM to generate insights
   // For now, we'll provide dummy insights
   
-  const taxRate = result.totalTaxes / result.totalGrossPay;
+  const taxRate = result.totalTaxes / result.totalGrossPay || 0; // Prevent division by zero
   const processingEfficiency = result.processingTime < 5 ? 'Excellent' : 
                               result.processingTime < 10 ? 'Good' : 
                               result.processingTime < 30 ? 'Fair' : 'Poor';
@@ -117,7 +118,7 @@ function generatePayrollInsights(result: PayrollRunResult, params: PayrollTaskPa
     processingMetrics: {
       processingTime: result.processingTime,
       efficiency: processingEfficiency,
-      successRate: (result.successfulPayments / result.processedEmployees) * 100
+      successRate: (result.successfulPayments / (result.processedEmployees || 1)) * 100 // Prevent division by zero
     },
     taxInsights: {
       taxRate: Math.round(taxRate * 100 * 100) / 100, // Two decimal places
@@ -136,11 +137,11 @@ function generatePayrollInsights(result: PayrollRunResult, params: PayrollTaskPa
 function generatePayrollNextSteps(result: PayrollRunResult, params: PayrollTaskParams): string[] {
   const steps: string[] = [];
   
-  if (result.status === 'Completed') {
+  if (result.status === 'completed') {
     steps.push("Review payroll summary for accuracy");
     steps.push("Distribute payment notifications to employees");
     steps.push("Export reports for accounting department");
-  } else if (result.status === 'Partial') {
+  } else if (result.status === 'processing') {
     steps.push("Review failed payments and resolve issues");
     steps.push("Process remaining payments manually");
     steps.push("Contact affected employees about payment delays");

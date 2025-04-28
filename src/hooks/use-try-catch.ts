@@ -1,98 +1,85 @@
 
-import { useState, useCallback, useEffect } from 'react';
-import { handleError, AppError, tryCatch } from '@/utils/error-handler';
-import { useSafeState } from './use-safe-state';
+import { useState, useCallback } from 'react';
+import { handleError, ErrorType } from '@/utils/error-handler';
 
 interface UseTryCatchOptions {
   showToast?: boolean;
-  rethrow?: boolean;
-}
-
-interface UseTryCatchReturn<T> {
-  isLoading: boolean;
-  error: AppError | null;
-  execute: (...args: any[]) => Promise<T | null>;
-  reset: () => void;
+  errorType?: ErrorType;
+  defaultErrorMessage?: string;
 }
 
 /**
- * Hook for handling try/catch patterns in async functions
+ * A custom hook to handle try-catch patterns with loading states
  */
-export function useTryCatch<T>(
-  fn: (...args: any[]) => Promise<T>,
-  options: UseTryCatchOptions = {}
-): UseTryCatchReturn<T> {
-  const { showToast = true, rethrow = false } = options;
-  
-  const [isLoading, setIsLoading] = useSafeState(false);
-  const [error, setError] = useSafeState<AppError | null>(null);
-  
-  const reset = useCallback(() => {
-    setError(null);
-  }, [setError]);
-  
-  const execute = useCallback(async (...args: any[]): Promise<T | null> => {
+export function useTryCatch<T>(options: UseTryCatchOptions = {}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<T | null>(null);
+
+  const { 
+    showToast = false, 
+    errorType = ErrorType.UNKNOWN, 
+    defaultErrorMessage = "An error occurred"
+  } = options;
+
+  const execute = useCallback(async <R = T>(
+    promiseOrFunction: Promise<R> | (() => Promise<R>),
+    onSuccess?: (result: R) => void,
+    onError?: (error: Error) => void
+  ): Promise<R | null> => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const result = await fn(...args);
+      // Handle both direct promises and functions that return promises
+      const promise = typeof promiseOrFunction === 'function' ? 
+        promiseOrFunction() : promiseOrFunction;
+      
+      const result = await promise;
+      setIsLoading(false);
+      
+      if (typeof result === 'object' && result !== null) {
+        // Only set data if the type matches (for type safety)
+        setData(result as unknown as T);
+      }
+      
+      if (onSuccess) {
+        onSuccess(result);
+      }
+      
       return result;
     } catch (err) {
-      const appError = handleError(err, showToast);
-      setError(appError);
+      setIsLoading(false);
       
-      if (rethrow) {
-        throw appError;
+      const error = err instanceof Error ? err : new Error(defaultErrorMessage);
+      setError(error);
+      
+      // Handle the error with our error handler
+      handleError({
+        type: errorType,
+        message: error.message,
+        userFriendlyMessage: defaultErrorMessage,
+        originalError: err
+      }, showToast);
+      
+      if (onError) {
+        onError(error);
       }
       
       return null;
-    } finally {
-      setIsLoading(false);
     }
-  }, [fn, showToast, rethrow, setIsLoading, setError]);
-  
+  }, [errorType, defaultErrorMessage, showToast]);
+
   return {
     isLoading,
     error,
+    data,
     execute,
-    reset
+    reset: () => {
+      setError(null);
+      setData(null);
+    }
   };
 }
 
-/**
- * Hook for handling async data fetching with error handling
- */
-export function useSafeAsync<T>(
-  asyncFn: () => Promise<T>,
-  dependencies: any[] = [],
-  initialData: T | null = null
-) {
-  const [data, setData] = useSafeState<T | null>(initialData);
-  const [isLoading, setIsLoading] = useSafeState(true);
-  const [error, setError] = useSafeState<AppError | null>(null);
-  
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    const [result, fetchError] = await tryCatch(asyncFn);
-    
-    setData(result);
-    setError(fetchError);
-    setIsLoading(false);
-    
-    return result;
-  }, [asyncFn, setData, setError, setIsLoading]);
-  
-  useEffect(() => {
-    fetchData();
-  }, dependencies); // eslint-disable-line react-hooks/exhaustive-deps
-  
-  return {
-    data,
-    isLoading,
-    error,
-    refetch: fetchData
-  };
-}
+export default useTryCatch;

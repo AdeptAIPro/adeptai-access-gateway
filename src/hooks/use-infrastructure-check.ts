@@ -1,7 +1,27 @@
 
 import { handleError, ErrorType } from "@/utils/error-handler";
-import { InfrastructureStatus } from "@/types/credentials";
-import { checkAwsCredentials, checkAwsInfrastructure } from "@/services/aws/AwsConfigService";
+
+export interface InfrastructureStatus {
+  ready: boolean;
+  issues: string[];
+  lastChecked: string;
+}
+
+// Mock functions to simulate AWS infrastructure checks
+const checkAwsCredentials = async (): Promise<boolean> => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(true), 500);
+  });
+};
+
+const checkAwsInfrastructure = async (): Promise<{ready: boolean, issues: string[]}> => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({
+      ready: true,
+      issues: []
+    }), 700);
+  });
+};
 
 export const useInfrastructureCheck = (hasAwsCredentials: boolean) => {
   const checkBackendStatus = async (): Promise<boolean> => {

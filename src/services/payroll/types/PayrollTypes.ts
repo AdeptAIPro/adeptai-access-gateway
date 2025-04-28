@@ -10,6 +10,21 @@ export interface PayrollRunOptions {
   includeAllEmployees?: boolean;
   payrollType?: 'regular' | 'bonus' | 'commission' | 'other';
   payFrequency?: 'weekly' | 'biweekly' | 'monthly' | 'semi-monthly';
+  // Add missing properties
+  individualEmployeeId?: string;
+  employeeType?: string;
+  departmentFilter?: string;
+  payPeriod?: string;
+  payDate?: string;
+  country?: string;
+  useDynamicTaxRates?: boolean;
+  companyInfo?: {
+    name: string;
+    address: string;
+    ein?: string;
+  };
+  verifyCompliance?: boolean;
+  optimizeForTaxes?: boolean;
 }
 
 // Define PayrollRunResult interface
@@ -28,6 +43,16 @@ export interface PayrollRunResult {
     error?: string;
   }>;
   error?: string;
+  // Add missing properties
+  totalEmployees: number;
+  processedEmployees: number;
+  totalGrossPay: number;
+  totalNetPay: number;
+  totalTaxes: number;
+  successfulPayments: number;
+  failedPayments: number;
+  processingTime: number;
+  taxRateSource?: string;
 }
 
 // Define PayrollHistory interface
@@ -68,4 +93,18 @@ export interface EmployeePayrollDetails extends Employee {
   payHistory?: {
     [payPeriod: string]: PayrollCalculationResult;
   };
+}
+
+// Define PayrollBatchItem interface
+export interface PayrollBatchItem {
+  employeeId: string;
+  amount: number;
+  paymentMethod: string;
+  bankInfo?: {
+    accountNumber: string;
+    routingNumber: string;
+    accountType: string;
+  };
+  taxInfo?: any;
+  deductions?: any;
 }
