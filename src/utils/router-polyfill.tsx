@@ -8,6 +8,11 @@ interface LinkProps {
   className?: string;
 }
 
+interface NavLinkProps extends LinkProps {
+  activeClassName?: string;
+  end?: boolean;
+}
+
 // Export polyfill versions of react-router-dom components and hooks
 export const BrowserRouter = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
 export const Routes = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
@@ -15,6 +20,16 @@ export const Route = ({ children, path }: { children: React.ReactNode; path: str
 
 export const Link = ({ to, children, className }: LinkProps) => {
   return <a href={to} className={className}>{children}</a>;
+};
+
+export const NavLink = ({ to, children, className, activeClassName, end }: NavLinkProps) => {
+  const isActive = window.location.pathname === to || 
+    (!end && window.location.pathname.startsWith(to));
+  const combinedClassName = isActive && activeClassName 
+    ? `${className || ''} ${activeClassName}`.trim()
+    : className;
+  
+  return <a href={to} className={combinedClassName}>{children}</a>;
 };
 
 export const useNavigate = () => {

@@ -1,22 +1,16 @@
 
-import { AppProvider } from "./providers/AppProvider";
-import AppRoutes from "./routes";
-import { ErrorBoundary } from "./components/error-boundary/ErrorBoundary";
-import GlobalErrorDialog from "./components/error-handling/GlobalErrorDialog";
-import { ToastProvider } from "./providers/ToastProvider";
-import { BrowserRouter } from "./utils/router-polyfill";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from '@/utils/router-polyfill';
+import TalentMatching from '@/pages/TalentMatching';
 
 function App() {
   return (
-    <ErrorBoundary variant="fullscreen">
-      <AppProvider>
-        <BrowserRouter basename="">
-          <ToastProvider />
-          <AppRoutes />
-          <GlobalErrorDialog />
-        </BrowserRouter>
-      </AppProvider>
-    </ErrorBoundary>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<TalentMatching />} />
+        {/* Add more routes as needed */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 

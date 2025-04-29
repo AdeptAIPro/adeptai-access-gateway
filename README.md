@@ -1,69 +1,65 @@
-# Welcome to your Lovable project
 
-## Project info
+# Enterprise Ready SaaS Application
 
-**URL**: https://lovable.dev/projects/10f6efec-346d-4269-b184-2f6a771db7ce
+This application follows enterprise-level architecture best practices for security, scalability and multi-tenancy.
 
-## How can I edit this code?
+## Architecture Overview
 
-There are several ways of editing your application.
+- **Frontend**: React/TypeScript application with secure API access
+- **Backend**: AWS Serverless architecture (Lambda, DynamoDB, S3)
+- **Security**: Tenant isolation, IAM roles, encrypted data at rest and in transit
+- **Scalability**: Auto-scaling serverless infrastructure
 
-**Use Lovable**
+## Security Implementation
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/10f6efec-346d-4269-b184-2f6a771db7ce) and start prompting.
+- **Multi-Tenant Architecture**: All data is isolated by tenant ID
+- **No Direct DB Access**: Frontend never accesses databases directly
+- **No Client-Side API Keys**: All external API calls are proxied through backend Lambda functions
+- **Secure Authentication**: Token-based authentication with proper session management
 
-Changes made via Lovable will be committed automatically to this repo.
+## Setup Instructions
 
-**Use your preferred IDE**
+1. Clone the repository
+2. Run `npm install` to install dependencies
+3. Configure AWS credentials:
+   - Set AWS_REGION
+   - Set AWS_ACCESS_KEY_ID
+   - Set AWS_SECRET_ACCESS_KEY
+4. Run `./fix-all-issues.sh` to ensure proper setup
+5. Start the development server with `./run-vite.sh`
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## AWS Resources Required
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Lambda functions:
+  - talent-match-processor
+  - user-management
+  - agentic-task-processor
+- DynamoDB tables:
+  - adept-talents
+  - adept-jobs
+  - adept-matches
+  - adept-tasks
+  - adept-agents
+  - adept-users
+  - adept-tenants
+- S3 buckets:
+  - adept-resumes
+  - adept-profile-images
+  - adept-job-descriptions
+  - adept-task-artifacts
 
-Follow these steps:
+## Directory Structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- `/src/components`: UI components
+- `/src/services`: Service layer for business logic
+  - `/src/services/aws`: AWS service clients
+  - `/src/services/backend-api`: Centralized API client for Lambda
+  - `/src/services/ai`: Secure AI services
+- `/src/utils`: Utility functions
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Development Guidelines
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/10f6efec-346d-4269-b184-2f6a771db7ce) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. **Never** store API keys in frontend code
+2. **Always** go through Lambda backend for any data operations
+3. **Always** include tenant ID in requests for proper data isolation
+4. **Use** proper error handling for all AWS operations
