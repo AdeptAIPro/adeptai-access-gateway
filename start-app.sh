@@ -22,6 +22,7 @@ npm cache clean --force
 echo "📦 Installing core dependencies..."
 npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/node
 npm install --save react react-dom react-router-dom sonner zod react-hook-form @hookform/resolvers
+npm install --save-dev lovable-tagger
 
 # Install AWS SDK dependencies
 echo "📦 Installing AWS SDK dependencies..."
@@ -66,7 +67,7 @@ if [ -z "$VITE_PATH" ]; then
   VITE_PATH="./node_modules/.bin/vite"
   if [ ! -f "$VITE_PATH" ]; then
     echo "Vite not found in PATH or node_modules. Installing..."
-    npm install --save-dev vite@latest @vitejs/plugin-react-swc @types/node
+    npm install --save-dev vite@latest @vitejs/plugin-react-swc @types/node lovable-tagger
     VITE_PATH="./node_modules/.bin/vite"
   fi
 fi
@@ -74,7 +75,7 @@ fi
 # Make sure vite is in node_modules and is executable
 if [ ! -f "./node_modules/.bin/vite" ]; then
   echo "Reinstalling Vite locally..."
-  npm install --save-dev vite@latest
+  npm install --save-dev vite@latest lovable-tagger
   chmod +x ./node_modules/.bin/vite 2>/dev/null || true
 fi
 
@@ -126,7 +127,7 @@ node -e "require('./node_modules/vite/bin/vite.js')"
 
 # If we get here, all methods failed
 echo "❌ All methods to start Vite failed. Please try the manual steps below:"
-echo "1. Run: npm install --save-dev vite @vitejs/plugin-react-swc @types/node"
+echo "1. Run: npm install --save-dev vite lovable-tagger @vitejs/plugin-react-swc @types/node"
 echo "2. Run: export PATH=\$PATH:./node_modules/.bin"
 echo "3. Run: npx vite"
 echo "4. If that fails, try: npm install -g vite && vite"

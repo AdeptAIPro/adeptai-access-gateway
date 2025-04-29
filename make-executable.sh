@@ -29,17 +29,18 @@ echo "✅ All scripts are now executable"
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
+export PATH="$PATH:$HOME/.npm/bin"
 
 # Install Vite if not already installed
 if ! npm list vite --depth=0 &> /dev/null; then
   echo "Installing vite and required dependencies..."
-  npm install --save-dev vite@latest @vitejs/plugin-react-swc @types/node
+  npm install --save-dev vite@latest @vitejs/plugin-react-swc @types/node lovable-tagger
 fi
 
 # Make sure vite is in node_modules and is executable
 if [ ! -f "./node_modules/.bin/vite" ]; then
   echo "Reinstalling Vite locally..."
-  npm install --save-dev vite@latest
+  npm install --save-dev vite@latest lovable-tagger
   chmod +x ./node_modules/.bin/vite 2>/dev/null || true
 fi
 
