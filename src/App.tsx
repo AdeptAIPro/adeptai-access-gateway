@@ -7,7 +7,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<TalentMatching />} />
+        <Route path="/">
+          <TalentMatching />
+        </Route>
         {/* Add more routes as needed */}
       </Routes>
     </BrowserRouter>

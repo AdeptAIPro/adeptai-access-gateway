@@ -12,6 +12,7 @@ chmod +x fix-all-issues.sh
 [ -f "make-executable.sh" ] && chmod +x make-executable.sh
 [ -f "ensure-vite.sh" ] && chmod +x ensure-vite.sh
 [ -f "run-vite.sh" ] && chmod +x run-vite.sh
+[ -f "fix-all-imports.sh" ] && chmod +x fix-all-imports.sh
 
 # Create utility directories if they don't exist
 mkdir -p src/utils
@@ -25,13 +26,9 @@ npm install --save react-router-dom sonner zod react-hook-form @hookform/resolve
 npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/uuid @types/node
 npm install --save aws-sdk @aws-sdk/client-s3 @aws-sdk/client-dynamodb @aws-sdk/util-dynamodb
 
-# Create shadcn patches file if it doesn't exist
-if [ ! -f "src/utils/shadcn-patches.tsx" ]; then
-  echo "Creating shadcn-patches.tsx..."
-  mkdir -p src/utils
-  touch src/utils/shadcn-patches.tsx
-fi
-
+# Install shadcn-ui dependencies
+npm install --save @radix-ui/react-tabs @radix-ui/react-select @radix-ui/react-dropdown-menu @radix-ui/react-radio-group @radix-ui/react-label
+ 
 # Ensure Vite is properly installed
 if [ ! -f "./node_modules/.bin/vite" ]; then
   echo "📦 Installing Vite locally..."
@@ -64,14 +61,6 @@ fi
 EOL
 
 chmod +x run-vite.sh
-
-# Create AWS service architecture directory structure
-mkdir -p src/services/aws/lambda
-mkdir -p src/services/aws/dynamodb
-mkdir -p src/services/aws/s3
-
-# Create AWS Lambda backend services
-mkdir -p src/services/backend-api
 
 echo "✅ All fixes have been applied!"
 echo "🚀 You can now start the development server with: ./run-vite.sh"

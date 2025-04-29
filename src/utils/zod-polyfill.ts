@@ -61,3 +61,5 @@ try {
 } catch (e) {
   console.log('Using zod polyfill');
 }
+
+export default { z };
