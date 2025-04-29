@@ -58,6 +58,7 @@ export const useFormContext = () => {
   return useForm().control;
 }
 
+// Fix the FormProvider component - this was causing the TS error
 export const FormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
