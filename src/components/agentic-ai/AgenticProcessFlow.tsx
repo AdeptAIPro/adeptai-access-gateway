@@ -6,7 +6,7 @@ import EnhancedTaskResultDisplay from "@/components/agentic-ai/task-result/Enhan
 import AgenticErrorHandler from "@/components/agentic-ai/AgenticErrorHandler";
 import usePersistedState from "@/hooks/use-persisted-state";
 import { toast } from "@/utils/sonner-polyfill";
-import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
+import { AgentTask, TaskResult } from '@/components/agentic-ai/task-result/types';
 
 interface AgenticProcessFlowProps {
   tasks: AgentTask[];
@@ -42,7 +42,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
     }
     
     try {
-      if (task.status === 'pending') { // Changed from 'queued' to 'pending' to match the AgentTask type
+      if (task.status === 'pending') { 
         setIsProcessing(true);
         // In a real implementation, you would call an API to process the task
         // For demo purposes, we're simulating processing with a timeout

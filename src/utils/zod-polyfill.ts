@@ -26,6 +26,14 @@ class ZodType {
   or() {
     return this;
   }
+
+  min() {
+    return this;
+  }
+  
+  max() {
+    return this;
+  }
 }
 
 class ZodString extends ZodType {
@@ -52,6 +60,7 @@ export const z = {
   enum: (values: any[]) => new ZodType(),
   literal: (value: any) => new ZodType(),
   union: (types: any[]) => new ZodType(),
+  infer: () => {},
 };
 
 // Try to use the real zod if it's available

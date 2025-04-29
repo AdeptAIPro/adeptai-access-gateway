@@ -27,7 +27,7 @@ npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/uu
 npm install --save aws-sdk @aws-sdk/client-s3 @aws-sdk/client-dynamodb @aws-sdk/util-dynamodb
 
 # Install shadcn-ui dependencies
-npm install --save @radix-ui/react-tabs @radix-ui/react-select @radix-ui/react-dropdown-menu @radix-ui/react-radio-group @radix-ui/react-label
+npm install --save @radix-ui/react-tabs @radix-ui/react-select @radix-ui/react-dropdown-menu @radix-ui/react-radio-group @radix-ui/react-label @radix-ui/react-dialog
  
 # Ensure Vite is properly installed
 if [ ! -f "./node_modules/.bin/vite" ]; then
@@ -39,6 +39,99 @@ fi
 if [ -f "src/utils/fix-imports.js" ]; then
   echo "🔧 Running import fixes..."
   node src/utils/fix-imports.js
+elif [ -f "fix-imports.js" ]; then
+  echo "🔧 Running import fixes from root directory..."
+  node fix-imports.js
+else
+  echo "📝 Creating fix-imports.js script..."
+  cat > fix-imports.js << 'EOL'
+const fs = require('fs');
+const path = require('path');
+
+// Function to recursively find all TypeScript files
+function findTsFiles(dir) {
+  let results = [];
+  
+  if (!fs.existsSync(dir)) {
+    console.error(`Directory does not exist: ${dir}`);
+    return results;
+  }
+  
+  try {
+    const list = fs.readdirSync(dir);
+    
+    for (const file of list) {
+      const filePath = path.join(dir, file);
+      const stat = fs.statSync(filePath);
+      
+      if (stat.isDirectory()) {
+        results = results.concat(findTsFiles(filePath));
+      } else if (/\.(ts|tsx)$/.test(file)) {
+        results.push(filePath);
+      }
+    }
+  } catch (err) {
+    console.error(`Error reading directory: ${err.message}`);
+  }
+  
+  return results;
+}
+
+// Fix imports and shadcn component props
+function fixImportsAndProps(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  
+  // Replace imports
+  let updatedContent = content
+    .replace(/from ['"]react-router-dom['"]/g, "from '@/utils/router-polyfill'")
+    .replace(/from ['"]sonner['"]/g, "from '@/utils/sonner-polyfill'")
+    .replace(/from ['"]zod['"]/g, "from '@/utils/zod-polyfill'") 
+    .replace(/from ['"]date-fns['"]/g, "from '@/utils/date-polyfill'")
+    .replace(/from ['"]react-hook-form['"]/g, "from '@/utils/hook-form-polyfill'")
+    .replace(/from ['"]@hookform\/resolvers\/zod['"]/g, "from '@/utils/hook-form-polyfill'")
+    .replace(/from ['"]lucide-react['"]/g, "from '@/utils/icon-polyfill'");
+
+  // Fix shadcn import paths
+  updatedContent = updatedContent
+    .replace(/from ["']@\/components\/ui\/tabs["']/g, "from '@/utils/shadcn-patches'")
+    .replace(/from ["']@\/components\/ui\/dropdown-menu["']/g, "from '@/utils/shadcn-patches'")
+    .replace(/from ["']@\/components\/ui\/select["']/g, "from '@/utils/shadcn-patches'")
+    .replace(/from ["']@\/components\/ui\/label["']/g, "from '@/utils/shadcn-patches'")
+    .replace(/from ["']@\/components\/ui\/dialog["']/g, "from '@/utils/shadcn-patches'")
+    .replace(/from ["']@\/components\/ui\/radio-group["']/g, "from '@/utils/shadcn-patches'");
+
+  if (updatedContent !== content) {
+    fs.writeFileSync(filePath, updatedContent);
+    console.log(`Fixed imports in ${filePath}`);
+  }
+}
+
+// Main execution
+console.log('🔍 Finding TypeScript files...');
+try {
+  const srcDir = path.resolve(__dirname, './src');
+  console.log(`Looking for TypeScript files in: ${srcDir}`);
+  const files = findTsFiles(srcDir);
+  console.log(`📁 Found ${files.length} TypeScript files`);
+
+  let updatedCount = 0;
+  for (const file of files) {
+    try {
+      fixImportsAndProps(file);
+      updatedCount++;
+    } catch (error) {
+      console.error(`❌ Error fixing imports in ${file}:`, error);
+    }
+  }
+
+  console.log(`\n✨ Done! Updated imports in ${updatedCount} files`);
+} catch (err) {
+  console.error('❌ Error during import fixing process:', err);
+}
+EOL
+
+  echo "🔧 Running import fixes..."
+  node fix-imports.js
 fi
 
 # Create a helper script to fix PATH issues with Vite
@@ -55,8 +148,16 @@ elif command -v npx &> /dev/null; then
   echo "Running Vite with npx"
   npx vite "$@"
 else
-  echo "❌ Vite not found! Please install it with: npm install --save-dev vite"
-  exit 1
+  echo "❌ Vite not found! Installing it now..."
+  npm install --save-dev vite@latest @vitejs/plugin-react-swc
+  
+  # Try running with npx after installation
+  if command -v npx &> /dev/null; then
+    npx vite
+  else
+    # If npx is not available, try direct access
+    ./node_modules/.bin/vite
+  fi
 fi
 EOL
 

@@ -13,10 +13,20 @@ interface NavLinkProps extends LinkProps {
   end?: boolean;
 }
 
+interface RouteProps {
+  children?: React.ReactNode;
+  path: string;
+  element?: React.ReactNode;
+}
+
 // Export polyfill versions of react-router-dom components and hooks
 export const BrowserRouter = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
 export const Routes = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
-export const Route = ({ children, path }: { children: React.ReactNode; path: string }) => <div>{children}</div>;
+
+export const Route = ({ children, path, element }: RouteProps) => {
+  // If element prop is provided, use it; otherwise use children
+  return <div>{element || children}</div>;
+};
 
 export const Link = ({ to, children, className }: LinkProps) => {
   return <a href={to} className={className}>{children}</a>;

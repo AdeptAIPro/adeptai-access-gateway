@@ -19,5 +19,12 @@ elif command -v npx &> /dev/null; then
 else
   echo "❌ Vite not found! Installing it now..."
   npm install --save-dev vite@latest @vitejs/plugin-react-swc
-  npx vite
+  
+  # Try running with npx after installation
+  if command -v npx &> /dev/null; then
+    npx vite
+  else
+    # If npx is not available, try direct access
+    ./node_modules/.bin/vite
+  fi
 fi
