@@ -1,6 +1,3 @@
 
-/**
- * This file re-exports icons from lucide-react to avoid direct imports
- * which can cause issues in some builds.
- */
+// Re-export all icons from lucide-react
 export * from 'lucide-react';

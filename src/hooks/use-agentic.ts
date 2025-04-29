@@ -18,6 +18,7 @@ export const useAgenticAI = () => {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+  const [activeTask, setActiveTask] = useState<AgentTask | null>(null); // Add missing activeTask state
   const { user } = useAuth() || { user: { id: 'guest-user' } as AgenticUser };
 
   // Fetch agents
@@ -100,6 +101,12 @@ export const useAgenticAI = () => {
     try {
       setIsLoading(true);
       
+      // Find the task
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        setActiveTask(task); // Set the active task
+      }
+      
       // Update task status to processing
       const updatedTask = await updateTask(taskId, {
         status: 'processing',
@@ -137,6 +144,8 @@ export const useAgenticAI = () => {
                 )
               );
               
+              setActiveTask(completedTask); // Update the active task
+              
               toast({
                 title: 'Task Completed',
                 description: 'Your task has been completed successfully.',
@@ -162,7 +171,7 @@ export const useAgenticAI = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [tasks]);
 
   // Load data on component mount
   useEffect(() => {
@@ -175,6 +184,7 @@ export const useAgenticAI = () => {
     tasks,
     isLoading,
     error,
+    activeTask, // Return activeTask
     createTask: handleCreateTask,
     processTask: handleProcessTask,
     refreshTasks: loadTasks,

@@ -6,7 +6,7 @@ export interface Agent {
   name: string;
   description?: string;
   type?: string;
-  capabilities?: string[];
+  capabilities: string[]; // Making capabilities required
   status?: 'active' | 'inactive' | 'deprecated';
   createdAt: string;
   updatedAt?: string;
@@ -40,4 +40,5 @@ export interface AgentTask {
     code?: string;
     details?: any;
   };
+  title?: string; // Add missing title property
 }
