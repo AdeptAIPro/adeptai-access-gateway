@@ -19,7 +19,7 @@ if ! npm list vite --depth=0 &> /dev/null; then
 fi
 
 # Install other critical dependencies if missing
-for pkg in react-router-dom sonner react-hook-form @hookform/resolvers zod date-fns @types/node
+for pkg in react-router-dom sonner zod react-hook-form @hookform/resolvers date-fns @types/node
 do
   if ! npm list $pkg --depth=0 &> /dev/null; then
     echo "📦 Installing $pkg..."
