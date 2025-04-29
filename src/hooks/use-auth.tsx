@@ -1,164 +1,113 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { lambdaApi } from '@/services/backend-api/LambdaApiClient';
-import { USER_MANAGEMENT_LAMBDA } from '@/services/aws/config';
-import { tryCatch, ErrorType, createAppError } from '@/utils/error-handler';
 
-// Define types
-interface User {
+// Define the user type
+type User = {
   id: string;
   email: string;
-  name: string;
+  name?: string;
   role: string;
-  permissions: string[];
   tenantId: string;
-}
+};
 
-interface AuthContextType {
+// Define the auth context type
+type AuthContextType = {
   user: User | null;
-  loading: boolean;
-  error: Error | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
-  hasPermission: (permission: string) => boolean;
-}
+  error: string | null;
+};
 
 // Create the auth context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Sample user data for development
-const mockUser: User = {
-  id: '1',
-  email: 'admin@example.com',
-  name: 'Admin User',
+// Mock user for development
+const MOCK_USER: User = {
+  id: 'user-123',
+  email: 'test@example.com',
+  name: 'Test User',
   role: 'admin',
-  permissions: ['viewDashboard', 'viewCRM', 'viewAnalytics', 'manageUsers'],
-  tenantId: 'default-tenant'
+  tenantId: 'tenant-123'
 };
 
-// Auth provider component
+// Create the auth provider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [isBackendAvailable, setIsBackendAvailable] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Check if backend is available
+  // Check if user is already logged in on mount
   useEffect(() => {
-    const checkBackendConnection = async () => {
+    const checkAuth = async () => {
       try {
-        const isAvailable = await lambdaApi.checkHealth();
-        setIsBackendAvailable(isAvailable);
+        // In a real app, check if there's a valid token in localStorage or cookies
+        const token = localStorage.getItem('authToken');
+        
+        if (token) {
+          // For development, use mock user data
+          setUser(MOCK_USER);
+          
+          // In production, validate token with backend
+          // const userData = await validateTokenWithBackend(token);
+          // setUser(userData);
+        }
       } catch (err) {
-        console.log('Backend health check failed, using mock data');
-        setIsBackendAvailable(false);
+        console.error('Auth initialization error:', err);
+        setError('Failed to initialize authentication');
+      } finally {
+        setIsLoading(false);
       }
     };
     
-    checkBackendConnection();
+    checkAuth();
   }, []);
 
-  // Load user on initial render
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        // Wait for backend availability check
-        if (isBackendAvailable === null) return;
-        
-        // If backend is available, verify token and get user data
-        if (isBackendAvailable) {
-          const sessionToken = localStorage.getItem('authToken');
-          
-          if (sessionToken) {
-            // Verify token with backend
-            const [userData, error] = await tryCatch(async () => {
-              return await lambdaApi.invoke(
-                USER_MANAGEMENT_LAMBDA,
-                'verifyToken',
-                { token: sessionToken }
-              );
-            });
-            
-            if (error || !userData) {
-              // Invalid token, clear it
-              localStorage.removeItem('authToken');
-              setUser(null);
-            } else {
-              setUser(userData);
-            }
-          } else {
-            // For development with no token, optionally use mock user
-            if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_USER === 'true') {
-              setUser(mockUser);
-              localStorage.setItem('authToken', 'mock-token');
-            } else {
-              setUser(null);
-            }
-          }
-        } else {
-          // Backend not available, use mock user for development
-          if (import.meta.env.DEV) {
-            console.log('Using mock user since backend is unavailable');
-            setUser(mockUser);
-            localStorage.setItem('authToken', 'mock-token');
-          } else {
-            // In production, don't use mock data if backend is down
-            setUser(null);
-            setError(new Error('Authentication services are currently unavailable.'));
-          }
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUser();
-  }, [isBackendAvailable]);
-
   // Login function
-  const login = async (email: string, password: string): Promise<void> => {
-    setLoading(true);
+  const login = async (email: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
     
     try {
-      if (!isBackendAvailable) {
-        // Mock login for development when backend is unavailable
-        if (import.meta.env.DEV) {
-          console.log('Using mock login since backend is unavailable');
-          setUser(mockUser);
-          localStorage.setItem('authToken', 'mock-token');
-          return;
-        } else {
-          throw createAppError(
-            'Authentication services are currently unavailable.',
-            ErrorType.API
-          );
-        }
-      }
+      // In development, just use mock data
+      setUser(MOCK_USER);
+      localStorage.setItem('authToken', 'mock-token-123');
       
-      // Real login with backend
-      const [authData, error] = await tryCatch(async () => {
-        return await lambdaApi.invoke(
-          USER_MANAGEMENT_LAMBDA,
-          'login',
-          { email, password }
-        );
-      });
-      
-      if (error || !authData) {
-        throw error || new Error('Login failed');
-      }
-      
-      // Store token and user data
-      localStorage.setItem('authToken', authData.token);
-      setUser(authData.user);
-      
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Login failed'));
-      throw err;
+      // In production, call backend API
+      // const { user, token } = await api.login(email, password);
+      // setUser(user);
+      // localStorage.setItem('authToken', token);
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Failed to login');
+      throw new Error(err.message || 'Failed to login');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  // Signup function
+  const signup = async (email: string, password: string, name: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // In development, just use mock data
+      setUser({ ...MOCK_USER, email, name });
+      localStorage.setItem('authToken', 'mock-token-123');
+      
+      // In production, call backend API
+      // const { user, token } = await api.signup(email, password, name);
+      // setUser(user);
+      // localStorage.setItem('authToken', token);
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      setError(err.message || 'Failed to signup');
+      throw new Error(err.message || 'Failed to signup');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -168,27 +117,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  // Permission check
-  const hasPermission = (permission: string): boolean => {
-    if (!user) return false;
-    return user.permissions.includes(permission);
-  };
-
-  // Context value
-  const value = {
+  const contextValue: AuthContextType = {
     user,
-    loading,
-    error,
+    isAuthenticated: !!user,
+    isLoading,
     login,
+    signup,
     logout,
-    hasPermission,
+    error
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// Hook to use auth context
-export const useAuth = (): AuthContextType => {
+// Create the auth hook
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');

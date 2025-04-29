@@ -29,6 +29,12 @@ export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
 
+# Install Vite if not already installed
+if ! npm list vite --depth=0 &> /dev/null; then
+  echo "Installing vite and required dependencies..."
+  npm install --save-dev vite@latest @vitejs/plugin-react-swc
+fi
+
 # Verify Vite installation
 if command -v npx &> /dev/null; then
   echo "Checking for Vite with npx..."

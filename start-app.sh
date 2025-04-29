@@ -23,7 +23,7 @@ echo "📦 Installing core dependencies..."
 npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript
 npm install --save react-router-dom sonner zod react-hook-form @hookform/resolvers
 
-# Ensure package.json is properly configured
+# Run fix-package.js to configure package.json
 echo "📋 Configuring package.json..."
 node fix-package.js
 
@@ -37,6 +37,14 @@ export PATH="$PATH:$HOME/.npm/bin"
 echo "🧹 Cleaning up previous builds..."
 rm -rf node_modules/.vite
 rm -rf dist
+
+# Create a .env file if it doesn't exist
+if [ ! -f ".env" ]; then
+  echo "Creating .env file..."
+  echo "VITE_API_GATEWAY_BASE_URL=https://api.adeptaipro.com" > .env
+  echo "VITE_AWS_REGION=us-east-1" >> .env
+  echo "VITE_MULTI_TENANCY_ENABLED=true" >> .env
+fi
 
 # Multiple attempts to start Vite
 echo "🚀 Starting application..."
@@ -79,6 +87,7 @@ node ./node_modules/vite/bin/vite.js
 
 # If we get here, all methods failed
 echo "❌ All methods to start Vite failed. Please try the manual steps below:"
-echo "1. Run: export PATH=\$PATH:./node_modules/.bin"
-echo "2. Run: npx vite"
-echo "3. If that fails, try: npm install -g vite && vite"
+echo "1. Run: npm install --save-dev vite @vitejs/plugin-react-swc"
+echo "2. Run: export PATH=\$PATH:./node_modules/.bin"
+echo "3. Run: npx vite"
+echo "4. If that fails, try: npm install -g vite && vite"
