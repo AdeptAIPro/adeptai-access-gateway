@@ -1,21 +1,25 @@
 
 import React from 'react';
-import { BrowserRouter, Routes, Route } from '@/utils/router-polyfill';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TalentMatching from '@/pages/TalentMatching';
 import { Suspense } from 'react';
 import { protectedRoutes } from './routes/protected-routes';
 import { PageLoader } from './routes/page-loader';
+import { AuthProvider } from './hooks/use-auth';
+import { AppProvider } from './providers/AppProvider';
 
 // Use non-lazy loaded component for the root route to avoid initial loading issues
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<TalentMatching />} />
-        {protectedRoutes}
-        {/* Add more routes as needed */}
-      </Routes>
-    </BrowserRouter>
+    <AppProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<TalentMatching />} />
+          {protectedRoutes}
+          {/* Add more routes as needed */}
+        </Routes>
+      </Router>
+    </AppProvider>
   );
 }
 
