@@ -10,7 +10,7 @@ npm install react-router-dom sonner zod react-hook-form @hookform/resolvers date
 npm install lucide-react recharts next-themes class-variance-authority clsx tailwind-merge
 
 # Install dev dependencies
-npm install --save-dev vite @vitejs/plugin-react-swc typescript @types/uuid
+npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/uuid
 
 # Create utility directories if they don't exist
 mkdir -p src/utils

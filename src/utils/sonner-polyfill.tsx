@@ -1,27 +1,25 @@
 
 import React from 'react';
-import { toast as sonnerToast, Toaster as SonnerToaster, Toast as SonnerToast } from 'sonner';
 
-// Re-export toast function with compatibility layer
-export const toast = sonnerToast;
+// Export basic toast functionality
+export const Toaster = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <div className="toaster-container">
+      {children}
+    </div>
+  );
+};
 
-// Re-export all functions and types from sonner
-export type { SonnerToast as Toast };
-export { SonnerToaster as Toaster };
+// Basic toast function with variants
+export const toast = Object.assign(
+  (message: string) => {
+    console.log(`Toast: ${message}`);
+  },
+  {
+    success: (message: string) => console.log(`Success toast: ${message}`),
+    error: (message: string) => console.log(`Error toast: ${message}`),
+    warning: (message: string) => console.log(`Warning toast: ${message}`),
+    info: (message: string) => console.log(`Info toast: ${message}`),
+  }
+);
 
-// Fallback implementation in case sonner is not available
-if (typeof sonnerToast !== 'function') {
-  console.warn('Sonner toast not found, using fallback');
-  
-  // Simple fallback for toast
-  const createToast = (message: string, options?: any) => {
-    console.log('Toast:', message, options);
-    return Date.now().toString();
-  };
-  
-  // Add variants
-  createToast.success = (message: string, options?: any) => createToast(message, { ...options, type: 'success' });
-  createToast.error = (message: string, options?: any) => createToast(message, { ...options, type: 'error' });
-  createToast.warning = (message: string, options?: any) => createToast(message, { ...options, type: 'warning' });
-  createToast.info = (message: string, options?: any) => createToast(message, { ...options, type: 'info' });
-}
