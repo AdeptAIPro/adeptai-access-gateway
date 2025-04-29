@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from '@/utils/router-polyfill';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TalentMatching from '@/pages/TalentMatching';
 import { protectedRoutes } from './routes/protected-routes';
 import { AuthProvider } from './hooks/use-auth';

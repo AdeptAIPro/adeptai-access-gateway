@@ -1,39 +1,37 @@
-
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route } from "@/utils/router-polyfill";
 import { RouteErrorBoundary } from "@/components/error-boundary/RouteErrorBoundary";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { PageLoader } from "./page-loader";
 
-// Directly import Dashboard component to avoid dynamic import issue
-import Dashboard from "@/pages/Dashboard";
-
-// Other components can remain lazy loaded
-const Checkout = React.lazy(() => import("@/pages/Checkout"));
-const PaymentSuccess = React.lazy(() => import("@/pages/PaymentSuccess"));
-const PaymentCancelled = React.lazy(() => import("@/pages/PaymentCancelled"));
-const Talent = React.lazy(() => import("@/pages/Talent"));
-const TalentMatching = React.lazy(() => import("@/pages/TalentMatching"));
-const TalentSearch = React.lazy(() => import("@/pages/TalentSearch"));
-const AgenticAI = React.lazy(() => import("@/pages/AgenticAI"));
-const Integrations = React.lazy(() => import("@/pages/Integrations"));
-const EnterpriseIntegrations = React.lazy(() => import("@/pages/EnterpriseIntegrations"));
-const CRM = React.lazy(() => import("@/pages/CRM"));
-const Analytics = React.lazy(() => import("@/pages/Analytics"));
-const Payroll = React.lazy(() => import("@/pages/Payroll"));
-const ProfessionalDevelopment = React.lazy(() => import("@/pages/ProfessionalDevelopment"));
-const Skills = React.lazy(() => import("@/pages/Skills"));
-const Settings = React.lazy(() => import("@/pages/Settings"));
-const Compliance = React.lazy(() => import("@/pages/Compliance"));
-const Onboarding = React.lazy(() => import("@/pages/Onboarding"));
+// Lazy load all components including Dashboard
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
+const PaymentSuccess = lazy(() => import("@/pages/PaymentSuccess"));
+const PaymentCancelled = lazy(() => import("@/pages/PaymentCancelled"));
+const Talent = lazy(() => import("@/pages/Talent"));
+const TalentMatching = lazy(() => import("@/pages/TalentMatching"));
+const TalentSearch = lazy(() => import("@/pages/TalentSearch"));
+const AgenticAI = lazy(() => import("@/pages/AgenticAI"));
+const Integrations = lazy(() => import("@/pages/Integrations"));
+const EnterpriseIntegrations = lazy(() => import("@/pages/EnterpriseIntegrations"));
+const CRM = lazy(() => import("@/pages/CRM"));
+const Analytics = lazy(() => import("@/pages/Analytics"));
+const Payroll = lazy(() => import("@/pages/Payroll"));
+const ProfessionalDevelopment = lazy(() => import("@/pages/ProfessionalDevelopment"));
+const Skills = lazy(() => import("@/pages/Skills"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Compliance = lazy(() => import("@/pages/Compliance"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
 
 export const protectedRoutes = (
   <>
     <Route path="/dashboard" element={
       <RouteErrorBoundary>
         <ProtectedRoute requiredPermission="viewDashboard">
-          {/* Using directly imported Dashboard - not lazy loaded */}
-          <Dashboard />
+          <Suspense fallback={<PageLoader />}>
+            <Dashboard />
+          </Suspense>
         </ProtectedRoute>
       </RouteErrorBoundary>
     } />
