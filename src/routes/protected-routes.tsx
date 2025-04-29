@@ -1,10 +1,11 @@
+
 import React, { Suspense } from "react";
 import { Route } from "@/utils/router-polyfill";
 import { RouteErrorBoundary } from "@/components/error-boundary/RouteErrorBoundary";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { PageLoader } from "./page-loader";
 
-// Import Dashboard without lazy loading to fix the immediate issue
+// Directly import Dashboard component to avoid dynamic import issue
 import Dashboard from "@/pages/Dashboard";
 
 // Other components can remain lazy loaded
@@ -31,7 +32,7 @@ export const protectedRoutes = (
     <Route path="/dashboard" element={
       <RouteErrorBoundary>
         <ProtectedRoute requiredPermission="viewDashboard">
-          {/* No Suspense needed for non-lazy component */}
+          {/* Using directly imported Dashboard - not lazy loaded */}
           <Dashboard />
         </ProtectedRoute>
       </RouteErrorBoundary>

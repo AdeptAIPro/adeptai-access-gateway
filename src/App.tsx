@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from '@/utils/router-polyfill';
 import TalentMatching from '@/pages/TalentMatching';
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { protectedRoutes } from './routes/protected-routes';
 import { PageLoader } from './routes/page-loader';
 
