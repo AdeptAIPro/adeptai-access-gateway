@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from '@/utils/router-polyfill';
 import TalentMatching from '@/pages/TalentMatching';
-import { Suspense } from 'react';
 import { protectedRoutes } from './routes/protected-routes';
-import { PageLoader } from './routes/page-loader';
 import { AuthProvider } from './hooks/use-auth';
 import { AppProvider } from './providers/AppProvider';
 
