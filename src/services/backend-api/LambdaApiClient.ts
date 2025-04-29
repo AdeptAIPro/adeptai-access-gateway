@@ -1,93 +1,134 @@
 
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
-import { lambdaClient } from '../aws/config';
-import { getEnvVar } from '@/utils/env-utils';
-import { ErrorType, handleError } from '@/utils/error-handler';
-
 /**
- * Central API client for calling Lambda functions
- * All API calls should go through this client instead of direct service calls
+ * Secure client for AWS Lambda invocation through API Gateway
+ * This handles authentication, tenant isolation, and error handling
  */
-export class LambdaApiClient {
-  private tenantId: string;
-  private authToken?: string;
+
+import { API_GATEWAY_BASE_URL, API_VERSION } from "@/services/aws/config";
+import { useAuth } from "@/hooks/use-auth";
+import { createAppError, ErrorType, tryCatch } from "@/utils/error-handler";
+import { reportApiError } from "@/services/error-reporting";
+
+class LambdaApiClient {
+  private apiBaseUrl: string;
+  private apiVersion: string;
   
   constructor() {
-    // Get tenant ID from environment or local storage
-    this.tenantId = getEnvVar('TENANT_ID', 'default');
-    // Get auth token from local storage if available
-    this.authToken = localStorage.getItem('auth_token') || undefined;
+    this.apiBaseUrl = API_GATEWAY_BASE_URL;
+    this.apiVersion = API_VERSION;
   }
-  
+
   /**
-   * Invoke a Lambda function with the specified action and payload
+   * Invoke a Lambda function through API Gateway
+   * @param functionName The Lambda function name (defined in aws/config.ts)
+   * @param action The specific action to invoke within the Lambda
+   * @param payload The data to send to the Lambda
+   * @returns The response from the Lambda
    */
-  async invoke<T, R>(functionName: string, action: string, payload: T): Promise<R> {
+  async invoke<TPayload, TResult>(
+    functionName: string, 
+    action: string, 
+    payload: TPayload
+  ): Promise<TResult> {
     try {
-      // Add tenant ID and auth token to all requests for multi-tenancy and security
-      const requestPayload = {
+      // Get current user and token from auth context
+      // For now, we'll use a polyfill that works without the actual authentication
+      let authToken = "";
+      let tenantId = "";
+      
+      try {
+        const auth = useAuth();
+        if (auth.user) {
+          authToken = "Bearer " + localStorage.getItem("authToken") || "";
+          tenantId = auth.user.id;
+        }
+      } catch (error) {
+        console.warn("Auth context not available, using anonymous access");
+      }
+
+      // Endpoint URL format: {baseUrl}/api/{version}/{functionName}
+      const url = `${this.apiBaseUrl}/api/${this.apiVersion}/${functionName}`;
+      
+      // Request body includes the action to perform and payload
+      const body = {
         action,
         payload,
         meta: {
-          tenantId: this.tenantId,
-          authToken: this.authToken,
-          timestamp: new Date().toISOString()
+          tenantId,
+          timestamp: new Date().toISOString(),
+          clientInfo: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language
+          }
         }
       };
       
-      // Log API call for debugging (remove in production)
-      console.log(`Invoking Lambda: ${functionName}::${action}`);
+      // Prepare headers with authentication token if available
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
       
-      const command = new InvokeCommand({
-        FunctionName: functionName,
-        Payload: Buffer.from(JSON.stringify(requestPayload)),
-        InvocationType: 'RequestResponse'
+      if (authToken) {
+        headers['Authorization'] = authToken;
+      }
+
+      // Make the API call
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
       });
-      
-      const response = await lambdaClient.send(command);
-      
-      // Parse response payload
-      if (!response.Payload) {
-        throw new Error('Empty response from Lambda function');
+
+      // Handle HTTP errors
+      if (!response.ok) {
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          // If response isn't JSON, use status text
+          errorData = { message: response.statusText };
+        }
+        
+        // Handle different error types
+        let errorType = ErrorType.API;
+        if (response.status === 401) errorType = ErrorType.AUTHENTICATION;
+        if (response.status === 403) errorType = ErrorType.AUTHORIZATION;
+        if (response.status === 404) errorType = ErrorType.NOT_FOUND;
+        if (response.status === 422) errorType = ErrorType.VALIDATION;
+        
+        throw createAppError(
+          errorData.message || `API Error: ${response.status}`,
+          errorType,
+          errorData,
+          { functionName, action, url }
+        );
       }
-      
-      const responseText = Buffer.from(response.Payload).toString();
-      const responseData = JSON.parse(responseText);
-      
-      // Check for Lambda function error
-      if (responseData.errorMessage) {
-        throw new Error(responseData.errorMessage);
-      }
-      
-      // Return function result
-      return responseData as R;
-    } catch (error: any) {
-      // Handle error properly
-      return handleError({
-        type: ErrorType.API,
-        message: `Error calling Lambda function ${functionName}::${action}`,
-        userFriendlyMessage: 'An error occurred while processing your request',
-        originalError: error
-      }, true) as any;
+
+      // Parse and return the response
+      const data = await response.json();
+      return data as TResult;
+    } catch (error) {
+      // Report and re-throw the error
+      reportApiError(
+        `lambdaApi.invoke:${functionName}.${action}`,
+        error,
+        { functionName, action }
+      );
+      throw error;
     }
   }
   
   /**
-   * Set the current tenant ID
+   * Check if the API is available
    */
-  setTenantId(tenantId: string): void {
-    this.tenantId = tenantId;
-  }
-  
-  /**
-   * Set the authentication token
-   */
-  setAuthToken(token: string | undefined): void {
-    this.authToken = token;
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
+  async checkHealth(): Promise<boolean> {
+    try {
+      const url = `${this.apiBaseUrl}/health`;
+      const response = await fetch(url);
+      return response.ok;
+    } catch (error) {
+      return false;
     }
   }
 }

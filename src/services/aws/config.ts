@@ -1,54 +1,28 @@
 
-import { S3Client } from '@aws-sdk/client-s3';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { LambdaClient } from '@aws-sdk/client-lambda';
-import { getEnvVar } from '@/utils/env-utils';
+/**
+ * AWS service endpoints and configuration
+ */
 
-// Get AWS configuration from environment variables
-const region = getEnvVar('AWS_REGION', 'us-east-1');
-const accessKeyId = getEnvVar('AWS_ACCESS_KEY_ID', '');
-const secretAccessKey = getEnvVar('AWS_SECRET_ACCESS_KEY', '');
+// Lambda function names
+export const USER_MANAGEMENT_LAMBDA = "adept-user-management";
+export const TALENT_MATCH_LAMBDA = "adept-talent-match";
+export const DATA_IMPORT_LAMBDA = "adept-data-import";
+export const ERROR_REPORTING_LAMBDA = "adept-error-reporting";
+export const AI_PROCESSING_LAMBDA = "adept-ai-processing";
+export const RESUME_PARSING_LAMBDA = "adept-resume-parsing";
+export const INTEGRATION_LAMBDA = "adept-integration-service";
+export const PAYMENT_LAMBDA = "adept-payment-service";
+export const CRM_LAMBDA = "adept-crm-service";
 
-// Base AWS configuration
-const awsConfig = {
-  region,
-  credentials: {
-    accessKeyId,
-    secretAccessKey
-  }
-};
+// API Gateway endpoints
+export const API_GATEWAY_BASE_URL = import.meta.env.VITE_API_GATEWAY_BASE_URL || "https://api.adeptaipro.com";
+export const API_VERSION = "v1";
 
-// Create centralized clients
-export const s3Client = new S3Client(awsConfig);
-export const dynamoDbClient = new DynamoDBClient(awsConfig);
-export const lambdaClient = new LambdaClient(awsConfig);
+// S3 Bucket names
+export const RESUME_BUCKET = "adept-resumes";
+export const PROFILE_IMAGES_BUCKET = "adept-profile-images";
+export const JOB_DESCRIPTIONS_BUCKET = "adept-job-descriptions";
+export const TASK_ARTIFACTS_BUCKET = "adept-task-artifacts";
 
-// Export configurations for Lambda functions
-export const TALENT_MATCH_LAMBDA = 'talent-match-processor';
-export const USER_MANAGEMENT_LAMBDA = 'user-management';
-export const TASK_PROCESSOR_LAMBDA = 'agentic-task-processor';
-
-// Export configurations for DynamoDB tables
-export const TALENTS_TABLE = 'adept-talents';
-export const JOBS_TABLE = 'adept-jobs';
-export const MATCHES_TABLE = 'adept-matches';
-export const TASKS_TABLE = 'adept-tasks';
-export const AGENTS_TABLE = 'adept-agents';
-export const USERS_TABLE = 'adept-users';
-export const TENANTS_TABLE = 'adept-tenants';
-
-// Export configurations for S3 buckets
-export const RESUMES_BUCKET = 'adept-resumes';
-export const PROFILE_IMAGES_BUCKET = 'adept-profile-images';
-export const JOB_DESCRIPTIONS_BUCKET = 'adept-job-descriptions';
-export const TASK_ARTIFACTS_BUCKET = 'adept-task-artifacts';
-
-// Helper to check if AWS credentials are configured
-export const isAwsConfigured = (): boolean => {
-  return !!accessKeyId && !!secretAccessKey;
-};
-
-// Helper for multi-tenancy - append tenant ID to resource identifiers
-export const getTenantResourceId = (baseId: string, tenantId: string): string => {
-  return `${tenantId}-${baseId}`;
-};
+// Region configuration
+export const AWS_REGION = import.meta.env.VITE_AWS_REGION || "us-east-1";

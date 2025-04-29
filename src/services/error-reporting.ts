@@ -1,52 +1,47 @@
 
-import { AppError } from '@/utils/error-handler';
+/**
+ * Service for centralized error reporting to backend
+ */
+
+import { ErrorType } from "@/utils/error-handler";
+import { lambdaApi } from "./backend-api/LambdaApiClient";
+import { ERROR_REPORTING_LAMBDA } from "./aws/config";
 
 /**
- * Service for reporting errors to monitoring services
- * This can be extended to send errors to services like Sentry, LogRocket, etc.
+ * Report an API error to our monitoring service
  */
-export const reportError = (error: Error | AppError, context: Record<string, any> = {}) => {
-  // Log to console in all environments
-  console.error('[Error Reporting]', error, context);
-  
-  // In production, we would send this to an error monitoring service
-  if (process.env.NODE_ENV === 'production') {
-    // Example: Send to a hypothetical error monitoring service
-    // sendToErrorMonitoring(error, context);
+export const reportApiError = async (
+  functionName: string,
+  error: any,
+  context: Record<string, any> = {}
+): Promise<void> => {
+  try {
+    // Extract useful information from error
+    const errorInfo = {
+      functionName,
+      errorMessage: error.message || "Unknown error",
+      errorType: error.type || ErrorType.UNKNOWN,
+      timestamp: new Date().toISOString(),
+      context,
+      stack: error.originalError?.stack,
+      metadata: error.metadata || {}
+    };
     
-    // For now, we'll just log it with a note
-    console.info('In production, this error would be sent to an error monitoring service');
+    console.error("API Error:", errorInfo);
+    
+    // In development, just log to console
+    if (import.meta.env.DEV) {
+      return;
+    }
+    
+    // In production, report to backend
+    await lambdaApi.invoke(
+      ERROR_REPORTING_LAMBDA,
+      'logError',
+      errorInfo
+    );
+  } catch (reportingError) {
+    // Don't let error reporting failures cause issues
+    console.error("Failed to report error:", reportingError);
   }
-};
-
-/**
- * Report an error that happens during API integrations
- */
-export const reportApiError = (
-  apiName: string,
-  error: Error | AppError,
-  requestData?: any
-) => {
-  reportError(error, {
-    source: 'API Integration',
-    api: apiName,
-    requestData: requestData ? JSON.stringify(requestData).substring(0, 1000) : undefined,
-    timestamp: new Date().toISOString()
-  });
-};
-
-/**
- * Report errors that happen during data processing
- */
-export const reportDataProcessingError = (
-  processorName: string,
-  error: Error | AppError,
-  inputData?: any
-) => {
-  reportError(error, {
-    source: 'Data Processing',
-    processor: processorName,
-    inputSample: inputData ? JSON.stringify(inputData).substring(0, 500) : undefined,
-    timestamp: new Date().toISOString()
-  });
 };

@@ -1,87 +1,126 @@
 
-// Define error types enum for the application
+/**
+ * Error handling utilities for AWS backend integration
+ */
+
 export enum ErrorType {
-  API = "api",
-  VALIDATION = "validation",
-  AUTHENTICATION = "authentication",
-  AUTHORIZATION = "authorization",
-  NETWORK = "network",
-  TIMEOUT = "timeout",
-  SERVER = "server",
-  DATABASE = "database",
-  INFRASTRUCTURE = "infrastructure",
-  SECURITY = "security",
-  UNKNOWN = "unknown"
+  API = 'API_ERROR',
+  VALIDATION = 'VALIDATION_ERROR',
+  AUTHENTICATION = 'AUTHENTICATION_ERROR',
+  AUTHORIZATION = 'AUTHORIZATION_ERROR',
+  NOT_FOUND = 'NOT_FOUND_ERROR',
+  TIMEOUT = 'TIMEOUT_ERROR',
+  NETWORK = 'NETWORK_ERROR',
+  UNKNOWN = 'UNKNOWN_ERROR'
 }
 
-// Error interface for structured error handling
 export interface AppError {
-  type: ErrorType;
   message: string;
-  userFriendlyMessage?: string;
+  type: ErrorType;
   originalError?: any;
-  code?: string | number;
-  stack?: string;
+  userFriendlyMessage: string;
+  metadata?: Record<string, any>;
 }
 
-// Main error handling function
-export const handleError = (
-  error: AppError | Error | unknown, 
-  showToast: boolean = false
-): AppError => {
-  let appError: AppError;
+/**
+ * Create a standardized application error
+ */
+export function createAppError(
+  message: string, 
+  type: ErrorType = ErrorType.UNKNOWN, 
+  originalError?: any,
+  metadata?: Record<string, any>
+): AppError {
+  // Create user-friendly message based on error type
+  let userFriendlyMessage = "An unexpected error occurred. Please try again.";
   
-  // Normalize the error to AppError format
-  if ((error as AppError).type) {
-    appError = error as AppError;
-  } else if (error instanceof Error) {
-    appError = {
-      type: ErrorType.UNKNOWN,
-      message: error.message,
-      userFriendlyMessage: "An unexpected error occurred",
-      originalError: error,
-      stack: error.stack
-    };
-  } else {
-    appError = {
-      type: ErrorType.UNKNOWN,
-      message: "Unknown error occurred",
-      userFriendlyMessage: "An unexpected error occurred",
-      originalError: error
-    };
+  switch (type) {
+    case ErrorType.API:
+      userFriendlyMessage = "We're having trouble connecting to our services. Please try again later.";
+      break;
+    case ErrorType.VALIDATION:
+      userFriendlyMessage = "Please check your input and try again.";
+      break;
+    case ErrorType.AUTHENTICATION:
+      userFriendlyMessage = "Your session has expired. Please log in again.";
+      break;
+    case ErrorType.AUTHORIZATION:
+      userFriendlyMessage = "You don't have permission to perform this action.";
+      break;
+    case ErrorType.NOT_FOUND:
+      userFriendlyMessage = "The requested resource was not found.";
+      break;
+    case ErrorType.TIMEOUT:
+      userFriendlyMessage = "The request timed out. Please try again.";
+      break;
+    case ErrorType.NETWORK:
+      userFriendlyMessage = "Network error. Please check your connection and try again.";
+      break;
   }
   
-  // Log the error for debugging
-  console.error(`[${appError.type.toUpperCase()}] ${appError.message}`, appError.originalError || '');
+  return {
+    message,
+    type,
+    originalError,
+    userFriendlyMessage,
+    metadata
+  };
+}
+
+/**
+ * Handle errors with optional toast notification
+ */
+export function handleError(error: any, showToast: boolean = true): AppError {
+  // Convert to AppError if it isn't already
+  const appError: AppError = error.type ? 
+    error as AppError : 
+    createAppError(
+      error.message || "Unknown error", 
+      ErrorType.UNKNOWN, 
+      error
+    );
   
-  // Optionally show a toast notification
-  if (showToast && typeof window !== 'undefined') {
-    try {
-      // Dynamically import toast to avoid circular dependencies
-      import('@/hooks/use-toast').then(({ toast }) => {
-        toast({
-          title: "Error",
-          description: appError.userFriendlyMessage || appError.message,
-          variant: "destructive",
-        });
-      }).catch(e => {
-        console.error("Failed to display toast:", e);
+  // Log error for debugging
+  console.error(`[${appError.type}]`, appError.message, {
+    originalError: appError.originalError,
+    metadata: appError.metadata
+  });
+  
+  // Show toast if requested
+  if (showToast) {
+    // Import dynamically to avoid circular dependencies
+    import("@/hooks/use-toast").then(({ toast }) => {
+      toast({
+        title: "Error",
+        description: appError.userFriendlyMessage,
+        variant: "destructive",
       });
-    } catch (e) {
-      console.error("Toast notification failed:", e);
-    }
+    }).catch(() => {
+      // Fallback if toast is not available
+      console.error("Failed to show toast notification");
+    });
   }
   
   return appError;
-};
+}
 
-// Helper function to extract error message from various error formats
-export const getErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  if (typeof error === 'object' && error !== null) {
-    if ('message' in error && typeof error.message === 'string') return error.message;
-    if ('error' in error && typeof error.error === 'string') return error.error;
+/**
+ * Try/catch wrapper for async functions
+ */
+export async function tryCatch<T>(
+  fn: () => Promise<T>
+): Promise<[T | null, AppError | null]> {
+  try {
+    const result = await fn();
+    return [result, null];
+  } catch (error) {
+    const appError = error.type ? 
+      error as AppError : 
+      createAppError(
+        error.message || "Unknown error", 
+        ErrorType.UNKNOWN, 
+        error
+      );
+    return [null, appError];
   }
-  return 'An unknown error occurred';
-};
+}
