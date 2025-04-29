@@ -12,6 +12,7 @@ chmod +x make-executable.sh
 [ -f "start-dev.sh" ] && chmod +x start-dev.sh
 [ -f "ensure-vite.sh" ] && chmod +x ensure-vite.sh
 [ -f "fix-all-issues.sh" ] && chmod +x fix-all-issues.sh
+[ -f "check-deps.sh" ] && chmod +x check-deps.sh
 
 # Clean npm cache to prevent issues
 echo "🧹 Cleaning npm cache..."
