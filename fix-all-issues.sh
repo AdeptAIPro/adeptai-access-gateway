@@ -25,6 +25,7 @@ echo "📦 Installing project dependencies..."
 npm install --save react-router-dom sonner zod react-hook-form @hookform/resolvers date-fns uuid
 npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/uuid @types/node
 npm install --save aws-sdk @aws-sdk/client-s3 @aws-sdk/client-dynamodb @aws-sdk/util-dynamodb
+npm install --global vite
 
 # Install shadcn-ui dependencies
 npm install --save @radix-ui/react-tabs @radix-ui/react-select @radix-ui/react-dropdown-menu @radix-ui/react-radio-group @radix-ui/react-label @radix-ui/react-dialog
@@ -140,6 +141,7 @@ cat > run-vite.sh << 'EOL'
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
+export PATH="$PATH:$HOME/.npm/bin"
 
 if [ -f "./node_modules/.bin/vite" ]; then
   echo "Running local Vite from ./node_modules/.bin/vite"
@@ -147,13 +149,19 @@ if [ -f "./node_modules/.bin/vite" ]; then
 elif command -v npx &> /dev/null; then
   echo "Running Vite with npx"
   npx vite "$@"
+elif command -v vite &> /dev/null; then
+  echo "Running global Vite"
+  vite "$@"
 else
   echo "❌ Vite not found! Installing it now..."
   npm install --save-dev vite@latest @vitejs/plugin-react-swc
+  npm install --global vite
   
   # Try running with npx after installation
   if command -v npx &> /dev/null; then
     npx vite
+  elif command -v vite &> /dev/null; then
+    vite
   else
     # If npx is not available, try direct access
     ./node_modules/.bin/vite

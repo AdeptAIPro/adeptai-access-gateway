@@ -8,6 +8,7 @@ chmod +x run-vite.sh
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
+export PATH="$PATH:$HOME/.npm/bin"
 
 # Check if vite is installed in node_modules
 if [ -f "./node_modules/.bin/vite" ]; then

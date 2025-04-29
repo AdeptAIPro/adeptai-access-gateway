@@ -1,23 +1,25 @@
 
-// Define a common TaskResult interface that matches what's used in different components
+// Basic types for task results and agent tasks
+
 export interface TaskResult {
-  summary: string;
-  details?: string;
-  data?: any;
-  findings?: any[];
-  recommendations?: any[];
+  id: string;
+  status: 'success' | 'error' | 'processing';
+  data: any;
+  error?: string;
+  timestamp: string;
 }
 
 export interface AgentTask {
   id: string;
-  taskType: string;
-  goal?: string;
+  title?: string;
+  description?: string;
+  type: string;
+  goal: string;
+  agentId: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  createdAt?: string;
+  priority: 'low' | 'medium' | 'high';
+  createdAt: string;
+  updatedAt?: string;
   result?: TaskResult;
   error?: string;
-  userId?: string;
-  agentId?: string;
-  priority?: string;
-  params?: Record<string, any>;
 }

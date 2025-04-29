@@ -34,6 +34,10 @@ class ZodType {
   max() {
     return this;
   }
+
+  enum() {
+    return this;
+  }
 }
 
 class ZodString extends ZodType {
@@ -71,4 +75,4 @@ try {
   console.log('Using zod polyfill');
 }
 
-export default { z };
+export default z;
