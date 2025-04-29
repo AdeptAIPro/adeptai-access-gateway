@@ -7,7 +7,7 @@ export const toast = sonnerToast;
 
 // Re-export all functions and types from sonner
 export type { SonnerToast as Toast };
-export { sonnerToast as toast, SonnerToaster as Toaster };
+export { SonnerToaster as Toaster };
 
 // Fallback implementation in case sonner is not available
 if (typeof sonnerToast !== 'function') {
@@ -24,7 +24,4 @@ if (typeof sonnerToast !== 'function') {
   createToast.error = (message: string, options?: any) => createToast(message, { ...options, type: 'error' });
   createToast.warning = (message: string, options?: any) => createToast(message, { ...options, type: 'warning' });
   createToast.info = (message: string, options?: any) => createToast(message, { ...options, type: 'info' });
-  
-  // @ts-ignore - Override the exported toast
-  exports.toast = createToast;
 }
