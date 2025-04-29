@@ -29,75 +29,85 @@ import {
 } from "@/components/ui/label";
 
 // Define types for our patched components
-type TabsProps = React.ComponentProps<typeof OriginalTabs> & { 
+interface TabsProps extends React.ComponentProps<typeof OriginalTabs> { 
   children: React.ReactNode;
   className?: string;
-};
+  defaultValue?: string;
+}
 
-type TabsListProps = React.ComponentProps<typeof OriginalTabsList> & { 
+interface TabsListProps extends React.ComponentProps<typeof OriginalTabsList> { 
   children: React.ReactNode;
   className?: string;
-};
+}
 
-type TabsTriggerProps = React.ComponentProps<typeof OriginalTabsTrigger> & { 
+interface TabsTriggerProps extends React.ComponentProps<typeof OriginalTabsTrigger> { 
   children: React.ReactNode;
-};
+  value: string;
+  className?: string;
+}
 
-type TabsContentProps = React.ComponentProps<typeof OriginalTabsContent> & { 
+interface TabsContentProps extends React.ComponentProps<typeof OriginalTabsContent> { 
   children: React.ReactNode;
   className?: string;
-};
+  value: string;
+}
 
-type DropdownMenuTriggerProps = React.ComponentProps<typeof OriginalDropdownMenuTrigger> & { 
+interface DropdownMenuTriggerProps extends React.ComponentProps<typeof OriginalDropdownMenuTrigger> { 
   children: React.ReactNode;
   asChild?: boolean;
-};
+}
 
-type DropdownMenuContentProps = React.ComponentProps<typeof OriginalDropdownMenuContent> & { 
+interface DropdownMenuContentProps extends React.ComponentProps<typeof OriginalDropdownMenuContent> { 
   children: React.ReactNode;
-};
+  className?: string;
+}
 
-type DropdownMenuItemProps = React.ComponentProps<typeof OriginalDropdownMenuItem> & { 
+interface DropdownMenuItemProps extends React.ComponentProps<typeof OriginalDropdownMenuItem> { 
   children: React.ReactNode;
   onClick?: () => void;
-};
+  className?: string;
+}
 
-type DropdownMenuLabelProps = React.ComponentProps<typeof OriginalDropdownMenuLabel> & { 
+interface DropdownMenuLabelProps extends React.ComponentProps<typeof OriginalDropdownMenuLabel> { 
   children: React.ReactNode;
-};
+}
 
-type SelectTriggerProps = React.ComponentProps<typeof OriginalSelectTrigger> & { 
+interface SelectTriggerProps extends React.ComponentProps<typeof OriginalSelectTrigger> { 
   children: React.ReactNode;
-};
+  className?: string;
+}
 
-type SelectContentProps = React.ComponentProps<typeof OriginalSelectContent> & { 
+interface SelectContentProps extends React.ComponentProps<typeof OriginalSelectContent> { 
   children: React.ReactNode;
-};
+  className?: string;
+}
 
-type SelectItemProps = React.ComponentProps<typeof OriginalSelectItem> & { 
+interface SelectItemProps extends React.ComponentProps<typeof OriginalSelectItem> { 
   children: React.ReactNode;
-};
+  value: string;
+}
 
-type SelectValueProps = React.ComponentProps<typeof OriginalSelectValue> & { 
+interface SelectValueProps extends React.ComponentProps<typeof OriginalSelectValue> { 
   children?: React.ReactNode;
-};
+}
 
-type LabelProps = React.ComponentProps<typeof OriginalLabel> & { 
+interface LabelProps extends React.ComponentProps<typeof OriginalLabel> { 
   children: React.ReactNode;
-};
+  className?: string;
+}
 
 // Export patched Tabs components
-export const Tabs: React.FC<TabsProps> = ({ children, className, ...props }) => 
-  <OriginalTabs className={className} {...props}>{children}</OriginalTabs>;
+export const Tabs: React.FC<TabsProps> = ({ children, className, defaultValue, ...props }) => 
+  <OriginalTabs className={className} defaultValue={defaultValue} {...props}>{children}</OriginalTabs>;
 
 export const TabsList: React.FC<TabsListProps> = ({ children, className, ...props }) => 
   <OriginalTabsList className={className} {...props}>{children}</OriginalTabsList>;
 
-export const TabsTrigger: React.FC<TabsTriggerProps> = ({ children, ...props }) => 
-  <OriginalTabsTrigger {...props}>{children}</OriginalTabsTrigger>;
+export const TabsTrigger: React.FC<TabsTriggerProps> = ({ children, value, className, ...props }) => 
+  <OriginalTabsTrigger value={value} className={className} {...props}>{children}</OriginalTabsTrigger>;
 
-export const TabsContent: React.FC<TabsContentProps> = ({ children, className, ...props }) => 
-  <OriginalTabsContent className={className} {...props}>{children}</OriginalTabsContent>;
+export const TabsContent: React.FC<TabsContentProps> = ({ children, className, value, ...props }) => 
+  <OriginalTabsContent value={value} className={className} {...props}>{children}</OriginalTabsContent>;
 
 // Export patched DropdownMenu components
 export const DropdownMenu = OriginalDropdownMenu;
@@ -105,11 +115,11 @@ export const DropdownMenu = OriginalDropdownMenu;
 export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({ children, asChild, ...props }) => 
   <OriginalDropdownMenuTrigger asChild={asChild} {...props}>{children}</OriginalDropdownMenuTrigger>;
 
-export const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({ children, ...props }) => 
-  <OriginalDropdownMenuContent {...props}>{children}</OriginalDropdownMenuContent>;
+export const DropdownMenuContent: React.FC<DropdownMenuContentProps> = ({ children, className, ...props }) => 
+  <OriginalDropdownMenuContent className={className} {...props}>{children}</OriginalDropdownMenuContent>;
 
-export const DropdownMenuItem: React.FC<DropdownMenuItemProps> = ({ children, onClick, ...props }) => 
-  <OriginalDropdownMenuItem onClick={onClick} {...props}>{children}</OriginalDropdownMenuItem>;
+export const DropdownMenuItem: React.FC<DropdownMenuItemProps> = ({ children, onClick, className, ...props }) => 
+  <OriginalDropdownMenuItem onClick={onClick} className={className} {...props}>{children}</OriginalDropdownMenuItem>;
 
 export const DropdownMenuLabel: React.FC<DropdownMenuLabelProps> = ({ children, ...props }) => 
   <OriginalDropdownMenuLabel {...props}>{children}</OriginalDropdownMenuLabel>;
@@ -119,18 +129,18 @@ export const DropdownMenuSeparator = OriginalDropdownMenuSeparator;
 // Export patched Select components
 export const Select = OriginalSelect; 
 
-export const SelectTrigger: React.FC<SelectTriggerProps> = ({ children, ...props }) => 
-  <OriginalSelectTrigger {...props}>{children}</OriginalSelectTrigger>;
+export const SelectTrigger: React.FC<SelectTriggerProps> = ({ children, className, ...props }) => 
+  <OriginalSelectTrigger className={className} {...props}>{children}</OriginalSelectTrigger>;
 
-export const SelectContent: React.FC<SelectContentProps> = ({ children, ...props }) => 
-  <OriginalSelectContent {...props}>{children}</OriginalSelectContent>;
+export const SelectContent: React.FC<SelectContentProps> = ({ children, className, ...props }) => 
+  <OriginalSelectContent className={className} {...props}>{children}</OriginalSelectContent>;
 
-export const SelectItem: React.FC<SelectItemProps> = ({ children, ...props }) => 
-  <OriginalSelectItem {...props}>{children}</OriginalSelectItem>;
+export const SelectItem: React.FC<SelectItemProps> = ({ children, value, ...props }) => 
+  <OriginalSelectItem value={value} {...props}>{children}</OriginalSelectItem>;
 
 export const SelectValue: React.FC<SelectValueProps> = ({ children, ...props }) => 
   <OriginalSelectValue {...props}>{children}</OriginalSelectValue>;
 
 // Export patched Label component
-export const Label: React.FC<LabelProps> = ({ children, ...props }) => 
-  <OriginalLabel {...props}>{children}</OriginalLabel>;
+export const Label: React.FC<LabelProps> = ({ children, className, ...props }) => 
+  <OriginalLabel className={className} {...props}>{children}</OriginalLabel>;

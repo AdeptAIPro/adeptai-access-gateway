@@ -5,17 +5,27 @@ const path = require('path');
 // Function to recursively find all TypeScript files
 function findTsFiles(dir) {
   let results = [];
-  const list = fs.readdirSync(dir);
   
-  for (const file of list) {
-    const filePath = path.join(dir, file);
-    const stat = fs.statSync(filePath);
+  if (!fs.existsSync(dir)) {
+    console.error(`Directory does not exist: ${dir}`);
+    return results;
+  }
+  
+  try {
+    const list = fs.readdirSync(dir);
     
-    if (stat.isDirectory()) {
-      results = results.concat(findTsFiles(filePath));
-    } else if (/\.(ts|tsx)$/.test(file)) {
-      results.push(filePath);
+    for (const file of list) {
+      const filePath = path.join(dir, file);
+      const stat = fs.statSync(filePath);
+      
+      if (stat.isDirectory()) {
+        results = results.concat(findTsFiles(filePath));
+      } else if (/\.(ts|tsx)$/.test(file)) {
+        results.push(filePath);
+      }
     }
+  } catch (err) {
+    console.error(`Error reading directory: ${err.message}`);
   }
   
   return results;
@@ -42,16 +52,116 @@ function fixImportsAndProps(filePath) {
     .replace(/from ["']@\/components\/ui\/select["']/g, "from '@/utils/shadcn-patches'")
     .replace(/from ["']@\/components\/ui\/label["']/g, "from '@/utils/shadcn-patches'");
 
-  // Add children type if using shadcn components
   if (updatedContent !== content) {
     fs.writeFileSync(filePath, updatedContent);
     console.log(`Fixed imports in ${filePath}`);
   }
 }
 
+// Create missing polyfill files
+function createPolyfills() {
+  const utilsDir = path.join(__dirname, 'src/utils');
+  if (!fs.existsSync(utilsDir)) {
+    fs.mkdirSync(utilsDir, { recursive: true });
+  }
+
+  // Ensure icon directories exist
+  const iconsDir = path.join(utilsDir, 'icons');
+  if (!fs.existsSync(iconsDir)) {
+    fs.mkdirSync(iconsDir, { recursive: true });
+  }
+
+  // Create basic icon polyfills if they don't exist
+  const iconPolyfills = {
+    'src/utils/icons/ui-icons.ts': `
+import * as LucideIcons from 'lucide-react';
+
+export const {
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  ChevronUp,
+  Check,
+  X,
+  Plus,
+  Minus,
+  Menu
+} = LucideIcons;
+`,
+    'src/utils/icons/data-icons.ts': `
+import * as LucideIcons from 'lucide-react';
+
+export const {
+  Database,
+  File,
+  FileText,
+  Folder,
+  FolderOpen
+} = LucideIcons;
+`,
+    'src/utils/icons/status-icons.ts': `
+import * as LucideIcons from 'lucide-react';
+
+export const {
+  AlertTriangle,
+  AlertCircle,
+  CheckCircle,
+  Info,
+  Loader,
+  Loader2,
+  RefreshCw
+} = LucideIcons;
+`,
+    'src/utils/icons/user-icons.ts': `
+import * as LucideIcons from 'lucide-react';
+
+export const {
+  User,
+  UserPlus,
+  UserMinus,
+  Users,
+  UserCheck
+} = LucideIcons;
+`,
+    'src/utils/icon-polyfill.ts': `// Re-export all icons from lucide-react
+import * as LucideIcons from 'lucide-react';
+export * from 'lucide-react';
+
+// Also export from categorized files
+export * from './icons/ui-icons';
+export * from './icons/data-icons';
+export * from './icons/status-icons';
+export * from './icons/user-icons';
+`,
+    'src/utils/date-polyfill.ts': `// Re-export date-fns
+export * from 'date-fns';
+`,
+    'src/utils/zod-polyfill.ts': `// Re-export zod with basic fallbacks
+export * from 'zod';
+`
+  };
+
+  for (const [filePath, content] of Object.entries(iconPolyfills)) {
+    const fullPath = path.join(__dirname, filePath);
+    const dir = path.dirname(fullPath);
+    
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    if (!fs.existsSync(fullPath)) {
+      fs.writeFileSync(fullPath, content.trim());
+      console.log(`Created polyfill at ${fullPath}`);
+    }
+  }
+}
+
 // Main function
 function main() {
   try {
+    console.log('Setting up polyfills...');
+    createPolyfills();
+    
     console.log('Finding TypeScript files...');
     const srcDir = path.join(__dirname, 'src');
     
@@ -67,56 +177,8 @@ function main() {
     } else {
       console.error('src directory not found.');
     }
-
-    // Also create patch file for shadcn components
-    createShadcnPatches();
-    createPolyfills();
   } catch (error) {
     console.error('Error fixing imports:', error);
-  }
-}
-
-// Create patches for shadcn components
-function createShadcnPatches() {
-  // Create a utility file to redirect imports to the patched components
-  const redirectFilePath = path.join(__dirname, 'src/utils/shadcn-components.ts');
-  
-  const redirectContent = `
-// This file redirects imports to the patched shadcn components
-export * from './shadcn-patches';
-`;
-
-  fs.writeFileSync(redirectFilePath, redirectContent);
-  console.log(`Created shadcn redirect at ${redirectFilePath}`);
-}
-
-// Create polyfill files if they don't exist
-function createPolyfills() {
-  const polyfills = {
-    'src/utils/icon-polyfill.ts': `// Re-export all icons from lucide-react
-export * from 'lucide-react';
-`,
-    'src/utils/hook-form-polyfill.ts': `// Re-export react-hook-form
-export * from 'react-hook-form';
-export * from '@hookform/resolvers/zod';
-`,
-    'src/utils/zod-polyfill.ts': `// Re-export zod
-export * from 'zod';
-`,
-    'src/utils/date-polyfill.ts': `// Re-export date-fns
-export * from 'date-fns';
-`
-  };
-
-  for (const [filePath, content] of Object.entries(polyfills)) {
-    if (!fs.existsSync(filePath)) {
-      const dir = path.dirname(filePath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      fs.writeFileSync(filePath, content);
-      console.log(`Created polyfill at ${filePath}`);
-    }
   }
 }
 
