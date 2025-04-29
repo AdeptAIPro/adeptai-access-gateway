@@ -17,6 +17,7 @@ chmod +x fix-all-imports.sh 2>/dev/null || true
 chmod +x fix-imports.js 2>/dev/null || true
 chmod +x ensure-vite.sh 2>/dev/null || true
 chmod +x start-app.sh 2>/dev/null || true
+chmod +x check-deps.sh 2>/dev/null || true
 
 # Make node scripts executable
 find . -name "*.js" -not -path "./node_modules/*" -exec chmod +x {} \; 2>/dev/null || true

@@ -59,7 +59,7 @@ export const useFormContext = () => {
 }
 
 // Fixed FormProvider component with proper TypeScript typing
-export const FormProvider = ({ children }: { children: React.ReactNode }) => {
+export const FormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
