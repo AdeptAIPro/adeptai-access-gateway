@@ -18,6 +18,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'sonner']
+    include: ['react', 'react-dom', 'sonner', 'react-hook-form', '@hookform/resolvers', 'zod']
   }
 }));

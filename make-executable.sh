@@ -43,6 +43,18 @@ if [ ! -f "./node_modules/.bin/vite" ]; then
   chmod +x ./node_modules/.bin/vite 2>/dev/null || true
 fi
 
+# Install React and other necessary dependencies
+if ! npm list react --depth=0 &> /dev/null; then
+  echo "Installing React and related dependencies..."
+  npm install --save react react-dom
+fi
+
+# Install React Hook Form and related packages
+if ! npm list react-hook-form --depth=0 &> /dev/null; then
+  echo "Installing React Hook Form and related packages..."
+  npm install --save react-hook-form @hookform/resolvers zod
+fi
+
 # Install AWS SDK dependencies
 if ! npm list @aws-sdk/client-s3 --depth=0 &> /dev/null; then
   echo "Installing AWS SDK dependencies..."
@@ -65,6 +77,7 @@ cat > run-vite.sh << 'EOL'
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
+export PATH="$PATH:$HOME/.npm/bin"
 
 # Try multiple ways to run vite
 if [ -f "./node_modules/.bin/vite" ]; then

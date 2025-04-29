@@ -21,7 +21,7 @@ npm cache clean --force
 # Install essential dependencies
 echo "📦 Installing core dependencies..."
 npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/node
-npm install --save react-router-dom sonner zod react-hook-form @hookform/resolvers
+npm install --save react react-dom react-router-dom sonner zod react-hook-form @hookform/resolvers
 
 # Install AWS SDK dependencies
 echo "📦 Installing AWS SDK dependencies..."
@@ -55,6 +55,10 @@ if [ ! -f "tsconfig.json" ]; then
   echo "Setting up TypeScript configuration..."
   npx tsc --init --jsx react
 fi
+
+# Install vite globally as a backup
+echo "Installing Vite globally in case local installation fails..."
+npm install -g vite
 
 # Find vite binary - try multiple locations
 VITE_PATH=$(which vite 2>/dev/null || true)
