@@ -13,5 +13,6 @@ node fix-imports.js
 
 # Make the start-dev script executable
 chmod +x start-dev.sh
+chmod +x setup-dependencies.sh
 
 echo "✅ Import fixes completed. Run ./start-dev.sh to start the application."

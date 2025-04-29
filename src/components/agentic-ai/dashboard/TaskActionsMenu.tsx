@@ -8,8 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { AgentTask } from '@/services/agentic-ai';
+} from "@/utils/shadcn-patches";
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 
 // Import icons from the icon-polyfill
 import { 
@@ -17,7 +17,7 @@ import {
   Copy, 
   Trash, 
   Share 
-} from 'lucide-react';
+} from '@/utils/icon-polyfill';
 
 interface TaskActionsMenuProps {
   task: AgentTask;

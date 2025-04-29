@@ -5,8 +5,8 @@ import TaskList from "@/components/agentic-ai/dashboard/TaskList";
 import EnhancedTaskResultDisplay from "@/components/agentic-ai/task-result/EnhancedTaskResultDisplay";
 import AgenticErrorHandler from "@/components/agentic-ai/AgenticErrorHandler";
 import usePersistedState from "@/hooks/use-persisted-state";
-import { toast } from "sonner";
-import { AgentTask } from "@/services/agentic-ai";
+import { toast } from "@/utils/sonner-polyfill";
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
 
 interface AgenticProcessFlowProps {
   tasks: AgentTask[];
@@ -121,7 +121,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
         )}
         
         <TaskList 
-          tasks={tasks as any[]} // Use type assertion here since the components are compatible
+          tasks={tasks} 
           activeTaskId={activeTaskId}
           processTask={processTask}
           emptyMessage="No AI Tasks Created Yet"
@@ -134,7 +134,7 @@ const AgenticProcessFlow: React.FC<AgenticProcessFlowProps> = ({
         
         {activeTask ? (
           <EnhancedTaskResultDisplay 
-            task={activeTask as any} // Use type assertion to maintain compatibility
+            task={activeTask} 
             loading={isProcessing}
             onRetry={() => handleRetryTask(activeTask.id)}
             onSave={() => handleSaveTask(activeTask.id)}

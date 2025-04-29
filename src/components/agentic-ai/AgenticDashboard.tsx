@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAgenticAI } from '@/hooks/use-agentic';
 import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
@@ -10,7 +9,8 @@ import AgentsList from './dashboard/AgentsList';
 import TasksByCategory from './dashboard/TasksByCategory';
 import { filterTasksByStatus, groupTasksByType } from './dashboard/utils/agenticUtils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { AgentTask } from '@/services/agentic-ai';
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/utils/shadcn-patches';
 
 const AgenticDashboard = () => {
   const { tasks, agents, isLoading, activeTask, processTask } = useAgenticAI();

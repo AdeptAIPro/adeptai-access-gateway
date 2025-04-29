@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from '@/utils/icon-polyfill';
-import { toast } from 'sonner';
+import { toast } from '@/utils/sonner-polyfill';
 
 interface TaskErrorDisplayProps {
   error: string;

@@ -1,6 +1,5 @@
 
-// If this file doesn't exist, we're creating it with the necessary types
-
+// Define the Agent interface
 export interface Agent {
   id: string;
   name: string;
@@ -16,9 +15,11 @@ export interface Agent {
   owner?: string;
 }
 
+// Define the AgentTask interface
 export interface AgentTask {
   id: string;
   agentId?: string;
+  title: string; // Adding required title property
   taskType: string;
   description: string;
   goal?: string;
@@ -40,5 +41,4 @@ export interface AgentTask {
     code?: string;
     details?: any;
   };
-  title?: string; // Add missing title property
 }

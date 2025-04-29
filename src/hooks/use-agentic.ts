@@ -1,196 +1,165 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchAgents } from '@/services/agentic-ai/services/agent-service';
-import { fetchTasks, createTask, updateTask } from '@/services/agentic-ai/services/task-service';
-import { AgentTask, Agent } from '@/services/agentic-ai/types/AgenticTypes';
-import { toast } from '@/hooks/use-toast';
-import { useAuth } from './use-auth';
+import { fetchAgents } from '@/services/agentic-ai/services/agent-service'; 
+import { fetchTasks } from '@/services/agentic-ai/services/task-service';
+import { Agent, AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
+import { useAuth } from '@/hooks/use-auth';
+import { v4 as uuidv4 } from 'uuid';
 
-interface AgenticUser {
-  id: string;
-  email?: string;
-  name?: string;
+export interface UseAgenticReturn {
+  agents: Agent[];
+  tasks: AgentTask[];
+  activeTask: AgentTask | null;
+  isLoading: boolean;
+  error: Error | null;
+  createTask: (taskData: Omit<AgentTask, "id" | "createdAt" | "status">) => Promise<AgentTask>;
+  processTask: (taskId: string) => Promise<AgentTask>;
+  refreshTasks: () => Promise<AgentTask[]>;
+  refreshAgents: () => Promise<Agent[]>;
 }
 
-// Renamed export to match what's being imported elsewhere
-export const useAgenticAI = () => {
+export const useAgenticAI = (): UseAgenticReturn => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [tasks, setTasks] = useState<AgentTask[]>([]);
+  const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
-  const [activeTask, setActiveTask] = useState<AgentTask | null>(null); // Add missing activeTask state
-  const { user } = useAuth() || { user: { id: 'guest-user' } as AgenticUser };
-
-  // Fetch agents
-  const loadAgents = useCallback(async () => {
-    try {
+  const { user } = useAuth();
+  
+  // Fetch initial data
+  useEffect(() => {
+    const loadInitialData = async () => {
       setIsLoading(true);
-      const fetchedAgents = await fetchAgents();
-      setAgents(fetchedAgents);
-      setError(null);
-    } catch (err) {
-      console.error('Error loading agents:', err);
-      setError(err as Error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load agents. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Fetch tasks
-  const loadTasks = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const fetchedTasks = await fetchTasks();
-      setTasks(fetchedTasks);
-      setError(null);
-    } catch (err) {
-      console.error('Error loading tasks:', err);
-      setError(err as Error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load tasks. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Create a new task
-  const handleCreateTask = useCallback(async (taskData: Omit<AgentTask, 'id' | 'status' | 'createdAt'>) => {
-    try {
-      setIsLoading(true);
-      const userId = user?.id || 'anonymous';
-      
-      const newTask = await createTask({
-        ...taskData,
-        status: 'pending',
-        userId,
-      });
-      
-      if (newTask) {
-        setTasks((prevTasks) => [...prevTasks, newTask]);
-        toast({
-          title: 'Task Created',
-          description: 'Your task has been created successfully.',
-        });
-        return newTask;
+      try {
+        await refreshAgents();
+        await refreshTasks();
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to load data'));
+      } finally {
+        setIsLoading(false);
       }
-      return null;
-    } catch (err) {
-      console.error('Error creating task:', err);
-      setError(err as Error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create task. Please try again.',
-        variant: 'destructive',
-      });
-      return null;
-    } finally {
-      setIsLoading(false);
+    };
+    
+    if (user) {
+      loadInitialData();
     }
   }, [user]);
-
-  // Process a task
-  const handleProcessTask = useCallback(async (taskId: string) => {
+  
+  // Refresh agents
+  const refreshAgents = useCallback(async () => {
     try {
-      setIsLoading(true);
-      
-      // Find the task
-      const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        setActiveTask(task); // Set the active task
-      }
-      
-      // Update task status to processing
-      const updatedTask = await updateTask(taskId, {
-        status: 'processing',
-      });
-      
-      if (updatedTask) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === taskId ? { ...task, status: 'processing' } : task
-          )
-        );
-        
-        toast({
-          title: 'Task Processing',
-          description: 'Your task is now being processed.',
-        });
-        
-        // In a real application, this would trigger a backend process
-        // For demonstration purposes, we'll simulate completion after a delay
-        setTimeout(async () => {
-          try {
-            const completedTask = await updateTask(taskId, {
-              status: 'completed',
-              result: {
-                summary: 'Task completed successfully',
-                details: 'This is a simulated task result.',
-              },
-              completedAt: new Date().toISOString(),
-            });
-            
-            if (completedTask) {
-              setTasks((prevTasks) =>
-                prevTasks.map((task) =>
-                  task.id === taskId ? completedTask : task
-                )
-              );
-              
-              setActiveTask(completedTask); // Update the active task
-              
-              toast({
-                title: 'Task Completed',
-                description: 'Your task has been completed successfully.',
-              });
-            }
-          } catch (error) {
-            console.error('Error completing task:', error);
-          }
-        }, 3000);
-        
-        return updatedTask;
-      }
-      return null;
+      const fetchedAgents = await fetchAgents();
+      setAgents(fetchedAgents);
+      return fetchedAgents;
     } catch (err) {
-      console.error('Error processing task:', err);
-      setError(err as Error);
-      toast({
-        title: 'Error',
-        description: 'Failed to process task. Please try again.',
-        variant: 'destructive',
-      });
-      return null;
+      setError(err instanceof Error ? err : new Error('Failed to fetch agents'));
+      return [];
+    }
+  }, []);
+  
+  // Refresh tasks
+  const refreshTasks = useCallback(async () => {
+    try {
+      const fetchedTasks = await fetchTasks();
+      setTasks(fetchedTasks);
+      return fetchedTasks;
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch tasks'));
+      return [];
+    }
+  }, []);
+  
+  // Create a new task
+  const createTask = useCallback(async (taskData: Omit<AgentTask, "id" | "createdAt" | "status">) => {
+    setIsLoading(true);
+    try {
+      // In a real implementation, we would call an API to create the task
+      // For now, we're creating it locally for demonstration
+      const newTask: AgentTask = {
+        id: uuidv4(),
+        title: taskData.title,
+        taskType: taskData.taskType,
+        description: taskData.description,
+        goal: taskData.goal || '',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        ...(taskData as any),
+      };
+      
+      setTasks(prev => [newTask, ...prev]);
+      setActiveTask(newTask);
+      return newTask;
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to create task'));
+      throw err;
     } finally {
       setIsLoading(false);
     }
+  }, []);
+  
+  // Process a task
+  const processTask = useCallback(async (taskId: string) => {
+    setIsLoading(true);
+    try {
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) {
+        throw new Error(`Task not found: ${taskId}`);
+      }
+      
+      // Set as active task
+      setActiveTask(task);
+      
+      // In a real implementation, we would call an API to process the task
+      // For now, we're updating it locally for demonstration
+      const updatedTask: AgentTask = {
+        ...task,
+        status: task.status === 'pending' ? 'processing' : task.status,
+        startedAt: task.startedAt || new Date().toISOString(),
+      };
+      
+      // Simulate processing
+      setTimeout(() => {
+        setTasks(prev => 
+          prev.map(t => t.id === taskId 
+            ? { 
+                ...t, 
+                status: 'completed',
+                completedAt: new Date().toISOString(),
+                result: { 
+                  summary: 'Task completed successfully!',
+                  details: `Task ${t.title || t.taskType} has been processed.`
+                } 
+              } 
+            : t
+          )
+        );
+        setIsLoading(false);
+      }, 2000);
+      
+      // Update the tasks array
+      setTasks(prev => 
+        prev.map(t => t.id === taskId ? updatedTask : t)
+      );
+      
+      return updatedTask;
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to process task'));
+      throw err;
+    }
   }, [tasks]);
-
-  // Load data on component mount
-  useEffect(() => {
-    loadAgents();
-    loadTasks();
-  }, [loadAgents, loadTasks]);
-
+  
   return {
     agents,
     tasks,
+    activeTask,
     isLoading,
     error,
-    activeTask, // Return activeTask
-    createTask: handleCreateTask,
-    processTask: handleProcessTask,
-    refreshTasks: loadTasks,
-    refreshAgents: loadAgents,
+    createTask,
+    processTask,
+    refreshTasks,
+    refreshAgents,
   };
 };
 
-// Also export original name for backward compatibility
-export const useAgentic = useAgenticAI;
+// Export default for compatibility
+export default useAgenticAI;

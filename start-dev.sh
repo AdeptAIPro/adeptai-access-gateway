@@ -18,15 +18,23 @@ export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
 
 # Install missing dependencies
-echo "📦 Installing missing dependencies..."
-npm install --save react-router-dom sonner zod react-hook-form @hookform/resolvers date-fns
-npm install --save-dev vite @vitejs/plugin-react-swc typescript
+echo "📦 Checking for missing dependencies..."
+npm list vite >/dev/null 2>&1 || npm install --save-dev vite@latest
+npm list react-router-dom >/dev/null 2>&1 || npm install react-router-dom
+npm list sonner >/dev/null 2>&1 || npm install sonner
+npm list zod >/dev/null 2>&1 || npm install zod
+npm list react-hook-form >/dev/null 2>&1 || npm install react-hook-form
+npm list @hookform/resolvers >/dev/null 2>&1 || npm install @hookform/resolvers
 
 # Verify Vite installation
 if [ ! -f "./node_modules/.bin/vite" ]; then
   echo "📦 Installing Vite locally..."
   npm install --save-dev vite@latest
 fi
+
+# Run fix-imports.js to fix the imports
+echo "🔧 Fixing imports..."
+node fix-imports.js
 
 # Clear any previous issues
 echo "🧹 Cleaning up previous builds..."
