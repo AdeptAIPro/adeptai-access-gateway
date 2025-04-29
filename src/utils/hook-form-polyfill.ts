@@ -1,5 +1,6 @@
 
 // Polyfill for react-hook-form and related libraries
+import React from 'react';
 
 export function useForm<T = any>(options?: any) {
   // Mock form state
@@ -57,7 +58,7 @@ export const useFormContext = () => {
   return useForm().control;
 }
 
-export const FormProvider = ({ children }: { children: React.ReactNode }) => {
+export const FormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 

@@ -1,9 +1,16 @@
 
 #!/bin/bash
 
-echo "🔧 Making scripts executable..."
+# Make all scripts executable
+chmod +x run-vite.sh
+chmod +x fix-package.js
+chmod +x setup-and-run.sh
+chmod +x make-executable.sh
+if [ -f "fix-all-issues.sh" ]; then
+  chmod +x fix-all-issues.sh
+fi
+if [ -f "fix-all-imports.sh" ]; then
+  chmod +x fix-all-imports.sh
+fi
 
-# Make all shell scripts executable
-find . -name "*.sh" -type f -exec chmod +x {} \;
-
-echo "✅ All scripts are now executable!"
+echo "✅ All scripts are now executable"
