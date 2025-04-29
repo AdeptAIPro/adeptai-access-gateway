@@ -73,3 +73,5 @@ export const toast = Object.assign(
     }
   }
 );
+
+export default { toast, Toaster };

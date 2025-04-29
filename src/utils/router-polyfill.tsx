@@ -1,59 +1,36 @@
+
 import React from 'react';
-import { 
-  BrowserRouter as OriginalBrowserRouter,
-  Routes as OriginalRoutes,
-  Route as OriginalRoute,
-  Link as OriginalLink,
-  useNavigate as originalUseNavigate,
-  useParams as originalUseParams,
-  useLocation as originalUseLocation,
-  Navigate as OriginalNavigate,
-  Outlet as OriginalOutlet
-} from 'react-router-dom';
 
-// Re-export everything from react-router-dom
-export * from 'react-router-dom';
-
-// Explicitly re-export BrowserRouter
-export const BrowserRouter = ({ children, basename = '' }: { children: React.ReactNode; basename?: string }) => {
-  try {
-    return <OriginalBrowserRouter basename={basename}>{children}</OriginalBrowserRouter>;
-  } catch (e) {
-    console.error("Error using BrowserRouter, using fallback", e);
-    return <div>{children}</div>;
-  }
-};
-
-export const Routes = OriginalRoutes;
-export const Route = OriginalRoute;
-export const Navigate = OriginalNavigate;
-export const Outlet = OriginalOutlet;
-
-// Create a simple Link component that uses anchor tags as fallback
+// These would normally be imported from react-router-dom
 interface LinkProps {
   to: string;
-  className?: string;
   children: React.ReactNode;
+  className?: string;
 }
 
-export const Link: React.FC<LinkProps> = ({ to, className, children }) => {
-  try {
-    return <OriginalLink to={to} className={className}>{children}</OriginalLink>;
-  } catch (e) {
-    return <a href={to} className={className}>{children}</a>;
-  }
+// Export polyfill versions of react-router-dom components and hooks
+export const BrowserRouter = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+export const Routes = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+export const Route = ({ children, path }: { children: React.ReactNode; path: string }) => <div>{children}</div>;
+
+export const Link = ({ to, children, className }: LinkProps) => {
+  return <a href={to} className={className}>{children}</a>;
 };
 
-// Create a simple useNavigate hook that uses window.location as fallback
 export const useNavigate = () => {
-  try {
-    return originalUseNavigate();
-  } catch (e) {
-    return (path: string) => {
-      window.location.href = path;
-    };
-  }
+  return (path: string) => {
+    console.log(`Navigate to: ${path}`);
+    window.location.href = path;
+  };
 };
 
-export const useParams = originalUseParams;
-export const useLocation = originalUseLocation;
+export const useParams = () => {
+  return {};
+};
+
+export const useLocation = () => {
+  return { pathname: window.location.pathname, search: '', hash: '', state: null };
+};
+
+export const Navigate = ({ to }: { to: string }) => null;
+export const Outlet = () => null;

@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TaskResultDisplay from "./TaskResultDisplay";
-import { AgentTask } from "@/services/agentic-ai/types/AgenticTypes";
+import { AgentTask } from "./TaskResultDisplay";
 import { Progress } from "@/components/ui/progress";
 import { RefreshCcw, Clock } from "@/utils/icon-polyfill";
-import { Download, Save } from "lucide-react";
+import { Download, Save } from "@/utils/icon-polyfill";
 
 interface EnhancedTaskResultDisplayProps {
   task: AgentTask;
@@ -59,7 +59,7 @@ const EnhancedTaskResultDisplay: React.FC<EnhancedTaskResultDisplayProps> = ({
               <span className="text-xs text-muted-foreground">Processing task...</span>
               <span className="text-xs font-medium">{getProgressValue()}%</span>
             </div>
-            <Progress value={getProgressValue()} className="h-1" />
+            <Progress value={getProgressValue()} />
           </div>
         )}
       </CardHeader>
