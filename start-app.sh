@@ -20,7 +20,7 @@ npm cache clean --force
 
 # Install essential dependencies
 echo "📦 Installing core dependencies..."
-npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript
+npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript @types/node
 npm install --save react-router-dom sonner zod react-hook-form @hookform/resolvers
 
 # Install AWS SDK dependencies
@@ -62,7 +62,7 @@ if [ -z "$VITE_PATH" ]; then
   VITE_PATH="./node_modules/.bin/vite"
   if [ ! -f "$VITE_PATH" ]; then
     echo "Vite not found in PATH or node_modules. Installing..."
-    npm install --save-dev vite@latest @vitejs/plugin-react-swc
+    npm install --save-dev vite@latest @vitejs/plugin-react-swc @types/node
     VITE_PATH="./node_modules/.bin/vite"
   fi
 fi
@@ -122,7 +122,7 @@ node -e "require('./node_modules/vite/bin/vite.js')"
 
 # If we get here, all methods failed
 echo "❌ All methods to start Vite failed. Please try the manual steps below:"
-echo "1. Run: npm install --save-dev vite @vitejs/plugin-react-swc"
+echo "1. Run: npm install --save-dev vite @vitejs/plugin-react-swc @types/node"
 echo "2. Run: export PATH=\$PATH:./node_modules/.bin"
 echo "3. Run: npx vite"
 echo "4. If that fails, try: npm install -g vite && vite"

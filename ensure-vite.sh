@@ -15,11 +15,11 @@ fi
 # Install vite locally if not already installed
 if ! npm list vite --depth=0 &> /dev/null; then
   echo "📦 Installing Vite locally..."
-  npm install --save-dev vite@latest
+  npm install --save-dev vite@latest @types/node
 fi
 
 # Install other critical dependencies if missing
-for pkg in react-router-dom sonner react-hook-form @hookform/resolvers zod date-fns
+for pkg in react-router-dom sonner react-hook-form @hookform/resolvers zod date-fns @types/node
 do
   if ! npm list $pkg --depth=0 &> /dev/null; then
     echo "📦 Installing $pkg..."

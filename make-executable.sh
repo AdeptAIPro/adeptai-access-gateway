@@ -33,7 +33,7 @@ export PATH="$PATH:./node_modules/.bin"
 # Install Vite if not already installed
 if ! npm list vite --depth=0 &> /dev/null; then
   echo "Installing vite and required dependencies..."
-  npm install --save-dev vite@latest @vitejs/plugin-react-swc
+  npm install --save-dev vite@latest @vitejs/plugin-react-swc @types/node
 fi
 
 # Make sure vite is in node_modules and is executable
