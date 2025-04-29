@@ -17,7 +17,13 @@ if ! npm list vite --depth=0 &> /dev/null; then
   npm install --save-dev vite@latest @vitejs/plugin-react-swc
 fi
 
-# Check if vite is installed in node_modules
+# Ensure it's properly installed
+if ! npm list vite --depth=0 &> /dev/null; then
+  echo "❌ Failed to install Vite through npm list check. Direct installation..."
+  npm install --save-dev vite --force
+fi
+
+# Check multiple ways to find and run Vite
 if [ -f "./node_modules/.bin/vite" ]; then
   echo "Running local Vite from ./node_modules/.bin/vite"
   ./node_modules/.bin/vite
@@ -28,7 +34,7 @@ elif command -v vite &> /dev/null; then
   echo "Running global Vite"
   vite
 else
-  echo "❌ Vite not found! Installing it now..."
+  echo "❌ Vite not found! Installing it now as a last resort..."
   npm install --save-dev vite@latest @vitejs/plugin-react-swc
   npm install --global vite
   
@@ -38,7 +44,8 @@ else
   elif command -v vite &> /dev/null; then
     vite
   else
-    # If npx is not available, try direct access
-    ./node_modules/.bin/vite
+    # Last resort - try using node to run vite directly
+    echo "Attempting to run Vite directly through Node..."
+    node ./node_modules/vite/bin/vite.js
   fi
 fi

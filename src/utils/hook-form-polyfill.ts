@@ -58,7 +58,7 @@ export const useFormContext = () => {
   return useForm().control;
 }
 
-// Fixed FormProvider component - proper React.FC typing
+// Fixed FormProvider component with proper React.FC typing
 export const FormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
