@@ -2,14 +2,14 @@
 import React, { useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
-import { Employee } from "@/types/employee";
 
 interface PayrollRunFormProps {
-  employees: Employee[];
-  onSubmit: (data: any) => Promise<void>;
+  employees?: any[];
+  onSubmit?: (data: any) => Promise<void>;
+  onPayrollRun?: () => void;
 }
 
-const PayrollRunForm = React.memo(({ employees, onSubmit }: PayrollRunFormProps) => {
+const PayrollRunForm = React.memo(({ employees = [], onSubmit, onPayrollRun }: PayrollRunFormProps) => {
   const [formData, setFormData] = React.useState({
     date: new Date().toISOString().split('T')[0],
     employeeType: 'W2',
@@ -24,7 +24,12 @@ const PayrollRunForm = React.memo(({ employees, onSubmit }: PayrollRunFormProps)
   };
 
   const handleSubmit = async () => {
-    await onSubmit(formData);
+    if (onSubmit) {
+      await onSubmit(formData);
+    }
+    if (onPayrollRun) {
+      onPayrollRun();
+    }
   };
 
   // Memoize form sections to prevent unnecessary re-renders

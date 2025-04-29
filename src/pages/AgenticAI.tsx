@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,8 +16,16 @@ import { AlertCircle, Database, RefreshCcw, KeyRound, CheckCircle } from "@/util
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AgentTask } from "@/services/agentic-ai/AgenticService";
+import { AgentTask } from "@/components/agentic-ai/task-result/types";
 import { toast } from "sonner";
+
+// Define AppCredentials type to match the expected shape
+interface AppCredentials {
+  openaiApiKey?: string;
+  awsRegion?: string;
+  awsAccessKeyId?: string;
+  awsSecretAccessKey?: string;
+}
 
 const AgenticAI = () => {
   const { user } = useAuth();
@@ -58,7 +67,7 @@ const AgenticAI = () => {
     toast.success("Sample data added successfully");
   };
   
-  const handleCredentialsSet = (newCredentials: any) => {
+  const handleCredentialsSet = (newCredentials: AppCredentials) => {
     setCredentials(newCredentials);
     checkBackendStatus().then((isReady) => {
       if (isReady) {

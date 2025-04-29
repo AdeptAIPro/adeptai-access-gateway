@@ -1,78 +1,73 @@
 
-import React from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar, DollarSign, Download, Users } from "lucide-react";
-
-interface PayrollHistoryItem {
-  id: string;
-  date: string;
-  type: string;
-  employeeType: string;
-  status: string;
-  amount: string;
-  employeeCount: number;
-}
+import React from 'react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import { Eye, Download } from 'lucide-react';
 
 interface PayrollHistoryTableProps {
-  payrollHistory: PayrollHistoryItem[];
+  payrollHistory?: {
+    id: string;
+    date: string;
+    status: string;
+    employeeCount: number;
+    totalAmount: number;
+  }[];
 }
 
-const PayrollHistoryTable = ({ payrollHistory }: PayrollHistoryTableProps) => {
+const PayrollHistoryTable: React.FC<PayrollHistoryTableProps> = ({ 
+  payrollHistory = [] // Default to empty array if not provided
+}) => {
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
-            <TableHead>Type</TableHead>
             <TableHead>Employees</TableHead>
+            <TableHead>Total Amount</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Amount</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {payrollHistory.map((payroll) => (
-            <TableRow key={payroll.id}>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Calendar size={16} className="text-muted-foreground" />
-                  {new Date(payroll.date).toLocaleDateString()}
-                </div>
-              </TableCell>
-              <TableCell>{payroll.type}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1">
-                  <Users size={14} className="text-muted-foreground" />
-                  <span>{payroll.employeeCount}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  {payroll.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-1">
-                  <DollarSign size={16} className="text-muted-foreground" />
-                  {payroll.amount}
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" className="h-8 gap-1">
-                    <Download size={14} />
-                    Export
+          {payrollHistory.length > 0 ? (
+            payrollHistory.map((run) => (
+              <TableRow key={run.id}>
+                <TableCell className="font-medium">
+                  {format(new Date(run.date), 'PP')}
+                </TableCell>
+                <TableCell>{run.employeeCount}</TableCell>
+                <TableCell>${run.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</TableCell>
+                <TableCell>
+                  <Badge 
+                    variant={
+                      run.status === 'completed' ? 'success' : 
+                      run.status === 'in-progress' ? 'warning' : 
+                      'secondary'
+                    }
+                  >
+                    {run.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="ghost" size="sm" className="mr-2">
+                    <Eye className="h-4 w-4 mr-1" /> View
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8">
-                    View
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-1" /> Report
                   </Button>
-                </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                No payroll runs found
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>

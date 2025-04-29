@@ -11,10 +11,11 @@ export interface TaskResult {
 
 export interface AgentTask {
   id: string;
-  title?: string;
-  description?: string;
+  title: string;
   type: string;
-  goal: string;
+  taskType: string;
+  description: string;
+  goal?: string;
   agentId: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   priority: 'low' | 'medium' | 'high';

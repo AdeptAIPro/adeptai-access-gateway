@@ -21,6 +21,7 @@ export interface User {
   email: string;
   role: string;
   roles?: string[]; // For backward compatibility
+  plan?: string; // Add plan property
 }
 
 export interface AuthContextType {
@@ -30,4 +31,6 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (name: string, email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string) => Promise<void>; // Add signUp method
+  hasPermission: (permission: string) => boolean; // Add hasPermission method
 }
