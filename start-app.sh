@@ -56,7 +56,7 @@ if [ ! -f "tsconfig.json" ]; then
   npx tsc --init --jsx react
 fi
 
-# Find vite binary
+# Find vite binary - try multiple locations
 VITE_PATH=$(which vite 2>/dev/null || true)
 if [ -z "$VITE_PATH" ]; then
   VITE_PATH="./node_modules/.bin/vite"
@@ -67,10 +67,31 @@ if [ -z "$VITE_PATH" ]; then
   fi
 fi
 
+# Make sure vite is in node_modules and is executable
+if [ ! -f "./node_modules/.bin/vite" ]; then
+  echo "Reinstalling Vite locally..."
+  npm install --save-dev vite@latest
+  chmod +x ./node_modules/.bin/vite 2>/dev/null || true
+fi
+
 # Multiple attempts to start Vite
 echo "🚀 Starting application with $VITE_PATH..."
 
-# Method 1: Try using local vite in node_modules
+# Method 1: Try using npx
+echo "Using npx to run Vite..."
+npx vite
+exit_code=$?
+if [ $exit_code -eq 0 ]; then exit 0; fi
+echo "Failed with exit code: $exit_code, trying next method..."
+
+# Method 2: Try using direct node execution 
+echo "Using direct Node execution of Vite..."
+node ./node_modules/vite/bin/vite.js
+exit_code=$?
+if [ $exit_code -eq 0 ]; then exit 0; fi
+echo "Failed with exit code: $exit_code, trying next method..."
+
+# Method 3: Try using local vite in node_modules with explicit path
 if [ -f "./node_modules/.bin/vite" ]; then
   echo "Using Vite from ./node_modules/.bin/vite"
   ./node_modules/.bin/vite
@@ -79,14 +100,7 @@ if [ -f "./node_modules/.bin/vite" ]; then
   echo "Failed with exit code: $exit_code, trying next method..."
 fi
 
-# Method 2: Try using npx
-echo "Using npx to run Vite..."
-npx vite
-exit_code=$?
-if [ $exit_code -eq 0 ]; then exit 0; fi
-echo "Failed with exit code: $exit_code, trying next method..."
-
-# Method 3: Try using direct global vite
+# Method 4: Try using global vite
 if command -v vite &> /dev/null; then
   echo "Using globally installed Vite..."
   vite
@@ -95,16 +109,16 @@ if command -v vite &> /dev/null; then
   echo "Failed with exit code: $exit_code, trying next method..."
 fi
 
-# Method 4: Try npm run dev
+# Method 5: Try npm run dev
 echo "Running via npm run dev..."
 npm run dev
 exit_code=$?
 if [ $exit_code -eq 0 ]; then exit 0; fi
 echo "Failed with exit code: $exit_code, trying last method..."
 
-# Last resort: Try direct node access to vite
+# Last resort: Try with node directly without relying on PATH
 echo "Trying direct node access to Vite..."
-node ./node_modules/vite/bin/vite.js
+node -e "require('./node_modules/vite/bin/vite.js')"
 
 # If we get here, all methods failed
 echo "❌ All methods to start Vite failed. Please try the manual steps below:"
