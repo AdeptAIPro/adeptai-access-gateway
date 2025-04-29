@@ -1,59 +1,43 @@
 
-// Define the Agent interface
+// If this file doesn't exist, we're creating it with the necessary types
+
 export interface Agent {
   id: string;
   name: string;
-  type: string;
-  status: 'active' | 'inactive' | 'maintenance' | 'error';
-  capabilities: string[];
   description?: string;
-  createdAt?: string | Date;
-  specialties?: string[];
+  type?: string;
+  capabilities?: string[];
+  status?: 'active' | 'inactive' | 'deprecated';
+  createdAt: string;
+  updatedAt?: string;
   version?: string;
-  restrictions?: string[];
-  icon?: string;
-  parameters?: Record<string, any>; // Add parameters property
+  config?: Record<string, any>;
+  integrations?: string[];
+  owner?: string;
 }
 
-// Define the AgentTask interface
 export interface AgentTask {
   id: string;
-  taskType: string;
-  goal: string;
   agentId?: string;
-  agent?: string;
+  taskType: string;
+  description: string;
+  goal?: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  result?: any;
-  error?: string;
-  createdAt: string | Date;
-  completedAt?: string | Date;
-  title?: string;
-  description?: string;
   priority?: 'low' | 'medium' | 'high';
-  params?: Record<string, any>; // Add params property
-  userId?: string; // Add userId property
-  updatedAt?: string | Date; // Add updatedAt property
-}
-
-// Define the AgentTaskType type alias
-export type AgentTaskType = string;
-
-// Task result interfaces
-export interface TaskResult {
-  summary?: string;
-  details?: string;
-  insights?: string[];
-  charts?: string[];
-  data?: any;
-}
-
-// Task query parameters
-export interface TaskQueryParams {
-  status?: AgentTask['status'];
-  agent?: string;
-  taskType?: string;
-  fromDate?: Date;
-  toDate?: Date;
-  limit?: number;
-  offset?: number;
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+  result?: {
+    summary?: string;
+    details?: string;
+    data?: any;
+  };
+  params?: Record<string, any>;
+  userId?: string;
+  updatedAt?: string;
+  error?: {
+    message: string;
+    code?: string;
+    details?: any;
+  };
 }

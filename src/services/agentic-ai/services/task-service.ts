@@ -8,6 +8,15 @@ import { processTask } from './task-processor';
 
 const TASKS_TABLE = getEnvVar('TASKS_TABLE', 'agent_tasks');
 
+export const fetchTasks = async (): Promise<AgentTask[]> => {
+  try {
+    return await getAllTasks();
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    return [];
+  }
+};
+
 export const getAllTasks = async (): Promise<AgentTask[]> => {
   const params = {
     TableName: TASKS_TABLE,

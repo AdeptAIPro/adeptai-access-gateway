@@ -1,31 +1,58 @@
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { Command } from "@aws-sdk/smithy-client";
 
-// Initialize DynamoDB client
-export const ddbClient = new DynamoDBClient({ 
-  region: getEnvVar('AWS_REGION', 'us-east-1'),
-  credentials: {
-    accessKeyId: getEnvVar('AWS_ACCESS_KEY_ID', 'AKIAxxxxxxxxxxxxx'),
-    secretAccessKey: getEnvVar('AWS_SECRET_ACCESS_KEY', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
+// Initialize the DynamoDB client
+let dynamoClient: DynamoDBClient | null = null;
+
+/**
+ * Get the DynamoDB client instance, creating it if necessary
+ */
+export const getDynamoDBClient = (): DynamoDBClient => {
+  if (!dynamoClient) {
+    // Get region from environment or use a default
+    const region = getEnvVar('AWS_REGION', 'us-east-1');
+    
+    dynamoClient = new DynamoDBClient({ 
+      region,
+      // Add credentials if available
+      credentials: process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+        ? {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          }
+        : undefined
+    });
   }
-});
+  return dynamoClient;
+};
 
-// Get environment variables safely with fallbacks
-export const getEnvVar = (key: string, fallback: string): string => {
+/**
+ * Utility to get environment variables with defaults
+ */
+export const getEnvVar = (name: string, defaultValue: string): string => {
+  return process.env[name] || defaultValue;
+};
+
+/**
+ * Execute a DynamoDB operation with error handling
+ */
+export const executeDbOperation = async <T>(command: Command<any, T, any, any, any>): Promise<T> => {
   try {
-    return (import.meta.env?.[key] || import.meta.env?.[`VITE_${key}`] || fallback) as string;
-  } catch (e) {
-    return fallback;
+    const client = getDynamoDBClient();
+    return await client.send(command);
+  } catch (error) {
+    console.error(`DynamoDB operation failed: ${error}`);
+    throw error;
   }
 };
 
-// Utility function to handle DynamoDB operations
-export const executeDbOperation = async (command: any) => {
-  try {
-    const response = await ddbClient.send(command);
-    return response;
-  } catch (error) {
-    console.error("DynamoDB operation failed:", error);
-    throw error;
-  }
+/**
+ * Mock implementation for development environments
+ * This will return mock data when no actual DynamoDB is available
+ */
+export const executeMockDbOperation = async <T>(mockData: T): Promise<T> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  return mockData;
 };

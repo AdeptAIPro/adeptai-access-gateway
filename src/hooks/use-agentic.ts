@@ -12,7 +12,8 @@ interface AgenticUser {
   name?: string;
 }
 
-export const useAgentic = () => {
+// Renamed export to match what's being imported elsewhere
+export const useAgenticAI = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [tasks, setTasks] = useState<AgentTask[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -68,7 +69,6 @@ export const useAgentic = () => {
       const newTask = await createTask({
         ...taskData,
         status: 'pending',
-        createdAt: new Date().toISOString(),
         userId,
       });
       
@@ -181,3 +181,6 @@ export const useAgentic = () => {
     refreshAgents: loadAgents,
   };
 };
+
+// Also export original name for backward compatibility
+export const useAgentic = useAgenticAI;

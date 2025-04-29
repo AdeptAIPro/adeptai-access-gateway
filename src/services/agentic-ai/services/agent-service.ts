@@ -7,6 +7,15 @@ import { getEnvVar, executeDbOperation } from '../utils/db-utils';
 
 const AGENTS_TABLE = getEnvVar('AGENTS_TABLE', 'agents');
 
+export const fetchAgents = async (): Promise<Agent[]> => {
+  try {
+    return await getAllAgents();
+  } catch (error) {
+    console.error('Error fetching agents:', error);
+    return [];
+  }
+};
+
 export const getAllAgents = async (): Promise<Agent[]> => {
   const params = {
     TableName: AGENTS_TABLE,
