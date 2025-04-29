@@ -18,6 +18,7 @@ chmod +x fix-imports.js 2>/dev/null || true
 chmod +x ensure-vite.sh 2>/dev/null || true
 chmod +x start-app.sh 2>/dev/null || true
 chmod +x check-deps.sh 2>/dev/null || true
+chmod +x deploy-aws.sh 2>/dev/null || true
 
 # Make node scripts executable
 find . -name "*.js" -not -path "./node_modules/*" -exec chmod +x {} \; 2>/dev/null || true
@@ -33,6 +34,12 @@ export PATH="$PATH:./node_modules/.bin"
 if ! npm list vite --depth=0 &> /dev/null; then
   echo "Installing vite and required dependencies..."
   npm install --save-dev vite@latest @vitejs/plugin-react-swc
+fi
+
+# Install AWS SDK dependencies
+if ! npm list @aws-sdk/client-s3 --depth=0 &> /dev/null; then
+  echo "Installing AWS SDK dependencies..."
+  npm install --save @aws-sdk/client-s3 @aws-sdk/client-dynamodb @aws-sdk/util-dynamodb uuid
 fi
 
 # Verify Vite installation

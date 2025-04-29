@@ -4,11 +4,11 @@
 echo "🚀 Starting comprehensive setup and application launch..."
 
 # Make all scripts executable
-chmod +x setup-and-run.sh
-chmod +x run-vite.sh
-chmod +x fix-package.js
-chmod +x fix-imports.js
-chmod +x make-executable.sh
+chmod +x setup-and-run.sh 2>/dev/null || true
+chmod +x run-vite.sh 2>/dev/null || true
+chmod +x fix-package.js 2>/dev/null || true
+chmod +x fix-imports.js 2>/dev/null || true
+chmod +x make-executable.sh 2>/dev/null || true
 [ -f "start-dev.sh" ] && chmod +x start-dev.sh
 [ -f "ensure-vite.sh" ] && chmod +x ensure-vite.sh
 [ -f "fix-all-issues.sh" ] && chmod +x fix-all-issues.sh
@@ -23,9 +23,13 @@ echo "📦 Installing core dependencies..."
 npm install --save-dev vite@latest @vitejs/plugin-react-swc typescript
 npm install --save react-router-dom sonner zod react-hook-form @hookform/resolvers
 
+# Install AWS SDK dependencies
+echo "📦 Installing AWS SDK dependencies..."
+npm install --save @aws-sdk/client-s3 @aws-sdk/client-dynamodb @aws-sdk/util-dynamodb uuid
+
 # Run fix-package.js to configure package.json
 echo "📋 Configuring package.json..."
-node fix-package.js
+node fix-package.js 2>/dev/null || true
 
 # Add npm bin directories to PATH
 export PATH="$PATH:$(npm bin)"
@@ -46,8 +50,25 @@ if [ ! -f ".env" ]; then
   echo "VITE_MULTI_TENANCY_ENABLED=true" >> .env
 fi
 
+# Set up TypeScript if needed
+if [ ! -f "tsconfig.json" ]; then
+  echo "Setting up TypeScript configuration..."
+  npx tsc --init --jsx react
+fi
+
+# Find vite binary
+VITE_PATH=$(which vite 2>/dev/null || true)
+if [ -z "$VITE_PATH" ]; then
+  VITE_PATH="./node_modules/.bin/vite"
+  if [ ! -f "$VITE_PATH" ]; then
+    echo "Vite not found in PATH or node_modules. Installing..."
+    npm install --save-dev vite@latest @vitejs/plugin-react-swc
+    VITE_PATH="./node_modules/.bin/vite"
+  fi
+fi
+
 # Multiple attempts to start Vite
-echo "🚀 Starting application..."
+echo "🚀 Starting application with $VITE_PATH..."
 
 # Method 1: Try using local vite in node_modules
 if [ -f "./node_modules/.bin/vite" ]; then
