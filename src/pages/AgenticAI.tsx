@@ -24,7 +24,7 @@ interface AppCredentials {
   awsRegion?: string;
   awsAccessKeyId?: string;
   awsSecretAccessKey?: string;
-  [key: string]: any;
+  [key: string]: string | undefined; // Make this compatible with the form structure
 }
 
 const AgenticAI = () => {
@@ -67,8 +67,16 @@ const AgenticAI = () => {
     toast.success("Sample data added successfully");
   };
   
-  const handleCredentialsSet = (newCredentials: AppCredentials) => {
-    setCredentials(newCredentials);
+  const handleCredentialsSet = (newCredentials: {
+    openaiApiKey?: string;
+    awsRegion?: string;
+    awsAccessKeyId?: string;
+    awsSecretAccessKey?: string;
+  }) => {
+    // Convert to the expected type
+    const typedCredentials: AppCredentials = newCredentials;
+    setCredentials(typedCredentials);
+    
     checkBackendStatus().then((isReady) => {
       if (isReady) {
         setActiveTab("dashboard");

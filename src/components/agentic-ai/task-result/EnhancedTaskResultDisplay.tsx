@@ -38,6 +38,13 @@ const EnhancedTaskResultDisplay: React.FC<EnhancedTaskResultDisplayProps> = ({
     if (task.status === 'pending') return 20;
     return 40; // for 'in-progress'
   };
+  
+  // Format error for display
+  const getErrorMessage = () => {
+    if (!task.error) return "Unknown error";
+    if (typeof task.error === 'string') return task.error;
+    return task.error.message || "An error occurred";
+  };
 
   return (
     <Card className={`border ${hasError ? 'border-destructive/40' : ''}`}>
@@ -82,7 +89,7 @@ const EnhancedTaskResultDisplay: React.FC<EnhancedTaskResultDisplayProps> = ({
             <div className="bg-destructive/10 text-destructive p-4 rounded-md">
               <h3 className="font-medium mb-1">Error Processing Task</h3>
               <p className="text-sm">
-                {typeof task.error === 'string' ? task.error : task.error?.message || 'Unknown error'}
+                {getErrorMessage()}
               </p>
             </div>
             

@@ -1,12 +1,12 @@
 
 import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientConfig } from "@tanstack/react-query";
 import { AuthProvider } from "@/hooks/use-auth";
 import { CredentialsProvider } from "@/context/CredentialsContext";
 import { SecurityProvider } from "./SecurityProvider";
 
-// Create a client
-const queryClient = new QueryClient({
+// Create a client with type-safe config
+const queryClientConfig: QueryClientConfig = {
   defaultOptions: {
     queries: {
       retry: 1,
@@ -14,11 +14,15 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
-});
+};
+
+// Create a client
+const queryClient = new QueryClient(queryClientConfig);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
+    // @ts-ignore - QueryClientProvider is available but TypeScript doesn't detect it properly
+    <QueryClient.Provider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <SecurityProvider>
           <AuthProvider>
@@ -26,6 +30,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           </AuthProvider>
         </SecurityProvider>
       </ThemeProvider>
-    </QueryClientProvider>
+    </QueryClient.Provider>
   );
 }

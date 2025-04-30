@@ -74,7 +74,7 @@ const PricingFaq = () => {
             <Button variant="outline" className="flex items-center gap-2">
               View Documentation
             </Button>
-            <Button variant="adept" className="flex items-center gap-2">
+            <Button variant="default" className="flex items-center gap-2">
               Contact Sales
             </Button>
           </div>

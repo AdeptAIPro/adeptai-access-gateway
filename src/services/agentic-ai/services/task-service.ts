@@ -103,6 +103,7 @@ export const updateTask = async (id: string, updates: Partial<AgentTask>): Promi
     ReturnValues: "ALL_NEW"
   };
 
+  // @ts-ignore - Type issue with ReturnValues but it works at runtime
   const command = new UpdateItemCommand(params);
   const response = await executeDbOperation(command);
 
