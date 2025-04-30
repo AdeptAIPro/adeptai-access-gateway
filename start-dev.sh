@@ -32,10 +32,6 @@ if [ ! -f "./node_modules/.bin/vite" ]; then
   npm install --save-dev vite@latest
 fi
 
-# Run fix-imports.js to fix the imports
-echo "🔧 Fixing imports..."
-node fix-imports.js
-
 # Clear any previous issues
 echo "🧹 Cleaning up previous builds..."
 rm -rf node_modules/.vite

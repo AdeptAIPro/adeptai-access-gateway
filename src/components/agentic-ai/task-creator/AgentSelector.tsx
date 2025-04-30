@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormDescription, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/utils/shadcn-patches";
 import { Control } from 'react-hook-form';
 import { Bot } from 'lucide-react';
@@ -30,27 +30,25 @@ const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps
       name="agentId"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-base font-medium flex items-center gap-2">
+          <label className="text-base font-medium flex items-center gap-2">
             <Bot className="h-4 w-4 text-adept" />
             Select Agent
-          </FormLabel>
+          </label>
           <div className="space-y-2">
             <Select 
               onValueChange={field.onChange} 
               value={field.value}
               disabled={!selectedTaskType || filteredAgents.length === 0}
             >
-              <FormControl>
-                <SelectTrigger className="h-10">
-                  <SelectValue placeholder={
-                    !selectedTaskType 
-                      ? "Select a task type first" 
-                      : filteredAgents.length === 0 
-                        ? "No agents available for this task" 
-                        : "Select an agent"
-                  } />
-                </SelectTrigger>
-              </FormControl>
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder={
+                  !selectedTaskType 
+                    ? "Select a task type first" 
+                    : filteredAgents.length === 0 
+                      ? "No agents available for this task" 
+                      : "Select an agent"
+                } />
+              </SelectTrigger>
               <SelectContent>
                 {filteredAgents.map(agent => (
                   <SelectItem key={agent.id} value={agent.id}>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormDescription, FormMessage, FormControl } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Control } from 'react-hook-form';
 import { FileText } from '@/utils/icon-polyfill';
@@ -16,10 +16,10 @@ const TaskGoalField = ({ control }: TaskGoalFieldProps) => {
       name="goal"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-base font-medium flex items-center gap-2">
+          <label className="text-base font-medium flex items-center gap-2">
             <FileText className="h-4 w-4 text-adept" />
             Task Goal
-          </FormLabel>
+          </label>
           <FormControl>
             <Textarea 
               placeholder="Describe what you want the AI to do..." 

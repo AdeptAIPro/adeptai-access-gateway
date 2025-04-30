@@ -3,7 +3,7 @@ import React from 'react';
 import { 
   FormControl,
   FormField,
-  FormItem, 
+  FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
@@ -28,41 +28,35 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ control }) => {
               defaultValue={field.value}
               className="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
-              <FormItem className="flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                <FormControl>
-                  <RadioGroupItem value="research" className="sr-only" />
-                </FormControl>
-                <FormLabel className="cursor-pointer text-center w-full">
+              <div className="flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                <RadioGroupItem value="research" id="research" />
+                <label htmlFor="research" className="cursor-pointer text-center w-full">
                   <div className="font-semibold mb-1">Research</div>
                   <div className="text-sm font-normal text-muted-foreground">
                     Deep dive into topics or problems
                   </div>
-                </FormLabel>
-              </FormItem>
+                </label>
+              </div>
               
-              <FormItem className="flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                <FormControl>
-                  <RadioGroupItem value="analysis" className="sr-only" />
-                </FormControl>
-                <FormLabel className="cursor-pointer text-center w-full">
+              <div className="flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                <RadioGroupItem value="analysis" id="analysis" />
+                <label htmlFor="analysis" className="cursor-pointer text-center w-full">
                   <div className="font-semibold mb-1">Analysis</div>
                   <div className="text-sm font-normal text-muted-foreground">
                     Evaluate data and provide insights
                   </div>
-                </FormLabel>
-              </FormItem>
+                </label>
+              </div>
               
-              <FormItem className="flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                <FormControl>
-                  <RadioGroupItem value="creation" className="sr-only" />
-                </FormControl>
-                <FormLabel className="cursor-pointer text-center w-full">
+              <div className="flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                <RadioGroupItem value="creation" id="creation" />
+                <label htmlFor="creation" className="cursor-pointer text-center w-full">
                   <div className="font-semibold mb-1">Creation</div>
                   <div className="text-sm font-normal text-muted-foreground">
                     Generate content or creative work
                   </div>
-                </FormLabel>
-              </FormItem>
+                </label>
+              </div>
             </RadioGroup>
           </FormControl>
           <FormMessage />

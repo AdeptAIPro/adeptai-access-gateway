@@ -5,7 +5,7 @@ export interface TaskResult {
   id: string;
   status: 'success' | 'error' | 'processing';
   data: any;
-  error?: string | {
+  error?: {
     message: string;
     code?: string;
     details?: any;
@@ -28,7 +28,7 @@ export interface AgentTask {
   createdAt: string;
   updatedAt?: string;
   result?: TaskResult;
-  error?: string | {
+  error?: {
     message: string;
     code?: string;
     details?: any;
