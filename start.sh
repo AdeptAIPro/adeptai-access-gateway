@@ -22,6 +22,12 @@ if ! npm list @tanstack/react-query >/dev/null 2>&1; then
   npm install @tanstack/react-query
 fi
 
+# Ensure Vite is installed
+if ! npm list vite >/dev/null 2>&1; then
+  echo "📦 Installing Vite..."
+  npm install vite
+fi
+
 # Run the project
 echo "🚀 Starting the development server..."
-npm run dev
+npx vite

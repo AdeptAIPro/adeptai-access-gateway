@@ -1,134 +1,104 @@
 
 /**
- * Secure client for AWS Lambda invocation through API Gateway
- * This handles authentication, tenant isolation, and error handling
+ * LambdaApiClient - A secure API client for AWS Lambda interactions
+ * 
+ * This client handles all communication between the frontend and AWS Lambda functions,
+ * enforcing secure practices like:
+ * - Adding authentication headers
+ * - Tenant isolation
+ * - Error handling
+ * - Logging
  */
 
-import { API_GATEWAY_BASE_URL, API_VERSION } from "@/services/aws/config";
-import { useAuth } from "@/hooks/use-auth";
-import { createAppError, ErrorType, tryCatch } from "@/utils/error-handler";
-import { reportApiError } from "@/services/error-reporting";
+import { getTenantContext } from '../tenant/TenantService';
+import { ErrorType, handleError } from '@/utils/error-handler';
+import { API_GATEWAY_BASE_URL, API_VERSION } from '../aws/config';
+import { toast } from 'sonner';
 
 class LambdaApiClient {
   private apiBaseUrl: string;
-  private apiVersion: string;
   
   constructor() {
-    this.apiBaseUrl = API_GATEWAY_BASE_URL;
-    this.apiVersion = API_VERSION;
+    this.apiBaseUrl = API_GATEWAY_BASE_URL || 'https://api.adeptaipro.com';
   }
-
+  
   /**
    * Invoke a Lambda function through API Gateway
-   * @param functionName The Lambda function name (defined in aws/config.ts)
-   * @param action The specific action to invoke within the Lambda
-   * @param payload The data to send to the Lambda
-   * @returns The response from the Lambda
+   * 
+   * @param functionName The Lambda function to invoke
+   * @param action The specific action to perform
+   * @param payload The data to send to the Lambda function
+   * @returns The response from the Lambda function
    */
-  async invoke<TPayload, TResult>(
-    functionName: string, 
-    action: string, 
+  async invoke<TPayload, TResponse>(
+    functionName: string,
+    action: string,
     payload: TPayload
-  ): Promise<TResult> {
+  ): Promise<TResponse> {
     try {
-      // Get current user and token from auth context
-      // For now, we'll use a polyfill that works without the actual authentication
-      let authToken = "";
-      let tenantId = "";
-      
-      try {
-        const auth = useAuth();
-        if (auth.user) {
-          authToken = "Bearer " + localStorage.getItem("authToken") || "";
-          tenantId = auth.user.id;
-        }
-      } catch (error) {
-        console.warn("Auth context not available, using anonymous access");
+      // Get authentication token from storage
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        console.warn('No authentication token found. Proceeding with unauthenticated request.');
       }
-
-      // Endpoint URL format: {baseUrl}/api/{version}/{functionName}
-      const url = `${this.apiBaseUrl}/api/${this.apiVersion}/${functionName}`;
       
-      // Request body includes the action to perform and payload
-      const body = {
+      // Get tenant context for multi-tenancy
+      const tenantContext = getTenantContext();
+      
+      // Build request with tenant and auth context
+      const requestPayload = {
         action,
         payload,
         meta: {
-          tenantId,
-          timestamp: new Date().toISOString(),
-          clientInfo: {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            language: navigator.language
-          }
+          ...tenantContext,
+          authToken: token,
+          timestamp: new Date().toISOString()
         }
       };
       
-      // Prepare headers with authentication token if available
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (authToken) {
-        headers['Authorization'] = authToken;
+      // Log outgoing requests in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Invoking ${functionName}:${action}`, requestPayload);
       }
-
-      // Make the API call
-      const response = await fetch(url, {
+      
+      // Make the request
+      const response = await fetch(`${this.apiBaseUrl}/${API_VERSION}/functions/${functionName}`, {
         method: 'POST',
-        headers,
-        body: JSON.stringify(body)
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+          'X-Tenant-ID': tenantContext.tenantId || 'default',
+          'X-API-Version': API_VERSION
+        },
+        body: JSON.stringify(requestPayload)
       });
-
+      
       // Handle HTTP errors
       if (!response.ok) {
-        let errorData;
-        try {
-          errorData = await response.json();
-        } catch (e) {
-          // If response isn't JSON, use status text
-          errorData = { message: response.statusText };
-        }
-        
-        // Handle different error types
-        let errorType = ErrorType.API;
-        if (response.status === 401) errorType = ErrorType.AUTHENTICATION;
-        if (response.status === 403) errorType = ErrorType.AUTHORIZATION;
-        if (response.status === 404) errorType = ErrorType.NOT_FOUND;
-        if (response.status === 422) errorType = ErrorType.VALIDATION;
-        
-        throw createAppError(
-          errorData.message || `API Error: ${response.status}`,
-          errorType,
-          errorData,
-          { functionName, action, url }
-        );
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error ${response.status}`);
       }
-
-      // Parse and return the response
+      
+      // Parse response
       const data = await response.json();
-      return data as TResult;
+      
+      // Check for API-level errors
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      return data as TResponse;
     } catch (error) {
-      // Report and re-throw the error
-      reportApiError(
-        `lambdaApi.invoke:${functionName}.${action}`,
-        error,
-        { functionName, action }
-      );
+      // Handle errors with centralized error handler
+      handleError({
+        type: ErrorType.API,
+        message: `Error invoking Lambda function ${functionName}:${action}`,
+        userFriendlyMessage: `Operation failed. Please try again later.`,
+        originalError: error
+      }, true);
+      
+      // Rethrow to allow component-level handling
       throw error;
-    }
-  }
-  
-  /**
-   * Check if the API is available
-   */
-  async checkHealth(): Promise<boolean> {
-    try {
-      const url = `${this.apiBaseUrl}/health`;
-      const response = await fetch(url);
-      return response.ok;
-    } catch (error) {
-      return false;
     }
   }
 }

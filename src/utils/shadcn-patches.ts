@@ -82,10 +82,10 @@ export const Label = ({ children, className, ...props }: {
 }) => {
   try {
     const OriginalLabel = require('@/components/ui/label').Label;
-    return <label className={className} {...props}>{children}</label>;
+    return <OriginalLabel className={className} {...props}>{children}</OriginalLabel>;
   } catch (e) {
     console.error("Could not load Label component:", e);
-    return <label className={className} {...props}>{children}</label>;
+    return <label className={className || ""} {...props}>{children}</label>;
   }
 };
 
@@ -96,9 +96,9 @@ export const Progress = ({ value, className, ...props }: {
 }) => {
   try {
     const OriginalProgress = require('@/components/ui/progress').Progress;
-    return <progress value={value} max="100" className={className} {...props} />;
+    return <OriginalProgress value={value} className={className} {...props} />;
   } catch (e) {
     console.error("Could not load Progress component:", e);
-    return <progress value={value} max="100" className={className} {...props} />;
+    return <progress value={value} max="100" className={className || ""} {...props} />;
   }
 };

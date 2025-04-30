@@ -1,130 +1,116 @@
 
 /**
- * Error handling utilities for AWS backend integration
+ * Centralized error handling utility
+ * 
+ * This provides consistent error handling and reporting across the application
  */
 
+import { toast } from 'sonner';
+
 export enum ErrorType {
-  API = 'API_ERROR',
-  VALIDATION = 'VALIDATION_ERROR',
-  AUTHENTICATION = 'AUTHENTICATION_ERROR',
-  AUTHORIZATION = 'AUTHORIZATION_ERROR',
-  NOT_FOUND = 'NOT_FOUND_ERROR',
-  TIMEOUT = 'TIMEOUT_ERROR',
-  NETWORK = 'NETWORK_ERROR',
-  UNKNOWN = 'UNKNOWN_ERROR',
-  SERVER = 'SERVER_ERROR',
-  DATA_ENCRYPTION = 'DATA_ENCRYPTION_ERROR',
-  INFRASTRUCTURE = 'INFRASTRUCTURE_ERROR',
-  SECURITY = 'SECURITY_ERROR'
+  API = 'API Error',
+  AUTH = 'Authentication Error',
+  NETWORK = 'Network Error',
+  DATA = 'Data Error',
+  AWS = 'AWS Service Error',
+  CONFIGURATION = 'Configuration Error',
+  VALIDATION = 'Validation Error',
+  UNKNOWN = 'Unknown Error'
 }
 
-export interface AppError {
-  message: string;
+export interface ErrorHandlerParams {
   type: ErrorType;
+  message: string;
+  userFriendlyMessage?: string;
   originalError?: any;
-  userFriendlyMessage: string;
   metadata?: Record<string, any>;
 }
 
 /**
- * Create a standardized application error
+ * Centralized error handler function
+ * 
+ * @param params Error parameters
+ * @param showToast Whether to show a toast notification
  */
-export function createAppError(
-  message: string, 
-  type: ErrorType = ErrorType.UNKNOWN, 
-  originalError?: any,
-  metadata?: Record<string, any>
-): AppError {
-  // Create user-friendly message based on error type
-  let userFriendlyMessage = "An unexpected error occurred. Please try again.";
+export const handleError = (params: ErrorHandlerParams, showToast: boolean = false): void => {
+  // Extract parameters
+  const { type, message, userFriendlyMessage, originalError, metadata } = params;
   
-  switch (type) {
-    case ErrorType.API:
-      userFriendlyMessage = "We're having trouble connecting to our services. Please try again later.";
-      break;
-    case ErrorType.VALIDATION:
-      userFriendlyMessage = "Please check your input and try again.";
-      break;
-    case ErrorType.AUTHENTICATION:
-      userFriendlyMessage = "Your session has expired. Please log in again.";
-      break;
-    case ErrorType.AUTHORIZATION:
-      userFriendlyMessage = "You don't have permission to perform this action.";
-      break;
-    case ErrorType.NOT_FOUND:
-      userFriendlyMessage = "The requested resource was not found.";
-      break;
-    case ErrorType.TIMEOUT:
-      userFriendlyMessage = "The request timed out. Please try again.";
-      break;
-    case ErrorType.NETWORK:
-      userFriendlyMessage = "Network error. Please check your connection and try again.";
-      break;
-  }
-  
-  return {
-    message,
-    type,
+  // Log error details to console
+  console.error(`${type}: ${message}`, {
     originalError,
-    userFriendlyMessage,
     metadata
-  };
-}
-
-/**
- * Handle errors with optional toast notification
- */
-export function handleError(error: any, showToast: boolean = true): AppError {
-  // Convert to AppError if it isn't already
-  const appError: AppError = error.type ? 
-    error as AppError : 
-    createAppError(
-      error.message || "Unknown error", 
-      ErrorType.UNKNOWN, 
-      error
-    );
-  
-  // Log error for debugging
-  console.error(`[${appError.type}]`, appError.message, {
-    originalError: appError.originalError,
-    metadata: appError.metadata
   });
   
-  // Show toast if requested
+  // Show toast notification if requested
   if (showToast) {
-    // Import dynamically to avoid circular dependencies
-    import("@/hooks/use-toast").then(({ toast }) => {
-      toast({
-        title: "Error",
-        description: appError.userFriendlyMessage,
-        variant: "destructive",
-      });
-    }).catch(() => {
-      // Fallback if toast is not available
-      console.error("Failed to show toast notification");
+    toast({
+      title: type,
+      description: userFriendlyMessage || message,
+      variant: "destructive",
     });
   }
   
-  return appError;
-}
+  // In a real implementation, we would also:
+  // 1. Send error to monitoring service (AWS CloudWatch, Sentry, etc)
+  // 2. Track in analytics
+  // 3. Perform recovery actions if possible
+};
 
 /**
- * Try/catch wrapper for async functions
+ * Report an API error with consistent formatting
  */
-export async function tryCatch<T>(
-  fn: () => Promise<T>
-): Promise<[T | null, AppError | null]> {
-  try {
-    const result = await fn();
-    return [result, null];
-  } catch (error) {
-    const appError = error.type ? 
-      error as AppError : 
-      createAppError(
-        error.message || "Unknown error", 
-        ErrorType.UNKNOWN, 
-        error
-      );
-    return [null, appError];
-  }
-}
+export const reportApiError = (
+  endpoint: string,
+  error: any,
+  requestData?: any
+): void => {
+  handleError({
+    type: ErrorType.API,
+    message: `API error calling ${endpoint}`,
+    userFriendlyMessage: 'Operation failed. Please try again later.',
+    originalError: error,
+    metadata: { endpoint, requestData }
+  }, true);
+};
+
+/**
+ * Handle unauthorized error (e.g., expired token)
+ */
+export const handleUnauthorizedError = (): void => {
+  // Clear authentication state
+  localStorage.removeItem('auth_token');
+  
+  // Show toast
+  toast({
+    title: "Session Expired",
+    description: "Your session has expired. Please log in again.",
+    variant: "destructive",
+  });
+  
+  // Redirect to login page
+  window.location.href = '/login';
+};
+
+/**
+ * Create a safe wrapper for async functions
+ * 
+ * This provides a standardized way to handle errors in async functions
+ */
+export const createSafeAsync = <T, A extends any[]>(
+  fn: (...args: A) => Promise<T>,
+  errorType: ErrorType = ErrorType.UNKNOWN
+) => {
+  return async (...args: A): Promise<T | null> => {
+    try {
+      return await fn(...args);
+    } catch (error) {
+      handleError({
+        type: errorType,
+        message: `Error in async function: ${fn.name}`,
+        originalError: error
+      }, true);
+      return null;
+    }
+  };
+};

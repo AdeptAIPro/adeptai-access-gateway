@@ -1,81 +1,91 @@
 
 /**
- * Utilities for handling environment variables in browser context
- * Since we can't directly access process.env in the browser,
- * we use localStorage as a temporary storage for environment variables
+ * Environment variable utilities
+ * 
+ * These utilities provide a consistent way to access environment variables
+ * from various sources (import.meta.env, localStorage, etc)
  */
 
 /**
- * Get environment variable from localStorage or return default
+ * Get an environment variable from various sources
+ * 
+ * Priority order:
+ * 1. import.meta.env
+ * 2. localStorage
+ * 3. Default value
+ * 
+ * @param key The environment variable key
+ * @param defaultValue Default value if not found
+ * @returns The environment variable value
  */
 export const getEnvVar = (key: string, defaultValue: string = ''): string => {
-  // First check localStorage
+  // Check if it exists in import.meta.env (Vite environment variables)
+  const envValue = (import.meta.env as any)[key];
+  if (envValue !== undefined) {
+    return envValue;
+  }
+  
+  // Check if it exists in localStorage
   const localValue = localStorage.getItem(key);
-  if (localValue) return localValue;
+  if (localValue !== null) {
+    return localValue;
+  }
   
-  // Then check import.meta.env (for Vite environment variables)
-  const envKey = `VITE_${key}`;
-  // @ts-ignore - import.meta.env is not typed
-  const envValue = import.meta.env[envKey];
-  if (envValue) return envValue;
-  
-  // Fall back to default
+  // Return default value
   return defaultValue;
 };
 
 /**
- * Set environment variable in localStorage
+ * Set an environment variable in localStorage
+ * 
+ * @param key The environment variable key
+ * @param value The environment variable value
  */
 export const setEnvVar = (key: string, value: string): void => {
-  if (value) {
-    localStorage.setItem(key, value);
-  } else {
-    localStorage.removeItem(key);
-  }
+  localStorage.setItem(key, value);
 };
 
 /**
- * Check if a specific environment is active
+ * Clear an environment variable from localStorage
+ * 
+ * @param key The environment variable key
  */
-export const isEnvironment = (env: 'development' | 'production' | 'test'): boolean => {
-  // @ts-ignore - import.meta.env is not typed
-  return import.meta.env.MODE === env;
+export const clearEnvVar = (key: string): void => {
+  localStorage.removeItem(key);
+};
+
+/**
+ * Check if an environment variable is defined
+ * 
+ * @param key The environment variable key
+ * @returns True if the environment variable is defined
+ */
+export const isEnvVarDefined = (key: string): boolean => {
+  return getEnvVar(key) !== '';
 };
 
 /**
  * Get all environment variables as an object
+ * 
+ * @returns Object containing all environment variables
  */
 export const getAllEnvVars = (): Record<string, string> => {
-  const vars: Record<string, string> = {};
+  const result: Record<string, string> = {};
   
-  // Add all localStorage vars that look like env vars
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && (key.startsWith('AWS_') || key.startsWith('API_') || key.includes('_API_KEY'))) {
-      vars[key] = localStorage.getItem(key) || '';
-    }
-  }
-  
-  // Add all import.meta.env vars
-  // @ts-ignore - import.meta.env is not typed
-  Object.keys(import.meta.env).forEach(key => {
-    if (key.startsWith('VITE_')) {
-      // @ts-ignore - import.meta.env is not typed
-      vars[key.replace('VITE_', '')] = import.meta.env[key];
+  // Add values from import.meta.env
+  Object.entries(import.meta.env).forEach(([key, value]) => {
+    if (typeof value === 'string') {
+      result[key] = value;
     }
   });
   
-  return vars;
-};
-
-/**
- * Clear all environment variables from localStorage
- */
-export const clearEnvVars = (): void => {
+  // Add values from localStorage
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && (key.startsWith('AWS_') || key.startsWith('API_') || key.includes('_API_KEY'))) {
-      localStorage.removeItem(key);
+    if (key && key.startsWith('VITE_')) {
+      result[key] = localStorage.getItem(key) || '';
     }
   }
+  
+  return result;
 };
