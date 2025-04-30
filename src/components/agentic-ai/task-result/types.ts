@@ -32,5 +32,5 @@ export interface AgentTask {
     message: string;
     code?: string;
     details?: any;
-  };
+  } | string;
 }

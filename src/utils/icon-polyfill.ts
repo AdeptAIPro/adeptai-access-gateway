@@ -4,4 +4,4 @@
  * which can cause issues in some builds.
  */
 export * from './icons';
-export { default } from './icons';
+export * from 'lucide-react';
