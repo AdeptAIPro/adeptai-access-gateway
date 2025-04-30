@@ -14,6 +14,19 @@ export interface TaskResult {
   timestamp: string;
   summary: string;
   details?: string;
+  findings?: any[];
+  recommendations?: any[];
+  context?: Record<string, any>;
 }
 
 export interface AgentTask extends BaseAgentTask {}
+
+// Define a properly typed result object that includes all possible fields
+export interface TaskResultData {
+  summary?: string;
+  details?: string;
+  data?: any;
+  findings?: any[];
+  recommendations?: any[];
+  context?: Record<string, any>;
+}

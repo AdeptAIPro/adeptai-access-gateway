@@ -6,14 +6,15 @@ import { Separator } from "@/components/ui/separator";
 import { CheckCircle, AlertCircle, BarChart2 } from "@/utils/icon-polyfill";
 import { FileCheck, UserCheck } from "@/utils/icon-polyfill";
 import { AgentTask } from '@/types/agent-task';
+import { TaskResultData } from './types';
 
 export interface TaskResultDisplayProps {
   task: AgentTask;
 }
 
 const TaskResultDisplay: React.FC<TaskResultDisplayProps> = ({ task }) => {
-  // Default empty state for result
-  const result = task.result || {
+  // Default empty state for result with proper type handling
+  const result = task.result as TaskResultData || {
     summary: "No summary available",
     findings: [],
     recommendations: []

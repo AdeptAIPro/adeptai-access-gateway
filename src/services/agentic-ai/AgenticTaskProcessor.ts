@@ -33,17 +33,20 @@ export const processAgenticTask = async (task: AgentTask): Promise<AgentTask> =>
     return await getTaskById(task.id) as AgentTask;
   } catch (error) {
     console.error(`Error processing agentic task ${task.id}:`, error);
+    
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    
     await updateTaskStatus(
       task.id, 
       "failed", 
       undefined, 
-      error instanceof Error ? { message: error.message } : { message: "Unknown error" }
+      { message: errorMessage }
     );
     
     return {
       ...task,
       status: "failed",
-      error: error instanceof Error ? { message: error.message } : { message: "Unknown error" }
+      error: { message: errorMessage }
     };
   }
 };

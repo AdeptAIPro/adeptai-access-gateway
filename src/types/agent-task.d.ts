@@ -1,4 +1,6 @@
 
+import { TaskResultData } from '@/components/agentic-ai/task-result/types';
+
 export interface AgentTask {
   id: string;
   type?: string;
@@ -13,12 +15,12 @@ export interface AgentTask {
   updatedAt: string | Date;
   startedAt?: string;
   completedAt?: string;
-  result?: {
-    summary?: string;
-    details?: string;
-    data?: any;
+  result?: TaskResultData;
+  error?: {
+    message: string;
+    code?: string;
+    details?: any;
   };
-  error?: string | { message: string; code?: string; details?: any; };
   progress?: number;
   params?: Record<string, any>;
   userId?: string;

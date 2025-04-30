@@ -43,12 +43,20 @@ export const getTaskById = async (id: string): Promise<AgentTask | undefined> =>
 export const createTask = async (taskData: Omit<AgentTask, 'id' | 'createdAt'>): Promise<AgentTask> => {
   const taskId = uuidv4();
   const createdAt = new Date().toISOString();
+  
+  // Ensure the task has required fields like title and description
+  const description = taskData.description || taskData.goal || 'No description provided';
+  const title = taskData.title || `${taskData.taskType.charAt(0).toUpperCase() + taskData.taskType.slice(1).replace(/-/g, " ")} Task`;
+  
   const newTask: AgentTask = {
     id: taskId,
     createdAt,
+    updatedAt: createdAt,
+    title,
+    description,
     ...taskData,
     taskType: taskData.taskType || 'default',
-    goal: taskData.description
+    goal: taskData.goal || description
   };
 
   const params = {

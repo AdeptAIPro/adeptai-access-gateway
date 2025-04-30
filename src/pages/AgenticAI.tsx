@@ -18,16 +18,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { AgentTask } from '@/types/agent-task';
 import { toast } from "sonner";
 
-// Define AppCredentials type to match the expected shape
+// Define correct credentials type to match what AgenticCredentialsForm expects
 interface AppCredentials {
-  openai?: {
-    apiKey: string;
-  };
-  aws?: {
-    region: string;
-    accessKeyId: string;
-    secretAccessKey: string;
-  };
+  openaiApiKey?: string;
+  awsRegion?: string;
+  awsAccessKeyId?: string;
+  awsSecretAccessKey?: string;
   [key: string]: any;
 }
 

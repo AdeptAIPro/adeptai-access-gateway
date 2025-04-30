@@ -1,6 +1,6 @@
 
 import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider as TanstackQueryProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/hooks/use-auth";
 import { CredentialsProvider } from "@/context/CredentialsContext";
 import { SecurityProvider } from "./SecurityProvider";
@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
-    <TanstackQueryProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <SecurityProvider>
           <AuthProvider>
@@ -26,6 +26,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           </AuthProvider>
         </SecurityProvider>
       </ThemeProvider>
-    </TanstackQueryProvider>
+    </QueryClientProvider>
   );
 }
