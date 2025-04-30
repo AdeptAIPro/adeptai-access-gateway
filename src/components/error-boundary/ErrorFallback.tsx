@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertTriangle } from '@/utils/lucide-polyfill';
+import { AlertTriangle } from '@/utils/misc-icons';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { AppError, ErrorType } from '@/utils/error-handler';

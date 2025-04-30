@@ -12,6 +12,9 @@ export * from './icons/chart-icons';
 export * from './icons/misc-icons';
 export * from './icons/commerce-icons';
 
+// Also re-export directly from lucide-react for any icons not in our categorized files
+export * from 'lucide-react';
+
 // Create a default export combining all icons for backwards compatibility
 import * as uiIcons from './icons/ui-icons';
 import * as dataIcons from './icons/data-icons';

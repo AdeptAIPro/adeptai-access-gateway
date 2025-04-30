@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Download, Save, Settings, Info } from '@/utils/icons';
+import { Share2, Download, Save, Settings, Info } from '@/utils/misc-icons';
 
 interface ToolbarProps {
   onShare?: () => void;

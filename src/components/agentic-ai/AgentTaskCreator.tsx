@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bot } from '@/utils/icons';
+import { Bot } from '@/utils/misc-icons';
 import TaskCreationForm from './task-creator/TaskCreationForm';
 import HowItWorksCard from './task-creator/HowItWorksCard';
 

@@ -1,35 +1,37 @@
 
-export interface UserRolePermissions {
-  role: string;
-  permissions: string[];
-}
-
 export interface User {
   id: string;
   email: string;
   name?: string;
+  avatar?: string;
   role: string;
-  permissions: string[];
-  createdAt: string;
-  updatedAt?: string;
+  plan?: "free_trial" | "pro" | "business" | "enterprise" | null;
+  permissions?: string[];
+  tenantId?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface AuthState {
-  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  user: User | null;
   error: string | null;
 }
 
-export interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  loading: boolean; // Added for compatibility
+export interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  signUp: (name: string, email: string, password: string) => Promise<void>;
-  hasPermission: (permission: string) => boolean;
-  error: string | null;
+  signup: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+  refreshUser: () => Promise<void>;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignupCredentials extends LoginCredentials {
+  name: string;
 }

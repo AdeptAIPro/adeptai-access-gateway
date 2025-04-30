@@ -1,3 +1,4 @@
+
 import React, { Component, ErrorInfo } from 'react';
 import { ErrorFallback } from './ErrorFallback';
 import { handleError } from '@/utils/error-handler';
@@ -27,7 +28,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    handleError(error, false);
+    handleError(error, 'error_boundary');
     
     if (this.props.onError) {
       this.props.onError(error, errorInfo.componentStack);

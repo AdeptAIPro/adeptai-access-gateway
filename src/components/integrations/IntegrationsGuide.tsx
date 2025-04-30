@@ -2,7 +2,8 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plug, Filter, Zap, Link, Settings } from "@/utils/lucide-polyfill";
+import { Filter, Link, Settings, Zap } from "@/utils/misc-icons";
+import { Plug } from "@/utils/lucide-polyfill";
 import { Step } from "@/components/talent-matching/guide/types";
 
 interface IntegrationsGuideProps {
