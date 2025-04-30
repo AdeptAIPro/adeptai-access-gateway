@@ -19,16 +19,16 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
   const [credentials, setCredentialsState] = useState<AppCredentials | null>(null);
   const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
   
-  const { loadStoredCredentials, storeCredentials, clearStoredCredentials } = useCredentialsStorage();
+  const credentialsStorage = useCredentialsStorage();
   const { testAwsConnection } = useAwsConnection();
   const { checkBackendStatus, checkInfrastructure } = useInfrastructureCheck(!!credentials?.aws);
   
   // Load credentials from secure storage on mount
   useEffect(() => {
-    const savedCredentials = loadStoredCredentials();
+    const savedCredentials = credentialsStorage.loadStoredCredentials();
     if (savedCredentials) {
       setCredentialsState(savedCredentials);
-      checkBackendStatus();
+      checkBackendStatus().then(setIsBackendReady);
     }
   }, []);
   
@@ -42,12 +42,12 @@ export const CredentialsProvider: React.FC<{children: ReactNode}> = ({ children 
   }, [credentials]);
   
   const setCredentials = (creds: AppCredentials) => {
-    storeCredentials(creds);
+    credentialsStorage.storeCredentials(creds);
     setCredentialsState(creds);
   };
   
   const clearCredentials = () => {
-    clearStoredCredentials();
+    credentialsStorage.clearStoredCredentials();
     setCredentialsState(null);
     setIsBackendReady(false);
   };
