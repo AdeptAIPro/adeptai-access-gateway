@@ -1,43 +1,16 @@
 
-import {
-  CheckCircle,
-  AlertCircle,
-  AlertTriangle,
-  Info,
-  HelpCircle,
-  Eye,
-  EyeOff,
-  Lock,
-  Unlock,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  Loader2,
-  RefreshCcw,
+import { 
+  AlertCircle, 
+  CheckCircle, 
+  Clock, 
   Check,
-  XCircle,
-  CheckCircle2
+  PlayCircle
 } from 'lucide-react';
 
 export {
-  CheckCircle,
   AlertCircle,
-  AlertTriangle,
-  Info,
-  HelpCircle,
-  Eye,
-  EyeOff,
-  Lock,
-  Unlock,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  Loader2,
-  RefreshCcw,
+  CheckCircle,
+  Clock,
   Check,
-  XCircle,
-  CheckCircle2
+  PlayCircle
 };
-
-// Also export Loader2 as Loader for compatibility
-export { Loader2 as Loader };

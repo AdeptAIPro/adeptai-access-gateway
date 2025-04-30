@@ -11,25 +11,5 @@ export * from './icons/chart-icons';
 export * from './icons/misc-icons';
 export * from './icons/commerce-icons';
 
-// Create a default export combining all icons for backwards compatibility
-import * as uiIcons from './icons/ui-icons';
-import * as dataIcons from './icons/data-icons';
-import * as communicationIcons from './icons/communication-icons';
-import * as statusIcons from './icons/status-icons';
-import * as userIcons from './icons/user-icons';
-import * as chartIcons from './icons/chart-icons';
-import * as miscIcons from './icons/misc-icons';
-import * as commerceIcons from './icons/commerce-icons';
-
-const icons = {
-  ...uiIcons,
-  ...dataIcons,
-  ...communicationIcons,
-  ...statusIcons,
-  ...userIcons,
-  ...chartIcons,
-  ...miscIcons,
-  ...commerceIcons
-};
-
-export default icons;
+// Also re-export directly from lucide-react for any icons that might not be in our categorized files
+export * from 'lucide-react';

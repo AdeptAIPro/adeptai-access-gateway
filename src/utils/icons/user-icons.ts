@@ -1,18 +1,14 @@
 
-import {
-  User,
-  Users,
+import { 
+  User, 
+  UserCheck, 
   UserPlus,
-  UserCheck,
-  Settings,
-  LogOut
+  Users
 } from 'lucide-react';
 
 export {
   User,
-  Users,
-  UserPlus,
   UserCheck,
-  Settings,
-  LogOut
+  UserPlus,
+  Users
 };

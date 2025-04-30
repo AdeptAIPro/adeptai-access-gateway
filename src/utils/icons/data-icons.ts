@@ -1,36 +1,24 @@
 
-import {
+import { 
+  Copy, 
+  Trash, 
+  Share,
+  Bot,
   File,
   FileText,
-  FileCode,
-  FileImage,
-  FileCheck,
-  FileCheck2,
-  Files,
   Folder,
   FolderOpen,
-  Database,
-  Save,
-  Upload,
-  Download,
-  UploadCloud,
-  ClipboardList
+  Database
 } from 'lucide-react';
 
 export {
+  Copy,
+  Trash,
+  Share,
+  Bot,
   File,
   FileText,
-  FileCode,
-  FileImage,
-  FileCheck,
-  FileCheck2,
-  Files,
   Folder,
   FolderOpen,
-  Database,
-  Save,
-  Upload,
-  Download,
-  UploadCloud,
-  ClipboardList
+  Database
 };

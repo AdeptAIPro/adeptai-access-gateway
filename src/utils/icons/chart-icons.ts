@@ -1,16 +1,12 @@
 
-import {
-  BarChart,
-  BarChart2,
-  BarChart3,
-  TrendingUp,
-  TrendingDown
+import { 
+  BarChart2, 
+  LineChart, 
+  PieChart
 } from 'lucide-react';
 
 export {
-  BarChart,
   BarChart2,
-  BarChart3,
-  TrendingUp,
-  TrendingDown
+  LineChart,
+  PieChart
 };

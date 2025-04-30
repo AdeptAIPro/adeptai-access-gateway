@@ -1,20 +1,10 @@
 
-import {
-  ShoppingBag,
-  ShoppingCart,
+import { 
   CreditCard,
-  CircleDollarSign,
-  DollarSign,
-  Truck,
-  Briefcase
+  Building 
 } from 'lucide-react';
 
 export {
-  ShoppingBag,
-  ShoppingCart,
   CreditCard,
-  CircleDollarSign,
-  DollarSign,
-  Truck,
-  Briefcase
+  Building
 };

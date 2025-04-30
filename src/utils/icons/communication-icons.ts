@@ -1,24 +1,14 @@
 
-import {
-  Mail,
+import { 
+  Mail, 
+  Phone, 
   MessageSquare,
-  Send,
-  Bell,
-  BellRing,
-  Share,
-  Link,
-  ExternalLink,
-  Phone
+  Globe
 } from 'lucide-react';
 
 export {
   Mail,
+  Phone,
   MessageSquare,
-  Send,
-  Bell,
-  BellRing,
-  Share,
-  Link,
-  ExternalLink,
-  Phone
+  Globe
 };
