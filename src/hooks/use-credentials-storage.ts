@@ -2,7 +2,7 @@
 /**
  * Secure storage for credentials with encryption support
  */
-const useCredentialsStorage = () => {
+export const useCredentialsStorage = () => {
   const prefix = 'adeptai_cred_';
   
   // Simple encode/decode for basic obfuscation (not true encryption)
@@ -81,4 +81,5 @@ const useCredentialsStorage = () => {
   };
 };
 
+// Also provide the function as default export for backward compatibility
 export default useCredentialsStorage;
