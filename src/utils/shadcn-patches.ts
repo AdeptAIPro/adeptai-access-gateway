@@ -27,6 +27,22 @@ import {
   RadioGroupItem as OriginalRadioGroupItem,
 } from "@/components/ui/radio-group";
 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from './shadcn-tabs';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from './shadcn-dropdown';
+
 // Re-export components with proper typing
 export const Select = OriginalSelect;
 export const SelectContent = OriginalSelectContent;
@@ -45,4 +61,44 @@ export const FormMessage = OriginalFormMessage;
 export const RadioGroup = OriginalRadioGroup;
 export const RadioGroupItem = OriginalRadioGroupItem;
 
+// Re-export tabs components
+export { Tabs, TabsContent, TabsList, TabsTrigger };
+
+// Re-export dropdown menu components
+export { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+};
+
 // Export other shadcn components as needed for fixes
+export const Label = ({ children, className, ...props }: { 
+  children?: React.ReactNode;
+  className?: string; 
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalLabel = require('@/components/ui/label').Label;
+    return <label className={className} {...props}>{children}</label>;
+  } catch (e) {
+    console.error("Could not load Label component:", e);
+    return <label className={className} {...props}>{children}</label>;
+  }
+};
+
+export const Progress = ({ value, className, ...props }: {
+  value: number;
+  className?: string;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalProgress = require('@/components/ui/progress').Progress;
+    return <progress value={value} max="100" className={className} {...props} />;
+  } catch (e) {
+    console.error("Could not load Progress component:", e);
+    return <progress value={value} max="100" className={className} {...props} />;
+  }
+};

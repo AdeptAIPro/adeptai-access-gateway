@@ -11,7 +11,7 @@ export interface TaskResult {
     details?: any;
   };
   timestamp: string;
-  summary?: string;
+  summary: string;
   details?: string;
 }
 
