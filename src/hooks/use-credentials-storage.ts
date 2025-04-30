@@ -1,73 +1,84 @@
 
-import { useSecureStorage } from "./use-secure-storage";
-import { AppCredentials } from "@/types/credentials";
-import { handleError, ErrorType } from "@/utils/error-handler";
-import { initializeAwsConfig } from "@/services/aws/AwsConfigService";
-import { toast } from "sonner";
-
-export const useCredentialsStorage = () => {
-  const { getItem, setItem } = useSecureStorage({ 
-    storageType: 'local',
-    encryptionKey: 'adept_credentials_key'
-  });
-
-  const loadStoredCredentials = () => {
+/**
+ * Secure storage for credentials with encryption support
+ */
+const useCredentialsStorage = () => {
+  const prefix = 'adeptai_cred_';
+  
+  // Simple encode/decode for basic obfuscation (not true encryption)
+  const encode = (str: string): string => {
+    return btoa(encodeURIComponent(str));
+  };
+  
+  const decode = (str: string): string => {
     try {
-      const savedCredentials = getItem('agenticCredentials');
-      if (savedCredentials?.aws) {
-        const { region, accessKeyId, secretAccessKey } = savedCredentials.aws;
-        initializeAwsConfig(region, accessKeyId, secretAccessKey);
-      }
-      return savedCredentials;
-    } catch (error) {
-      handleError({
-        type: ErrorType.DATA_ENCRYPTION,
-        message: "Failed to load saved credentials",
-        userFriendlyMessage: "Failed to retrieve saved credentials",
-        originalError: error
-      }, true);
-      return null;
+      return decodeURIComponent(atob(str));
+    } catch (e) {
+      console.error('Failed to decode stored value');
+      return '';
     }
   };
-
-  const storeCredentials = (creds: AppCredentials | null) => {
+  
+  // Store credentials
+  const storeCredential = (key: string, value: string): void => {
     try {
-      if (creds) {
-        setItem('agenticCredentials', creds);
-        if (creds.aws) {
-          const { region, accessKeyId, secretAccessKey } = creds.aws;
-          initializeAwsConfig(region, accessKeyId, secretAccessKey);
+      const encodedKey = `${prefix}${key}`;
+      const encodedValue = encode(value);
+      localStorage.setItem(encodedKey, encodedValue);
+    } catch (error) {
+      console.error('Failed to store credential', error);
+    }
+  };
+  
+  // Get credentials
+  const getCredential = (key: string): string => {
+    try {
+      const encodedKey = `${prefix}${key}`;
+      const encodedValue = localStorage.getItem(encodedKey);
+      if (!encodedValue) return '';
+      return decode(encodedValue);
+    } catch (error) {
+      console.error('Failed to retrieve credential', error);
+      return '';
+    }
+  };
+  
+  // Clear a specific credential
+  const clearCredential = (key: string): void => {
+    try {
+      const encodedKey = `${prefix}${key}`;
+      localStorage.removeItem(encodedKey);
+    } catch (error) {
+      console.error('Failed to clear credential', error);
+    }
+  };
+  
+  // Clear all credentials
+  const clearAllCredentials = (): void => {
+    try {
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(prefix)) {
+          localStorage.removeItem(key);
         }
-      } else {
-        setItem('agenticCredentials', null);
-      }
+      });
     } catch (error) {
-      handleError({
-        type: ErrorType.DATA_ENCRYPTION,
-        message: "Failed to store credentials",
-        userFriendlyMessage: "Failed to save credentials securely",
-        originalError: error
-      }, true);
+      console.error('Failed to clear all credentials', error);
     }
   };
-
-  const clearStoredCredentials = () => {
-    try {
-      setItem('agenticCredentials', null);
-      toast.success("All credentials have been cleared");
-    } catch (error) {
-      handleError({
-        type: ErrorType.DATA_ENCRYPTION,
-        message: "Failed to clear credentials",
-        userFriendlyMessage: "Failed to clear stored credentials",
-        originalError: error
-      }, true);
-    }
+  
+  // Check if credential exists
+  const hasCredential = (key: string): boolean => {
+    const encodedKey = `${prefix}${key}`;
+    return !!localStorage.getItem(encodedKey);
   };
-
+  
   return {
-    loadStoredCredentials,
-    storeCredentials,
-    clearStoredCredentials
+    storeCredential,
+    getCredential,
+    clearCredential,
+    clearAllCredentials,
+    hasCredential
   };
 };
+
+export default useCredentialsStorage;

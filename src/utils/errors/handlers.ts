@@ -1,24 +1,28 @@
 
-import { ErrorType } from './types';
+import { ErrorType, ErrorDetails } from './types';
 import { AppError } from './AppError';
 
-/**
- * Simple utility for handling try/catch logic in async functions
- */
+type AsyncFunction<T> = () => Promise<T>;
+
 export const tryCatch = async <T>(
-  fn: () => Promise<T>,
-  errorType: ErrorType = ErrorType.UNKNOWN,
-  errorMessage: string = 'An error occurred'
+  fn: AsyncFunction<T>,
+  errorType: ErrorType = ErrorType.UNKNOWN
 ): Promise<[T | null, AppError | null]> => {
   try {
     const result = await fn();
     return [result, null];
   } catch (error) {
+    if (error instanceof AppError) {
+      return [null, error];
+    }
+    
     const appError = new AppError({
-      message: errorMessage,
+      message: error instanceof Error ? error.message : 'An unexpected error occurred',
       type: errorType,
-      originalError: error
+      originalError: error,
+      stack: error instanceof Error ? error.stack : undefined
     });
+    
     return [null, appError];
   }
 };

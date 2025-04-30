@@ -25,6 +25,7 @@ export interface AuthContextType extends AuthState {
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
+  hasPermission: (permission: string) => boolean;
 }
 
 export interface LoginCredentials {
@@ -34,4 +35,12 @@ export interface LoginCredentials {
 
 export interface SignupCredentials extends LoginCredentials {
   name: string;
+}
+
+export enum UserRolePermissions {
+  VIEW_DASHBOARD = "view_dashboard",
+  MANAGE_USERS = "manage_users",
+  ADMIN = "admin",
+  USE_AI = "use_ai",
+  MANAGE_INTEGRATIONS = "manage_integrations"
 }

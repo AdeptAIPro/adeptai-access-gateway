@@ -15,6 +15,35 @@ export * from './icons/commerce-icons';
 // Also re-export directly from lucide-react for any icons not in our categorized files
 export * from 'lucide-react';
 
+// Standard icons used throughout the app
+import {
+  Check,
+  Clock,
+  AlertCircle,
+  Bot,
+  RefreshCcw,
+  CheckCircle,
+  PlayCircle,
+  MoreVertical,
+  Copy,
+  Trash,
+  Share
+} from 'lucide-react';
+
+export {
+  Check,
+  Clock, 
+  AlertCircle,
+  Bot,
+  RefreshCcw,
+  CheckCircle,
+  PlayCircle,
+  MoreVertical,
+  Copy,
+  Trash,
+  Share
+};
+
 // Create a default export combining all icons for backwards compatibility
 import * as uiIcons from './icons/ui-icons';
 import * as dataIcons from './icons/data-icons';

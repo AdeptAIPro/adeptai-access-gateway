@@ -1,187 +1,189 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { AppError } from '@/utils/error-handler';
-import { UserRolePermissions } from '@/types/auth-types';
-import { User, AuthContextType } from '@/types/auth-types';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { User, AuthContextType, UserRolePermissions } from '@/types/auth-types';
 
-// Create the authentication context
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-  loading: true, // for backward compatibility
-  login: async () => {},
-  logout: () => {},
-  register: async () => {},
-  signUp: async () => {},
-  hasPermission: () => false
-});
-
-// Default user roles and permissions
-const defaultUserRoles: Record<string, UserRolePermissions> = {
-  admin: {
-    viewCRM: true,
-    editCRM: true,
-    viewPayroll: true,
-    runPayroll: true,
-    viewAnalytics: true,
-    viewDashboard: true
-  },
-  user: {
-    viewCRM: true,
-    editCRM: false,
-    viewPayroll: false,
-    runPayroll: false,
-    viewAnalytics: true,
-    viewDashboard: true
-  }
-};
+// Create the Auth Context
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Check for existing user on mount
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        // Check for user in localStorage (simplified auth for demo)
-        const savedUser = localStorage.getItem('user');
-        
-        if (savedUser) {
-          // Parse and validate user data
-          const userData = JSON.parse(savedUser) as User;
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error('Error checking authentication:', error);
-        // Clear potentially corrupted data
-        localStorage.removeItem('user');
-        localStorage.removeItem('auth_token');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkUser();
-  }, []);
+  const [error, setError] = useState<string | null>(null);
 
   // Login function
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       setIsLoading(true);
+      setError(null);
       
-      // In a real app, this would call your API
-      // For demo purposes, we'll use dummy data
-      
-      if (!email || !password) {
-        throw new Error('Email and password are required');
-      }
-      
-      // Simulate API call delay
+      // Mock login - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Simple validation for demo
-      if (password === 'password') {
-        // Mock user
-        const newUser: User = {
-          id: '1',
-          name: email.split('@')[0],
-          email,
-          role: email.includes('admin') ? 'admin' : 'user'
-        };
-        
-        // Save to localStorage (in production use secure auth tokens)
-        localStorage.setItem('user', JSON.stringify(newUser));
-        localStorage.setItem('auth_token', 'mock-jwt-token');
-        
-        setUser(newUser);
-        
-        toast.success('Login successful', {
-          description: `Welcome back, ${newUser.name}!`
-        });
-      } else {
-        throw new Error('Invalid credentials');
-      }
-    } catch (error) {
-      toast.error('Login failed', {
-        description: error instanceof Error ? error.message : 'Please check your credentials.'
-      });
-      throw error;
+      // Mock user data
+      const userData: User = {
+        id: '123',
+        email,
+        name: 'Test User',
+        role: 'user',
+        permissions: [UserRolePermissions.VIEW_DASHBOARD]
+      };
+      
+      setUser(userData);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(userData));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to login');
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Signup function
+  const signup = useCallback(async (email: string, password: string, name: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Mock signup - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock user data
+      const userData: User = {
+        id: '123',
+        email,
+        name,
+        role: 'user',
+        permissions: [UserRolePermissions.VIEW_DASHBOARD]
+      };
+      
+      setUser(userData);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(userData));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign up');
+      console.error('Signup error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   // Logout function
-  const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('auth_token');
-    setUser(null);
-    toast.info('Logged out successfully');
-  };
+  const logout = useCallback(async () => {
+    try {
+      // Mock logout - replace with actual API call if needed
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('user');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+    return Promise.resolve();
+  }, []);
 
-  // Register function
-  const register = async (name: string, email: string, password: string) => {
+  // Reset password function
+  const resetPassword = useCallback(async (email: string) => {
     try {
       setIsLoading(true);
+      setError(null);
       
-      // In a real app, call your API to register the user
-      // For demo, we'll simulate an API call
-      
-      if (!name || !email || !password) {
-        throw new Error('All fields are required');
-      }
-      
-      // Simulate API call delay
+      // Mock reset password - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast.success('Registration successful', {
-        description: 'Your account has been created. You may now log in.'
-      });
-      
-      // Note: In a real app, you might want to automatically log in the user
-      
-    } catch (error) {
-      toast.error('Registration failed', {
-        description: error instanceof Error ? error.message : 'Please check your information.'
-      });
-      throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reset password');
+      console.error('Reset password error:', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Update profile function
+  const updateProfile = useCallback(async (data: Partial<User>) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Mock update profile - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (user) {
+        const updatedUser = { ...user, ...data };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      console.error('Update profile error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  // Refresh user function
+  const refreshUser = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      // Check if user exists in local storage
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser) as User;
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    } catch (err) {
+      console.error('Refresh user error:', err);
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+    return Promise.resolve();
+  }, []);
 
   // Check if user has specific permission
-  const hasPermission = (permission: string): boolean => {
-    if (!user) return false;
-    
-    // Get role permissions
-    const rolePermissions = defaultUserRoles[user.role] || defaultUserRoles.user;
-    
-    // Check if permission exists
-    return Boolean(rolePermissions[permission]);
+  const hasPermission = useCallback((permission: string): boolean => {
+    if (!user || !user.permissions) return false;
+    return user.permissions.includes(permission) || user.role === 'admin';
+  }, [user]);
+
+  // Initialize auth state
+  React.useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
+
+  const contextValue: AuthContextType = {
+    isAuthenticated,
+    isLoading,
+    user,
+    error,
+    login,
+    signup,
+    logout,
+    resetPassword,
+    updateProfile,
+    refreshUser,
+    hasPermission
   };
-  
-  // For backward compatibility
-  const signUp = register;
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      isAuthenticated: !!user, 
-      isLoading,
-      loading: isLoading, // for backward compatibility
-      login, 
-      logout, 
-      register, 
-      signUp,
-      hasPermission
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export default useAuth;
