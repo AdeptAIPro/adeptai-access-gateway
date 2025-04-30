@@ -5,8 +5,14 @@ export interface TaskResult {
   id: string;
   status: 'success' | 'error' | 'processing';
   data: any;
-  error?: string;
+  error?: string | {
+    message: string;
+    code?: string;
+    details?: any;
+  };
   timestamp: string;
+  summary?: string;
+  details?: string;
 }
 
 export interface AgentTask {
@@ -22,5 +28,9 @@ export interface AgentTask {
   createdAt: string;
   updatedAt?: string;
   result?: TaskResult;
-  error?: string;
+  error?: string | {
+    message: string;
+    code?: string;
+    details?: any;
+  };
 }

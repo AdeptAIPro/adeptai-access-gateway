@@ -67,3 +67,24 @@ export interface Activity {
   createdAt: string;
   updatedAt: string;
 }
+
+// Add missing Lead and LeadFilter interfaces
+export interface Lead {
+  id: string;
+  name?: string;
+  email: string;
+  company?: string;
+  source?: string;
+  status?: string;
+  createdAt: string | Date;
+  lastActivity?: string | Date;
+  score?: number;
+}
+
+export interface LeadFilter {
+  status?: string;
+  source?: string;
+  fromDate?: string;
+  toDate?: string;
+  minScore?: number;
+}

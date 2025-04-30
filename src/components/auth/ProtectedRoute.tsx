@@ -6,7 +6,7 @@ import { UserRolePermissions } from "@/services/crm/types";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredPermission: keyof UserRolePermissions;
+  requiredPermission: string;
   redirectTo?: string;
 }
 
@@ -15,10 +15,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredPermission,
   redirectTo = "/login" 
 }) => {
-  const { user, loading, hasPermission } = useAuth();
+  const { user, isLoading, hasPermission } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (isLoading) {
     // You can show a loading spinner here
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }

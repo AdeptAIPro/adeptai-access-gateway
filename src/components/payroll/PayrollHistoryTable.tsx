@@ -44,7 +44,7 @@ const PayrollHistoryTable: React.FC<PayrollHistoryTableProps> = ({
                   <Badge 
                     variant={
                       run.status === 'completed' ? 'success' : 
-                      run.status === 'in-progress' ? 'warning' : 
+                      run.status === 'in-progress' ? 'secondary' : 
                       'secondary'
                     }
                   >
