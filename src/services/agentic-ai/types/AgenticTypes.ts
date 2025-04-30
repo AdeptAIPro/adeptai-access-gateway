@@ -15,6 +15,44 @@ export interface Agent {
   owner?: string;
 }
 
+// Define the TaskResultData interface to support all needed properties
+export interface TaskResultData {
+  summary?: string;
+  details?: string;
+  data?: any;
+  findings?: any[];
+  recommendations?: any[];
+  context?: any;
+  message?: string;
+  candidates?: any[];
+  // Add other potential result data fields
+  [key: string]: any;
+}
+
 // Define the AgentTask interface based on the unified type
-import { AgentTask as BaseAgentTask } from '@/types/agent-task';
-export interface AgentTask extends BaseAgentTask {}
+export interface AgentTask {
+  id: string;
+  taskType: string;
+  description: string;
+  title: string;
+  goal?: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  startedAt?: string;
+  completedAt?: string;
+  result?: TaskResultData;
+  error?: {
+    message: string;
+    code?: string;
+    details?: any;
+  };
+  progress?: number;
+  params?: Record<string, any>;
+  userId?: string;
+  agentId?: string;
+  priority?: "low" | "medium" | "high";
+}
+
+// Export AgentTask as a type alias to maintain backward compatibility
+export type AgentTaskType = AgentTask;

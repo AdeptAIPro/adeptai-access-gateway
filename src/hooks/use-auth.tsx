@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Signup function
-  const signup = useCallback(async (email: string, password: string, name: string) => {
+  const signup = useCallback(async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -68,6 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   }, []);
+
+  // Add signUp as an alias for signup to maintain compatibility
+  const signUp = signup;
 
   // Logout function
   const logout = useCallback(async () => {
@@ -164,6 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     error,
     login,
     signup,
+    signUp,  // Add the alias
     logout,
     resetPassword,
     updateProfile,

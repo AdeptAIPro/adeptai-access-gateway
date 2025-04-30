@@ -77,8 +77,8 @@ export const updateTask = async (id: string, updates: Partial<AgentTask>): Promi
   }
 
   let updateExpression = 'SET ';
-  const expressionAttributeValues: any = {};
-  let expressionAttributeNames: any = {};
+  const expressionAttributeValues: Record<string, any> = {};
+  let expressionAttributeNames: Record<string, string> = {};
   let attributeCount = 0;
 
   for (const key in updates) {
@@ -86,7 +86,7 @@ export const updateTask = async (id: string, updates: Partial<AgentTask>): Promi
       const attributeName = `#attr${attributeCount}`;
       const attributeValue = `:val${attributeCount}`;
       updateExpression += `${attributeName} = ${attributeValue}, `;
-      expressionAttributeValues[attributeValue] = updates[key];
+      expressionAttributeValues[attributeValue] = updates[key as keyof AgentTask];
       expressionAttributeNames[attributeName] = key;
       attributeCount++;
     }
@@ -94,16 +94,17 @@ export const updateTask = async (id: string, updates: Partial<AgentTask>): Promi
 
   updateExpression = updateExpression.slice(0, -2);
 
+  // Cast to appropriate ReturnValue type
+  const returnValues: "ALL_NEW" = "ALL_NEW";
   const params = {
     TableName: TASKS_TABLE,
     Key: marshall({ id: id }),
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: marshall(expressionAttributeValues),
     ExpressionAttributeNames: expressionAttributeNames,
-    ReturnValues: "ALL_NEW"
+    ReturnValues: returnValues
   };
 
-  // @ts-ignore - Type issue with ReturnValues but it works at runtime
   const command = new UpdateItemCommand(params);
   const response = await executeDbOperation(command);
 

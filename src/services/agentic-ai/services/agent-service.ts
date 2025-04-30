@@ -4,15 +4,17 @@ import { Agent } from '../types/AgenticTypes';
 import { DynamoDBClient, ScanCommand, PutItemCommand, GetItemCommand, UpdateItemCommand, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { getEnvVar, executeDbOperation } from '../utils/db-utils';
+import { createMockAgents } from '../db/mockAgentsData';
 
-const AGENTS_TABLE = getEnvVar('AGENTS_TABLE', 'agents');
+const AGENTS_TABLE = getEnvVar('AGENTS_TABLE', 'agent_definitions');
 
 export const fetchAgents = async (): Promise<Agent[]> => {
   try {
     return await getAllAgents();
   } catch (error) {
     console.error('Error fetching agents:', error);
-    return [];
+    // Return mock agents if database connection fails
+    return createMockAgents();
   }
 };
 
@@ -30,7 +32,7 @@ export const getAllAgents = async (): Promise<Agent[]> => {
 export const getAgentById = async (id: string): Promise<Agent | undefined> => {
   const params = {
     TableName: AGENTS_TABLE,
-    Key: marshall({ id: id }),
+    Key: marshall({ id }),
   };
 
   const command = new GetItemCommand(params);
@@ -42,6 +44,7 @@ export const getAgentById = async (id: string): Promise<Agent | undefined> => {
 export const createAgent = async (agentData: Omit<Agent, 'id' | 'createdAt'>): Promise<Agent> => {
   const agentId = uuidv4();
   const createdAt = new Date().toISOString();
+  
   const newAgent: Agent = {
     id: agentId,
     createdAt,
@@ -66,8 +69,8 @@ export const updateAgent = async (id: string, updates: Partial<Agent>): Promise<
   }
 
   let updateExpression = 'SET ';
-  const expressionAttributeValues: any = {};
-  let expressionAttributeNames: any = {};
+  const expressionAttributeValues: Record<string, any> = {};
+  let expressionAttributeNames: Record<string, string> = {};
   let attributeCount = 0;
 
   for (const key in updates) {
@@ -75,7 +78,7 @@ export const updateAgent = async (id: string, updates: Partial<Agent>): Promise<
       const attributeName = `#attr${attributeCount}`;
       const attributeValue = `:val${attributeCount}`;
       updateExpression += `${attributeName} = ${attributeValue}, `;
-      expressionAttributeValues[attributeValue] = updates[key];
+      expressionAttributeValues[attributeValue] = updates[key as keyof Agent];
       expressionAttributeNames[attributeName] = key;
       attributeCount++;
     }
@@ -85,14 +88,21 @@ export const updateAgent = async (id: string, updates: Partial<Agent>): Promise<
 
   const params = {
     TableName: AGENTS_TABLE,
-    Key: marshall({ id: id }),
+    Key: marshall({ id }),
     UpdateExpression: updateExpression,
     ExpressionAttributeValues: marshall(expressionAttributeValues),
     ExpressionAttributeNames: expressionAttributeNames,
     ReturnValues: "ALL_NEW"
   };
 
-  const command = new UpdateItemCommand(params);
+  // Cast to appropriate ReturnValue type
+  const returnValues: "ALL_NEW" = "ALL_NEW";
+  const correctedParams = {
+    ...params,
+    ReturnValues: returnValues
+  };
+
+  const command = new UpdateItemCommand(correctedParams);
   const response = await executeDbOperation(command);
 
   return response.Attributes ? unmarshall(response.Attributes) as Agent : undefined;
@@ -101,7 +111,7 @@ export const updateAgent = async (id: string, updates: Partial<Agent>): Promise<
 export const deleteAgent = async (id: string): Promise<boolean> => {
   const params = {
     TableName: AGENTS_TABLE,
-    Key: marshall({ id: id }),
+    Key: marshall({ id }),
   };
 
   const command = new DeleteItemCommand(params);

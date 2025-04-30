@@ -100,7 +100,7 @@ export const useCRM = () => {
           lead.phone || "",
           lead.source,
           lead.status,
-          lead.created_at ? new Date(lead.created_at).toLocaleDateString() : ""
+          lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : ""
         ].map(cell => `"${cell}"`).join(","))
       ].join("\n");
       
@@ -129,10 +129,11 @@ export const useCRM = () => {
   };
   
   const applyDateFilter = () => {
+    // Convert Date objects to strings before setting in the filter
     setFilter(prev => ({
       ...prev,
-      dateFrom: fromDate,
-      dateTo: toDate
+      dateFrom: fromDate ? fromDate.toISOString() : undefined,
+      dateTo: toDate ? toDate.toISOString() : undefined
     }));
   };
   

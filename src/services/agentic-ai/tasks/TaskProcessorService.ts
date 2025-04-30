@@ -1,5 +1,5 @@
 
-import { AgentTask, AgentTaskType } from '../types/AgenticTypes';
+import { AgentTask } from '../types/AgenticTypes';
 import { processTalentMatchingTask } from "../talent/TalentMatchingAgenticService";
 import { processPayrollTask } from '../payroll/PayrollAgenticService';
 import { processCrossSourceTalentIntelligenceTask } from '../talent/CrossSourceTalentIntelligenceService';
@@ -46,7 +46,9 @@ const processGenericTask = async (task: AgentTask): Promise<AgentTask> => {
     return {
       ...updatedTask,
       status: "failed",
-      error: `Failed to process task: ${error}`
+      error: { 
+        message: `Failed to process task: ${error instanceof Error ? error.message : String(error)}`
+      }
     };
   }
 };
