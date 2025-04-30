@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TaskResultDisplay from "./TaskResultDisplay";
-import { AgentTask } from "./TaskResultDisplay";
+import { AgentTask } from '@/types/agent-task';
 import { Progress } from "@/components/ui/progress";
 import { RefreshCcw, Clock } from "@/utils/icon-polyfill";
 import { Download, Save } from "@/utils/icon-polyfill";
@@ -81,7 +81,9 @@ const EnhancedTaskResultDisplay: React.FC<EnhancedTaskResultDisplayProps> = ({
           <div className="space-y-4">
             <div className="bg-destructive/10 text-destructive p-4 rounded-md">
               <h3 className="font-medium mb-1">Error Processing Task</h3>
-              <p className="text-sm">{task.error}</p>
+              <p className="text-sm">
+                {typeof task.error === 'string' ? task.error : task.error?.message || 'Unknown error'}
+              </p>
             </div>
             
             {onRetry && (

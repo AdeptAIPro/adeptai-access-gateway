@@ -1,5 +1,6 @@
 
 // Basic types for task results and agent tasks
+import { AgentTask as BaseAgentTask } from '@/types/agent-task';
 
 export interface TaskResult {
   id: string;
@@ -15,22 +16,4 @@ export interface TaskResult {
   details?: string;
 }
 
-export interface AgentTask {
-  id: string;
-  title: string;
-  type: string;
-  taskType: string;
-  description: string;
-  goal?: string;
-  agentId: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  priority: 'low' | 'medium' | 'high';
-  createdAt: string;
-  updatedAt?: string;
-  result?: TaskResult;
-  error?: {
-    message: string;
-    code?: string;
-    details?: any;
-  } | string;
-}
+export interface AgentTask extends BaseAgentTask {}

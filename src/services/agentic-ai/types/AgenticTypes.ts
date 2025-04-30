@@ -15,30 +15,6 @@ export interface Agent {
   owner?: string;
 }
 
-// Define the AgentTask interface
-export interface AgentTask {
-  id: string;
-  agentId?: string;
-  title: string; // Adding required title property
-  taskType: string;
-  description: string;
-  goal?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  priority?: 'low' | 'medium' | 'high';
-  createdAt: string;
-  startedAt?: string;
-  completedAt?: string;
-  result?: {
-    summary?: string;
-    details?: string;
-    data?: any;
-  };
-  params?: Record<string, any>;
-  userId?: string;
-  updatedAt?: string;
-  error?: {
-    message: string;
-    code?: string;
-    details?: any;
-  };
-}
+// Define the AgentTask interface based on the unified type
+import { AgentTask as BaseAgentTask } from '@/types/agent-task';
+export interface AgentTask extends BaseAgentTask {}

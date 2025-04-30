@@ -9,21 +9,24 @@ const mockAgents: Agent[] = [
     name: 'Data Analysis Agent',
     type: 'analysis',
     status: 'active',
-    capabilities: ['Data processing', 'Pattern recognition', 'Visualization']
+    capabilities: ['Data processing', 'Pattern recognition', 'Visualization'],
+    createdAt: new Date().toISOString(),
   },
   {
     id: '2',
     name: 'Content Writer',
     type: 'content',
     status: 'active',
-    capabilities: ['Blog writing', 'SEO optimization', 'Editing']
+    capabilities: ['Blog writing', 'SEO optimization', 'Editing'],
+    createdAt: new Date().toISOString(),
   },
   {
     id: '3',
     name: 'Research Assistant',
     type: 'research',
     status: 'inactive',
-    capabilities: ['Web search', 'Summarization', 'Fact checking']
+    capabilities: ['Web search', 'Summarization', 'Fact checking'],
+    createdAt: new Date().toISOString(),
   }
 ];
 
@@ -31,35 +34,45 @@ const mockTasks: AgentTask[] = [
   {
     id: '1',
     taskType: 'data-analysis',
+    title: 'Q1 Sales Analysis',
+    description: 'Analyze Q1 sales data',
     goal: 'Analyze Q1 sales data and identify top-performing products',
-    agent: '1',
+    agentId: '1',
     status: 'completed',
     result: {
-      insights: ['Product A had highest revenue', 'Product B had best margin'],
-      charts: ['sales-by-product.png', 'margin-analysis.png']
+      summary: 'Product A had highest revenue',
+      details: 'Product B had best margin',
+      data: ['sales-by-product.png', 'margin-analysis.png']
     },
     createdAt: new Date('2025-03-15').toString(),
+    updatedAt: new Date('2025-03-16').toString(),
     completedAt: new Date('2025-03-16').toString(),
-    title: 'Q1 Sales Analysis'
+    priority: 'medium'
   },
   {
     id: '2',
     taskType: 'content-creation',
+    title: 'AI Trends Blog Post',
+    description: 'Write blog post on AI trends',
     goal: 'Write a blog post about AI trends in 2025',
-    agent: '2',
+    agentId: '2',
     status: 'processing',
     createdAt: new Date('2025-04-02').toString(),
-    title: 'AI Trends Blog Post'
+    updatedAt: new Date('2025-04-02').toString(),
+    priority: 'medium'
   },
   {
     id: '3',
     taskType: 'research',
+    title: 'Competitor Research',
+    description: 'Research competitors',
     goal: 'Research competitors in the enterprise SaaS market',
-    agent: '3',
+    agentId: '3',
     status: 'failed',
-    error: 'Could not access required data sources',
+    error: { message: 'Could not access required data sources' },
     createdAt: new Date('2025-03-28').toString(),
-    title: 'Competitor Research'
+    updatedAt: new Date('2025-03-28').toString(),
+    priority: 'medium'
   }
 ];
 
@@ -109,10 +122,14 @@ export const createTask = (task: Partial<AgentTask>): AgentTask => {
   const newTask: AgentTask = {
     id: uuidv4(),
     taskType: task.taskType || 'general',
+    title: task.title || 'New Task',
+    description: task.description || '',
     goal: task.goal || '',
-    agent: task.agent || '',
+    agentId: task.agentId || '',
     status: 'pending',
     createdAt: new Date().toString(),
+    updatedAt: new Date().toString(),
+    priority: task.priority || 'medium',
     ...task
   };
   
@@ -200,7 +217,7 @@ export const processTask = async (id: string): Promise<AgentTask | undefined> =>
   } else {
     return updateTask(id, {
       status: 'failed',
-      error: 'Failed to process task due to an unexpected error',
+      error: { message: 'Failed to process task due to an unexpected error' },
     });
   }
 };

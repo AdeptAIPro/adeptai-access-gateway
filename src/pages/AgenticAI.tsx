@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,15 +15,20 @@ import { AlertCircle, Database, RefreshCcw, KeyRound, CheckCircle } from "@/util
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { seedAgenticAIData, ensureAgenticTables } from "@/services/agentic-ai/db/AgenticDatabaseSeeder";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AgentTask } from "@/components/agentic-ai/task-result/types";
+import { AgentTask } from '@/types/agent-task';
 import { toast } from "sonner";
 
 // Define AppCredentials type to match the expected shape
 interface AppCredentials {
-  openaiApiKey?: string;
-  awsRegion?: string;
-  awsAccessKeyId?: string;
-  awsSecretAccessKey?: string;
+  openai?: {
+    apiKey: string;
+  };
+  aws?: {
+    region: string;
+    accessKeyId: string;
+    secretAccessKey: string;
+  };
+  [key: string]: any;
 }
 
 const AgenticAI = () => {
@@ -132,7 +136,7 @@ const AgenticAI = () => {
             <TabsList className="flex w-full md:w-2/3 overflow-hidden rounded-lg border-0 shadow-md bg-card">
               <TabsTrigger 
                 value="setup" 
-                className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+                className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
               >
                 <span className="flex items-center justify-center gap-2">
                   <KeyRound className="h-5 w-5" />
@@ -141,7 +145,7 @@ const AgenticAI = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="create" 
-                className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+                className="flex-1 px-4 py-3 text-base font-medium border-r border-border data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg
@@ -161,7 +165,7 @@ const AgenticAI = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="dashboard"
-                className="flex-1 px-4 py-3 text-base font-medium data-[state=active]:bg-adept data-[state=active]:text-white transition-all"
+                className="flex-1 px-4 py-3 text-base font-medium data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
               >
                 <span className="flex items-center justify-center gap-2">
                   <svg
@@ -197,8 +201,8 @@ const AgenticAI = () => {
           
           <TabsContent value="create">
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="border-2 border-adept/30 shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-adept/10 to-adept/5 pb-4">
+              <Card className="border-2 border-primary/30 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-4">
                   <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -208,7 +212,7 @@ const AgenticAI = () => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="h-6 w-6 text-adept"
+                      className="h-6 w-6 text-primary"
                     >
                       <path d="M12 5v14M5 12h14" />
                     </svg>
@@ -225,8 +229,8 @@ const AgenticAI = () => {
           </TabsContent>
           
           <TabsContent value="dashboard">
-            <Card className="border-2 border-adept/30 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-adept/10 to-adept/5">
+            <Card className="border-2 border-primary/30 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
                 <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -236,7 +240,7 @@ const AgenticAI = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="h-6 w-6 text-adept"
+                    className="h-6 w-6 text-primary"
                   >
                     <rect width="7" height="9" x="3" y="3" rx="1" />
                     <rect width="7" height="5" x="14" y="3" rx="1" />

@@ -12,7 +12,7 @@ export const processAgenticTask = async (task: AgentTask): Promise<AgentTask> =>
     return {
       ...task,
       status: "failed",
-      error: "OpenAI is not initialized. Please set your API key."
+      error: { message: "OpenAI is not initialized. Please set your API key." }
     };
   }
   
@@ -37,13 +37,13 @@ export const processAgenticTask = async (task: AgentTask): Promise<AgentTask> =>
       task.id, 
       "failed", 
       undefined, 
-      error instanceof Error ? error.message : "Unknown error"
+      error instanceof Error ? { message: error.message } : { message: "Unknown error" }
     );
     
     return {
       ...task,
       status: "failed",
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? { message: error.message } : { message: "Unknown error" }
     };
   }
 };

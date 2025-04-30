@@ -5,26 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, AlertCircle, BarChart2 } from "@/utils/icon-polyfill";
 import { FileCheck, UserCheck } from "@/utils/icon-polyfill";
-
-// Define a more specific type for task results
-interface TaskResult {
-  summary: string;
-  findings?: string[];
-  recommendations?: string[];
-  context?: Record<string, any>;
-}
-
-export interface AgentTask {
-  id: string;
-  taskType: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  title?: string;
-  createdAt?: string;
-  completedAt?: string;
-  goal?: string;
-  result?: TaskResult;
-  error?: string;
-}
+import { AgentTask } from '@/types/agent-task';
 
 export interface TaskResultDisplayProps {
   task: AgentTask;
