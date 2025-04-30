@@ -2,7 +2,7 @@
 import React from "react";
 import { Navigate, useLocation } from "@/utils/router-polyfill";
 import { useAuth } from "@/hooks/use-auth";
-import { UserRolePermissions } from "@/services/crm/types";
+import { UserRolePermissions } from "@/types/auth-types";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

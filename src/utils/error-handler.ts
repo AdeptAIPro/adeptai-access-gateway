@@ -6,7 +6,14 @@
  */
 
 import { toast } from 'sonner';
+import { AppError } from './errors/AppError';
 
+// Re-export AppError and related types from the errors directory 
+export { AppError } from './errors/AppError';
+export { ErrorType } from './errors/types';
+export { tryCatch } from './errors/handlers';
+
+// Legacy error type enum (to be deprecated)
 export enum ErrorType {
   API = 'API Error',
   AUTH = 'Authentication Error',
@@ -15,7 +22,13 @@ export enum ErrorType {
   AWS = 'AWS Service Error',
   CONFIGURATION = 'Configuration Error',
   VALIDATION = 'Validation Error',
-  UNKNOWN = 'Unknown Error'
+  UNKNOWN = 'Unknown Error',
+  // Add missing error types referenced in the codebase
+  AUTHENTICATION = 'Authentication Error',
+  SERVER = 'Server Error',
+  DATA_ENCRYPTION = 'Data Encryption Error',
+  SECURITY = 'Security Error',
+  INFRASTRUCTURE = 'Infrastructure Error'
 }
 
 export interface ErrorHandlerParams {
@@ -32,9 +45,19 @@ export interface ErrorHandlerParams {
  * @param params Error parameters
  * @param showToast Whether to show a toast notification
  */
-export const handleError = (params: ErrorHandlerParams, showToast: boolean = false): void => {
+export const handleError = (params: ErrorHandlerParams | Error, showToast: boolean = false): AppError => {
+  // Handle case where an Error object is passed directly
+  if (params instanceof Error) {
+    const errorParams = {
+      type: ErrorType.UNKNOWN,
+      message: params.message,
+      originalError: params
+    } as ErrorHandlerParams;
+    params = errorParams;
+  }
+
   // Extract parameters
-  const { type, message, userFriendlyMessage, originalError, metadata } = params;
+  const { type, message, userFriendlyMessage, originalError, metadata } = params as ErrorHandlerParams;
   
   // Log error details to console
   console.error(`${type}: ${message}`, {
@@ -50,12 +73,50 @@ export const handleError = (params: ErrorHandlerParams, showToast: boolean = fal
       variant: "destructive",
     });
   }
+
+  // Create an AppError for consistent error handling
+  const appError = createAppError(message, type, originalError);
   
-  // In a real implementation, we would also:
-  // 1. Send error to monitoring service (AWS CloudWatch, Sentry, etc)
-  // 2. Track in analytics
-  // 3. Perform recovery actions if possible
+  return appError;
 };
+
+/**
+ * Create a properly formatted AppError instance
+ */
+export const createAppError = (
+  message: string,
+  type: ErrorType = ErrorType.UNKNOWN,
+  originalError?: any,
+  context?: Record<string, any>
+): AppError => {
+  return new AppError({
+    message,
+    type,
+    userFriendlyMessage: getDefaultUserFriendlyMessage(type, message),
+    originalError,
+    context
+  });
+};
+
+/**
+ * Get a default user-friendly message based on error type
+ */
+function getDefaultUserFriendlyMessage(type: ErrorType, originalMessage: string): string {
+  switch (type) {
+    case ErrorType.NETWORK:
+      return 'Network error. Please check your connection and try again.';
+    case ErrorType.AUTHENTICATION:
+      return 'Authentication error. Please log in again.';
+    case ErrorType.API:
+      return 'Operation failed. Please try again later.';
+    default:
+      // Use original message if relatively short and doesn't contain technical details
+      if (originalMessage.length < 100 && !originalMessage.includes('Exception') && !originalMessage.includes('Error:')) {
+        return originalMessage;
+      }
+      return 'An unexpected error occurred. Please try again.';
+  }
+}
 
 /**
  * Report an API error with consistent formatting

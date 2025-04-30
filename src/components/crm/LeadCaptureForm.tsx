@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { saveLead } from "@/services/crm/LeadService";
+import { Lead } from '@/services/crm/types';
 
 interface LeadCaptureFormProps {
   source?: string;
@@ -44,10 +46,15 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     setIsLoading(true);
     
     try {
-      const success = await saveLead({
+      // Create a lead object matching the required structure
+      const leadData: Partial<Lead> = {
         ...formData,
-        source
-      });
+        source,
+        id: `lead_${Date.now()}`, // Generate temporary ID
+        createdAt: new Date().toISOString() // Use ISO string format for dates
+      };
+      
+      const success = await saveLead(leadData as Lead);
       
       if (success) {
         toast.success("Thank You!", {

@@ -28,7 +28,7 @@ export interface AgentTask {
   createdAt: string;
   updatedAt?: string;
   result?: TaskResult;
-  error?: {
+  error?: string | {
     message: string;
     code?: string;
     details?: any;
