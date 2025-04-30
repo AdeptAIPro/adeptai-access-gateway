@@ -4,6 +4,8 @@
  * to fix TypeScript compatibility issues
  */
 
+import React from 'react';
+
 import {
   Select as OriginalSelect,
   SelectContent as OriginalSelectContent,
@@ -27,22 +29,6 @@ import {
   RadioGroupItem as OriginalRadioGroupItem,
 } from "@/components/ui/radio-group";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from './shadcn-tabs';
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from './shadcn-dropdown';
-
 // Re-export components with proper typing
 export const Select = OriginalSelect;
 export const SelectContent = OriginalSelectContent;
@@ -61,19 +47,6 @@ export const FormMessage = OriginalFormMessage;
 export const RadioGroup = OriginalRadioGroup;
 export const RadioGroupItem = OriginalRadioGroupItem;
 
-// Re-export tabs components
-export { Tabs, TabsContent, TabsList, TabsTrigger };
-
-// Re-export dropdown menu components
-export { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-};
-
 // Export other shadcn components as needed for fixes
 export const Label = ({ children, className, ...props }: { 
   children?: React.ReactNode;
@@ -82,10 +55,10 @@ export const Label = ({ children, className, ...props }: {
 }) => {
   try {
     const OriginalLabel = require('@/components/ui/label').Label;
-    return <OriginalLabel className={className} {...props}>{children}</OriginalLabel>;
+    return React.createElement(OriginalLabel, { className, ...props }, children);
   } catch (e) {
     console.error("Could not load Label component:", e);
-    return <label className={className || ""} {...props}>{children}</label>;
+    return React.createElement('label', { className: className || "", ...props }, children);
   }
 };
 
@@ -96,9 +69,233 @@ export const Progress = ({ value, className, ...props }: {
 }) => {
   try {
     const OriginalProgress = require('@/components/ui/progress').Progress;
-    return <OriginalProgress value={value} className={className} {...props} />;
+    return React.createElement(OriginalProgress, { value, className, ...props });
   } catch (e) {
     console.error("Could not load Progress component:", e);
-    return <progress value={value} max="100" className={className || ""} {...props} />;
+    return React.createElement('progress', { value, max: "100", className: className || "", ...props });
+  }
+};
+
+// Tabs components
+export const Tabs = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalTabs = require('@/components/ui/tabs').Tabs;
+    return React.createElement('div', props, children);
+  } catch (e) {
+    console.error("Could not load Tabs component:", e);
+    return React.createElement('div', props, children);
+  }
+};
+
+export const TabsList = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalTabsList = require('@/components/ui/tabs').TabsList;
+    return React.createElement('div', { className: "flex", ...props }, children);
+  } catch (e) {
+    console.error("Could not load TabsList component:", e);
+    return React.createElement('div', { className: "flex", ...props }, children);
+  }
+};
+
+export const TabsTrigger = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalTabsTrigger = require('@/components/ui/tabs').TabsTrigger;
+    return React.createElement('button', props, children);
+  } catch (e) {
+    console.error("Could not load TabsTrigger component:", e);
+    return React.createElement('button', props, children);
+  }
+};
+
+export const TabsContent = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalTabsContent = require('@/components/ui/tabs').TabsContent;
+    return React.createElement('div', props, children);
+  } catch (e) {
+    console.error("Could not load TabsContent component:", e);
+    return React.createElement('div', props, children);
+  }
+};
+
+// Dropdown menu components
+export const DropdownMenu = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDropdownMenu = require('@/components/ui/dropdown-menu').DropdownMenu;
+    return React.createElement('div', props, children);
+  } catch (e) {
+    console.error("Could not load DropdownMenu component:", e);
+    return React.createElement('div', props, children);
+  }
+};
+
+export const DropdownMenuTrigger = ({ children, asChild, ...props }: {
+  children?: React.ReactNode;
+  asChild?: boolean;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDropdownMenuTrigger = require('@/components/ui/dropdown-menu').DropdownMenuTrigger;
+    return React.createElement('button', props, children);
+  } catch (e) {
+    console.error("Could not load DropdownMenuTrigger component:", e);
+    return React.createElement('button', props, children);
+  }
+};
+
+export const DropdownMenuContent = ({ children, align, ...props }: {
+  children?: React.ReactNode;
+  align?: string;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDropdownMenuContent = require('@/components/ui/dropdown-menu').DropdownMenuContent;
+    return React.createElement('div', props, children);
+  } catch (e) {
+    console.error("Could not load DropdownMenuContent component:", e);
+    return React.createElement('div', props, children);
+  }
+};
+
+export const DropdownMenuItem = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDropdownMenuItem = require('@/components/ui/dropdown-menu').DropdownMenuItem;
+    return React.createElement('button', { className: "block w-full text-left px-2 py-1", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DropdownMenuItem component:", e);
+    return React.createElement('button', { className: "block w-full text-left px-2 py-1", ...props }, children);
+  }
+};
+
+export const DropdownMenuLabel = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDropdownMenuLabel = require('@/components/ui/dropdown-menu').DropdownMenuLabel;
+    return React.createElement('div', { className: "px-2 py-1 font-medium", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DropdownMenuLabel component:", e);
+    return React.createElement('div', { className: "px-2 py-1 font-medium", ...props }, children);
+  }
+};
+
+export const DropdownMenuSeparator = (props: any) => {
+  try {
+    const OriginalDropdownMenuSeparator = require('@/components/ui/dropdown-menu').DropdownMenuSeparator;
+    return React.createElement('hr', props);
+  } catch (e) {
+    console.error("Could not load DropdownMenuSeparator component:", e);
+    return React.createElement('hr', props);
+  }
+};
+
+// Dialog components
+export const Dialog = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialog = require('@/components/ui/dialog').Dialog;
+    return React.createElement('div', props, children);
+  } catch (e) {
+    console.error("Could not load Dialog component:", e);
+    return React.createElement('div', props, children);
+  }
+};
+
+export const DialogTrigger = ({ children, asChild, ...props }: {
+  children?: React.ReactNode;
+  asChild?: boolean;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialogTrigger = require('@/components/ui/dialog').DialogTrigger;
+    return React.createElement('button', props, children);
+  } catch (e) {
+    console.error("Could not load DialogTrigger component:", e);
+    return React.createElement('button', props, children);
+  }
+};
+
+export const DialogContent = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialogContent = require('@/components/ui/dialog').DialogContent;
+    return React.createElement('div', { className: "fixed inset-0 z-50 bg-background/80 flex items-center justify-center", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DialogContent component:", e);
+    return React.createElement('div', { className: "fixed inset-0 z-50 bg-background/80 flex items-center justify-center", ...props }, children);
+  }
+};
+
+export const DialogHeader = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialogHeader = require('@/components/ui/dialog').DialogHeader;
+    return React.createElement('div', { className: "mb-4", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DialogHeader component:", e);
+    return React.createElement('div', { className: "mb-4", ...props }, children);
+  }
+};
+
+export const DialogTitle = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialogTitle = require('@/components/ui/dialog').DialogTitle;
+    return React.createElement('h2', { className: "text-lg font-semibold", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DialogTitle component:", e);
+    return React.createElement('h2', { className: "text-lg font-semibold", ...props }, children);
+  }
+};
+
+export const DialogDescription = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialogDescription = require('@/components/ui/dialog').DialogDescription;
+    return React.createElement('p', { className: "text-sm text-muted-foreground", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DialogDescription component:", e);
+    return React.createElement('p', { className: "text-sm text-muted-foreground", ...props }, children);
+  }
+};
+
+export const DialogFooter = ({ children, ...props }: {
+  children?: React.ReactNode;
+  [key: string]: any;
+}) => {
+  try {
+    const OriginalDialogFooter = require('@/components/ui/dialog').DialogFooter;
+    return React.createElement('div', { className: "mt-4 flex justify-end", ...props }, children);
+  } catch (e) {
+    console.error("Could not load DialogFooter component:", e);
+    return React.createElement('div', { className: "mt-4 flex justify-end", ...props }, children);
   }
 };

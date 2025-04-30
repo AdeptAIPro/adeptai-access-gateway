@@ -28,6 +28,10 @@ if ! npm list vite >/dev/null 2>&1; then
   npm install vite
 fi
 
+# Update browserslist database
+echo "🔄 Updating browserslist database..."
+npx update-browserslist-db@latest
+
 # Run the project
 echo "🚀 Starting the development server..."
 npx vite
