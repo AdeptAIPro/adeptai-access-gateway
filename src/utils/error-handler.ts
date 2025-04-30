@@ -7,29 +7,12 @@
 
 import { toast } from 'sonner';
 import { AppError } from './errors/AppError';
+import { ErrorType } from './errors/types';
 
 // Re-export AppError and related types from the errors directory 
 export { AppError } from './errors/AppError';
 export { ErrorType } from './errors/types';
 export { tryCatch } from './errors/handlers';
-
-// Legacy error type enum (to be deprecated)
-export enum ErrorType {
-  API = 'API Error',
-  AUTH = 'Authentication Error',
-  NETWORK = 'Network Error',
-  DATA = 'Data Error',
-  AWS = 'AWS Service Error',
-  CONFIGURATION = 'Configuration Error',
-  VALIDATION = 'Validation Error',
-  UNKNOWN = 'Unknown Error',
-  // Add missing error types referenced in the codebase
-  AUTHENTICATION = 'Authentication Error',
-  SERVER = 'Server Error',
-  DATA_ENCRYPTION = 'Data Encryption Error',
-  SECURITY = 'Security Error',
-  INFRASTRUCTURE = 'Infrastructure Error'
-}
 
 export interface ErrorHandlerParams {
   type: ErrorType;

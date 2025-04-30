@@ -21,5 +21,5 @@ export interface LeadFilter {
   scoreMax?: number;
   dateFrom?: string;
   dateTo?: string;
-  minScore?: number; // Add this to fix the type error
+  minScore?: number; // Adding this to fix the type error
 }

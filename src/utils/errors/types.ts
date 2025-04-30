@@ -1,16 +1,21 @@
 
 export enum ErrorType {
-  VALIDATION = 'VALIDATION',
-  NETWORK = 'NETWORK',
-  SERVER = 'SERVER',
-  AUTH = 'AUTH',
-  AUTHENTICATION = 'AUTHENTICATION',
-  AUTHORIZATION = 'AUTHORIZATION',
-  DATA_ENCRYPTION = 'DATA_ENCRYPTION',
-  DATABASE = 'DATABASE',
-  API = 'API',
-  NOT_FOUND = 'NOT_FOUND',
-  UNKNOWN = 'UNKNOWN'
+  VALIDATION = 'Validation Error',
+  NETWORK = 'Network Error',
+  SERVER = 'Server Error',
+  AUTH = 'Authentication Error',
+  AUTHENTICATION = 'Authentication Error',
+  AUTHORIZATION = 'Authorization Error',
+  DATA_ENCRYPTION = 'Data Encryption Error',
+  DATABASE = 'Database Error',
+  API = 'API Error',
+  NOT_FOUND = 'Not Found Error',
+  UNKNOWN = 'Unknown Error',
+  SECURITY = 'Security Error',
+  INFRASTRUCTURE = 'Infrastructure Error',
+  AWS = 'AWS Service Error',
+  CONFIGURATION = 'Configuration Error',
+  DATA = 'Data Error'
 }
 
 export interface ErrorDetails {

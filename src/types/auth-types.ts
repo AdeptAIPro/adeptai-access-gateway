@@ -1,37 +1,22 @@
 
-export interface UserRole {
-  id: string;
-  name: string;
-  permissions: UserRolePermissions;
-}
-
 export interface UserRolePermissions {
-  viewCRM: boolean;
-  editCRM: boolean;
-  viewPayroll: boolean;
-  runPayroll: boolean;
-  viewAnalytics: boolean;
-  viewDashboard: boolean;
-  [key: string]: boolean;
+  role: string;
+  permissions: string[];
 }
 
 export interface User {
   id: string;
-  name: string;
   email: string;
+  name?: string;
   role: string;
-  roles?: string[]; // For backward compatibility
-  plan?: string; // Add plan property
+  permissions: string[];
+  createdAt: string;
+  updatedAt?: string;
 }
 
-export interface AuthContextType {
+export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  loading: boolean; // Adding this for backward compatibility
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  signUp: (name: string, email: string, password: string) => Promise<void>; // Add signUp method
-  hasPermission: (permission: string) => boolean; // Add hasPermission method
+  error: string | null;
 }

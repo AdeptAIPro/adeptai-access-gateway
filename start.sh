@@ -3,6 +3,10 @@
 
 echo "🚀 Starting the lovable project..."
 
+# Update browserslist database first
+echo "🔄 Updating browserslist database..."
+npx update-browserslist-db@latest
+
 # Make this script executable
 chmod +x start.sh
 
@@ -27,10 +31,6 @@ if ! npm list vite >/dev/null 2>&1; then
   echo "📦 Installing Vite..."
   npm install vite
 fi
-
-# Update browserslist database
-echo "🔄 Updating browserslist database..."
-npx update-browserslist-db@latest
 
 # Run the project
 echo "🚀 Starting the development server..."

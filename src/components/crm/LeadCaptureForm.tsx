@@ -47,14 +47,14 @@ const LeadCaptureForm: React.FC<LeadCaptureFormProps> = ({
     
     try {
       // Create a lead object matching the required structure
-      const leadData: Partial<Lead> = {
+      const leadData: Lead = {
         ...formData,
         source,
-        id: `lead_${Date.now()}`, // Generate temporary ID
-        createdAt: new Date().toISOString() // Use ISO string format for dates
+        id: `lead_${Date.now()}`,
+        createdAt: new Date().toISOString()
       };
       
-      const success = await saveLead(leadData as Lead);
+      const success = await saveLead(leadData);
       
       if (success) {
         toast.success("Thank You!", {
