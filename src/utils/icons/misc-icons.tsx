@@ -10,16 +10,8 @@ export const {
   Trash,
   PlayCircle,
   Settings,
-  Info,
   Download,
   Save,
   Share2,
-  Check,
-  Clock,
-  AlertCircle,
-  RefreshCcw,
-  RefreshCcw as RefreshCw,
-  CheckCircle,
-  MoreVertical,
-  AlertCircle as AlertTriangle
+  MoreVertical
 } = LucideIcons;

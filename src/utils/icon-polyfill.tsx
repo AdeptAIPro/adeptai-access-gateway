@@ -36,17 +36,7 @@ export const {
   Download,
   Save,
   Share2,
-  MoreVertical,
-  
-  // Additional icons
-  User,
-  Users,
-  FileText,
-  Calendar,
-  Mail,
-  Phone,
-  CreditCard,
-  ClipboardList
+  MoreVertical
 } = LucideIcons;
 
 // Re-export everything from lucide-react for any other icons

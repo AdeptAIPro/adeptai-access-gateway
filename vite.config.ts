@@ -18,6 +18,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'sonner', 'react-hook-form', '@hookform/resolvers', 'zod']
+    include: ['react', 'react-dom', 'sonner', 'react-hook-form', '@hookform/resolvers', 'zod', 'lucide-react', 'date-fns', 'class-variance-authority', 'tailwind-merge', 'clsx']
   }
 }));
