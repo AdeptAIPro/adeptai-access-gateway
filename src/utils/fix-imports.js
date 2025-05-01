@@ -67,40 +67,14 @@ function fixImports(filePath) {
     updated = true;
   }
   
-  // Replace direct zod imports with our polyfill
+  // Replace direct date-fns imports with our polyfill
   const updatedContent4 = content.replace(
-    /from ['"]zod['"]/g, 
-    "from '@/utils/zod-polyfill'"
+    /from ['"]date-fns['"]/g, 
+    "from '@/utils/date-polyfill'"
   );
   
   if (content !== updatedContent4) {
     content = updatedContent4;
-    updated = true;
-  }
-
-  // Replace shadcn component imports with our patched versions
-  const updatedContent5 = content.replace(
-    /from ['"]@\/components\/ui\/radio-group['"]/g, 
-    "from '@/utils/shadcn-patches'"
-  ).replace(
-    /from ['"]@\/components\/ui\/label['"]/g, 
-    "from '@/utils/shadcn-patches'"
-  ).replace(
-    /from ['"]@\/components\/ui\/tabs['"]/g, 
-    "from '@/utils/shadcn-patches'"
-  ).replace(
-    /from ['"]@\/components\/ui\/select['"]/g, 
-    "from '@/utils/shadcn-patches'"
-  ).replace(
-    /from ['"]@\/components\/ui\/dropdown-menu['"]/g, 
-    "from '@/utils/shadcn-patches'"
-  ).replace(
-    /from ['"]@\/components\/ui\/dialog['"]/g, 
-    "from '@/utils/shadcn-patches'"
-  );
-  
-  if (content !== updatedContent5) {
-    content = updatedContent5;
     updated = true;
   }
   

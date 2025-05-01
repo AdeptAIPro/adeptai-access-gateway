@@ -1,30 +1,53 @@
 
 import React from 'react';
+import * as LucideIcons from 'lucide-react';
 
-// Re-export all categorized icons
-export * from './icons/ui-icons';
-export * from './icons/status-icons';
-export * from './icons/misc-icons';
-export * from './icons/data-icons';
-export * from './icons/communication-icons';
-export * from './icons/user-icons';
-export * from './icons/chart-icons';
-export * from './icons/commerce-icons';
-
-// Also re-export directly from lucide-react for any icons not in our categorized files
-export * from 'lucide-react';
-
-// Explicitly export commonly used icons to ensure they're available
-export {
+// Export all individual icons used throughout the application
+export const {
+  // UI icons
   Check,
-  Clock,
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  ChevronUp,
+  X,
+  Plus,
+  Minus,
+  Menu,
+  
+  // Status icons
+  AlertTriangle,
   AlertCircle,
-  Bot,
-  RefreshCcw,
   CheckCircle,
-  PlayCircle,
-  MoreVertical,
+  Info,
+  Loader,
+  Loader2,
+  RefreshCw,
+  RefreshCcw,
+  Clock,
+  
+  // Misc icons
+  Bot,
+  Share,
   Copy,
   Trash,
-  Share
-} from 'lucide-react';
+  PlayCircle,
+  Settings,
+  Download,
+  Save,
+  Share2,
+  MoreVertical,
+  
+  // Additional icons
+  User,
+  Users,
+  FileText,
+  Calendar,
+  Mail,
+  Phone,
+  CreditCard,
+  ClipboardList
+} = LucideIcons;
+
+// Re-export everything from lucide-react for any other icons
+export * from 'lucide-react';

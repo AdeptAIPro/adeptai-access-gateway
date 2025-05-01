@@ -1,9 +1,6 @@
 
 #!/bin/bash
 
-# Make this script executable
-chmod +x setup-and-run-vite.sh
-
 echo "🔧 Setting up project dependencies and fixing React/Vite issues..."
 
 # Install core dependencies
@@ -19,294 +16,74 @@ npm install --save lucide-react
 echo "📦 Installing Vite and plugins..."
 npm install --save-dev vite @vitejs/plugin-react-swc
 
-# Create utils directory for polyfill files if it doesn't exist
-mkdir -p src/utils/icons
+# Install additional dependencies
+echo "📦 Installing additional dependencies..."
+npm install --save class-variance-authority clsx tailwind-merge @radix-ui/react-slot
+npm install --save react-hook-form @hookform/resolvers
 
-# Create icon-polyfill.tsx with all the required icons
-cat > src/utils/icon-polyfill.tsx << 'EOL'
-import React from 'react';
-import { 
-  AlertCircle, 
-  RefreshCcw, 
-  CheckCircle, 
-  PlayCircle, 
-  MoreVertical,
-  Copy, 
-  Trash, 
-  Share,
-  Bot,
-  Clock,
-  Check
-} from 'lucide-react';
-
-// Re-export all the icons used in the project
-export {
-  AlertCircle, 
-  RefreshCcw, 
-  CheckCircle, 
-  PlayCircle, 
-  MoreVertical,
-  Copy, 
-  Trash, 
-  Share,
-  Bot,
-  Clock,
-  Check
-};
-
-// Export default for compatibility
-export default {
-  AlertCircle, 
-  RefreshCcw, 
-  CheckCircle, 
-  PlayCircle, 
-  MoreVertical,
-  Copy, 
-  Trash, 
-  Share,
-  Bot,
-  Clock,
-  Check
-};
-EOL
-
-# Create sonner-polyfill.tsx
-cat > src/utils/sonner-polyfill.tsx << 'EOL'
-import { toast } from 'sonner';
-
-// Re-export everything from sonner
-export * from 'sonner';
-
-// Export toast directly for compatibility
-export { toast };
-
-// Export default for compatibility
-export default toast;
-EOL
-
-# Update the Button component to support the 'variant' prop
-cat > src/components/ui/button.tsx << 'EOL'
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
+# Create tsconfig.json file if it doesn't exist
+if [ ! -f "tsconfig.json" ]; then
+  echo "🔧 Creating tsconfig.json..."
+  echo '{
+    "compilerOptions": {
+      "target": "ES2020",
+      "useDefineForClassFields": true,
+      "lib": ["ES2020", "DOM", "DOM.Iterable"],
+      "module": "ESNext",
+      "skipLibCheck": true,
+      "moduleResolution": "bundler",
+      "allowImportingTsExtensions": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "jsx": "react-jsx",
+      "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noFallthroughCasesInSwitch": true,
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./src/*"]
+      }
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
+    "include": ["src"],
+    "references": [{ "path": "./tsconfig.node.json" }]
+  }' > tsconfig.json
+fi
+
+# Create tsconfig.node.json if it doesn't exist
+if [ ! -f "tsconfig.node.json" ]; then
+  echo "🔧 Creating tsconfig.node.json..."
+  echo '{
+    "compilerOptions": {
+      "composite": true,
+      "skipLibCheck": true,
+      "module": "ESNext",
+      "moduleResolution": "bundler",
+      "allowSyntheticDefaultImports": true
     },
-  }
-)
+    "include": ["vite.config.ts"]
+  }' > tsconfig.node.json
+fi
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
-
-export { Button, buttonVariants }
-EOL
-
-# Create utils.ts for cn function
-mkdir -p src/lib
-cat > src/lib/utils.ts << 'EOL'
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
- 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-EOL
-
-# Update Badge component to support variant and className
-cat > src/components/ui/badge.tsx << 'EOL'
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-  {
-    variants: {
-      variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-        success: "border-transparent bg-green-500 text-white hover:bg-green-600",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
-
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
-  children?: React.ReactNode;
-}
-
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  )
-}
-
-export { Badge, badgeVariants }
-EOL
-
-# Create proper tsconfig.json file
-echo "🔧 Creating tsconfig.json..."
-cat > tsconfig.json << 'EOL'
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
-EOL
-
-# Create tsconfig.node.json
-cat > tsconfig.node.json << 'EOL'
-{
-  "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.ts"]
-}
-EOL
-
-# Update vite.config.ts
-echo "🔧 Updating vite.config.ts..."
-cat > vite.config.ts << 'EOL'
-import { defineConfig } from "vite";
+# Create vite.config.ts if it doesn't exist
+if [ ! -f "vite.config.ts" ]; then
+  echo "🔧 Creating vite.config.ts..."
+  echo 'import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    host: "0.0.0.0",
-    port: 8080,
-  },
   plugins: [react()],
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
     },
   },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'sonner', 'react-hook-form', '@hookform/resolvers', 'zod']
-  }
-});
-EOL
+});' > vite.config.ts
+fi
 
-# Install additional packages for class-variance-authority
-npm install class-variance-authority clsx tailwind-merge
-
-# Fix package.json
-echo "🔧 Updating package.json..."
-cat > package.json << 'EOL'
-{
-  "name": "vite-react-app",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.0.2",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "date-fns": "^2.30.0",
-    "lucide-react": "^0.268.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.45.4",
-    "react-router-dom": "^6.15.0",
-    "sonner": "^0.7.0",
-    "tailwind-merge": "^1.14.0",
-    "zod": "^3.22.2"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react-swc": "^3.3.2",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
-  }
-}
-EOL
-
-# Run Vite using npx to ensure we use the locally installed version
+# Run Vite using npx
 echo "🚀 Starting Vite development server..."
 npx vite
