@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, AlertCircle, Clock } from '@/utils/icon-polyfill';
 
 interface TaskStatusBadgeProps {
-  status: string;
+  status: "pending" | "processing" | "completed" | "failed"; // Updated to match AgentTask status types
 }
 
 export const formatTaskType = (type: string): string => {

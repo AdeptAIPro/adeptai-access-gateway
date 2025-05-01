@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "@/utils/router-polyfill";
 import { toast } from "sonner";
@@ -135,11 +136,11 @@ const Signup = () => {
           />
           <Label htmlFor="terms" className="text-sm font-normal leading-tight">
             I agree to the{" "}
-            <a href="/terms" className="text-adept hover:underline">
+            <a href="/terms" className="text-primary hover:underline">
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="/privacy" className="text-adept hover:underline">
+            <a href="/privacy" className="text-primary hover:underline">
               Privacy Policy
             </a>
           </Label>
@@ -147,7 +148,7 @@ const Signup = () => {
         
         <Button
           type="submit"
-          className="w-full bg-adept hover:bg-adept-dark transition-all duration-300"
+          className="w-full bg-primary hover:bg-primary/90 transition-all duration-300"
           disabled={isLoading}
         >
           {isLoading ? "Creating account..." : "Create account"}

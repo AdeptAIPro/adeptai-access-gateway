@@ -1,11 +1,11 @@
 
-import { TaskResultData } from '@/components/agentic-ai/task-result/types';
+import { TaskResultData } from '@/services/agentic-ai/types/AgenticTypes';
 
 export interface AgentTask {
   id: string;
   type?: string;
   taskType: string;
-  status: string;
+  status: "pending" | "processing" | "completed" | "failed"; // Updated to match AgenticTypes
   goal?: string;
   description: string;
   title: string;

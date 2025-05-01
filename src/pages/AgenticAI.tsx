@@ -73,9 +73,7 @@ const AgenticAI = () => {
     awsAccessKeyId?: string;
     awsSecretAccessKey?: string;
   }) => {
-    // Convert to the expected type
-    const typedCredentials: AppCredentials = newCredentials;
-    setCredentials(typedCredentials);
+    setCredentials(newCredentials);
     
     checkBackendStatus().then((isReady) => {
       if (isReady) {

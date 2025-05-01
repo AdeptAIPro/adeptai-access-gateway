@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes';
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes'; // Updated import path
 import { Card, CardContent } from "@/components/ui/card";
 import { Bot } from '@/utils/icon-polyfill';
 import TaskCard from './TaskCard';

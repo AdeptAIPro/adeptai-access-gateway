@@ -69,9 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Add signUp as an alias for signup to maintain compatibility
-  const signUp = signup;
-
   // Logout function
   const logout = useCallback(async () => {
     try {
@@ -167,7 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     error,
     login,
     signup,
-    signUp,  // Add the alias
+    signUp: signup, // Add signUp as an alias for signup
     logout,
     resetPassword,
     updateProfile,

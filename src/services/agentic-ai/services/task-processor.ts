@@ -8,8 +8,8 @@ export const processTask = async (taskId: string): Promise<boolean> => {
   try {
     console.log(`Processing task ${taskId}`);
     
-    // Update task status to in progress
-    await updateTask(taskId, { status: "in progress" });
+    // Update task status to processing (changed from 'in progress')
+    await updateTask(taskId, { status: "processing" });
     
     // Get the full task details
     const task = await updateTask(taskId, {});
@@ -62,7 +62,9 @@ export const processTask = async (taskId: string): Promise<boolean> => {
     console.error(`Error processing task ${taskId}:`, error);
     await updateTask(taskId, { 
       status: "failed",
-      error: error instanceof Error ? error.message : "Unknown error occurred"
+      error: { 
+        message: error instanceof Error ? error.message : "Unknown error occurred"
+      }
     });
     return false;
   }
@@ -94,7 +96,9 @@ async function fallbackProcessing(task: AgentTask): Promise<boolean> {
     console.error(`Fallback processing error for task ${task.id}:`, error);
     await updateTask(task.id, { 
       status: "failed",
-      error: error instanceof Error ? error.message : "Unknown error occurred"
+      error: { 
+        message: error instanceof Error ? error.message : "Unknown error occurred" 
+      }
     });
     return false;
   }

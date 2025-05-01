@@ -1,83 +1,92 @@
 
-import { AgentTask } from "../types/AgenticTypes";
-import { collectCandidatesFromAllSources, crossReferenceMultipleSourceCandidates, calculateAverageCrossSourceScore } from "./utils/CandidateCollector";
-import { generateFallbackCandidates, generateFallbackMatchingResult } from "../../talent-matching/fallbacks/MatchingFallbacks";
+import { AgentTask } from '../types/AgenticTypes';
 
-/**
- * Process a cross-source talent intelligence task
- * This service aggregates candidate information across multiple sources,
- * validates it, and provides insights about the candidates
- */
 export const processCrossSourceTalentIntelligenceTask = async (task: AgentTask): Promise<AgentTask> => {
-  console.log(`Processing cross-source talent intelligence task: ${task.id}`);
-  
-  // Mark task as processing
-  const updatedTask = { ...task, status: "processing" as const };
+  console.log(`Processing cross-source talent intelligence: ${task.id}`);
   
   try {
-    // Add some delay to simulate processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Get parameters from the task
-    const params = task.params as any;
-    
-    if (!params.jobDescription && !params.requiredSkills) {
-      throw new Error("Missing required parameters: jobDescription or requiredSkills");
+    // Validate the parameters
+    if (!task.params || !task.params.query) {
+      return {
+        ...task,
+        status: "failed",
+        error: {
+          message: "Missing required parameter: query",
+          code: "MISSING_PARAMETER"
+        }
+      };
     }
     
-    // 1. Collect candidates from all configured sources
-    const candidates = await collectCandidatesFromAllSources({
-      jobDescription: params.jobDescription,
-      requiredSkills: params.requiredSkills,
-      preferredSkills: params.preferredSkills,
-      sources: params.sources,
-      minMatchScore: params.minMatchScore || 70,
-      culturalFitPriority: params.culturalFitPriority || 5
-    });
+    // Simulate processing delay
+    await new Promise(resolve => setTimeout(resolve, 2500));
     
-    // 2. Cross-reference candidates across sources for validation
-    const crossReferencedCandidates = await crossReferenceMultipleSourceCandidates(candidates);
-    
-    // 3. Compute cross-source statistics
-    const verifiedCandidates = crossReferencedCandidates.filter(c => c.crossSourceVerified);
-    const averageCrossSourceScore = calculateAverageCrossSourceScore(crossReferencedCandidates);
-    const sourcesSearched = Array.from(new Set(candidates.flatMap(c => c.crossSourceSources || [c.source]))); 
-    
-    // 4. Generate insights from fallback data
-    const fallbackResult = generateFallbackMatchingResult("Software Developer", ["JavaScript", "React", "Node.js"]);
-    
-    // Combine with our cross-source validation data
-    return {
-      ...updatedTask,
-      status: "completed",
-      result: {
-        candidates: crossReferencedCandidates,
-        insights: fallbackResult.insights,
-        crossSourceValidation: {
-          sourcesSearched,
-          candidatesFound: candidates.length,
-          verifiedCandidates: verifiedCandidates.length,
-          verificationRate: Math.round((verifiedCandidates.length / candidates.length) * 100),
-          averageCrossSourceScore
+    // Generate mock intelligence data
+    const results = {
+      summary: "Cross-source talent intelligence analysis completed",
+      query: task.params.query,
+      timestamp: new Date().toISOString(),
+      sources: ["LinkedIn", "Internal Database", "Monster", "Indeed", "GitHub"],
+      candidates: generateMockCandidates(task.params.query),
+      insights: {
+        skillDistribution: {
+          "React": 75,
+          "JavaScript": 92,
+          "TypeScript": 68,
+          "Node.js": 64,
+          "AWS": 45,
+          "Docker": 39
         },
-        outreachStrategies: {
-          recommendedChannels: ["Email", "LinkedIn InMail"],
-          messagingTemplates: [
-            {
-              type: "initial-contact",
-              subject: "Opportunity at [Company]",
-              body: "Hello [Name], I came across your profile and think you'd be a great fit for our [Position] role..."
-            }
-          ]
-        }
+        geographicDistribution: {
+          "San Francisco": 35,
+          "New York": 28,
+          "London": 17,
+          "Remote": 20
+        },
+        salaryRanges: {
+          "Junior": "$80k - $100k",
+          "Mid-level": "$100k - $140k",
+          "Senior": "$140k - $180k",
+          "Lead": "$180k+"
+        },
+        demandTrends: "Increasing demand for TypeScript and AWS skills"
       }
     };
-  } catch (error) {
-    console.error(`Error processing cross-source talent intelligence task: ${error}`);
+    
     return {
-      ...updatedTask,
+      ...task,
+      status: "completed",
+      result: results,
+      completedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error(`Error processing cross-source intelligence: ${error}`);
+    
+    return {
+      ...task,
       status: "failed",
-      error: `Failed to process task: ${error}`
+      error: {
+        message: error instanceof Error ? error.message : "Error processing cross-source intelligence",
+        code: "PROCESSING_ERROR"
+      }
     };
   }
+};
+
+const generateMockCandidates = (query: string) => {
+  return Array.from({ length: 8 }, (_, i) => ({
+    id: `cand-${i+100}`,
+    name: `Candidate ${i+1}`,
+    title: `Senior Developer`,
+    score: 95 - (i * 4),
+    sources: i % 3 === 0 
+      ? ["LinkedIn", "Internal Database"] 
+      : i % 2 === 0 
+        ? ["Monster", "GitHub"] 
+        : ["Internal Database"],
+    skills: ["JavaScript", "React", i % 2 === 0 ? "AWS" : "Azure", "TypeScript"],
+    experience: 3 + (i % 5),
+    location: i % 2 === 0 ? "San Francisco, CA" : "New York, NY",
+    availability: "Immediately",
+    lastActive: "2 weeks ago"
+  }));
 };

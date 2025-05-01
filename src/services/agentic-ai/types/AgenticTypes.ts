@@ -52,6 +52,7 @@ export interface AgentTask {
   userId?: string;
   agentId?: string;
   priority?: "low" | "medium" | "high";
+  agent?: string;
 }
 
 // Export AgentTask as a type alias to maintain backward compatibility

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import TaskList from "@/components/agentic-ai/dashboard/TaskList";
@@ -5,7 +6,7 @@ import EnhancedTaskResultDisplay from "@/components/agentic-ai/task-result/Enhan
 import AgenticErrorHandler from "@/components/agentic-ai/AgenticErrorHandler";
 import usePersistedState from "@/hooks/use-persisted-state";
 import { toast } from "sonner";
-import { AgentTask } from '@/types/agent-task';
+import { AgentTask } from '@/services/agentic-ai/types/AgenticTypes'; // Changed import path
 
 interface AgenticProcessFlowProps {
   tasks: AgentTask[];

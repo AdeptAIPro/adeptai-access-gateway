@@ -40,4 +40,10 @@ export class AgenticDatabaseService {
     console.log(`Fetching task ${taskId}`);
     return null; // Mock: Task not found
   }
+  
+  // Mock function for any modules expecting executeQuery
+  static async executeQuery(params: any): Promise<any> {
+    console.log("Executing query with params:", params);
+    return { Items: [] };
+  }
 }

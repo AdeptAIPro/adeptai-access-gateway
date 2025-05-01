@@ -1,6 +1,6 @@
 
 // Basic types for task results and agent tasks
-import { AgentTask as BaseAgentTask } from '@/types/agent-task';
+import { AgentTask as BaseAgentTask, TaskResultData } from '@/services/agentic-ai/types/AgenticTypes';
 
 export interface TaskResult {
   id: string;
@@ -21,12 +21,5 @@ export interface TaskResult {
 
 export interface AgentTask extends BaseAgentTask {}
 
-// Define a properly typed result object that includes all possible fields
-export interface TaskResultData {
-  summary?: string;
-  details?: string;
-  data?: any;
-  findings?: any[];
-  recommendations?: any[];
-  context?: Record<string, any>;
-}
+// Re-export TaskResultData from AgenticTypes
+export { TaskResultData };
