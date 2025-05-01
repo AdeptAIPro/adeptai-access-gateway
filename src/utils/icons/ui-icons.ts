@@ -1,38 +1,14 @@
 
-import { 
-  Share2, 
-  Download, 
-  Save, 
-  Settings, 
-  Info, 
-  RefreshCcw, 
-  RefreshCw,
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Plus,
-  Minus,
-  Menu,
-  MoreVertical
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
-export {
-  Share2,
-  Download,
-  Save,
-  Settings,
-  Info,
-  RefreshCcw,
-  RefreshCw,
+export const {
   ChevronDown,
-  ChevronUp,
-  ChevronLeft,
   ChevronRight,
+  ChevronLeft,
+  ChevronUp,
+  Check,
   X,
   Plus,
   Minus,
-  Menu,
-  MoreVertical
-};
+  Menu
+} = LucideIcons;

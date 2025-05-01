@@ -1,58 +1,97 @@
 
 #!/bin/bash
 
-echo "🚀 Starting development environment..."
+echo "🚀 Starting developer setup and application..."
 
-# Make this script executable
+# Make all scripts executable
+chmod +x run-vite.sh
+chmod +x fix-dependencies.sh
 chmod +x start-dev.sh
+chmod +x setup-and-run-vite.sh
+chmod +x init.sh
+[ -f "make-fix-executable.sh" ] && chmod +x make-fix-executable.sh
 
-# Ensure node_modules exists
-if [ ! -d "node_modules" ]; then
-  echo "📦 Installing dependencies..."
-  npm install
+# Create directories if they don't exist
+mkdir -p src/utils/icons
+mkdir -p src/lib
+
+# Create lib/utils.ts if it doesn't exist
+if [ ! -f "src/lib/utils.ts" ]; then
+  echo "Creating utils.ts..."
+  cat > src/lib/utils.ts <<EOL
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+ 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+EOL
 fi
 
-# Add npm bin directories to PATH
+# Install required dependencies
+echo "📦 Installing core dependencies..."
+npm install --save react react-dom react-router-dom sonner date-fns zod lucide-react
+npm install --save-dev @types/react @types/react-dom typescript
+npm install --save class-variance-authority clsx tailwind-merge @radix-ui/react-slot
+
+# Install Vite and its dependencies
+echo "📦 Installing Vite..."
+npm install --save-dev vite @vitejs/plugin-react-swc
+
+# Fix PATH to include node_modules/.bin
 export PATH="$PATH:$(npm bin)"
 export PATH="$PATH:$(npm config get prefix)/bin"
 export PATH="$PATH:./node_modules/.bin"
 
-# Install missing dependencies
-echo "📦 Checking for missing dependencies..."
-npm list vite >/dev/null 2>&1 || npm install --save-dev vite@latest
-npm list react-router-dom >/dev/null 2>&1 || npm install react-router-dom
-npm list sonner >/dev/null 2>&1 || npm install sonner
-npm list zod >/dev/null 2>&1 || npm install zod
-npm list react-hook-form >/dev/null 2>&1 || npm install react-hook-form
-npm list @hookform/resolvers >/dev/null 2>&1 || npm install @hookform/resolvers
-
-# Verify Vite installation
-if [ ! -f "./node_modules/.bin/vite" ]; then
-  echo "📦 Installing Vite locally..."
-  npm install --save-dev vite@latest
+# Create a tsconfig.json file if it doesn't exist
+if [ ! -f "tsconfig.json" ]; then
+  echo "🔧 Creating tsconfig.json..."
+  cat > tsconfig.json << EOL
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+EOL
 fi
 
-# Clear any previous issues
-echo "🧹 Cleaning up previous builds..."
-rm -rf node_modules/.vite
-rm -rf dist
+# Create tsconfig.node.json if it doesn't exist
+if [ ! -f "tsconfig.node.json" ]; then
+  echo "🔧 Creating tsconfig.node.json..."
+  cat > tsconfig.node.json << EOL
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.ts"]
+}
+EOL
+fi
 
-# Start the app
+# Start the development server using the local Vite
 echo "🚀 Starting development server..."
-
-if [ -f "./node_modules/.bin/vite" ]; then
-  echo "Using local Vite installation"
-  ./node_modules/.bin/vite
-elif command -v npx &> /dev/null; then
-  echo "Using npx to run Vite"
-  npx vite
-else
-  echo "Trying npm run dev"
-  npm run dev
-fi
-
-# If all else fails, inform the user
-if [ $? -ne 0 ]; then
-  echo "❌ Failed to start the development server."
-  echo "Try manually running: npm run dev"
-fi
+npx vite

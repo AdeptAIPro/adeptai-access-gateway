@@ -1,42 +1,15 @@
 
-import { 
-  Search, 
-  Calendar, 
-  Shield,
-  Share2,
-  Download,
-  Save,
-  Settings,
-  Info,
-  Bot,
-  ArrowRight,
-  TrendingUp,
-  ShieldCheck,
-  Zap,
-  AlertTriangle,
-  Plug,
-  ClipboardList,
-  Filter,
-  Link
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
-export {
-  Search,
-  Calendar,
-  Shield,
-  Share2,
+export const {
+  Bot,
+  Share,
+  Copy,
+  Trash,
+  PlayCircle,
+  Settings,
   Download,
   Save,
-  Settings,
-  Info,
-  Bot,
-  ArrowRight,
-  TrendingUp,
-  ShieldCheck,
-  Zap,
-  AlertTriangle,
-  Plug,
-  ClipboardList,
-  Filter,
-  Link
-};
+  Share2,
+  MoreVertical
+} = LucideIcons;

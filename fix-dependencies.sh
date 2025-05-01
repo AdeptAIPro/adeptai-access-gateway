@@ -3,6 +3,9 @@
 
 echo "🚀 Installing required dependencies..."
 
+# Clean npm cache to prevent issues
+npm cache clean --force
+
 # Install core dependencies
 npm install --save react react-dom react-router-dom sonner zod date-fns
 npm install --save-dev @types/react @types/react-dom typescript
@@ -19,8 +22,8 @@ npm install --save react-hook-form @hookform/resolvers
 # Add executable permissions to run scripts
 chmod +x run-vite.sh
 chmod +x setup-and-run-vite.sh
+chmod +x start-dev.sh
 
 # Run Vite
 echo "🚀 Starting Vite development server..."
 npx vite
-

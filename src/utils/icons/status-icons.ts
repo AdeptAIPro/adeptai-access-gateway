@@ -1,16 +1,14 @@
 
-import { 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
-  Check,
-  PlayCircle
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
-export {
+export const {
+  AlertTriangle,
   AlertCircle,
   CheckCircle,
-  Clock,
-  Check,
-  PlayCircle
-};
+  Info,
+  Loader,
+  Loader2,
+  RefreshCw,
+  RefreshCcw,
+  Clock
+} = LucideIcons;
