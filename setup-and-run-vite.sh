@@ -19,12 +19,10 @@ npm install --save lucide-react
 echo "📦 Installing Vite and plugins..."
 npm install --save-dev vite @vitejs/plugin-react-swc
 
-# Create icons-polyfill file to fix missing icon exports
-echo "🔧 Creating icon polyfills..."
+# Create utils directory for polyfill files if it doesn't exist
 mkdir -p src/utils/icons
 
-# Create icon-polyfill.tsx
-mkdir -p src/utils
+# Create icon-polyfill.tsx with all the required icons
 cat > src/utils/icon-polyfill.tsx << 'EOL'
 import React from 'react';
 import { 
@@ -86,42 +84,82 @@ export { toast };
 export default toast;
 EOL
 
-# Update the @tanstack/react-query import in AppProvider.tsx
-echo "🔧 Fixing QueryClientProvider import in AppProvider.tsx..."
-cat > src/providers/AppProvider.tsx << 'EOL'
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/hooks/use-auth';
+# Update the Button component to support the 'variant' prop
+cat > src/components/ui/button.tsx << 'EOL'
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
 
-// Create a new QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false,
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
     },
-  },
-});
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ 
-  children 
-}) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    </QueryClientProvider>
-  );
-};
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Button.displayName = "Button"
+
+export { Button, buttonVariants }
 EOL
 
-# Create a basic Badge component that accepts className prop
-echo "🔧 Creating Badge component that accepts className prop..."
-mkdir -p src/components/ui
+# Create utils.ts for cn function
+mkdir -p src/lib
+cat > src/lib/utils.ts << 'EOL'
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+ 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+EOL
+
+# Update Badge component to support variant and className
 cat > src/components/ui/badge.tsx << 'EOL'
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
@@ -136,9 +174,7 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        success: "border-transparent bg-emerald-500 text-white hover:bg-emerald-500/80",
-        ghost: "border-transparent bg-muted text-muted-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        success: "border-transparent bg-green-500 text-white hover:bg-green-600",
       },
     },
     defaultVariants: {
@@ -149,7 +185,9 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  children?: React.ReactNode;
+}
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (
@@ -158,17 +196,6 @@ function Badge({ className, variant, ...props }: BadgeProps) {
 }
 
 export { Badge, badgeVariants }
-EOL
-
-# Create utils.ts for cn function
-mkdir -p src/lib
-cat > src/lib/utils.ts << 'EOL'
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
- 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
 EOL
 
 # Create proper tsconfig.json file
@@ -257,13 +284,14 @@ cat > package.json << 'EOL'
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.0.0",
+    "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "lucide-react": "^0.268.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.45.4",
     "react-router-dom": "^6.15.0",
     "sonner": "^0.7.0",
     "tailwind-merge": "^1.14.0",
