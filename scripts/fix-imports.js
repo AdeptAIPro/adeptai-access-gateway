@@ -1,8 +1,14 @@
 
+#!/usr/bin/env node
+
+/**
+ * This script fixes common import issues in the codebase
+ */
+
 const fs = require('fs');
 const path = require('path');
 
-// Function to recursively find all TypeScript files
+// Find all TypeScript files
 function findTsFiles(dir) {
   if (!fs.existsSync(dir)) {
     console.warn(`Directory not found: ${dir}`);
@@ -47,7 +53,7 @@ function updateImports(filePath) {
     
     // Replace direct lucide-react imports with our polyfill
     const updatedContent = content.replace(
-      /from ['"]lucide-react['"]/g,
+      /from ['"]lucide-react['"]/g, 
       "from '@/utils/icon-polyfill'"
     );
     
