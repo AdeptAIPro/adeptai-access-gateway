@@ -1,14 +1,21 @@
 
 import * as LucideIcons from 'lucide-react';
 
+// Export all UI-related icons
 export const {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
+  Calendar,
   ChevronDown,
-  ChevronRight,
   ChevronLeft,
+  ChevronRight,
   ChevronUp,
-  Check,
-  X,
-  Plus,
-  Minus,
-  Menu
+  DollarSign,
+  Home,
+  Menu,
+  Search,
+  User,
+  Users
 } = LucideIcons;

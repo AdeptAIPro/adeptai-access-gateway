@@ -10,7 +10,7 @@ import TaskGoalField from './TaskGoalField';
 import AgentSelector from './AgentSelector';
 import PrioritySelector from './PrioritySelector';
 import { toast } from '@/utils/sonner-polyfill';
-import { z } from 'zod';
+import { z } from '@/utils/zod-polyfill';
 
 // Define types needed for the form
 interface Agent {

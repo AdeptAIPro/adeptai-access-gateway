@@ -1,14 +1,16 @@
 
 import * as LucideIcons from 'lucide-react';
 
+// Export all status-related icons
 export const {
-  AlertTriangle,
   AlertCircle,
+  AlertTriangle,
+  Check,
   CheckCircle,
-  Info,
+  Clock,
   Loader,
-  Loader2,
-  RefreshCw,
+  LoaderCircle,
   RefreshCcw,
-  Clock
+  X,
+  XCircle
 } = LucideIcons;

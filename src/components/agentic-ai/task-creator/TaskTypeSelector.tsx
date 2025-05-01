@@ -4,11 +4,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Control } from "react-hook-form";
+import { FixedLabel, FixedRadioGroup } from "@/utils/shadcn-patches";
 
 export interface TaskTypeSelectorProps {
   control: Control<any>;
@@ -21,9 +21,9 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ control }) => {
       name="taskType"
       render={({ field }) => (
         <FormItem className="space-y-3">
-          <FormLabel>Task Type</FormLabel>
+          <FixedLabel>Task Type</FixedLabel>
           <FormControl>
-            <RadioGroup
+            <FixedRadioGroup
               onValueChange={field.onChange}
               defaultValue={field.value}
               className="grid grid-cols-1 md:grid-cols-3 gap-4"
@@ -57,7 +57,7 @@ const TaskTypeSelector: React.FC<TaskTypeSelectorProps> = ({ control }) => {
                   </div>
                 </label>
               </div>
-            </RadioGroup>
+            </FixedRadioGroup>
           </FormControl>
           <FormMessage />
         </FormItem>

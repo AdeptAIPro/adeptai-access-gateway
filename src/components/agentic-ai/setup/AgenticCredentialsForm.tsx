@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import * as z from '@/utils/zod-polyfill';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -12,6 +12,7 @@ import { initializeOpenAI, isOpenAIInitialized } from '@/services/llm/OpenAIServ
 import { checkAwsCredentials } from '@/services/aws/AwsConfigService';
 import { Eye, EyeOff, CheckCircle, AlertCircle, KeyRound, Database } from 'lucide-react';
 import { toast } from 'sonner';
+import { FixedLabel } from '@/utils/shadcn-patches';
 
 // Form validation schema
 const formSchema = z.object({
@@ -195,7 +196,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
                   name="openaiApiKey"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>OpenAI API Key</FormLabel>
+                      <FixedLabel>OpenAI API Key</FixedLabel>
                       <div className="flex space-x-2">
                         <FormControl>
                           <div className="relative">
@@ -259,7 +260,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
                     name="awsRegion"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>AWS Region</FormLabel>
+                        <FixedLabel>AWS Region</FixedLabel>
                         <FormControl>
                           <Input {...field} placeholder="us-east-1" />
                         </FormControl>
@@ -273,7 +274,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
                     name="awsAccessKeyId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>AWS Access Key ID</FormLabel>
+                        <FixedLabel>AWS Access Key ID</FixedLabel>
                         <FormControl>
                           <Input {...field} placeholder="AKIA..." />
                         </FormControl>
@@ -287,7 +288,7 @@ const AgenticCredentialsForm: React.FC<AgenticCredentialsFormProps> = ({
                     name="awsSecretAccessKey"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>AWS Secret Access Key</FormLabel>
+                        <FixedLabel>AWS Secret Access Key</FixedLabel>
                         <div className="flex space-x-2">
                           <FormControl>
                             <div className="relative">

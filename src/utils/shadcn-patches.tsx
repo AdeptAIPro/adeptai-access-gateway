@@ -45,29 +45,29 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group";
 
-// Create fixed versions of components that have issues
-export const FixedLabel = (props: React.ComponentProps<typeof Label>) => {
-  return <Label {...props} />;
+// Create properly typed wrapper components
+export const FixedLabel = ({ children, className, ...props }: React.HTMLProps<HTMLLabelElement>) => {
+  return <Label className={className} {...props}>{children}</Label>;
 };
 
-export const FixedSelectTrigger = (props: React.ComponentProps<typeof SelectTrigger>) => {
-  return <SelectTrigger {...props} />;
+export const FixedSelectTrigger = ({ children, className, ...props }: React.HTMLProps<HTMLButtonElement> & { children?: React.ReactNode }) => {
+  return <SelectTrigger className={className} {...props}>{children}</SelectTrigger>;
 };
 
-export const FixedSelectContent = (props: React.ComponentProps<typeof SelectContent>) => {
-  return <SelectContent {...props} />;
+export const FixedSelectContent = ({ children, ...props }: React.HTMLProps<HTMLDivElement> & { children?: React.ReactNode }) => {
+  return <SelectContent {...props}>{children}</SelectContent>;
 };
 
-export const FixedSelectItem = (props: React.ComponentProps<typeof SelectItem>) => {
-  return <SelectItem {...props} />;
+export const FixedSelectItem = ({ children, value, ...props }: React.HTMLProps<HTMLDivElement> & { value: string, children?: React.ReactNode }) => {
+  return <SelectItem value={value} {...props}>{children}</SelectItem>;
 };
 
-export const FixedTabsTrigger = (props: React.ComponentProps<typeof TabsTrigger>) => {
-  return <TabsTrigger {...props} />;
-};
-
-export const FixedDropdownMenuTrigger = (props: React.ComponentProps<typeof DropdownMenuTrigger>) => {
-  return <DropdownMenuTrigger {...props} />;
+export const FixedRadioGroup = ({ children, onValueChange, defaultValue, className, ...props }: React.HTMLProps<HTMLDivElement> & { 
+  onValueChange?: (value: string) => void, 
+  defaultValue?: string,
+  children?: React.ReactNode 
+}) => {
+  return <RadioGroup onValueChange={onValueChange} defaultValue={defaultValue} className={className} {...props}>{children}</RadioGroup>;
 };
 
 // Re-export all the components
