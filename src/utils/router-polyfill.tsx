@@ -1,8 +1,4 @@
 
-/**
- * This file re-exports components from react-router-dom to avoid direct imports
- * which can cause issues in some builds.
- */
 import React from 'react';
 import * as ReactRouterDom from 'react-router-dom';
 
