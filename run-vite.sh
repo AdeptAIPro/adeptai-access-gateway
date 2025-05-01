@@ -9,3 +9,4 @@ export PATH="$PATH:./node_modules/.bin"
 # Run Vite
 echo "🚀 Starting Vite development server..."
 npx vite
+

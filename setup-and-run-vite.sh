@@ -87,3 +87,4 @@ fi
 # Run Vite using npx
 echo "🚀 Starting Vite development server..."
 npx vite
+

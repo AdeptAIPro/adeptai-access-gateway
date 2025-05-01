@@ -18,7 +18,6 @@ npm install --save react-hook-form @hookform/resolvers
 
 # Add executable permissions to run scripts
 chmod +x run-vite.sh
-chmod +x start-dev.sh
 chmod +x setup-and-run-vite.sh
 
 # Run Vite
