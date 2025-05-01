@@ -1,26 +1,17 @@
 
 #!/bin/bash
 
-# Make this script executable
-chmod +x start-dev.sh
-
-# Install required dependencies if missing
-echo "📦 Installing required dependencies..."
-npm install --save react react-dom react-router-dom sonner date-fns zod lucide-react
-npm install --save-dev @types/react @types/react-dom typescript
-npm install --save class-variance-authority tailwind-merge clsx
-npm install --save @radix-ui/react-slot @radix-ui/react-toast
-
-# Run the Vite server
-echo "🚀 Starting development server..."
+# Add npm bin directories to PATH
 export PATH="$PATH:$(npm bin)"
-if [ -f "./node_modules/.bin/vite" ]; then
-  echo "Using local Vite installation"
-  ./node_modules/.bin/vite
-elif command -v npx &> /dev/null; then
-  echo "Using npx to run Vite"
-  npx vite
-else
-  echo "Trying with npm run dev"
-  npm run dev
+export PATH="$PATH:$(npm config get prefix)/bin"
+export PATH="$PATH:./node_modules/.bin"
+
+# Install Vite if not available
+if ! npm list vite >/dev/null 2>&1; then
+  echo "📦 Installing Vite..."
+  npm install --save-dev vite@latest @vitejs/plugin-react-swc
 fi
+
+# Run Vite
+echo "🚀 Starting Vite development server..."
+npx vite

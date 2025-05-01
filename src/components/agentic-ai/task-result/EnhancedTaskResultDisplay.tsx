@@ -6,7 +6,7 @@ import TaskResultDisplay from "./TaskResultDisplay";
 import { AgentTask } from '@/types/agent-task';
 import { Progress } from "@/components/ui/progress";
 import { RefreshCcw, Clock } from "@/utils/icon-polyfill";
-import { Download, Save } from "@/utils/icon-polyfill";
+import { Download, Save } from "lucide-react";
 
 interface EnhancedTaskResultDisplayProps {
   task: AgentTask;

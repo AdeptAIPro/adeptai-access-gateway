@@ -7,6 +7,6 @@ export * from './icons/misc-icons';
 // Also re-export everything from lucide-react for any other icons
 export * from 'lucide-react';
 
-// Explicitly export commonly used icons for compatibility
-import { Bot, Clock, Check, AlertCircle, RefreshCcw, CheckCircle, PlayCircle, MoreVertical, Copy, Trash, Share } from 'lucide-react';
-export { Bot, Clock, Check, AlertCircle, RefreshCcw, CheckCircle, PlayCircle, MoreVertical, Copy, Trash, Share };
+// Explicitly export commonly used icons to resolve conflicts
+import { Bot, Clock, Check, AlertCircle, RefreshCcw, CheckCircle, PlayCircle, MoreVertical, Copy, Trash, Share, Download, Save } from 'lucide-react';
+export { Bot, Clock, Check, AlertCircle, RefreshCcw, CheckCircle, PlayCircle, MoreVertical, Copy, Trash, Share, Download, Save };

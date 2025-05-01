@@ -1,6 +1,7 @@
 
 import * as LucideIcons from 'lucide-react';
 
+// Export all miscellaneous icons
 export const {
   Bot,
   Share,
