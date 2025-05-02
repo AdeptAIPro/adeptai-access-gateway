@@ -25,13 +25,11 @@ echo "📦 Installing required dependencies..."
 npm install --save react react-dom react-router-dom sonner date-fns zod lucide-react lovable-tagger
 npm install --save-dev @types/react @types/react-dom typescript @vitejs/plugin-react-swc vite
 
-# Create essential utility files if they don't exist
-if [ ! -d "src/utils/icons" ]; then
-  mkdir -p src/utils/icons
-fi
+# Ensure path includes node modules binaries
+export PATH="$PATH:$(npm bin)"
 
-# Ensure we have the dependency needed for the component tagger
-npm install --save-dev lovable-tagger
+# Create essential utility files if they don't exist
+mkdir -p src/utils/icons
 
 echo "🚀 Now running start-dev.sh to set up dependencies and start Vite..."
 ./start-dev.sh

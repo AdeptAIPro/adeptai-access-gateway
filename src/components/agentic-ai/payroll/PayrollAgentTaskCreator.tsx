@@ -7,10 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "@/utils/zod-polyfill";
+import { z } from "zod";
 import { Bot, Calendar, DollarSign } from "@/utils/icon-polyfill";
 import { toast } from "@/utils/sonner-polyfill";
-import { FixedLabel, FixedSelectTrigger, FixedSelectContent, FixedSelectItem } from "@/utils/shadcn-patches";
+import { Label } from "@/components/ui/label";
 
 // Define the schema for the form
 const payrollTaskSchema = z.object({
@@ -73,24 +73,24 @@ const PayrollAgentTaskCreator: React.FC = () => {
             name="period"
             render={({ field }) => (
               <FormItem>
-                <FixedLabel className="text-base font-medium flex items-center gap-2">
+                <Label className="text-base font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-primary" />
                   Select Payroll Period
-                </FixedLabel>
+                </Label>
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <FixedSelectTrigger>
+                    <SelectTrigger>
                       <SelectValue placeholder="Select a payroll period" />
-                    </FixedSelectTrigger>
+                    </SelectTrigger>
                   </FormControl>
-                  <FixedSelectContent>
-                    <FixedSelectItem value="april-first-half">April 1-15, 2025</FixedSelectItem>
-                    <FixedSelectItem value="april-second-half">April 16-30, 2025</FixedSelectItem>
-                    <FixedSelectItem value="may-first-half">May 1-15, 2025</FixedSelectItem>
-                  </FixedSelectContent>
+                  <SelectContent>
+                    <SelectItem value="april-first-half">April 1-15, 2025</SelectItem>
+                    <SelectItem value="april-second-half">April 16-30, 2025</SelectItem>
+                    <SelectItem value="may-first-half">May 1-15, 2025</SelectItem>
+                  </SelectContent>
                 </Select>
                 <FormDescription>
                   Choose the payroll period to process
@@ -104,10 +104,10 @@ const PayrollAgentTaskCreator: React.FC = () => {
             name="goal"
             render={({ field }) => (
               <FormItem>
-                <FixedLabel className="text-base font-medium flex items-center gap-2">
+                <Label className="text-base font-medium flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-primary" />
                   Processing Instructions
-                </FixedLabel>
+                </Label>
                 <FormControl>
                   <Textarea 
                     placeholder="E.g., Process standard payroll including overtime for marketing department..." 
@@ -127,21 +127,21 @@ const PayrollAgentTaskCreator: React.FC = () => {
             name="priority"
             render={({ field }) => (
               <FormItem>
-                <FixedLabel>Priority</FixedLabel>
+                <Label>Priority</Label>
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <FixedSelectTrigger>
+                    <SelectTrigger>
                       <SelectValue />
-                    </FixedSelectTrigger>
+                    </SelectTrigger>
                   </FormControl>
-                  <FixedSelectContent>
-                    <FixedSelectItem value="low">Low</FixedSelectItem>
-                    <FixedSelectItem value="medium">Medium</FixedSelectItem>
-                    <FixedSelectItem value="high">High</FixedSelectItem>
-                  </FixedSelectContent>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
                 </Select>
                 <FormDescription>
                   Set the priority level for processing

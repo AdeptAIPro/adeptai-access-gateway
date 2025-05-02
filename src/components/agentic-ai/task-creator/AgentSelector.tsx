@@ -4,7 +4,6 @@ import { FormField, FormItem, FormDescription, FormMessage } from "@/components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Control } from 'react-hook-form';
 import { Bot } from '@/utils/icon-polyfill';
-import { FixedSelectTrigger, FixedSelectContent, FixedSelectItem } from "@/utils/shadcn-patches";
 
 // Use a more generic type that works with both Agent definitions
 interface AgentSelectorProps {
@@ -41,7 +40,7 @@ const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps
               value={field.value}
               disabled={!selectedTaskType || filteredAgents.length === 0}
             >
-              <FixedSelectTrigger className="h-10">
+              <SelectTrigger className="h-10">
                 <SelectValue placeholder={
                   !selectedTaskType 
                     ? "Select a task type first" 
@@ -49,14 +48,14 @@ const AgentSelector = ({ control, selectedTaskType, agents }: AgentSelectorProps
                       ? "No agents available for this task" 
                       : "Select an agent"
                 } />
-              </FixedSelectTrigger>
-              <FixedSelectContent>
+              </SelectTrigger>
+              <SelectContent>
                 {filteredAgents.map(agent => (
-                  <FixedSelectItem key={agent.id} value={agent.id}>
+                  <SelectItem key={agent.id} value={agent.id}>
                     {agent.name}
-                  </FixedSelectItem>
+                  </SelectItem>
                 ))}
-              </FixedSelectContent>
+              </SelectContent>
             </Select>
             {selectedTaskType && filteredAgents.length === 0 && (
               <p className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
